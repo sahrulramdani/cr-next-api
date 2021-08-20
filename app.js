@@ -1,4 +1,4 @@
-const express = require('express');
+ const express = require('express');
 const app = express();
 const mysql = require('mysql');
 const cors = require('cors');
@@ -79,10 +79,10 @@ app.get('/', (request, response) => {
     });
 })
 
-app.post('/savePekerjaan', function(req, res) {
+app.post('/saveSetup', function(req, res) {
     var sql = 'INSERT INTO tb00_basx SET ?';
     var data = {
-        CODD_FLNM : 'PEKERJAAN',
+        CODD_FLNM : req.body.CODD_FLNM,
         CODD_VALU : req.body.CODD_VALU,
         CODD_DESC : req.body.CODD_DESC 
     };
