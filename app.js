@@ -79,6 +79,34 @@ app.get('/', (request, response) => {
     });
 })
 
+app.post('/savePekerjaan', function(req, res) {
+    var sql = 'INSERT INTO tb00_basx SET ?';
+    var data = {
+        CODD_FLNM : 'PEKERJAAN',
+        CODD_VALU : req.body.CODD_VALU,
+        CODD_DESC : req.body.CODD_DESC 
+    };
+
+    db.query(sql, data, (err, result) => {
+        if (err) {
+            console.log('Error', err);
+        } else {
+            res.send({
+                status: true
+            });
+        }
+    });
+});
+
+app.use((error, req, res, next) => {
+    res.status(error.status || 500).send({
+      error: {
+        status: error.status || 500,
+        message: error.message || 'Internal Server Error',
+      },
+    });
+  });
+
 app.listen(3000, () => {
     console.log('Server aktif di port 3000')
 });
