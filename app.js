@@ -98,6 +98,25 @@ app.post('/saveSetup', function(req, res) {
     });
 });
 
+app.post('/saveUnit', function(req, res) {
+    var sql = 'INSERT INTO tb00_unit SET ?';
+    var data = {
+        KODE_UNIT : req.body.KODE_UNIT,
+        NAMA_UNIT : req.body.NAMA_UNIT,
+        KETX_UNIT : req.body.KODE_UNIT
+    };
+
+    db.query(sql, data, (err, result) => {
+        if (err) {
+            console.log('Error', err);
+        } else {
+            res.send({
+                status: true
+            });
+        }
+    });
+});
+
 app.use((error, req, res, next) => {
     res.status(error.status || 500).send({
       error: {
