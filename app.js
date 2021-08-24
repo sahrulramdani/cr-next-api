@@ -125,6 +125,26 @@ app.get('/issues', (request, response) => {
     });
 })
 
+// save Master RKAT issue Header
+app.post('/saveIssue', function(req, res) {
+    var sql = 'INSERT INTO tb50_rish SET ?';
+    var data = {
+        ACCT_CODE : req.body.ACCT_CODE,
+        ACCT_NAMA : req.body.ACCT_NAMA,
+        STATUS : req.body.STATUS
+    };
+
+    db.query(sql, data, (err, result) => {
+        if (err) {
+            console.log('Error', err);
+        } else {
+            res.send({
+                status: true
+            });
+        }
+    });
+});
+
 app.use((error, req, res, next) => {
     res.status(error.status || 500).send({
       error: {
