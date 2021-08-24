@@ -119,7 +119,7 @@ app.post('/saveUnit', function(req, res) {
 
 // Master RKAT Issue Header
 app.get('/issues', (request, response) => {
-    var qryCmd = "select ACCT_CODE, ACCT_NAMA from tb50_rish";
+    var qryCmd = "select ACCT_CODE, ACCT_NAMA, STATUS from tb50_rish";
     db.query(qryCmd, function(err, rows, fields) {
         response.send(rows);
     });
