@@ -117,6 +117,14 @@ app.post('/saveUnit', function(req, res) {
     });
 });
 
+// Master RKAT Issue Header
+app.get('/issues', (request, response) => {
+    var qryCmd = "select ACCT_CODE, ACCT_NAMA from tb50_rish";
+    db.query(qryCmd, function(err, rows, fields) {
+        response.send(rows);
+    });
+})
+
 app.use((error, req, res, next) => {
     res.status(error.status || 500).send({
       error: {
