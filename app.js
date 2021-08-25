@@ -98,6 +98,7 @@ app.post('/saveSetup', function(req, res) {
     });
 });
 
+// Save Unit/Entity
 app.post('/saveUnit', function(req, res) {
     var sql = 'INSERT INTO tb00_unit SET ?';
     var data = {
@@ -128,6 +129,38 @@ app.get('/issues', (request, response) => {
 // save Master RKAT issue Header
 app.post('/saveIssue', function(req, res) {
     var sql = 'INSERT INTO tb50_rish SET ?';
+    var data = {
+        ACCT_CODE : req.body.ACCT_CODE,
+        ACCT_NAMA : req.body.ACCT_NAMA,
+        STATUS : req.body.STATUS
+    };
+
+    db.query(sql, data, (err, result) => {
+        if (err) {
+            console.log('Error', err);
+        } else {
+            res.send({
+                status: true
+            });
+        }
+    });
+});
+
+// Issue Get ID
+app.get('/issue/:id', function(req, res) {
+    var ids = req.params.id;
+    var sql = ' SELECT * FROM `tb50_rish` WHERE ACCT_CODE = "'+ ids +'" ';
+    db.query(sql, (err, result) => {
+        if(err) throw err;
+        console.log(result);
+        res.send(result);
+    });
+});
+
+// Update Issue
+app.post('/updateIssue', function(req, res) {
+    var ids = req.body.ACCT_CODE;
+    var sql = 'UPDATE `tb50_rish` SET ? WHERE ACCT_CODE = "'+ ids +'" '
     var data = {
         ACCT_CODE : req.body.ACCT_CODE,
         ACCT_NAMA : req.body.ACCT_NAMA,
