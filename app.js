@@ -120,7 +120,7 @@ app.post('/saveUnit', function(req, res) {
 
 // Master RKAT Issue Header
 app.get('/issues', (request, response) => {
-    var qryCmd = "select ACCT_CODE, ACCT_NAMA, STATUS from tb50_rish";
+    var qryCmd = "select ACCT_CODE as id, ACCT_NAMA, STATUS from tb50_rish";
     db.query(qryCmd, function(err, rows, fields) {
         response.send(rows);
     });
@@ -152,7 +152,6 @@ app.get('/issue/:id', function(req, res) {
     var sql = ' SELECT * FROM `tb50_rish` WHERE ACCT_CODE = "'+ ids +'" ';
     db.query(sql, (err, result) => {
         if(err) throw err;
-        console.log(result);
         res.send(result);
     });
 });
@@ -160,7 +159,7 @@ app.get('/issue/:id', function(req, res) {
 // Update Issue
 app.post('/updateIssue', function(req, res) {
     var ids = req.body.ACCT_CODE;
-    var sql = 'UPDATE `tb50_rish` SET ? WHERE ACCT_CODE = "'+ ids +'" '
+    var sql = 'UPDATE `tb50_rish` SET ? WHERE ACCT_CODE = "'+ ids +'" ';
     var data = {
         ACCT_CODE : req.body.ACCT_CODE,
         ACCT_NAMA : req.body.ACCT_NAMA,
@@ -177,6 +176,54 @@ app.post('/updateIssue', function(req, res) {
         }
     });
 });
+
+// Delete Issue
+app.post('/deleteIssue', function(req, res) {
+    var selectedIds = [];
+    console.log(req.body.selectedIds);
+    selectedIds = parseComma(req.body.selectedIds);
+
+    var arrayLength = selectedIds.length;
+    var sql = 'delete from `tb50_rish` where ACCT_CODE in (';
+    if (arrayLength > 0) {
+        for(var i=0; i<arrayLength; i++) {
+            if (i === 0) {
+              sql += selectedIds[i];
+            } else {
+              sql += ',' + selectedIds[i];
+            }
+        } 
+
+        sql += ')';
+
+        db.query(sql, (err, result) => {
+            if (err) {
+                console.log('Error', err);
+            } else {
+                res.send({
+                    status: true
+                });
+            }
+        });
+    } else {
+        res.send({
+            status: true
+        });
+    }
+});
+
+function parseComma(paramInput) {
+    var output = [];
+    var temp = [];
+    temp = paramInput.split(';');
+    console.log(temp);
+
+    if (temp.length > 0) {
+        output = temp;
+    }
+
+    return output;
+}
 
 app.use((error, req, res, next) => {
     res.status(error.status || 500).send({
