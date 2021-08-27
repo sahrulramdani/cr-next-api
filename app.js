@@ -1,7 +1,9 @@
- const express = require('express');
+const express = require('express');
 const app = express();
 const mysql = require('mysql');
 const cors = require('cors');
+
+const { fncParseComma } = require('./component/sisqu/Utility');
 
 const db = mysql.createConnection({
     host : 'localhost',
@@ -181,7 +183,7 @@ app.post('/updateIssue', function(req, res) {
 app.post('/deleteIssue', function(req, res) {
     var selectedIds = [];
     console.log(req.body.selectedIds);
-    selectedIds = parseComma(req.body.selectedIds);
+    selectedIds = fncParseComma(req.body.selectedIds);
 
     var arrayLength = selectedIds.length;
     var sql = 'delete from `tb50_rish` where ACCT_CODE in (';
@@ -211,19 +213,6 @@ app.post('/deleteIssue', function(req, res) {
         });
     }
 });
-
-function parseComma(paramInput) {
-    var output = [];
-    var temp = [];
-    temp = paramInput.split(';');
-    console.log(temp);
-
-    if (temp.length > 0) {
-        output = temp;
-    }
-
-    return output;
-}
 
 app.use((error, req, res, next) => {
     res.status(error.status || 500).send({
