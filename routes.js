@@ -18,8 +18,8 @@ import * as C from './controller/index.js';
       app.route('/issues').get(C.issue.issueAll);
       app.route('/saveIssue').post(C.issue.saveIssue);
       app.route('/issue/:id').get(C.issue.getIssue);
-      app.route('/updateIssue').get(C.issue.updateIssue);
-      app.route('/deleteIssue').get(C.issue.deleteIssue);
+      app.route('/updateIssue').post(C.issue.updateIssue);
+      app.route('/deleteIssue').post(C.issue.deleteIssue);
 }
 
 
