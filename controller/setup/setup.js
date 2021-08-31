@@ -24,6 +24,13 @@ export default class Setup {
         });
     }
 
+    typeRelawanAll = (request, response) => {
+        var qryCmd = "select * from tb00_basx where CODD_FLNM = 'TYPE_RELAWAN'";
+        db.query(qryCmd, function(err, rows, fields) {
+            response.send(rows);
+        });
+    }
+
     unitAll = (request, response) => {
         var qryCmd = "select * from tb00_unit";
         db.query(qryCmd, function(err, rows, fields) {

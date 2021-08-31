@@ -7,6 +7,7 @@ import * as C from './controller/index.js';
       app.route('/pekerjaans').get(C.setup.pekerjaanAll);
       app.route('/pendidikans').get(C.setup.pendidikanAll);
       app.route('/wilayah-kerjas').get(C.setup.wilayahKerjaAll);
+      app.route('/type-relawans').get(C.setup.typeRelawanAll);
       app.route('/units').get(C.setup.unitAll);
       app.route('/locations').get(C.setup.locationAll);
       app.route('/bussiness-units').get(C.setup.bussinessUnitAll);
