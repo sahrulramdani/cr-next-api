@@ -14,6 +14,7 @@ import * as C from './controller/index.js';
       app.route('/saveSetup').post(C.setup.saveSetup);
       app.route('/deleteSetup').post(C.setup.deleteSetup);
       app.route('/saveUnit').post(C.setup.saveUnit);
+      app.route('/deleteUnit').post(C.setup.deleteUnit);
 
       //---- Issue - Master RKAT Issue Header  ------
       app.route('/issues').get(C.issue.issueAll);

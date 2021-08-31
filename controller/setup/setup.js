@@ -25,7 +25,7 @@ export default class Setup {
     }
 
     unitAll = (request, response) => {
-        var qryCmd = "select * from tb00_lokx";
+        var qryCmd = "select * from tb00_unit";
         db.query(qryCmd, function(err, rows, fields) {
             response.send(rows);
         });
@@ -115,6 +115,21 @@ export default class Setup {
         };
     
         db.query(sql, data, (err, result) => {
+            if (err) {
+                console.log('Error', err);
+            } else {
+                res.send({
+                    status: true
+                });
+            }
+        });
+    }
+
+    deleteUnit = function(req, res) {
+        var id = req.body.KODE_UNIT;
+        var sql = "delete from `tb00_unit` where KODE_UNIT = '" + id + "'";
+
+        db.query(sql, (err, result) => {
             if (err) {
                 console.log('Error', err);
             } else {
