@@ -4,7 +4,7 @@ import { fncParseComma } from './../../libraries/sisqu/Utility.js';
 
 export default class Setup {
     pekerjaanAll = (request, response) => {
-        var qryCmd = "select * from tb00_basx where CODD_FLNM = 'PEKERJAAN'";
+        var qryCmd = "select * from tb00_basx where CODD_FLNM = 'PEKERJAAN' order by CODD_DESC";
         db.query(qryCmd, function(err, rows, fields) {
             response.send(rows);
         });

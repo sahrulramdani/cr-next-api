@@ -23,6 +23,10 @@ import * as C from './controller/index.js';
       app.route('/issue/:id').get(C.issue.getIssue);
       app.route('/updateIssue').post(C.issue.updateIssue);
       app.route('/deleteIssue').post(C.issue.deleteIssue);
+
+      // ----- Karyawan --------------
+      app.route('/saveKaryawan').post(C.karyawan.saveKaryawan);
+      app.route('/saveKaryawanPrsh').post(C.karyawan.saveKaryawanPrsh);
 }
 
 
