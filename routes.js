@@ -12,6 +12,7 @@ import * as C from './controller/index.js';
       app.route('/bussiness-units').get(C.setup.bussinessUnitAll);
       app.route('/kelompok-kerjas').get(C.setup.kelompokKerjaAll);
       app.route('/saveSetup').post(C.setup.saveSetup);
+      app.route('/deleteSetup').post(C.setup.deleteSetup);
       app.route('/saveUnit').post(C.setup.saveUnit);
 
       //---- Issue - Master RKAT Issue Header  ------
