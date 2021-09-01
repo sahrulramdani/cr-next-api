@@ -21,7 +21,12 @@ export default class Karyawan {
             Hp : req.body.Hp,
             email : req.body.email,
             TempatLahir : req.body.TempatLahir,
-            TglLahir : req.body.TglLahir
+            TglLahir : req.body.TglLahir,
+            BUSS_CODE : req.body.BUSS_CODE,
+            NoKTP : req.body.NoKTP,
+            StatusAktif : '1',
+            StatusKawin : req.body.StatusKawin,
+            TglMasuk : req.body.TglMasuk
         };
 
         var sqlDelete = 'DELETE FROM tb21_empl WHERE KodeNik = "' + data.KodeNik + '"';

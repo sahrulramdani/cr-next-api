@@ -59,6 +59,13 @@ export default class Setup {
         });
     }
 
+    statusMaritalAll = (request, response) => {
+        var qryCmd = "select * from tb00_basx where CODD_FLNM = 'MARY_PART'";
+        db.query(qryCmd, function(err, rows, fields) {
+            response.send(rows);
+        });
+    }
+
     saveSetup = function(req, res) {
         var sql = 'INSERT INTO tb00_basx SET ?';
         var data = {
