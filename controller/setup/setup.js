@@ -77,6 +77,10 @@ export default class Setup {
         db.query(sql, data, (err, result) => {
             if (err) {
                 console.log('Error', err);
+                res.send({
+                    status: false,
+                    message: err.sqlMessage
+                });
             } else {
                 res.send({
                     status: true
@@ -131,6 +135,11 @@ export default class Setup {
         db.query(sql, data, (err, result) => {
             if (err) {
                 console.log('Error', err);
+
+                res.send({
+                    status: false,
+                    message: err.sqlMessage
+                });
             } else {
                 res.send({
                     status: true

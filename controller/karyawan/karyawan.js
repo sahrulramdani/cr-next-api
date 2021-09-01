@@ -41,6 +41,11 @@ export default class Karyawan {
                 db.query(sql, data, (err2, result2) => {
                     if (err2) {
                         console.log('Error', err2);
+
+                        res.send({
+                            status: false,
+                            message: err2.sqlMessage
+                        });
                     } else {
                         res.send({
                             status: true
