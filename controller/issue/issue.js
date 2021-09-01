@@ -30,8 +30,8 @@ export default class Issue {
     }
 
     getIssue = function(req, res) {
-        var ids = req.params.id;
-        var sql = ' SELECT * FROM `tb50_rish` WHERE ACCT_CODE = "'+ ids +'" ';
+        var id = req.params.id;
+        var sql = 'SELECT * FROM `tb50_rish` WHERE ACCT_CODE = "'+ id +'" ';
         db.query(sql, (err, result) => {
             if(err) throw err;
             res.send(result);
