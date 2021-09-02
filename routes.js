@@ -29,6 +29,10 @@ import * as C from './controller/index.js';
       app.route('/karyawan/:id').get(C.karyawan.getKaryawan);
       app.route('/saveKaryawan').post(C.karyawan.saveKaryawan);
       app.route('/saveKaryawanPrsh').post(C.karyawan.saveKaryawanPrsh);
+
+      // ------ Management User --------------
+      app.route('/users').get(C.user.userAll);
+      app.route('/deleteUser').post(C.user.deleteUser);  // delete user hanya menonaktifkan user
 }
 
 
