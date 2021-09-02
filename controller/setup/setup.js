@@ -11,7 +11,7 @@ export default class Setup {
     }
 
     pendidikanAll = (request, response) => {
-        var qryCmd = "select * from tb00_basx where CODD_FLNM = 'PENDIDIKAN'";
+        var qryCmd = "select * from tb00_basx where CODD_FLNM = 'PENDIDIKAN' order by CODD_VALU";
         db.query(qryCmd, function(err, rows, fields) {
             response.send(rows);
         });
@@ -25,7 +25,7 @@ export default class Setup {
     }
 
     typeRelawanAll = (request, response) => {
-        var qryCmd = "select * from tb00_basx where CODD_FLNM = 'TYPE_RELAWAN'";
+        var qryCmd = "select * from tb00_basx where CODD_FLNM = 'TYPE_RELAWAN' order by CODD_VALU";
         db.query(qryCmd, function(err, rows, fields) {
             response.send(rows);
         });
@@ -46,21 +46,21 @@ export default class Setup {
     }
 
     bussinessUnitAll = (request, response) => {
-        var qryCmd = "select * from tb00_basx where CODD_FLNM = 'BUSSINESS_UNIT'";
+        var qryCmd = "select * from tb00_basx where CODD_FLNM = 'BUSSINESS_UNIT' order by CODD_VALU";
         db.query(qryCmd, function(err, rows, fields) {
             response.send(rows);
         });
     }
 
     kelompokKerjaAll = (request, response) => {
-        var qryCmd = "select * from tb00_basx where CODD_FLNM = 'KELOMPOK_KERJA'";
+        var qryCmd = "select * from tb00_basx where CODD_FLNM = 'KELOMPOK_KERJA' order by CODD_VALU";
         db.query(qryCmd, function(err, rows, fields) {
             response.send(rows);
         });
     }
 
     statusMaritalAll = (request, response) => {
-        var qryCmd = "select * from tb00_basx where CODD_FLNM = 'MARY_PART'";
+        var qryCmd = "select * from tb00_basx where CODD_FLNM = 'MARY_PART' order by CODD_VALU";
         db.query(qryCmd, function(err, rows, fields) {
             response.send(rows);
         });
