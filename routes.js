@@ -35,6 +35,7 @@ import * as C from './controller/index.js';
       app.route('/deleteUser').post(C.user.deleteUser);  // delete user hanya menonaktifkan user
 
       // ------ CRM --------------
+      app.route('/type-donaturs').get(C.setup.typeDonaturAll);
       app.route('/saveDonatur').post(C.donatur.saveDonatur);
 }
 
