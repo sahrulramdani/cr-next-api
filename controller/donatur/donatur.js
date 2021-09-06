@@ -44,7 +44,9 @@ export default class Donatur {
             StatusKawin : req.body.StatusKawin,
             TglX_MASK : req.body.TglX_MASK,
             Status : req.body.Status,
-            TypeBadan : req.body.TypeBadan
+            TypeBadan : req.body.TypeBadan,
+            TypeDonatur : req.body.TypeDonatur,
+            FlgPlatinum : req.body.FlgPlatinum
         };
 
         db.query(sql, data, (err2, result2) => {
@@ -82,7 +84,9 @@ export default class Donatur {
             StatusKawin : req.body.StatusKawin,
             TglX_MASK : req.body.TglX_MASK,
             Status : req.body.Status,
-            TypeBadan : req.body.TypeBadan
+            TypeBadan : req.body.TypeBadan,
+            TypeDonatur : req.body.TypeDonatur,
+            FlgPlatinum : req.body.FlgPlatinum
         };
 
         db.query(sql, data, (err2, result2) => {
