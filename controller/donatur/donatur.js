@@ -1,6 +1,31 @@
 import  db from './../../koneksi.js';
+import { fncParseComma } from './../../libraries/sisqu/Utility.js';
 
 export default class Donatur {
+    donaturs = (request, response) => {
+        var status = request.params.status;
+
+        var qryCmd = "";
+        if (status === "0") {   // All Status
+            qryCmd = "select a.NO_ID as id, a.NAMA, " +
+                     "CASE a.JNKX_KLMN " +
+                        "WHEN '1' THEN 'Laki-laki' " +
+                        "ELSE 'Perempuan' " +
+                      "END As Jns_Kelamin, " + 
+                      "a.Email, a.NoHP from tb11_mzjb a";
+        } else {
+            qryCmd = "select a.NO_ID as id, a.NAMA, " +
+                     "CASE a.JNKX_KLMN " +
+                        "WHEN '1' THEN 'Laki-laki' " +
+                        "ELSE 'Perempuan' " +
+                      "END As Jns_Kelamin, " + 
+                      "a.Email, a.NoHP from tb11_mzjb a where a.Status = '" + status + "'";
+        };
+        db.query(qryCmd, function(err, rows, fields) {
+            response.send(rows);
+        });
+    }
+
     idDonaturs = (request, response) => {
         var status = request.params.status
 
@@ -103,5 +128,40 @@ export default class Donatur {
                 });
             }
         });
+    }
+
+    verify = function(req, res) {
+        var status = req.body.Status;
+
+        var selectedIds = [];
+        selectedIds = fncParseComma(req.body.selectedIds);
+        var arrayLength = selectedIds.length;
+
+        var sql = 'UPDATE tb11_mzjb SET Status = "' + status + '" WHERE NO_ID in (';
+        if (arrayLength > 0) {
+            for(var i=0; i<arrayLength; i++) {
+                if (i === 0) {
+                  sql += selectedIds[i];
+                } else {
+                  sql += ',' + selectedIds[i];
+                }
+            } 
+    
+            sql += ')';
+    
+            db.query(sql, (err, result) => {
+                if (err) {
+                    console.log('Error', err);
+                } else {
+                    res.send({
+                        status: true
+                    });
+                }
+            });
+        } else {
+            res.send({
+                status: true
+            });
+        }
     }
 }

@@ -36,10 +36,12 @@ import * as C from './controller/index.js';
 
       // ------ CRM --------------
       app.route('/idDonaturs/:status').get(C.donatur.idDonaturs);
+      app.route('/donaturs/:status').get(C.donatur.donaturs);
       app.route('/donatur/:id').get(C.donatur.getDonatur);
       app.route('/type-donaturs').get(C.setup.typeDonaturAll);
       app.route('/saveDonatur').post(C.donatur.saveDonatur);
       app.route('/updateDonatur').post(C.donatur.updateDonatur);
+      app.route('/verifyDonatur').post(C.donatur.verify);
 }
 
 
