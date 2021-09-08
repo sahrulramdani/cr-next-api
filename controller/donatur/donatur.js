@@ -6,13 +6,13 @@ export default class Donatur {
         var status = request.params.status;
 
         var qryCmd = "";
-        if (status === "0") {   // All Status
+        if (status === "0") {   // All Status kecuali New dan Send Back
             qryCmd = "select a.NO_ID as id, a.NAMA, " +
                      "CASE a.JNKX_KLMN " +
                         "WHEN '1' THEN 'Laki-laki' " +
                         "ELSE 'Perempuan' " +
                       "END As Jns_Kelamin, " + 
-                      "a.Email, a.NoHP from tb11_mzjb a";
+                      "a.Email, a.NoHP from tb11_mzjb a where a.Status <> '1' And a.Status <> '3'";
         } else {
             qryCmd = "select a.NO_ID as id, a.NAMA, " +
                      "CASE a.JNKX_KLMN " +
@@ -31,8 +31,8 @@ export default class Donatur {
 
         var qryCmd = "";
         if (status === "0") {
-            // All
-            qryCmd = "select NO_ID As value, CONCAT(`NO_ID`, ' - ', `NAMA`, ' - ', SUBSTRING(`ALMT_XXX1`, 1, 20)) As label from tb11_mzjb order by NO_ID";
+            // All, kecuali New dan Send Back
+            qryCmd = "select NO_ID As value, CONCAT(`NO_ID`, ' - ', `NAMA`, ' - ', SUBSTRING(`ALMT_XXX1`, 1, 20)) As label from tb11_mzjb where Status <> '1' And Status <> '3' order by NO_ID";
         } else {
             qryCmd = "select NO_ID As value, CONCAT(`NO_ID`, ' - ', `NAMA`, ' - ', SUBSTRING(`ALMT_XXX1`, 1, 20)) As label from tb11_mzjb where Status = '" + status + "'  order by NO_ID";
         }
@@ -132,12 +132,13 @@ export default class Donatur {
 
     verify = function(req, res) {
         var status = req.body.Status;
+        var typeDonatur = req.body.TypeDonatur;
 
         var selectedIds = [];
         selectedIds = fncParseComma(req.body.selectedIds);
         var arrayLength = selectedIds.length;
 
-        var sql = 'UPDATE tb11_mzjb SET Status = "' + status + '" WHERE NO_ID in (';
+        var sql = 'UPDATE tb11_mzjb SET Status = "' + status + ', TypeDonatur = "' + typeDonatur + '" WHERE NO_ID in (';
         if (arrayLength > 0) {
             for(var i=0; i<arrayLength; i++) {
                 if (i === 0) {
