@@ -165,4 +165,31 @@ export default class Donatur {
             });
         }
     }
+
+    saveMasterFile = function(req, res) {
+        var sql = 'INSERT INTO tb52_0001 SET ?';   // Tabel Master File Type Program Donatur
+        var data = {
+            FileName : req.body.FileName,
+            FilePath : req.body.FilePath,
+            Nama : req.body.Nama,
+            TypeProgram : req.body.TypeProgram,
+            TahunBuku : req.body.TahunBuku,
+            Unit : req.body.Unit
+        };
+
+        db.query(sql, data, (err2, result2) => {
+            if (err2) {
+                console.log('Error', err2);
+
+                res.send({
+                    status: false,
+                    message: err2.sqlMessage
+                });
+            } else {
+                res.send({
+                    status: true
+                });
+            }
+        });
+    } 
 }

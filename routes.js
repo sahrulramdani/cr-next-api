@@ -39,9 +39,14 @@ import * as C from './controller/index.js';
       app.route('/donaturs/:status').get(C.donatur.donaturs);
       app.route('/donatur/:id').get(C.donatur.getDonatur);
       app.route('/type-donaturs').get(C.setup.typeDonaturAll);
+      app.route('/type-program-donaturs').get(C.setup.typeProgramDonaturAll);
       app.route('/saveDonatur').post(C.donatur.saveDonatur);
       app.route('/updateDonatur').post(C.donatur.updateDonatur);
       app.route('/verifyDonatur').post(C.donatur.verify);
+      app.route('/saveMasterFile').post(C.donatur.saveMasterFile);
+
+      // ------ Accounting --------------
+      app.route('/saveThnBuku').post(C.accounting.saveTahunBuku);
 }
 
 
