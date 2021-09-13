@@ -51,6 +51,22 @@ export default class Donatur {
         });
     }
 
+    getDonatursPerLevel = function(req, res) {
+        var level = req.params.level;
+        var sql = '';
+
+        if (level === 'P') { // Donatur Platinum
+            sql = 'SELECT * FROM tb11_mzjb WHERE FlgPlatinum = "1"';
+        } else {
+            sql = 'SELECT a.* FROM tb11_mzjb a inner join (select * from tb00_basx where CODD_FLNM = "TYPE_DONATUR") b on a.TypeDonatur = b.CODD_VALU WHERE b.CODD_VARC >= "'+ level + '"';
+        }
+        
+        db.query(sql, (err, result) => {
+            if(err) throw err;
+            res.send(result);
+        });
+    }
+
     saveDonatur = function(req, res) {
         var sql = 'INSERT INTO tb11_mzjb SET ?';
         var data = {
@@ -260,6 +276,57 @@ export default class Donatur {
         var transNumber = req.params.transNumber;
 
         var sql = 'SELECT a.*, b.FileName FROM tb52_slpb a inner join tb52_0001 b on a.FileID = b.id  WHERE a.transNumber = "'+ transNumber +'"';
+        db.query(sql, (err, result) => {
+            if(err) throw err;
+            res.send(result);
+        });
+    }
+
+    deleteSLPAttachment = function(req, res) {
+        var id = req.body.id;
+        
+        var sql = "delete from `tb52_slpb` where id = " + id;
+        db.query(sql, (err, result) => {
+            if (err) {
+                console.log('Error', err);
+            } else {
+                res.send({
+                    status: true
+                });
+            }
+        });
+    }
+
+    // Save Detail Transaksi SLP Donaturs
+    saveDetTransSLP2 = function(req, res) {
+        var sql = 'INSERT INTO tb52_slpc SET ?';   
+        var data = {
+            transNumber : req.body.transNumber,
+            donaturID : req.body.donaturID
+            
+        };
+
+        db.query(sql, data, (err2, result2) => {
+            if (err2) {
+                console.log('Error', err2);
+
+                res.send({
+                    status: false,
+                    message: err2.sqlMessage
+                });
+            } else {
+                res.send({
+                    status: true
+                });
+            }
+        });
+    } 
+
+    // get Transaksi SLP Detail Donaturs
+    getSLPDonaturs = function(req, res) {
+        var transNumber = req.params.transNumber;
+
+        var sql = 'SELECT a.*, b.NAMA FROM tb52_slpc a inner join tb11_mzjb b on a.donaturID = b.NO_ID  WHERE a.transNumber = "'+ transNumber +'"';
         db.query(sql, (err, result) => {
             if(err) throw err;
             res.send(result);

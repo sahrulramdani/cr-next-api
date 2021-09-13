@@ -39,7 +39,12 @@ export default class Setup {
     }
 
     typeProgramDonaturAll = (request, response) => {
-        var qryCmd = "select * from tb00_basx where CODD_FLNM = 'TYPE_PROGRAM_DONATUR' order by CODD_VALU";
+        var qryCmd = "select a.*, " + 
+                      "Case a.CODD_VARC " +
+                          "WHEN 'PLATINUM' Then 'P' "  +
+                          "ELSE b.CODD_VARC " +
+                       "End As Level " +
+                       "from tb00_basx a left join (select * from tb00_basx where CODD_FLNM = 'TYPE_DONATUR') b on a.CODD_VARC = b.CODD_DESC where a.CODD_FLNM = 'TYPE_PROGRAM_DONATUR' order by a.CODD_VALU";
         db.query(qryCmd, function(err, rows, fields) {
             response.send(rows);
         });
