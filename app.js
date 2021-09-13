@@ -39,6 +39,12 @@ app.post("/uploadFile", upload, (req, res, next) => {
    }
 );
 
+// API download file
+app.get('/download', function(req, res) {
+    const file = `./uploads/Sistem Pengelolaan Data Donatur.pdf`;
+    res.download(file); // Set disposition and send it.
+});
+
 app.use((error, req, res, next) => {
     res.status(error.status || 500).send({
       error: {

@@ -192,4 +192,77 @@ export default class Donatur {
             }
         });
     } 
+
+    getMasterFiles = (request, response) => {
+        var typeProgram = request.params.typeProgram;
+        var tahunBuku = request.params.tahunBuku;
+
+        var qryCmd = "select * from tb52_0001 where TypeProgram = '" + typeProgram + "' And TahunBuku = '" + tahunBuku + "'";
+        db.query(qryCmd, function(err, rows, fields) {
+            response.send(rows);
+        });
+    }
+
+    saveTransSLP = function(req, res) {
+        var sql = 'INSERT INTO tb52_slpa SET ?';   
+        var data = {
+            transNumber : req.body.transNumber,
+            tglProses : req.body.tglProses,
+            typeProgram : req.body.typeProgram,
+            status : req.body.status,
+            tahunBuku : req.body.tahunBuku,
+            unit : req.body.unit
+        };
+
+        db.query(sql, data, (err2, result2) => {
+            if (err2) {
+                console.log('Error', err2);
+
+                res.send({
+                    status: false,
+                    message: err2.sqlMessage
+                });
+            } else {
+                res.send({
+                    status: true
+                });
+            }
+        });
+    } 
+
+    // Save Detail Transaksi SLP Attachments
+    saveDetTransSLP1 = function(req, res) {
+        var sql = 'INSERT INTO tb52_slpb SET ?';   
+        var data = {
+            transNumber : req.body.transNumber,
+            fileID : req.body.fileID
+            
+        };
+
+        db.query(sql, data, (err2, result2) => {
+            if (err2) {
+                console.log('Error', err2);
+
+                res.send({
+                    status: false,
+                    message: err2.sqlMessage
+                });
+            } else {
+                res.send({
+                    status: true
+                });
+            }
+        });
+    } 
+
+    // get Transaksi SLP Detail Attachments
+    getSLPAttachments = function(req, res) {
+        var transNumber = req.params.transNumber;
+
+        var sql = 'SELECT a.*, b.FileName FROM tb52_slpb a inner join tb52_0001 b on a.FileID = b.id  WHERE a.transNumber = "'+ transNumber +'"';
+        db.query(sql, (err, result) => {
+            if(err) throw err;
+            res.send(result);
+        });
+    }
 }

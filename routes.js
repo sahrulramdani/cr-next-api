@@ -44,6 +44,10 @@ import * as C from './controller/index.js';
       app.route('/updateDonatur').post(C.donatur.updateDonatur);
       app.route('/verifyDonatur').post(C.donatur.verify);
       app.route('/saveMasterFile').post(C.donatur.saveMasterFile);
+      app.route('/masterFiles/:typeProgram/:tahunBuku').get(C.donatur.getMasterFiles);
+      app.route('/saveTransSLP').post(C.donatur.saveTransSLP);
+      app.route('/saveDetTransSLP1').post(C.donatur.saveDetTransSLP1);
+      app.route('/SLPAttachments/:transNumber').get(C.donatur.getSLPAttachments);
 
       // ------ Accounting --------------
       app.route('/saveThnBuku').post(C.accounting.saveTahunBuku);
