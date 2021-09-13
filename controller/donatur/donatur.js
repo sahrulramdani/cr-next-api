@@ -332,4 +332,19 @@ export default class Donatur {
             res.send(result);
         });
     }
+
+    deleteSLPDonatur = function(req, res) {
+        var id = req.body.id;
+        
+        var sql = "delete from `tb52_slpc` where id = " + id;
+        db.query(sql, (err, result) => {
+            if (err) {
+                console.log('Error', err);
+            } else {
+                res.send({
+                    status: true
+                });
+            }
+        });
+    }
 }
