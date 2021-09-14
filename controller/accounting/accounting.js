@@ -2,6 +2,13 @@ import  db from './../../koneksi.js';
 
 
 export default class Accounting {
+        tahunBukuAll = (request, response) => {
+                var qryCmd = "select * from tb00_thna order by TGLX_STRT desc";
+            db.query(qryCmd, function(err, rows, fields) {
+                response.send(rows);
+            });
+        }
+
         saveTahunBuku = function(req, res) {
             var sql = 'INSERT INTO tb00_thna SET ?';
             var data = {

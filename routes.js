@@ -60,6 +60,7 @@ import * as C from './controller/index.js';
 
       // ------ Accounting --------------
       app.route('/saveThnBuku').post(C.accounting.saveTahunBuku);
+      app.route('/tahunBukus').get(C.accounting.tahunBukuAll);
 }
 
 
