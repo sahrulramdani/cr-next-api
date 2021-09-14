@@ -193,17 +193,21 @@ export default class Donatur {
             Unit : req.body.Unit
         };
 
-        db.query(sql, data, (err2, result2) => {
-            if (err2) {
-                console.log('Error', err2);
+        db.query(sql, data, (err, result) => {
+            if (err) {
+                console.log('Error', err);
 
                 res.send({
                     status: false,
-                    message: err2.sqlMessage
+                    message: err.sqlMessage
                 });
             } else {
-                res.send({
-                    status: true
+                //update File Path to /download/:id
+                sql = 'update tb52_0001 set FilePath = CONCAT(FilePath, LAST_INSERT_ID()) where id = LAST_INSERT_ID()';
+                db.query(sql, (err2, result2) => {
+                    res.send({
+                        status: true
+                    });
                 });
             }
         });

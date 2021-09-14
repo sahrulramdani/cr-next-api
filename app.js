@@ -1,8 +1,8 @@
 import express from 'express';
 import cors from 'cors';
 import routes from './routes.js';
-import * as C from './controller/index.js';
 import multer from 'multer';
+import db from './koneksi.js';
 
 const app = express();
 
@@ -30,8 +30,8 @@ const upload = multer({
               }).single('myFile');
 
 app.post("/uploadFile", upload, (req, res, next) => {
-      console.log("Request ---", req.body);
-      console.log("Request file ---", req.file); //Here you get file.
+      // console.log("Request ---", req.body);
+      // console.log("Request file ---", req.file); //Here you get file.
 
       res.send({
           status: true
@@ -40,9 +40,20 @@ app.post("/uploadFile", upload, (req, res, next) => {
 );
 
 // API download file
-app.get('/download', function(req, res) {
-    const file = `./uploads/Sistem Pengelolaan Data Donatur.pdf`;
-    res.download(file); // Set disposition and send it.
+app.get('/download/:id', function(req, res) {
+    var id = req.params.id;
+    var sql = 'select * from tb52_0001 where id = ' + id;
+
+    db.query(sql, function(err, rows, fields) {
+      if (rows.length > 0) {
+        var dataFile = rows[0];
+
+        const file = `./uploads/` + dataFile.FileName;
+        res.download(file); // Set disposition and send it.
+      } else {
+        res.send(rows);
+      }
+  });
 });
 
 app.use((error, req, res, next) => {
