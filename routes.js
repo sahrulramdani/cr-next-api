@@ -55,6 +55,8 @@ import * as C from './controller/index.js';
       app.route('/deleteSLPDonatur').post(C.donatur.deleteSLPDonatur);
       app.route('/transSLPs').get(C.donatur.transSLPAll);
       app.route('/deleteTransSLP').post(C.donatur.deleteTransSLP);
+      app.route('/transSLP/:id').get(C.donatur.getTransSLP);
+      app.route('/updateTransSLP').post(C.donatur.updateTransSLP);
 
       // ------ Accounting --------------
       app.route('/saveThnBuku').post(C.accounting.saveTahunBuku);

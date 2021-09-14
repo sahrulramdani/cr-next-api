@@ -373,4 +373,41 @@ export default class Donatur {
             }
         });
     }
+
+    getTransSLP = function(req, res) {
+        var transNumber = req.params.id;
+
+        var sql = 'SELECT a.*, c.CODD_VARC As Level FROM tb52_slpa a INNER JOIN (select * from tb00_basx where CODD_FLNM = "TYPE_PROGRAM_DONATUR") b ON a.typeProgram = b.CODD_VALU LEFT JOIN (select * from tb00_basx where CODD_FLNM = "TYPE_DONATUR") c ON b.CODD_VARC = c.CODD_DESC WHERE a.transNumber = "'+ transNumber +'"';
+        db.query(sql, (err, result) => {
+            if(err) throw err;
+            res.send(result);
+        });
+    }
+
+    updateTransSLP = function(req, res) {
+        var transNumber = req.body.transNumber;
+        var sql = 'UPDATE tb52_slpa SET ? WHERE transNumber = "' + transNumber + '"';   
+        var data = {
+            tglProses : req.body.tglProses,
+            typeProgram : req.body.typeProgram,
+            status : req.body.status,
+            tahunBuku : req.body.tahunBuku,
+            unit : req.body.unit
+        };
+
+        db.query(sql, data, (err2, result2) => {
+            if (err2) {
+                console.log('Error', err2);
+
+                res.send({
+                    status: false,
+                    message: err2.sqlMessage
+                });
+            } else {
+                res.send({
+                    status: true
+                });
+            }
+        });
+    }
 }
