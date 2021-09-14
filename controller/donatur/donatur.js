@@ -58,7 +58,7 @@ export default class Donatur {
         if (level === 'P') { // Donatur Platinum
             sql = 'SELECT * FROM tb11_mzjb WHERE FlgPlatinum = "1"';
         } else {
-            sql = 'SELECT a.* FROM tb11_mzjb a inner join (select * from tb00_basx where CODD_FLNM = "TYPE_DONATUR") b on a.TypeDonatur = b.CODD_VALU WHERE b.CODD_VARC >= "'+ level + '"';
+            sql = 'SELECT a.* FROM tb11_mzjb a inner join (select * from tb00_basx where CODD_FLNM = "TYPE_DONATUR") b on a.TypeDonatur = b.CODD_VALU WHERE b.CODD_VARC >= "'+ level + '" ORDER BY a.NAMA';
         }
         
         db.query(sql, (err, result) => {
@@ -341,6 +341,28 @@ export default class Donatur {
         var id = req.body.id;
         
         var sql = "delete from `tb52_slpc` where id = " + id;
+        db.query(sql, (err, result) => {
+            if (err) {
+                console.log('Error', err);
+            } else {
+                res.send({
+                    status: true
+                });
+            }
+        });
+    }
+
+    transSLPAll = (request, response) => {
+        var qryCmd = "select a.*, DATE_FORMAT(a.tglProses, '%e %M %Y') As tglProsesFormat, b.CODD_DESC As TypeProgram2 from tb52_slpa a inner join (select * from tb00_basx where CODD_FLNM = 'TYPE_PROGRAM_DONATUR') b on a.typeProgram = b.CODD_VALU order by a.transNumber";
+        db.query(qryCmd, function(err, rows, fields) {
+            response.send(rows);
+        });
+    }
+
+    deleteTransSLP = function(req, res) {
+        var transNumber = req.body.id;
+        
+        var sql = "delete from `tb52_slpa` where transNumber = '" + transNumber + "'";
         db.query(sql, (err, result) => {
             if (err) {
                 console.log('Error', err);

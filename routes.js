@@ -53,6 +53,8 @@ import * as C from './controller/index.js';
       app.route('/SLPDonaturs/:transNumber').get(C.donatur.getSLPDonaturs);
       app.route('/deleteSLPAttachment').post(C.donatur.deleteSLPAttachment);
       app.route('/deleteSLPDonatur').post(C.donatur.deleteSLPDonatur);
+      app.route('/transSLPs').get(C.donatur.transSLPAll);
+      app.route('/deleteTransSLP').post(C.donatur.deleteTransSLP);
 
       // ------ Accounting --------------
       app.route('/saveThnBuku').post(C.accounting.saveTahunBuku);
