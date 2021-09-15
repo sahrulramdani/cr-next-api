@@ -90,7 +90,8 @@ export default class Setup {
         var data = {
             CODD_FLNM : req.body.CODD_FLNM,
             CODD_VALU : req.body.CODD_VALU,
-            CODD_DESC : req.body.CODD_DESC 
+            CODD_DESC : req.body.CODD_DESC,
+            CODD_VARC : req.body.CODD_VARC 
         };
     
         db.query(sql, data, (err, result) => {
