@@ -410,4 +410,11 @@ export default class Donatur {
             }
         });
     }
+
+    masterFileAll = (request, response) => {
+        var qryCmd = "select a.*, b.CODD_DESC As TypeProgram2 from tb52_0001 a inner join (select * from tb00_basx where CODD_FLNM = 'TYPE_PROGRAM_DONATUR') b on a.typeProgram = b.CODD_VALU order by a.id desc";
+        db.query(qryCmd, function(err, rows, fields) {
+            response.send(rows);
+        });
+    }
 }

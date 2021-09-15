@@ -46,6 +46,7 @@ import * as C from './controller/index.js';
       app.route('/verifyDonatur').post(C.donatur.verify);
       app.route('/saveMasterFile').post(C.donatur.saveMasterFile);
       app.route('/masterFiles/:typeProgram/:tahunBuku').get(C.donatur.getMasterFiles);
+      app.route('/masterFiles').get(C.donatur.masterFileAll);
       app.route('/saveTransSLP').post(C.donatur.saveTransSLP);
       app.route('/saveDetTransSLP1').post(C.donatur.saveDetTransSLP1);   // Save Transaksi SLP Attachments
       app.route('/saveDetTransSLP2').post(C.donatur.saveDetTransSLP2);   // Save Transaksi SLP Donaturs
