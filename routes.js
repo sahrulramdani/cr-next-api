@@ -14,6 +14,7 @@ import * as C from './controller/index.js';
       app.route('/bussiness-units').get(C.setup.bussinessUnitAll);
       app.route('/kelompok-kerjas').get(C.setup.kelompokKerjaAll);
       app.route('/status-maritals').get(C.setup.statusMaritalAll);
+      app.route('/channel-donaturs').get(C.setup.channelDonaturAll);
       app.route('/saveSetup').post(C.setup.saveSetup);
       app.route('/deleteSetup').post(C.setup.deleteSetup);
       app.route('/saveUnit').post(C.setup.saveUnit);

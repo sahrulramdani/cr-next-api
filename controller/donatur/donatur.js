@@ -87,7 +87,8 @@ export default class Donatur {
             Status : req.body.Status,
             TypeBadan : req.body.TypeBadan,
             TypeDonatur : req.body.TypeDonatur,
-            FlgPlatinum : req.body.FlgPlatinum
+            FlgPlatinum : req.body.FlgPlatinum,
+            Channel : req.body.Channel
         };
 
         db.query(sql, data, (err2, result2) => {
@@ -127,7 +128,8 @@ export default class Donatur {
             Status : req.body.Status,
             TypeBadan : req.body.TypeBadan,
             TypeDonatur : req.body.TypeDonatur,
-            FlgPlatinum : req.body.FlgPlatinum
+            FlgPlatinum : req.body.FlgPlatinum,
+            Channel : req.body.Channel
         };
 
         db.query(sql, data, (err2, result2) => {
