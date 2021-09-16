@@ -57,6 +57,15 @@ export default class Setup {
         });
     }
 
+    getUnit = function(req, res) {
+        var id = req.params.id;
+        var sql = 'SELECT * FROM `tb00_unit` WHERE KODE_UNIT = "'+ id +'" ';
+        db.query(sql, (err, result) => {
+            if(err) throw err;
+            res.send(result);
+        });
+    }
+
     locationAll = (request, response) => {
         var qryCmd = "select * from tb00_lokx";
         db.query(qryCmd, function(err, rows, fields) {
@@ -149,7 +158,38 @@ export default class Setup {
         var data = {
             KODE_UNIT : req.body.KODE_UNIT,
             NAMA_UNIT : req.body.NAMA_UNIT,
-            KETX_UNIT : req.body.KODE_UNIT
+            KETX_UNIT : req.body.NAMA_UNIT,
+            KODE_LOKX : req.body.KODE_LOKX,
+            KODE_URUT : req.body.KODE_URUT,
+            Active : req.body.Active
+        };
+    
+        db.query(sql, data, (err, result) => {
+            if (err) {
+                console.log('Error', err);
+
+                res.send({
+                    status: false,
+                    message: err.sqlMessage
+                });
+            } else {
+                res.send({
+                    status: true
+                });
+            }
+        });
+    }
+
+    updateUnit = function(req, res) {
+        var id = req.params.id;
+        var sql = 'UPDATE tb00_unit SET ? WHERE KODE_UNIT = "' + id + '"';
+        var data = {
+            KODE_UNIT : req.body.KODE_UNIT,
+            NAMA_UNIT : req.body.NAMA_UNIT,
+            KETX_UNIT : req.body.NAMA_UNIT,
+            KODE_LOKX : req.body.KODE_LOKX,
+            KODE_URUT : req.body.KODE_URUT,
+            Active : req.body.Active
         };
     
         db.query(sql, data, (err, result) => {

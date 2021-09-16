@@ -9,6 +9,7 @@ import * as C from './controller/index.js';
       app.route('/wilayah-kerjas').get(C.setup.wilayahKerjaAll);
       app.route('/type-relawans').get(C.setup.typeRelawanAll);
       app.route('/units').get(C.setup.unitAll);
+      app.route('/unit/:id').get(C.setup.getUnit);
       app.route('/locations').get(C.setup.locationAll);
       app.route('/bussiness-units').get(C.setup.bussinessUnitAll);
       app.route('/kelompok-kerjas').get(C.setup.kelompokKerjaAll);
@@ -16,6 +17,7 @@ import * as C from './controller/index.js';
       app.route('/saveSetup').post(C.setup.saveSetup);
       app.route('/deleteSetup').post(C.setup.deleteSetup);
       app.route('/saveUnit').post(C.setup.saveUnit);
+      app.route('/updateUnit').post(C.setup.updateUnit);
       app.route('/deleteUnit').post(C.setup.deleteUnit);
 
       //---- Issue - Master RKAT Issue Header  ------
