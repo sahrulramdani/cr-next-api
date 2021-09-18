@@ -101,6 +101,13 @@ export default class Setup {
         });
     }
 
+    golDarahAll = (request, response) => {
+        var qryCmd = "select * from tb00_basx where CODD_FLNM = 'BLOD_CODE' order by CODD_VALU";
+        db.query(qryCmd, function(err, rows, fields) {
+            response.send(rows);
+        });
+    }
+
     saveSetup = function(req, res) {
         var sql = 'INSERT INTO tb00_basx SET ?';
         var data = {
