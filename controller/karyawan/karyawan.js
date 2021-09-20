@@ -26,7 +26,8 @@ export default class Karyawan {
             NoKTP : req.body.NoKTP,
             StatusAktif : '1',
             StatusKawin : req.body.StatusKawin,
-            TglMasuk : req.body.TglMasuk
+            TglMasuk : req.body.TglMasuk,
+            GolDarah : req.body.GolDarah
         };
 
         var sqlDelete = 'DELETE FROM tb21_empl WHERE KodeNik = "' + data.KodeNik + '"';
