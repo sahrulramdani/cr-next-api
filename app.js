@@ -3,6 +3,7 @@ import cors from 'cors';
 import routes from './routes.js';
 import multer from 'multer';
 import db from './koneksi.js';
+import { auth } from './controller/auth/index.js';
 
 const app = express();
 
@@ -29,7 +30,7 @@ const upload = multer({
                  limits: {fileSize: 5000000},
               }).single('myFile');
 
-app.post("/uploadFile", upload, (req, res, next) => {
+app.post("/uploadFile", auth.verifyToken, upload, (req, res, next) => {
       // console.log("Request ---", req.body);
       // console.log("Request file ---", req.file); //Here you get file.
 
@@ -40,7 +41,7 @@ app.post("/uploadFile", upload, (req, res, next) => {
 );
 
 // API download file
-app.get('/download/:id', function(req, res) {
+app.get('/download/:id', auth.verifyToken, function(req, res) {
     var id = req.params.id;
     var sql = 'select * from tb52_0001 where id = ' + id;
 
