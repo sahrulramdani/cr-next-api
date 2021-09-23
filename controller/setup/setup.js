@@ -4,107 +4,387 @@ import { fncParseComma } from './../../libraries/sisqu/Utility.js';
 
 export default class Setup {
     pekerjaanAll = (request, response) => {
+        // get user Access
+        var authAdd = request.AUTH_ADDX;
+        var authEdit = request.AUTH_EDIT;
+        var authDelt = request.AUTH_DELT;
+
         var qryCmd = "select * from tb00_basx where CODD_FLNM = 'PEKERJAAN' order by CODD_DESC";
         db.query(qryCmd, function(err, rows, fields) {
-            response.send(rows);
+            var output = [];
+
+            rows.forEach(function(row) {
+                var obj = new Object();
+                for(var key in row) {
+                    obj[key] = row[key];
+                }
+
+                obj['AUTH_ADDX'] = authAdd;
+                obj['AUTH_EDIT'] = authEdit;
+                obj['AUTH_DELT'] = authDelt;
+
+                output.push(obj);
+            })
+
+            response.send(output);
         });
     }
 
     pendidikanAll = (request, response) => {
+        // get user Access
+        var authAdd = request.AUTH_ADDX;
+        var authEdit = request.AUTH_EDIT;
+        var authDelt = request.AUTH_DELT;
+
         var qryCmd = "select * from tb00_basx where CODD_FLNM = 'PENDIDIKAN' order by CODD_VALU";
         db.query(qryCmd, function(err, rows, fields) {
-            response.send(rows);
+            var output = [];
+
+            rows.forEach(function(row) {
+                var obj = new Object();
+                for(var key in row) {
+                    obj[key] = row[key];
+                }
+
+                obj['AUTH_ADDX'] = authAdd;
+                obj['AUTH_EDIT'] = authEdit;
+                obj['AUTH_DELT'] = authDelt;
+
+                output.push(obj);
+            })
+
+            response.send(output);
         });
     }
 
     wilayahKerjaAll = (request, response) => {
+        // get user Access
+        var authAdd = request.AUTH_ADDX;
+        var authEdit = request.AUTH_EDIT;
+        var authDelt = request.AUTH_DELT;
+
         var qryCmd = "select * from tb20_area";
         db.query(qryCmd, function(err, rows, fields) {
-            response.send(rows);
+            var output = [];
+
+            rows.forEach(function(row) {
+                var obj = new Object();
+                for(var key in row) {
+                    obj[key] = row[key];
+                }
+
+                obj['AUTH_ADDX'] = authAdd;
+                obj['AUTH_EDIT'] = authEdit;
+                obj['AUTH_DELT'] = authDelt;
+
+                output.push(obj);
+            })
+
+            response.send(output);
         });
     }
 
     typeRelawanAll = (request, response) => {
+        // get user Access
+        var authAdd = request.AUTH_ADDX;
+        var authEdit = request.AUTH_EDIT;
+        var authDelt = request.AUTH_DELT;
+
         var qryCmd = "select * from tb00_basx where CODD_FLNM = 'TYPE_RELAWAN' order by CODD_VALU";
         db.query(qryCmd, function(err, rows, fields) {
-            response.send(rows);
+            var output = [];
+
+            rows.forEach(function(row) {
+                var obj = new Object();
+                for(var key in row) {
+                    obj[key] = row[key];
+                }
+
+                obj['AUTH_ADDX'] = authAdd;
+                obj['AUTH_EDIT'] = authEdit;
+                obj['AUTH_DELT'] = authDelt;
+
+                output.push(obj);
+            })
+
+            response.send(output);
         });
     }
 
     typeDonaturAll = (request, response) => {
+        // get user Access
+        var authAdd = request.AUTH_ADDX;
+        var authEdit = request.AUTH_EDIT;
+        var authDelt = request.AUTH_DELT;
+
         var qryCmd = "select * from tb00_basx where CODD_FLNM = 'TYPE_DONATUR' order by CODD_VALU";
         db.query(qryCmd, function(err, rows, fields) {
-            response.send(rows);
+            var output = [];
+
+            rows.forEach(function(row) {
+                var obj = new Object();
+                for(var key in row) {
+                    obj[key] = row[key];
+                }
+
+                obj['AUTH_ADDX'] = authAdd;
+                obj['AUTH_EDIT'] = authEdit;
+                obj['AUTH_DELT'] = authDelt;
+
+                output.push(obj);
+            })
+
+            response.send(output);
         });
     }
 
     typeProgramDonaturAll = (request, response) => {
+        // get user Access
+        var authAdd = request.AUTH_ADDX;
+        var authEdit = request.AUTH_EDIT;
+        var authDelt = request.AUTH_DELT;
+
         var qryCmd = "select a.*, " + 
                       "Case a.CODD_VARC " +
                           "WHEN 'PLATINUM' Then 'P' "  +
                           "ELSE b.CODD_VARC " +
                        "End As Level " +
                        "from tb00_basx a left join (select * from tb00_basx where CODD_FLNM = 'TYPE_DONATUR') b on a.CODD_VARC = b.CODD_DESC where a.CODD_FLNM = 'TYPE_PROGRAM_DONATUR' order by a.CODD_VALU";
+        
         db.query(qryCmd, function(err, rows, fields) {
-            response.send(rows);
+            var output = [];
+
+            rows.forEach(function(row) {
+                var obj = new Object();
+                for(var key in row) {
+                    obj[key] = row[key];
+                }
+
+                obj['AUTH_ADDX'] = authAdd;
+                obj['AUTH_EDIT'] = authEdit;
+                obj['AUTH_DELT'] = authDelt;
+
+                output.push(obj);
+            })
+
+            response.send(output);
         });
     }
 
     unitAll = (request, response) => {
+        // get user Access
+        var authAdd = request.AUTH_ADDX;
+        var authEdit = request.AUTH_EDIT;
+        var authDelt = request.AUTH_DELT;
+
         var qryCmd = "select * from tb00_unit";
         db.query(qryCmd, function(err, rows, fields) {
-            response.send(rows);
+            var output = [];
+
+            rows.forEach(function(row) {
+                var obj = new Object();
+                for(var key in row) {
+                    obj[key] = row[key];
+                }
+
+                obj['AUTH_ADDX'] = authAdd;
+                obj['AUTH_EDIT'] = authEdit;
+                obj['AUTH_DELT'] = authDelt;
+
+                output.push(obj);
+            })
+
+            response.send(output);
         });
     }
 
     getUnit = function(req, res) {
+        // get user Access
+        var authAdd = request.AUTH_ADDX;
+        var authEdit = request.AUTH_EDIT;
+        var authDelt = request.AUTH_DELT;
+
         var id = req.params.id;
         var sql = 'SELECT * FROM `tb00_unit` WHERE KODE_UNIT = "'+ id +'" ';
-        db.query(sql, (err, result) => {
-            if(err) throw err;
-            res.send(result);
+        db.query(sql, function(err, rows, fields) {
+            var output = [];
+
+            rows.forEach(function(row) {
+                var obj = new Object();
+                for(var key in row) {
+                    obj[key] = row[key];
+                }
+
+                obj['AUTH_ADDX'] = authAdd;
+                obj['AUTH_EDIT'] = authEdit;
+                obj['AUTH_DELT'] = authDelt;
+
+                output.push(obj);
+            })
+
+            response.send(output);
         });
     }
 
     locationAll = (request, response) => {
+        // get user Access
+        var authAdd = request.AUTH_ADDX;
+        var authEdit = request.AUTH_EDIT;
+        var authDelt = request.AUTH_DELT;
+
         var qryCmd = "select * from tb00_lokx";
         db.query(qryCmd, function(err, rows, fields) {
-            response.send(rows);
+            var output = [];
+
+            rows.forEach(function(row) {
+                var obj = new Object();
+                for(var key in row) {
+                    obj[key] = row[key];
+                }
+
+                obj['AUTH_ADDX'] = authAdd;
+                obj['AUTH_EDIT'] = authEdit;
+                obj['AUTH_DELT'] = authDelt;
+
+                output.push(obj);
+            })
+
+            response.send(output);
         });
     }
 
     bussinessUnitAll = (request, response) => {
+        // get user Access
+        var authAdd = request.AUTH_ADDX;
+        var authEdit = request.AUTH_EDIT;
+        var authDelt = request.AUTH_DELT;
+
         var qryCmd = "select * from tb00_basx where CODD_FLNM = 'BUSSINESS_UNIT' order by CODD_VALU";
         db.query(qryCmd, function(err, rows, fields) {
-            response.send(rows);
+            var output = [];
+
+            rows.forEach(function(row) {
+                var obj = new Object();
+                for(var key in row) {
+                    obj[key] = row[key];
+                }
+
+                obj['AUTH_ADDX'] = authAdd;
+                obj['AUTH_EDIT'] = authEdit;
+                obj['AUTH_DELT'] = authDelt;
+
+                output.push(obj);
+            })
+
+            response.send(output);
         });
     }
 
     kelompokKerjaAll = (request, response) => {
+        // get user Access
+        var authAdd = request.AUTH_ADDX;
+        var authEdit = request.AUTH_EDIT;
+        var authDelt = request.AUTH_DELT;
+
         var qryCmd = "select * from tb00_basx where CODD_FLNM = 'KELOMPOK_KERJA' order by CODD_VALU";
         db.query(qryCmd, function(err, rows, fields) {
-            response.send(rows);
+            var output = [];
+
+            rows.forEach(function(row) {
+                var obj = new Object();
+                for(var key in row) {
+                    obj[key] = row[key];
+                }
+
+                obj['AUTH_ADDX'] = authAdd;
+                obj['AUTH_EDIT'] = authEdit;
+                obj['AUTH_DELT'] = authDelt;
+
+                output.push(obj);
+            })
+
+            response.send(output);
         });
     }
 
     statusMaritalAll = (request, response) => {
+        // get user Access
+        var authAdd = request.AUTH_ADDX;
+        var authEdit = request.AUTH_EDIT;
+        var authDelt = request.AUTH_DELT;
+
         var qryCmd = "select * from tb00_basx where CODD_FLNM = 'MARY_PART' order by CODD_VALU";
         db.query(qryCmd, function(err, rows, fields) {
-            response.send(rows);
+            var output = [];
+
+            rows.forEach(function(row) {
+                var obj = new Object();
+                for(var key in row) {
+                    obj[key] = row[key];
+                }
+
+                obj['AUTH_ADDX'] = authAdd;
+                obj['AUTH_EDIT'] = authEdit;
+                obj['AUTH_DELT'] = authDelt;
+
+                output.push(obj);
+            })
+
+            response.send(output);
         });
     }
 
     channelDonaturAll = (request, response) => {
+        // get user Access
+        var authAdd = request.AUTH_ADDX;
+        var authEdit = request.AUTH_EDIT;
+        var authDelt = request.AUTH_DELT;
+
         var qryCmd = "select * from tb00_basx where CODD_FLNM = 'CHANNEL_DONATUR' order by CODD_VALU";
         db.query(qryCmd, function(err, rows, fields) {
-            response.send(rows);
+            var output = [];
+
+            rows.forEach(function(row) {
+                var obj = new Object();
+                for(var key in row) {
+                    obj[key] = row[key];
+                }
+
+                obj['AUTH_ADDX'] = authAdd;
+                obj['AUTH_EDIT'] = authEdit;
+                obj['AUTH_DELT'] = authDelt;
+
+                output.push(obj);
+            })
+
+            response.send(output);
         });
     }
 
     golDarahAll = (request, response) => {
+        // get user Access
+        var authAdd = request.AUTH_ADDX;
+        var authEdit = request.AUTH_EDIT;
+        var authDelt = request.AUTH_DELT;
+
         var qryCmd = "select * from tb00_basx where CODD_FLNM = 'BLOD_CODE' order by CODD_VALU";
         db.query(qryCmd, function(err, rows, fields) {
-            response.send(rows);
+            var output = [];
+
+            rows.forEach(function(row) {
+                var obj = new Object();
+                for(var key in row) {
+                    obj[key] = row[key];
+                }
+
+                obj['AUTH_ADDX'] = authAdd;
+                obj['AUTH_EDIT'] = authEdit;
+                obj['AUTH_DELT'] = authDelt;
+
+                output.push(obj);
+            })
+
+            response.send(output);
         });
     }
 
@@ -116,10 +396,11 @@ export default class Setup {
             CODD_DESC : req.body.CODD_DESC,
             CODD_VARC : req.body.CODD_VARC 
         };
-    
+        
         db.query(sql, data, (err, result) => {
             if (err) {
                 console.log('Error', err);
+
                 res.send({
                     status: false,
                     message: err.sqlMessage
@@ -150,16 +431,22 @@ export default class Setup {
             } 
     
             sql += ')';
-    
+            
             db.query(sql, (err, result) => {
                 if (err) {
                     console.log('Error', err);
+
+                    res.send({
+                        status: false,
+                        message: err.sqlMessage
+                    });
                 } else {
                     res.send({
                         status: true
                     });
                 }
             });
+            
         } else {
             res.send({
                 status: true
@@ -177,7 +464,7 @@ export default class Setup {
             KODE_URUT : req.body.KODE_URUT,
             Active : req.body.Active
         };
-    
+        
         db.query(sql, data, (err, result) => {
             if (err) {
                 console.log('Error', err);
@@ -205,7 +492,7 @@ export default class Setup {
             KODE_URUT : req.body.KODE_URUT,
             Active : req.body.Active
         };
-    
+        
         db.query(sql, data, (err, result) => {
             if (err) {
                 console.log('Error', err);
@@ -225,10 +512,15 @@ export default class Setup {
     deleteUnit = function(req, res) {
         var id = req.body.KODE_UNIT;
         var sql = "delete from `tb00_unit` where KODE_UNIT = '" + id + "'";
-
+        
         db.query(sql, (err, result) => {
             if (err) {
                 console.log('Error', err);
+
+                res.send({
+                    status: false,
+                    message: err.sqlMessage
+                });
             } else {
                 res.send({
                     status: true
@@ -236,5 +528,4 @@ export default class Setup {
             }
         });
     }
-
 }

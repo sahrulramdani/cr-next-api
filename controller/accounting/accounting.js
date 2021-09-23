@@ -3,10 +3,31 @@ import  db from './../../koneksi.js';
 
 export default class Accounting {
         tahunBukuAll = (request, response) => {
-                var qryCmd = "select * from tb00_thna order by TGLX_STRT desc";
+            // get user Access
+            var authAdd = request.AUTH_ADDX;
+            var authEdit = request.AUTH_EDIT;
+            var authDelt = request.AUTH_DELT;
+
+            var qryCmd = "select * from tb00_thna order by TGLX_STRT desc";
             db.query(qryCmd, function(err, rows, fields) {
-                response.send(rows);
+                var output = [];
+
+                rows.forEach(function(row) {
+                    var obj = new Object();
+                    for(var key in row) {
+                        obj[key] = row[key];
+                    }
+
+                    obj['AUTH_ADDX'] = authAdd;
+                    obj['AUTH_EDIT'] = authEdit;
+                    obj['AUTH_DELT'] = authDelt;
+
+                    output.push(obj);
+                })
+
+                response.send(output);
             });
+            
         }
 
         saveTahunBuku = function(req, res) {
@@ -22,6 +43,7 @@ export default class Accounting {
     
             // set seluruh data Non Aktif
             var sql2 = 'UPDATE tb00_thna SET STAT_AKTF = "0"';
+            
             db.query(sql2, (err2, result2) => {
                 db.query(sql, data, (err2, result2) => {
                     if (err2) {

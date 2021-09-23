@@ -37,8 +37,8 @@ import * as C from './controller/index.js';
       // ------ Management User --------------
       app.route('/users').get(C.auth.verifyToken, C.user.userAll);
       app.route('/deleteUser').post(C.auth.verifyToken, C.user.deleteUser);  // delete user hanya menonaktifkan user
-      app.route('/register').post(C.auth.verifyToken, C.auth.register);
-      app.route('/signin').post(C.auth.verifyToken, C.auth.signin);
+      app.route('/register').post(C.auth.register);
+      app.route('/signin').post(C.auth.signin);
 
       // ------ CRM --------------
       app.route('/idDonaturs/:status').get(C.auth.verifyToken, C.donatur.idDonaturs);

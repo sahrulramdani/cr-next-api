@@ -3,6 +3,11 @@ import { fncParseComma } from './../../libraries/sisqu/Utility.js';
 
 export default class Donatur {
     donaturs = (request, response) => {
+        // get user Access
+        var authAdd = request.AUTH_ADDX;
+        var authEdit = request.AUTH_EDIT;
+        var authDelt = request.AUTH_DELT;
+
         var status = request.params.status;
 
         var qryCmd = "";
@@ -21,8 +26,24 @@ export default class Donatur {
                       "END As Jns_Kelamin, " + 
                       "a.Email, a.NoHP from tb11_mzjb a where a.Status = '" + status + "'";
         };
+        
         db.query(qryCmd, function(err, rows, fields) {
-            response.send(rows);
+            var output = [];
+
+            rows.forEach(function(row) {
+                var obj = new Object();
+                for(var key in row) {
+                    obj[key] = row[key];
+                }
+
+                obj['AUTH_ADDX'] = authAdd;
+                obj['AUTH_EDIT'] = authEdit;
+                obj['AUTH_DELT'] = authDelt;
+
+                output.push(obj);
+            })
+
+            response.send(output);
         });
     }
 
@@ -36,22 +57,54 @@ export default class Donatur {
         } else {
             qryCmd = "select NO_ID As value, CONCAT(`NO_ID`, ' - ', `NAMA`, ' - ', SUBSTRING(`ALMT_XXX1`, 1, 20)) As label from tb11_mzjb where Status = '" + status + "'  order by NO_ID";
         }
+        
         db.query(qryCmd, function(err, rows, fields) {
-            response.send(rows);
+            var output = [];
+
+            rows.forEach(function(row) {
+                var obj = new Object();
+                for(var key in row) {
+                    obj[key] = row[key];
+                }
+
+                output.push(obj);
+            })
+
+            response.send(output);
         });
     }
 
     getDonatur = function(req, res) {
+        // get user Access
+        var authEdit = request.AUTH_EDIT;
+
         var id = req.params.id;
 
         var sql = 'SELECT * FROM tb11_mzjb WHERE NO_ID = "'+ id +'"';
-        db.query(sql, (err, result) => {
-            if(err) throw err;
-            res.send(result);
+        db.query(sql, function(err, rows, fields) {
+            var output = [];
+
+            rows.forEach(function(row) {
+                var obj = new Object();
+                for(var key in row) {
+                    obj[key] = row[key];
+                }
+
+                obj['AUTH_EDIT'] = authEdit;
+
+                output.push(obj);
+            })
+
+            res.send(output);
         });
     }
 
     getDonatursPerLevel = function(req, res) {
+        // get user Access
+        var authAdd = request.AUTH_ADDX;
+        var authEdit = request.AUTH_EDIT;
+        var authDelt = request.AUTH_DELT;
+
         var level = req.params.level;
         var sql = '';
 
@@ -60,10 +113,24 @@ export default class Donatur {
         } else {
             sql = 'SELECT a.*, b.CODD_DESC As TypeDonatur2, a.flgPlatinum As Platinum, DATE_FORMAT(a.TglX_MASK, "%e-%b-%Y") As TglMasuk FROM tb11_mzjb a inner join (select * from tb00_basx where CODD_FLNM = "TYPE_DONATUR") b on a.TypeDonatur = b.CODD_VALU WHERE b.CODD_VARC >= "'+ level + '" ORDER BY a.NAMA';
         }
-        
-        db.query(sql, (err, result) => {
-            if(err) throw err;
-            res.send(result);
+       
+        db.query(qryCmd, function(err, rows, fields) {
+            var output = [];
+
+            rows.forEach(function(row) {
+                var obj = new Object();
+                for(var key in row) {
+                    obj[key] = row[key];
+                }
+
+                obj['AUTH_ADDX'] = authAdd;
+                obj['AUTH_EDIT'] = authEdit;
+                obj['AUTH_DELT'] = authDelt;
+
+                output.push(obj);
+            })
+
+            res.send(output);
         });
     }
 
@@ -90,14 +157,14 @@ export default class Donatur {
             FlgPlatinum : req.body.FlgPlatinum,
             Channel : req.body.Channel
         };
-
-        db.query(sql, data, (err2, result2) => {
-            if (err2) {
-                console.log('Error', err2);
+        
+        db.query(sql, data, (err, result) => {
+            if (err) {
+                console.log('Error', err);
 
                 res.send({
                     status: false,
-                    message: err2.sqlMessage
+                    message: err.sqlMessage
                 });
             } else {
                 res.send({
@@ -131,14 +198,14 @@ export default class Donatur {
             FlgPlatinum : req.body.FlgPlatinum,
             Channel : req.body.Channel
         };
-
-        db.query(sql, data, (err2, result2) => {
-            if (err2) {
-                console.log('Error', err2);
+        
+        db.query(sql, data, (err, result) => {
+            if (err) {
+                console.log('Error', err);
 
                 res.send({
                     status: false,
-                    message: err2.sqlMessage
+                    message: err.sqlMessage
                 });
             } else {
                 res.send({
@@ -168,9 +235,15 @@ export default class Donatur {
     
             sql += ')';
     
-            db.query(sql, (err, result) => {
+            
+            db.query(sql, data, (err, result) => {
                 if (err) {
                     console.log('Error', err);
+
+                    res.send({
+                        status: false,
+                        message: err.sqlMessage
+                    });
                 } else {
                     res.send({
                         status: true
@@ -194,7 +267,7 @@ export default class Donatur {
             TahunBuku : req.body.TahunBuku,
             Unit : req.body.Unit
         };
-
+        
         db.query(sql, data, (err, result) => {
             if (err) {
                 console.log('Error', err);
@@ -216,12 +289,32 @@ export default class Donatur {
     } 
 
     getMasterFiles = (request, response) => {
+        // get user Access
+        var authAdd = request.AUTH_ADDX;
+        var authEdit = request.AUTH_EDIT;
+        var authDelt = request.AUTH_DELT;
+
         var typeProgram = request.params.typeProgram;
         var tahunBuku = request.params.tahunBuku;
 
         var qryCmd = "select * from tb52_0001 where TypeProgram = '" + typeProgram + "' And TahunBuku = '" + tahunBuku + "'";
         db.query(qryCmd, function(err, rows, fields) {
-            response.send(rows);
+            var output = [];
+
+            rows.forEach(function(row) {
+                var obj = new Object();
+                for(var key in row) {
+                    obj[key] = row[key];
+                }
+
+                obj['AUTH_ADDX'] = authAdd;
+                obj['AUTH_EDIT'] = authEdit;
+                obj['AUTH_DELT'] = authDelt;
+
+                output.push(obj);
+            })
+
+            response.send(output);
         });
     }
 
@@ -235,14 +328,14 @@ export default class Donatur {
             tahunBuku : req.body.tahunBuku,
             unit : req.body.unit
         };
-
-        db.query(sql, data, (err2, result2) => {
-            if (err2) {
-                console.log('Error', err2);
+        
+        db.query(sql, data, (err, result) => {
+            if (err) {
+                console.log('Error', err);
 
                 res.send({
                     status: false,
-                    message: err2.sqlMessage
+                    message: err.sqlMessage
                 });
             } else {
                 res.send({
@@ -258,16 +351,15 @@ export default class Donatur {
         var data = {
             transNumber : req.body.transNumber,
             fileID : req.body.fileID
-            
         };
-
-        db.query(sql, data, (err2, result2) => {
-            if (err2) {
-                console.log('Error', err2);
+        
+        db.query(sql, data, (err, result) => {
+            if (err) {
+                console.log('Error', err);
 
                 res.send({
                     status: false,
-                    message: err2.sqlMessage
+                    message: err.sqlMessage
                 });
             } else {
                 res.send({
@@ -279,22 +371,46 @@ export default class Donatur {
 
     // get Transaksi SLP Detail Attachments
     getSLPAttachments = function(req, res) {
+        // get user Access
+        var authAdd = request.AUTH_ADDX;
+        var authEdit = request.AUTH_EDIT;
+        var authDelt = request.AUTH_DELT;
+
         var transNumber = req.params.transNumber;
 
         var sql = 'SELECT a.*, b.FileName FROM tb52_slpb a inner join tb52_0001 b on a.FileID = b.id  WHERE a.transNumber = "'+ transNumber +'"';
-        db.query(sql, (err, result) => {
-            if(err) throw err;
-            res.send(result);
+        
+        db.query(sql, function(err, rows, fields) {
+            var output = [];
+
+            rows.forEach(function(row) {
+                var obj = new Object();
+                for(var key in row) {
+                    obj[key] = row[key];
+                }
+
+                obj['AUTH_ADDX'] = authAdd;
+                obj['AUTH_EDIT'] = authEdit;
+                obj['AUTH_DELT'] = authDelt;
+
+                output.push(obj);
+            })
+
+            res.send(output);
         });
     }
 
     deleteSLPAttachment = function(req, res) {
         var id = req.body.id;
-        
         var sql = "delete from `tb52_slpb` where id = " + id;
         db.query(sql, (err, result) => {
             if (err) {
                 console.log('Error', err);
+
+                res.send({
+                    status: false,
+                    message: err.sqlMessage
+                });
             } else {
                 res.send({
                     status: true
@@ -311,14 +427,14 @@ export default class Donatur {
             donaturID : req.body.donaturID
             
         };
-
-        db.query(sql, data, (err2, result2) => {
-            if (err2) {
-                console.log('Error', err2);
+        
+        db.query(sql, data, (err, result) => {
+            if (err) {
+                console.log('Error', err);
 
                 res.send({
                     status: false,
-                    message: err2.sqlMessage
+                    message: err.sqlMessage
                 });
             } else {
                 res.send({
@@ -330,22 +446,45 @@ export default class Donatur {
 
     // get Transaksi SLP Detail Donaturs
     getSLPDonaturs = function(req, res) {
+        // get user Access
+        var authAdd = request.AUTH_ADDX;
+        var authEdit = request.AUTH_EDIT;
+        var authDelt = request.AUTH_DELT;
+
         var transNumber = req.params.transNumber;
 
         var sql = 'SELECT a.*, b.NAMA FROM tb52_slpc a inner join tb11_mzjb b on a.donaturID = b.NO_ID  WHERE a.transNumber = "'+ transNumber +'"';
-        db.query(sql, (err, result) => {
-            if(err) throw err;
-            res.send(result);
+        db.query(sql, function(err, rows, fields) {
+            var output = [];
+
+            rows.forEach(function(row) {
+                var obj = new Object();
+                for(var key in row) {
+                    obj[key] = row[key];
+                }
+
+                obj['AUTH_ADDX'] = authAdd;
+                obj['AUTH_EDIT'] = authEdit;
+                obj['AUTH_DELT'] = authDelt;
+
+                output.push(obj);
+            })
+
+            res.send(output);
         });
     }
 
     deleteSLPDonatur = function(req, res) {
         var id = req.body.id;
-        
         var sql = "delete from `tb52_slpc` where id = " + id;
         db.query(sql, (err, result) => {
             if (err) {
                 console.log('Error', err);
+
+                res.send({
+                    status: false,
+                    message: err.sqlMessage
+                });
             } else {
                 res.send({
                     status: true
@@ -355,19 +494,42 @@ export default class Donatur {
     }
 
     transSLPAll = (request, response) => {
+        var authAdd = request.AUTH_ADDX;
+        var authEdit = request.AUTH_EDIT;
+        var authDelt = request.AUTH_DELT;
+
         var qryCmd = "select a.*, DATE_FORMAT(a.tglProses, '%Y/%m/%d') As tglProsesFormat, b.CODD_DESC As TypeProgram2 from tb52_slpa a inner join (select * from tb00_basx where CODD_FLNM = 'TYPE_PROGRAM_DONATUR') b on a.typeProgram = b.CODD_VALU order by a.transNumber";
         db.query(qryCmd, function(err, rows, fields) {
-            response.send(rows);
+            var output = [];
+
+            rows.forEach(function(row) {
+                var obj = new Object();
+                for(var key in row) {
+                    obj[key] = row[key];
+                }
+
+                obj['AUTH_ADDX'] = authAdd;
+                obj['AUTH_EDIT'] = authEdit;
+                obj['AUTH_DELT'] = authDelt;
+
+                output.push(obj);
+            })
+
+            response.send(output);
         });
     }
 
     deleteTransSLP = function(req, res) {
         var transNumber = req.body.id;
-        
         var sql = "delete from `tb52_slpa` where transNumber = '" + transNumber + "'";
         db.query(sql, (err, result) => {
             if (err) {
                 console.log('Error', err);
+
+                res.send({
+                    status: false,
+                    message: err.sqlMessage
+                });
             } else {
                 res.send({
                     status: true
@@ -377,12 +539,31 @@ export default class Donatur {
     }
 
     getTransSLP = function(req, res) {
+        // get user Access
+        var authAdd = request.AUTH_ADDX;
+        var authEdit = request.AUTH_EDIT;
+        var authDelt = request.AUTH_DELT;
+
         var transNumber = req.params.id;
 
         var sql = 'SELECT a.*, c.CODD_VARC As Level FROM tb52_slpa a INNER JOIN (select * from tb00_basx where CODD_FLNM = "TYPE_PROGRAM_DONATUR") b ON a.typeProgram = b.CODD_VALU LEFT JOIN (select * from tb00_basx where CODD_FLNM = "TYPE_DONATUR") c ON b.CODD_VARC = c.CODD_DESC WHERE a.transNumber = "'+ transNumber +'"';
-        db.query(sql, (err, result) => {
-            if(err) throw err;
-            res.send(result);
+        db.query(sql, function(err, rows, fields) {
+            var output = [];
+
+            rows.forEach(function(row) {
+                var obj = new Object();
+                for(var key in row) {
+                    obj[key] = row[key];
+                }
+
+                obj['AUTH_ADDX'] = authAdd;
+                obj['AUTH_EDIT'] = authEdit;
+                obj['AUTH_DELT'] = authDelt;
+
+                output.push(obj);
+            })
+
+            res.send(output);
         });
     }
 
@@ -396,14 +577,14 @@ export default class Donatur {
             tahunBuku : req.body.tahunBuku,
             unit : req.body.unit
         };
-
-        db.query(sql, data, (err2, result2) => {
-            if (err2) {
-                console.log('Error', err2);
+        
+        db.query(sql, data, (err, result) => {
+            if (err) {
+                console.log('Error', err);
 
                 res.send({
                     status: false,
-                    message: err2.sqlMessage
+                    message: err.sqlMessage
                 });
             } else {
                 res.send({
@@ -414,9 +595,29 @@ export default class Donatur {
     }
 
     masterFileAll = (request, response) => {
+        // get user Access
+        var authAdd = request.AUTH_ADDX;
+        var authEdit = request.AUTH_EDIT;
+        var authDelt = request.AUTH_DELT;
+
         var qryCmd = "select a.*, b.CODD_DESC As TypeProgram2 from tb52_0001 a inner join (select * from tb00_basx where CODD_FLNM = 'TYPE_PROGRAM_DONATUR') b on a.typeProgram = b.CODD_VALU order by a.id desc";
         db.query(qryCmd, function(err, rows, fields) {
-            response.send(rows);
+            var output = [];
+
+            rows.forEach(function(row) {
+                var obj = new Object();
+                for(var key in row) {
+                    obj[key] = row[key];
+                }
+
+                obj['AUTH_ADDX'] = authAdd;
+                obj['AUTH_EDIT'] = authEdit;
+                obj['AUTH_DELT'] = authDelt;
+
+                output.push(obj);
+            })
+
+            response.send(output);
         });
-    }
+    } 
 }

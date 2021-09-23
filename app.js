@@ -42,19 +42,30 @@ app.post("/uploadFile", auth.verifyToken, upload, (req, res, next) => {
 
 // API download file
 app.get('/download/:id', auth.verifyToken, function(req, res) {
+    // get user Access
+    var rightAuth = request.RIGH_AUTH;
+
     var id = req.params.id;
     var sql = 'select * from tb52_0001 where id = ' + id;
 
-    db.query(sql, function(err, rows, fields) {
-      if (rows.length > 0) {
-        var dataFile = rows[0];
+    if (rightAuth === '1') {
+      db.query(sql, function(err, rows, fields) {
+          if (rows.length > 0) {
+            var dataFile = rows[0];
 
-        const file = `./uploads/` + dataFile.FileName;
-        res.download(file); // Set disposition and send it.
-      } else {
-        res.send(rows);
-      }
-  });
+            const file = `./uploads/` + dataFile.FileName;
+            res.download(file); // Set disposition and send it.
+          } else {
+            res.send(rows);
+          }
+      });
+    } else {
+        res.status(403).send({ 
+            status: false, 
+            message: 'Access Denied',
+            userAccess: false
+        });
+    }
 });
 
 app.use((error, req, res, next) => {

@@ -2,11 +2,27 @@ import  db from './../../koneksi.js';
 
 export default class Karyawan {
     getKaryawan = function(req, res) {
+        // get user Access
+        var authEdit = request.AUTH_EDIT;
+
         var nik = req.params.id;
         var sql = 'SELECT a.* FROM tb21_empl a INNER JOIN tb21_empx b ON a.KodeNik = b.KodeNik WHERE a.KodeNik = "'+ nik +'" ';
-        db.query(sql, (err, result) => {
-            if(err) throw err;
-            res.send(result);
+        
+        db.query(sql, function(err, rows, fields) {
+            var output = [];
+
+            rows.forEach(function(row) {
+                var obj = new Object();
+                for(var key in row) {
+                    obj[key] = row[key];
+                }
+
+                obj['AUTH_EDIT'] = authEdit;
+
+                output.push(obj);
+            })
+
+            res.send(output);
         });
     }
 
@@ -31,13 +47,12 @@ export default class Karyawan {
         };
 
         var sqlDelete = 'DELETE FROM tb21_empl WHERE KodeNik = "' + data.KodeNik + '"';
-
+        
         // execute query Delete
         db.query(sqlDelete, (err, result) => {
             if (err) {
                 console.log('Error', err);
             } else {
-
                 // execute query Save
                 db.query(sql, data, (err2, result2) => {
                     if (err2) {
@@ -66,7 +81,7 @@ export default class Karyawan {
         };
     
         var sqlDelete = 'DELETE FROM tb21_empx WHERE KodeNik = "' + data.KodeNik + '"';
-
+        
         // execute query Delete
         db.query(sqlDelete, (err, result) => {
             if (err) {
