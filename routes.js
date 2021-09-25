@@ -36,7 +36,13 @@ import * as C from './controller/index.js';
 
       // ------ Management User --------------
       app.route('/users').get(C.auth.verifyToken, C.user.userAll);
-      app.route('/deleteUser').post(C.auth.verifyToken, C.user.deleteUser);  // delete user hanya menonaktifkan user
+      app.route('/user/delete').post(C.auth.verifyToken, C.user.deleteUser);  // delete user hanya menonaktifkan user
+      app.route('/user/update').post(C.auth.verifyToken, C.user.updateUser);
+      app.route('/user/privilege/delete').post(C.auth.verifyToken, C.user.deleteDetPrivilege);
+      app.route('/user/privilege/save').post(C.auth.verifyToken, C.user.saveDetPrivilege);
+      app.route('/user/privilege/:id').get(C.auth.verifyToken, C.user.getDetUserAccess);
+      app.route('/user/privileges/:userID').get(C.auth.verifyToken, C.user.getDetUserAccesses);
+      app.route('/user/:userID').get(C.auth.verifyToken, C.user.getUser);
       app.route('/register').post(C.auth.register);
       app.route('/signin').post(C.auth.signin);
 
@@ -68,6 +74,10 @@ import * as C from './controller/index.js';
       // ------ Accounting --------------
       app.route('/saveThnBuku').post(C.auth.verifyToken, C.accounting.saveTahunBuku);
       app.route('/tahunBukus').get(C.auth.verifyToken, C.accounting.tahunBukuAll);
+
+      // ------ Menu Management --------------
+      app.route('/modules/:bussCode/:typeModule').get(C.auth.verifyToken, C.menu.moduleAll);
+      app.route('/processes/:bussCode/:module').get(C.auth.verifyToken, C.menu.processAll);
 }
 
 
