@@ -152,17 +152,17 @@ export default class Menu {
         selectedIds = fncParseComma(req.body.selectedIds);
     
         var arrayLength = selectedIds.length;
-        var sql = 'delete from `tb01_proc` where PROC_CODE in (';
+        var sql = 'delete from `tb01_proc` where PROC_CODE in ("';
         if (arrayLength > 0) {
             for(var i=0; i<arrayLength; i++) {
                 if (i === 0) {
                   sql += selectedIds[i];
                 } else {
-                  sql += ',' + selectedIds[i];
+                  sql += '","' + selectedIds[i];
                 }
             } 
     
-            sql += ')';
+            sql += '")';
             
             db.query(sql, (err, result) => {
                 if (err) {
