@@ -77,7 +77,12 @@ import * as C from './controller/index.js';
 
       // ------ Menu Management --------------
       app.route('/modules/:bussCode/:typeModule').get(C.auth.verifyToken, C.menu.moduleAll);
+      app.route('/module/update').post(C.auth.verifyToken, C.menu.updateModule);
+      app.route('/module/process/save').post(C.auth.verifyToken, C.menu.saveDetProcess);
+      app.route('/module/process/delete').post(C.auth.verifyToken, C.menu.deleteDetProcess);
+      app.route('/module/:id').get(C.auth.verifyToken, C.menu.getModule);
       app.route('/processes/:bussCode/:module').get(C.auth.verifyToken, C.menu.processAll);
+      
 }
 
 
