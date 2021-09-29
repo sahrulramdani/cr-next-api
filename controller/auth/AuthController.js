@@ -111,6 +111,8 @@ export default class AuthController {
                 
                 // get User Access
                 var sql = 'SELECT a.* FROM `tb01_usrd` a INNER JOIN `tb01_lgxh` b on a.USER_IDXX = b.USER_IDXX And a.BUSS_CODE = b.BUSS_CODE  WHERE a.USER_IDXX = "' + decoded.id + '" And "' + path + '%" like CONCAT(a.PATH,"%") And a.TYPE_MDUL = "1" ORDER BY a.PATH' ;  // TYPE_MDUL = 1 (API)
+
+                console.log('test', sql);
                 
                 db.query(sql, (err, rows) => {
                     if (err)

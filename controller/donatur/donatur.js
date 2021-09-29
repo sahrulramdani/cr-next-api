@@ -101,9 +101,9 @@ export default class Donatur {
 
     getDonatursPerLevel = function(req, res) {
         // get user Access
-        var authAdd = request.AUTH_ADDX;
-        var authEdit = request.AUTH_EDIT;
-        var authDelt = request.AUTH_DELT;
+        var authAdd = req.AUTH_ADDX;
+        var authEdit = req.AUTH_EDIT;
+        var authDelt = req.AUTH_DELT;
 
         var level = req.params.level;
         var sql = '';
@@ -114,7 +114,7 @@ export default class Donatur {
             sql = 'SELECT a.*, b.CODD_DESC As TypeDonatur2, a.flgPlatinum As Platinum, DATE_FORMAT(a.TglX_MASK, "%e-%b-%Y") As TglMasuk FROM tb11_mzjb a inner join (select * from tb00_basx where CODD_FLNM = "TYPE_DONATUR") b on a.TypeDonatur = b.CODD_VALU WHERE b.CODD_VARC >= "'+ level + '" ORDER BY a.NAMA';
         }
        
-        db.query(qryCmd, function(err, rows, fields) {
+        db.query(sql, function(err, rows, fields) {
             var output = [];
 
             rows.forEach(function(row) {
@@ -372,9 +372,9 @@ export default class Donatur {
     // get Transaksi SLP Detail Attachments
     getSLPAttachments = function(req, res) {
         // get user Access
-        var authAdd = request.AUTH_ADDX;
-        var authEdit = request.AUTH_EDIT;
-        var authDelt = request.AUTH_DELT;
+        var authAdd = req.AUTH_ADDX;
+        var authEdit = req.AUTH_EDIT;
+        var authDelt = req.AUTH_DELT;
 
         var transNumber = req.params.transNumber;
 
@@ -447,9 +447,9 @@ export default class Donatur {
     // get Transaksi SLP Detail Donaturs
     getSLPDonaturs = function(req, res) {
         // get user Access
-        var authAdd = request.AUTH_ADDX;
-        var authEdit = request.AUTH_EDIT;
-        var authDelt = request.AUTH_DELT;
+        var authAdd = req.AUTH_ADDX;
+        var authEdit = req.AUTH_EDIT;
+        var authDelt = req.AUTH_DELT;
 
         var transNumber = req.params.transNumber;
 
@@ -540,9 +540,9 @@ export default class Donatur {
 
     getTransSLP = function(req, res) {
         // get user Access
-        var authAdd = request.AUTH_ADDX;
-        var authEdit = request.AUTH_EDIT;
-        var authDelt = request.AUTH_DELT;
+        var authAdd = req.AUTH_ADDX;
+        var authEdit = req.AUTH_EDIT;
+        var authDelt = req.AUTH_DELT;
 
         var transNumber = req.params.id;
 

@@ -45,6 +45,7 @@ import * as C from './controller/index.js';
       app.route('/user/:userID').get(C.auth.verifyToken, C.user.getUser);
       app.route('/register').post(C.auth.register);
       app.route('/signin').post(C.auth.signin);
+      app.route('/profile').get(C.auth.verifyToken, C.user.getProfile);
 
       // ------ CRM --------------
       app.route('/idDonaturs/:status').get(C.auth.verifyToken, C.donatur.idDonaturs);

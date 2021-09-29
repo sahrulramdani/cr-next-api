@@ -74,6 +74,29 @@ export default class User {
         });
     }
 
+    getProfile = function(req, res) {
+        // get user Access
+        var authEdit = req.AUTH_EDIT;
+        
+        var sql = 'SELECT * FROM `tb01_lgxh` WHERE USER_IDXX = "'+ req.userID +'" ';
+        db.query(sql, function(err, rows, fields) {
+            var output = [];
+
+            rows.forEach(function(row) {
+                var obj = new Object();
+                for(var key in row) {
+                    obj[key] = row[key];
+                }
+
+                obj['AUTH_EDIT'] = authEdit;
+
+                output.push(obj);
+            })
+
+            res.send(output);
+        });
+    }
+
     updateUser = function(req, res) {
         var ids = req.body.USER_IDXX;
         var sql = 'UPDATE `tb01_lgxh` SET ? WHERE USER_IDXX = "'+ ids +'" ';
@@ -82,7 +105,8 @@ export default class User {
             KETX_USER : req.body.KETX_USER,
             NO_ID : req.body.NO_ID,
             Active : req.body.Active,
-            TYPE_PRSON : req.body.TYPE_PRSON
+            TYPE_PRSON : req.body.TYPE_PRSON,
+            NamaFile : req.body.NamaFile
         };
         
         db.query(sql, data, (err, result) => {

@@ -17,7 +17,7 @@ app.use(cors());
 
 routes(app);
 
-// API Upload File
+// API Upload File for Master File
 const storage = multer.diskStorage({
        destination: "./uploads/",
        filename: function(req, file, cb) {
@@ -38,6 +38,26 @@ app.post("/uploadFile", auth.verifyToken, upload, (req, res, next) => {
           status: true
       });
    }
+);
+
+// API Upload File for Image Profile
+const storage2 = multer.diskStorage({
+  destination: 'D:\\VICKY\\React JS\\sisqu2\\files\\profiles\\',   
+  filename: function(req, file, cb) {
+     cb(null, file.originalname);
+  }
+});
+
+const upload2 = multer({
+  storage: storage2,
+  limits: {fileSize: 5000000},
+}).single('myFile');
+
+app.post("/uploadImageFile", auth.verifyToken, upload2, (req, res, next) => {
+  res.send({
+      status: true
+  });
+}
 );
 
 // API download file
