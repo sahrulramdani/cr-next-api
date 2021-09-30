@@ -4,6 +4,7 @@ import routes from './routes.js';
 import multer from 'multer';
 import db from './koneksi.js';
 import { auth } from './controller/auth/index.js';
+import * as ca  from './config.js';  // config app
 
 const app = express();
 
@@ -42,7 +43,7 @@ app.post("/uploadFile", auth.verifyToken, upload, (req, res, next) => {
 
 // API Upload File for Image Profile
 const storage2 = multer.diskStorage({
-  destination: 'D:\\VICKY\\React JS\\sisqu2\\files\\profiles\\',   
+  destination: ca.config.FolderImageFile,   
   filename: function(req, file, cb) {
      cb(null, file.originalname);
   }
