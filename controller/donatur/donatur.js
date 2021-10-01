@@ -620,4 +620,81 @@ export default class Donatur {
             response.send(output);
         });
     } 
+
+    // Get Detail Transactions
+    getDetTransactions = function(req, res) {
+        // get user Access
+        var authAdd = req.AUTH_ADDX;
+        var authEdit = req.AUTH_EDIT;
+        var authDelt = req.AUTH_DELT;
+
+        var donaturID = req.params.donaturID;
+
+        var sql = 'SELECT a.*, b.NAMA FROM trans_donatur a inner join tb11_mzjb b on a.donaturID = b.NO_ID  WHERE a.NO_ID = "'+ donaturID +'"';
+        db.query(sql, function(err, rows, fields) {
+            var output = [];
+
+            rows.forEach(function(row) {
+                var obj = new Object();
+                for(var key in row) {
+                    obj[key] = row[key];
+                }
+
+                obj['AUTH_ADDX'] = authAdd;
+                obj['AUTH_EDIT'] = authEdit;
+                obj['AUTH_DELT'] = authDelt;
+
+                output.push(obj);
+            })
+
+            res.send(output);
+        });
+    }
+
+    // Save Detail Transaction Donatur
+    saveDetTransaction = function(req, res) {
+        var sql = 'INSERT INTO trans_donatur SET ?';   
+        var data = {
+            TransNumber : req.body.TransNumber,
+            TransDate : req.body.TransDate,
+            DonaturID : req.body.DonaturID,
+            CurrencyID : req.body.CurrencyID,
+            Amount : req.body.Amount,
+            isValidate : req.body.isValidate
+        };
+        
+        db.query(sql, data, (err, result) => {
+            if (err) {
+                console.log('Error', err);
+
+                res.send({
+                    status: false,
+                    message: err.sqlMessage
+                });
+            } else {
+                res.send({
+                    status: true
+                });
+            }
+        });
+    } 
+
+    deleteDetTransaction = function(req, res) {
+        var id = req.body.id;
+        var sql = "delete from `trans_donatur` where id = " + id;
+        db.query(sql, (err, result) => {
+            if (err) {
+                console.log('Error', err);
+
+                res.send({
+                    status: false,
+                    message: err.sqlMessage
+                });
+            } else {
+                res.send({
+                    status: true
+                });
+            }
+        });
+    }
 }

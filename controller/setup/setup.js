@@ -171,6 +171,33 @@ export default class Setup {
         });
     }
 
+    currencyAll = (request, response) => {
+        // get user Access
+        var authAdd = request.AUTH_ADDX;
+        var authEdit = request.AUTH_EDIT;
+        var authDelt = request.AUTH_DELT;
+
+        var qryCmd = "select * from tb00_basx where CODD_FLNM = 'CURR_MNYX' order by CODD_VALU";
+        db.query(qryCmd, function(err, rows, fields) {
+            var output = [];
+
+            rows.forEach(function(row) {
+                var obj = new Object();
+                for(var key in row) {
+                    obj[key] = row[key];
+                }
+
+                obj['AUTH_ADDX'] = authAdd;
+                obj['AUTH_EDIT'] = authEdit;
+                obj['AUTH_DELT'] = authDelt;
+
+                output.push(obj);
+            })
+
+            response.send(output);
+        });
+    }
+
     unitAll = (request, response) => {
         // get user Access
         var authAdd = request.AUTH_ADDX;

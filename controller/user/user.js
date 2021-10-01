@@ -78,7 +78,7 @@ export default class User {
         // get user Access
         var authEdit = req.AUTH_EDIT;
         
-        var sql = 'SELECT * FROM `tb01_lgxh` WHERE USER_IDXX = "'+ req.userID +'" ';
+        var sql = 'SELECT a.*, b.NAMA_UNIT FROM `tb01_lgxh` a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT WHERE a.USER_IDXX = "'+ req.userID +'" ';
         db.query(sql, function(err, rows, fields) {
             var output = [];
 

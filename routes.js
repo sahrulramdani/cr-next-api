@@ -16,6 +16,7 @@ import * as C from './controller/index.js';
       app.route('/status-maritals').get(C.auth.verifyToken, C.setup.statusMaritalAll);
       app.route('/channel-donaturs').get(C.auth.verifyToken, C.setup.channelDonaturAll);
       app.route('/gol-darahs').get(C.auth.verifyToken, C.setup.golDarahAll);
+      app.route('/currencies').get(C.auth.verifyToken, C.setup.currencyAll);
       app.route('/saveSetup').post(C.auth.verifyToken, C.setup.saveSetup);
       app.route('/deleteSetup').post(C.auth.verifyToken, C.setup.deleteSetup);
       app.route('/saveUnit').post(C.auth.verifyToken, C.setup.saveUnit);
@@ -49,9 +50,12 @@ import * as C from './controller/index.js';
 
       // ------ CRM --------------
       app.route('/idDonaturs/:status').get(C.auth.verifyToken, C.donatur.idDonaturs);
-      app.route('/donaturs/:status').get(C.auth.verifyToken, C.donatur.donaturs);
-      app.route('/donatur/:id').get(C.auth.verifyToken, C.donatur.getDonatur);
       app.route('/donaturs/level/:level').get(C.auth.verifyToken, C.donatur.getDonatursPerLevel);
+      app.route('/donaturs/:status').get(C.auth.verifyToken, C.donatur.donaturs);
+      app.route('/donatur/transaction/save').post(C.auth.verifyToken, C.donatur.saveDetTransaction);
+      app.route('/donatur/transaction/delete').post(C.auth.verifyToken, C.donatur.deleteDetTransaction);
+      app.route('/donatur/transactions/:donaturID').get(C.auth.verifyToken, C.donatur.getDetTransactions);
+      app.route('/donatur/:id').get(C.auth.verifyToken, C.donatur.getDonatur);
       app.route('/type-donaturs').get(C.auth.verifyToken, C.setup.typeDonaturAll);
       app.route('/type-program-donaturs').get(C.auth.verifyToken, C.setup.typeProgramDonaturAll);
       app.route('/saveDonatur').post(C.auth.verifyToken, C.donatur.saveDonatur);
@@ -71,6 +75,7 @@ import * as C from './controller/index.js';
       app.route('/deleteTransSLP').post(C.auth.verifyToken, C.donatur.deleteTransSLP);
       app.route('/transSLP/:id').get(C.auth.verifyToken, C.donatur.getTransSLP);
       app.route('/updateTransSLP').post(C.auth.verifyToken, C.donatur.updateTransSLP);
+      
 
       // ------ Accounting --------------
       app.route('/saveThnBuku').post(C.auth.verifyToken, C.accounting.saveTahunBuku);
@@ -83,7 +88,6 @@ import * as C from './controller/index.js';
       app.route('/module/process/delete').post(C.auth.verifyToken, C.menu.deleteDetProcess);
       app.route('/module/:id').get(C.auth.verifyToken, C.menu.getModule);
       app.route('/processes/:bussCode/:module').get(C.auth.verifyToken, C.menu.processAll);
-      
 }
 
 
