@@ -78,14 +78,6 @@ export default class AuthController {
           });
         }
 
-        /* verifyToken = function(req, res, next) {
-            try {
-                var abc= await verifyToken2(req, res, next);
-            } catch (e) {
-
-            }
-        } */
-
         verifyToken = function(req, res, next) {
             var path = req.url;
             var token = req.headers['x-access-token'];
@@ -135,11 +127,17 @@ export default class AuthController {
                             next();
                         }
                     } else {
-                        return res.status(403).send({ 
-                            status: false, 
-                            message: 'Access Denied',
-                            userAccess: false
-                        });
+                        const pathPermit = ['/profile', '/'];
+
+                        if (pathPermit.includes(path)) {
+                            next();
+                        } else {
+                            return res.status(403).send({ 
+                                status: false, 
+                                message: 'Access Denied',
+                                userAccess: false
+                            });
+                        }
                     }
                 });
             });
