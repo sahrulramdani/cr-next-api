@@ -630,7 +630,7 @@ export default class Donatur {
 
         var donaturID = req.params.donaturID;
 
-        var sql = 'SELECT a.*, b.NAMA FROM trans_donatur a inner join tb11_mzjb b on a.donaturID = b.NO_ID  WHERE a.NO_ID = "'+ donaturID +'"';
+        var sql = 'SELECT a.*, b.NAMA FROM trans_donatur a inner join tb11_mzjb b on a.donaturID = b.NO_ID  WHERE b.NO_ID = "'+ donaturID +'"';
         db.query(sql, function(err, rows, fields) {
             var output = [];
 
