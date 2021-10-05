@@ -18,7 +18,10 @@ export default class AuthController {
                 USER_IDXX : req.body.USER_IDXX,
                 PASS_IDXX : hashedPassword,
                 KETX_USER : req.body.KETX_USER,
-                Active : req.body.Active
+                BUSS_CODE : req.body.BUSS_CODE,
+                Active : req.body.Active,
+                IsValid : req.body.IsValid,
+                Email : req.body.Email
             };
         
             db.query(sql, data, (err, result) => {
@@ -39,7 +42,7 @@ export default class AuthController {
         }
 
         signin = function(req, res) {
-            var sql = 'select * from tb01_lgxh where USER_IDXX = "' + req.body.USER_IDXX + '" And Active = "1"';
+            var sql = 'select * from tb01_lgxh where USER_IDXX = "' + req.body.USER_IDXX + '" And Active = "1" And IsValid = "1"';
             db.query(sql, (err, rows) => {
               if (err) {
                   console.log('Error', err);
@@ -71,7 +74,7 @@ export default class AuthController {
                   } else {
                     res.send({
                         status: false,
-                        message: 'User Name not found or disabled!'
+                        message: 'User Name not found or disabled or need verification!'
                     });
                   }
               }
@@ -102,7 +105,7 @@ export default class AuthController {
                 req.userID = decoded.id;
                 
                 // get User Access
-                var sql = 'SELECT a.* FROM `tb01_usrd` a INNER JOIN `tb01_lgxh` b on a.USER_IDXX = b.USER_IDXX And a.BUSS_CODE = b.BUSS_CODE  WHERE a.USER_IDXX = "' + decoded.id + '" And "' + path + '%" like CONCAT(a.PATH,"%") And a.TYPE_MDUL = "1" ORDER BY a.PATH' ;  // TYPE_MDUL = 1 (API)
+                var sql = 'SELECT a.*, b.IsValid FROM `tb01_usrd` a INNER JOIN `tb01_lgxh` b on a.USER_IDXX = b.USER_IDXX And a.BUSS_CODE = b.BUSS_CODE  WHERE a.USER_IDXX = "' + decoded.id + '" And "' + path + '%" like CONCAT(a.PATH,"%") And a.TYPE_MDUL = "1" ORDER BY a.PATH' ;  // TYPE_MDUL = 1 (API)
                 
                 db.query(sql, (err, rows) => {
                     if (err)
@@ -116,6 +119,15 @@ export default class AuthController {
                         req.AUTH_EDIT = userAccess.AUTH_EDIT;
                         req.AUTH_DELT = userAccess.AUTH_DELT;
                         req.AUTH_PRNT = userAccess.AUTH_PRNT;
+
+                        if (userAccess.IsValid === '0') {
+                            return res.status(403).send({ 
+                                status: false, 
+                                message: 'Need Verification!',
+                                userAccess: false,
+                                isValid: false
+                            });
+                        }
 
                         if (authRight === '0') {
                             return res.status(403).send({ 

@@ -7,7 +7,7 @@ export default class User {
         var authEdit = request.AUTH_EDIT;
         var authDelt = request.AUTH_DELT;
 
-        var qryCmd = "select USER_IDXX, BUSS_CODE, KETX_USER, `Active` from tb01_lgxh order by USER_IDXX";
+        var qryCmd = "select USER_IDXX, BUSS_CODE, KETX_USER, `Active`, IsValid from tb01_lgxh order by USER_IDXX";
         db.query(qryCmd, function(err, rows, fields) {
             var output = [];
 
@@ -105,6 +105,7 @@ export default class User {
             KETX_USER : req.body.KETX_USER,
             NO_ID : req.body.NO_ID,
             Active : req.body.Active,
+            IsValid : req.body.IsValid,
             TYPE_PRSON : req.body.TYPE_PRSON,
             NamaFile : req.body.NamaFile
         };

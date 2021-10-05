@@ -76,7 +76,7 @@ export default class Donatur {
 
     getDonatur = function(req, res) {
         // get user Access
-        var authEdit = request.AUTH_EDIT;
+        var authEdit = req.AUTH_EDIT;
 
         var id = req.params.id;
 
