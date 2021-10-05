@@ -135,7 +135,7 @@ export default class User {
 
         var userID = req.params.userID;
 
-        var sql = 'SELECT a.* FROM tb01_usrd a WHERE a.USER_IDXX = "'+ userID +'" ORDER BY a.PATH';
+        var sql = 'SELECT a.* FROM tb01_usrd a INNER JOIN tb01_lgxh b ON a.USER_IDXX = b.USER_IDXX AND a.BUSS_CODE = b.BUSS_CODE WHERE a.USER_IDXX = "'+ userID +'" ORDER BY a.PATH';
         db.query(sql, function(err, rows, fields) {
             var output = [];
 
