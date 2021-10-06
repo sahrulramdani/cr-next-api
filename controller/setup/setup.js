@@ -440,6 +440,32 @@ export default class Setup {
         });
     }
 
+    updateSetup = function(req, res) {
+        var type = req.body.CODD_FLNM;
+        var value = req.body.CODD_VALU;
+        
+        var sql = 'UPDATE tb00_basx SET ? WHERE CODD_VALU = "' + value + '" AND CODD_FLNM = "' + type + '"';
+        var data = {
+            CODD_DESC : req.body.CODD_DESC,
+            CODD_VARC : req.body.CODD_VARC 
+        };
+        
+        db.query(sql, data, (err, result) => {
+            if (err) {
+                console.log('Error', err);
+
+                res.send({
+                    status: false,
+                    message: err.sqlMessage
+                });
+            } else {
+                res.send({
+                    status: true
+                });
+            }
+        });
+    }
+
     deleteSetup = function(req, res) {
         var selectedIds = [];
         selectedIds = fncParseComma(req.body.selectedIds);

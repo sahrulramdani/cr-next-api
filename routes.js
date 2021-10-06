@@ -18,6 +18,7 @@ import * as C from './controller/index.js';
       app.route('/gol-darahs').get(C.auth.verifyToken, C.setup.golDarahAll);
       app.route('/currencies').get(C.auth.verifyToken, C.setup.currencyAll);
       app.route('/saveSetup').post(C.auth.verifyToken, C.setup.saveSetup);
+      app.route('/updateSetup').post(C.auth.verifyToken, C.setup.updateSetup);
       app.route('/deleteSetup').post(C.auth.verifyToken, C.setup.deleteSetup);
       app.route('/saveUnit').post(C.auth.verifyToken, C.setup.saveUnit);
       app.route('/updateUnit').post(C.auth.verifyToken, C.setup.updateUnit);
