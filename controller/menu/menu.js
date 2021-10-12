@@ -186,4 +186,38 @@ export default class Menu {
         }
     }
 
+    getMenus = function(req, res) {
+        var sql = 'SELECT a.*, b.id AS USERACCESS_ID FROM `tb01_proc` a LEFT JOIN `tb01_usrd` b ON a.BUSS_CODE = b.BUSS_CODE AND a.PROC_CODE = b.PROC_CODE WHERE a.NoUrut IS NOT NULL AND a.BUSS_CODE = "' + req.BUSS_CODE0 + '" ORDER BY a.NoUrut';
+        db.query(sql, function(err, rows, fields) {
+            var output = [];
+
+            rows.forEach(function(row) {
+                var obj = new Object();
+                for(var key in row) {
+                    obj[key] = row[key];
+                }
+
+                var check = rows.filter(item => item.PARENT === obj.PROC_CODE);
+                if (check.length > 0) {
+                    check.sort((a, b) => {
+                        if (a.NoUrut < b.NoUrut) {
+                            return -1;
+                        } else if (a.NoUrut > b.NoUrut) {
+                            return 1;
+                        };
+    
+                        return 0;
+                    });
+    
+                    obj.children = check;
+                }
+
+                if (obj.PARENT === null) {
+                    output.push(obj);
+                }
+            })
+
+            res.send(output);
+        });
+    }
 }

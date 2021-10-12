@@ -119,6 +119,7 @@ export default class AuthController {
                         req.AUTH_EDIT = userAccess.AUTH_EDIT;
                         req.AUTH_DELT = userAccess.AUTH_DELT;
                         req.AUTH_PRNT = userAccess.AUTH_PRNT;
+                        req.BUSS_CODE0 = userAccess.BUSS_CODE;
 
                         if (userAccess.IsValid === '0') {
                             return res.status(403).send({ 

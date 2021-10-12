@@ -4,25 +4,25 @@ import * as C from './controller/index.js';
       app.route('/').get(C.index);
 
       //---- Setup ----
-      app.route('/pekerjaans').get(C.auth.verifyToken, C.setup.pekerjaanAll);
-      app.route('/pendidikans').get(C.auth.verifyToken, C.setup.pendidikanAll);
-      app.route('/wilayah-kerjas').get(C.auth.verifyToken, C.setup.wilayahKerjaAll);
-      app.route('/type-relawans').get(C.auth.verifyToken, C.setup.typeRelawanAll);
-      app.route('/units').get(C.auth.verifyToken, C.setup.unitAll);
-      app.route('/unit/:id').get(C.auth.verifyToken, C.setup.getUnit);
-      app.route('/locations').get(C.auth.verifyToken, C.setup.locationAll);
-      app.route('/bussiness-units').get(C.auth.verifyToken, C.setup.bussinessUnitAll);
-      app.route('/kelompok-kerjas').get(C.auth.verifyToken, C.setup.kelompokKerjaAll);
-      app.route('/status-maritals').get(C.auth.verifyToken, C.setup.statusMaritalAll);
-      app.route('/channel-donaturs').get(C.auth.verifyToken, C.setup.channelDonaturAll);
-      app.route('/gol-darahs').get(C.auth.verifyToken, C.setup.golDarahAll);
-      app.route('/currencies').get(C.auth.verifyToken, C.setup.currencyAll);
-      app.route('/saveSetup').post(C.auth.verifyToken, C.setup.saveSetup);
-      app.route('/updateSetup').post(C.auth.verifyToken, C.setup.updateSetup);
-      app.route('/deleteSetup').post(C.auth.verifyToken, C.setup.deleteSetup);
-      app.route('/saveUnit').post(C.auth.verifyToken, C.setup.saveUnit);
-      app.route('/updateUnit').post(C.auth.verifyToken, C.setup.updateUnit);
-      app.route('/deleteUnit').post(C.auth.verifyToken, C.setup.deleteUnit);
+      app.route('/setup/save').post(C.auth.verifyToken, C.setup.saveSetup);
+      app.route('/setup/update').post(C.auth.verifyToken, C.setup.updateSetup);
+      app.route('/setup/delete').post(C.auth.verifyToken, C.setup.deleteSetup);
+      app.route('/setup/pekerjaans').get(C.auth.verifyToken, C.setup.pekerjaanAll);
+      app.route('/setup/pendidikans').get(C.auth.verifyToken, C.setup.pendidikanAll);
+      app.route('/setup/wilayah-kerjas').get(C.auth.verifyToken, C.setup.wilayahKerjaAll);
+      app.route('/setup/type-relawans').get(C.auth.verifyToken, C.setup.typeRelawanAll);
+      app.route('/setup/unit/save').post(C.auth.verifyToken, C.setup.saveUnit);
+      app.route('/setup/unit/update').post(C.auth.verifyToken, C.setup.updateUnit);
+      app.route('/setup/unit/delete').post(C.auth.verifyToken, C.setup.deleteUnit);
+      app.route('/setup/unit/:id').get(C.auth.verifyToken, C.setup.getUnit);
+      app.route('/setup/units').get(C.auth.verifyToken, C.setup.unitAll);
+      app.route('/setup/locations').get(C.auth.verifyToken, C.setup.locationAll);
+      app.route('/setup/bussiness-units').get(C.auth.verifyToken, C.setup.bussinessUnitAll);
+      app.route('/setup/kelompok-kerjas').get(C.auth.verifyToken, C.setup.kelompokKerjaAll);
+      app.route('/setup/status-maritals').get(C.auth.verifyToken, C.setup.statusMaritalAll);
+      app.route('/setup/channel-donaturs').get(C.auth.verifyToken, C.setup.channelDonaturAll);
+      app.route('/setup/gol-darahs').get(C.auth.verifyToken, C.setup.golDarahAll);
+      app.route('/setup/currencies').get(C.auth.verifyToken, C.setup.currencyAll);
 
       //---- Issue - Master RKAT Issue Header  ------
       app.route('/issues').get(C.auth.verifyToken, C.issue.issueAll);
@@ -89,6 +89,7 @@ import * as C from './controller/index.js';
       app.route('/module/process/delete').post(C.auth.verifyToken, C.menu.deleteDetProcess);
       app.route('/module/:id').get(C.auth.verifyToken, C.menu.getModule);
       app.route('/processes/:bussCode/:module').get(C.auth.verifyToken, C.menu.processAll);
+      app.route('/menus').get(C.auth.verifyToken, C.menu.getMenus);
 }
 
 
