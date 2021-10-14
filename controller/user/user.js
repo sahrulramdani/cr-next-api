@@ -231,4 +231,109 @@ export default class User {
             }
         });
     }
+
+    saveRole = function(req, res) {
+        var sql = 'INSERT INTO `role` SET ?';
+        var data = {
+            RoleName : req.body.RoleName,
+            UnitID : req.body.UnitID
+        };
+        
+        db.query(sql, data, (err, result) => {
+            if (err) {
+                console.log('Error', err);
+
+                res.send({
+                    status: false,
+                    message: err.sqlMessage
+                });
+            } else {
+                sql = 'select LAST_INSERT_ID() As ID;';
+
+                db.query(sql, data, (err, result2) => {
+                    res.send(result2);
+                });
+            }
+        });
+    }
+
+    saveRoleDetPrivilege = function(req, res) {
+        var sql = 'INSERT INTO `role_menu` SET ?';
+        var data = {
+            ROLE_IDXX : req.body.ROLE_IDXX ,
+            PROC_CODE : req.body.PROC_CODE,
+            PATH : req.body.PATH,
+            BUSS_CODE : req.body.BUSS_CODE,
+            MDUL_CODE : req.body.MDUL_CODE,
+            TYPE_MDUL : req.body.TYPE_MDUL,
+            RIGH_AUTH : req.body.RIGH_AUTH,
+            AUTH_ADDX : req.body.AUTH_ADDX,
+            AUTH_EDIT : req.body.AUTH_EDIT,
+            AUTH_DELT : req.body.AUTH_DELT
+        };
+        
+        db.query(sql, data, (err, result) => {
+            if (err) {
+                console.log('Error', err);
+
+                res.send({
+                    status: false,
+                    message: err.sqlMessage
+                });
+            } else {
+                res.send({
+                    status: true
+                });
+            }
+        });
+    }
+
+    deleteRoleDetPrivilege = function(req, res) {
+        var id = req.body.id;
+        var sql = "delete from `role_menu` where id = " + id;
+        db.query(sql, (err, result) => {
+            if (err) {
+                console.log('Error', err);
+
+                res.send({
+                    status: false,
+                    message: err.sqlMessage
+                });
+            } else {
+                res.send({
+                    status: true
+                });
+            }
+        });
+    }
+
+    // get Role Detail Privileges User Access (list)
+    getRoleDetUserAccesses = function(req, res) {
+        // get user Access
+        var authAdd = req.AUTH_ADDX;
+        var authEdit = req.AUTH_EDIT;
+        var authDelt = req.AUTH_DELT;
+
+        var roleID = req.params.roleID;
+
+        var sql = 'SELECT a.*, C.PROC_NAME FROM role_menu a INNER JOIN role b ON a.ROLE_IDXX = b.id AND a.BUSS_CODE = b.UnitID INNER JOIN tb01_proc c ON a.PROC_CODE = c.PROC_CODE WHERE a.ROLE_IDXX = "' + roleID + '" ORDER BY a.PATH';
+        db.query(sql, function(err, rows, fields) {
+            var output = [];
+
+            rows.forEach(function(row) {
+                var obj = new Object();
+                for(var key in row) {
+                    obj[key] = row[key];
+                }
+
+                obj['AUTH_ADDX'] = authAdd;
+                obj['AUTH_EDIT'] = authEdit;
+                obj['AUTH_DELT'] = authDelt;
+
+                output.push(obj);
+            })
+
+            res.send(output);
+        });
+    }
 }

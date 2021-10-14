@@ -45,6 +45,10 @@ import * as C from './controller/index.js';
       app.route('/user/privilege/:id').get(C.auth.verifyToken, C.user.getDetUserAccess);
       app.route('/user/privileges/:userID').get(C.auth.verifyToken, C.user.getDetUserAccesses);
       app.route('/user/:userID').get(C.auth.verifyToken, C.user.getUser);
+      app.route('/role/save').post(C.auth.verifyToken, C.user.saveRole);
+      app.route('/role/privilege/save').post(C.auth.verifyToken, C.user.saveRoleDetPrivilege);
+      app.route('/role/privilege/delete').post(C.auth.verifyToken, C.user.deleteRoleDetPrivilege);
+      app.route('/role/privileges/:roleID').get(C.auth.verifyToken, C.user.getRoleDetUserAccesses);
       app.route('/register').post(C.auth.register);
       app.route('/signin').post(C.auth.signin);
       app.route('/profile').get(C.auth.verifyToken, C.user.getProfile);
@@ -90,6 +94,7 @@ import * as C from './controller/index.js';
       app.route('/menu/module/:id').get(C.auth.verifyToken, C.menu.getModule);
       app.route('/menu/processes/:bussCode/:module').get(C.auth.verifyToken, C.menu.processAll);
       app.route('/menu/menus').get(C.auth.verifyToken, C.menu.getMenus);
+      app.route('/menu/menus2/:userID').get(C.auth.verifyToken, C.menu.getMenus2);
 }
 
 
