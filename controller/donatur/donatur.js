@@ -221,22 +221,23 @@ export default class Donatur {
 
         var selectedIds = [];
         selectedIds = fncParseComma(req.body.selectedIds);
+        console.log(selectedIds);
         var arrayLength = selectedIds.length;
 
-        var sql = 'UPDATE tb11_mzjb SET Status = "' + status + ', TypeDonatur = "' + typeDonatur + '" WHERE NO_ID in (';
+        var sql = 'UPDATE tb11_mzjb SET Status = "' + status + '", TypeDonatur = "' + typeDonatur + '" WHERE NO_ID in ("';
         if (arrayLength > 0) {
             for(var i=0; i<arrayLength; i++) {
                 if (i === 0) {
-                  sql += selectedIds[i];
+                  sql += selectedIds[i] + '"' ;
                 } else {
-                  sql += ',' + selectedIds[i];
+                  sql += ',"' + selectedIds[i] + '"';
                 }
             } 
     
             sql += ')';
     
-            
-            db.query(sql, data, (err, result) => {
+            console.log(sql);
+            db.query(sql, (err, result) => {
                 if (err) {
                     console.log('Error', err);
 

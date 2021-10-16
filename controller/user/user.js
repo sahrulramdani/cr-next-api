@@ -264,6 +264,7 @@ export default class User {
             PROC_CODE : req.body.PROC_CODE,
             PATH : req.body.PATH,
             BUSS_CODE : req.body.BUSS_CODE,
+            TYPE_MDUL : req.body.TYPE_MDUL,
             MDUL_CODE : req.body.MDUL_CODE,
             TYPE_MDUL : req.body.TYPE_MDUL,
             RIGH_AUTH : req.body.RIGH_AUTH,
@@ -334,6 +335,60 @@ export default class User {
             })
 
             res.send(output);
+        });
+    }
+
+    saveRoleAllDetPrivilege = function(req, res) {
+        var sql = 'INSERT INTO `role_menu` (ROLE_IDXX, PROC_CODE, PATH, BUSS_CODE, MDUL_CODE, TYPE_MDUL, RIGH_AUTH, AUTH_ADDX, AUTH_EDIT, AUTH_DELT) SELECT "' + req.body.ROLE_IDXX + '" As ROLE_IDXX, PROC_CODE, PATH, BUSS_CODE, MDUL_CODE, TYPE_MDUL, "1" As RIGH_AUTH, "1" As AUTH_ADDX, "1" As AUTH_EDIT, "1" As AUTH_DELT from `tb01_proc` where BUSS_CODE = "' + req.body.BUSS_CODE + '" AND NoUrut IS NOT NULL';
+        
+        db.query(sql, (err, result) => {
+            if (err) {
+                console.log('Error', err);
+
+                res.send({
+                    status: false,
+                    message: err.sqlMessage
+                });
+            } else {
+                res.send({
+                    status: true
+                });
+            }
+        });
+    }
+
+    getRolePrivilege = function(req, res) {
+        var id = req.params.id;
+        var sql = 'SELECT * FROM `role_menu` WHERE id = ' + id;
+        
+        db.query(sql, function(err, rows, fields) {
+            res.send(rows);
+        });
+    }
+
+    updateDetPrivilege = function(req, res) {
+        var ids = req.body.id;
+        var sql = 'UPDATE `role_menu` SET ? WHERE id = '+ ids;
+        var data = {
+            RIGH_AUTH : req.body.RIGH_AUTH,
+            AUTH_ADDX : req.body.AUTH_ADDX,
+            AUTH_EDIT : req.body.AUTH_EDIT,
+            AUTH_DELT : req.body.AUTH_DELT
+        };
+        
+        db.query(sql, data, (err, result) => {
+            if (err) {
+                console.log('Error', err);
+
+                res.send({
+                    status: false,
+                    message: err.sqlMessage
+                });
+            } else {
+                res.send({
+                    status: true
+                });
+            }
         });
     }
 }
