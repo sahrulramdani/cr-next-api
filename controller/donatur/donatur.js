@@ -74,6 +74,25 @@ export default class Donatur {
         });
     }
 
+    idDonatursAll = (request, response) => {
+        var qryCmd = "select NO_ID As value, CONCAT(`NO_ID`, ' - ', `NAMA`, ' - ', SUBSTRING(`ALMT_XXX1`, 1, 20)) As label from tb11_mzjb order by NO_ID";
+        
+        db.query(qryCmd, function(err, rows, fields) {
+            var output = [];
+
+            rows.forEach(function(row) {
+                var obj = new Object();
+                for(var key in row) {
+                    obj[key] = row[key];
+                }
+
+                output.push(obj);
+            })
+
+            response.send(output);
+        });
+    }
+
     getDonatur = function(req, res) {
         // get user Access
         var authEdit = req.AUTH_EDIT;
@@ -631,7 +650,7 @@ export default class Donatur {
 
         var donaturID = req.params.donaturID;
 
-        var sql = 'SELECT a.*, b.NAMA FROM trans_donatur a inner join tb11_mzjb b on a.donaturID = b.NO_ID  WHERE b.NO_ID = "'+ donaturID +'"';
+        var sql = 'SELECT a.*, b.NAMA FROM trans_donatur a inner join tb11_mzjb b on a.donaturID = b.NO_ID WHERE b.NO_ID = "'+ donaturID +'" And (a.isDelete <> "1" OR a.isDelete IS NULL)';
         db.query(sql, function(err, rows, fields) {
             var output = [];
 
@@ -661,7 +680,8 @@ export default class Donatur {
             DonaturID : req.body.DonaturID,
             CurrencyID : req.body.CurrencyID,
             Amount : req.body.Amount,
-            isValidate : req.body.isValidate
+            isValidate : req.body.isValidate,
+            isDelete : req.body.isDelete
         };
         
         db.query(sql, data, (err, result) => {
@@ -696,6 +716,130 @@ export default class Donatur {
                     status: true
                 });
             }
+        });
+    }
+
+    // Get Transactions Donatur (money transfer)
+    getDonaturTransactions = function(req, res) {
+        // get user Access
+        var authAdd = req.AUTH_ADDX;
+        var authEdit = req.AUTH_EDIT;
+        var authDelt = req.AUTH_DELT;
+
+        var isValid = req.params.isValid;
+        var sql = '';
+
+        if (isValid === '0') {
+            isValid = '0",null';
+        } else if (isValid === '1') {
+            isValid = '1"';
+        }
+
+        if (isValid === 'all') {
+            sql = 'SELECT a.*, b.NAMA FROM trans_donatur a inner join tb11_mzjb b on a.donaturID = b.NO_ID WHERE a.isDelete <> "1"';
+        } else {
+            sql = 'SELECT a.*, b.NAMA FROM trans_donatur a inner join tb11_mzjb b on a.donaturID = b.NO_ID WHERE a.isValidate in ("' +  
+                isValid +') And (a.isDelete <> "1" OR a.isDelete IS NULL)';
+        }
+
+        db.query(sql, function(err, rows, fields) {
+            var output = [];
+
+            rows.forEach(function(row) {
+                var obj = new Object();
+                for(var key in row) {
+                    obj[key] = row[key];
+                }
+
+                obj['AUTH_ADDX'] = authAdd;
+                obj['AUTH_EDIT'] = authEdit;
+                obj['AUTH_DELT'] = authDelt;
+
+                output.push(obj);
+            })
+
+            res.send(output);
+        });
+    }
+
+    updateDonaturTrans = function(req, res) {
+        var transNumber = req.body.transNumber;
+        var sql = 'UPDATE trans_donatur SET ? WHERE TransNumber = "' + transNumber + '"';   
+        var data = {
+            TransDate : req.body.TransDate,
+            CurrencyID : req.body.CurrencyID,
+            Amount : req.body.Amount,
+            isValidate : req.body.isValidate,
+            isDelete : req.body.isDelete
+        };
+        
+        db.query(sql, data, (err, result) => {
+            if (err) {
+                console.log('Error', err);
+
+                res.send({
+                    status: false,
+                    message: err.sqlMessage
+                });
+            } else {
+                res.send({
+                    status: true
+                });
+            }
+        });
+    }
+
+    // soft delete
+    deleteSoftDonaturTrans = function(req, res) {
+        var transNumber = req.body.transNumber;
+        var sql = 'UPDATE trans_donatur SET ? WHERE TransNumber = "' + transNumber + '"';   
+        var data = {
+            isDelete : req.body.isDelete
+        };
+        
+        db.query(sql, data, (err, result) => {
+            if (err) {
+                console.log('Error', err);
+
+                res.send({
+                    status: false,
+                    message: err.sqlMessage
+                });
+            } else {
+                res.send({
+                    status: true
+                });
+            }
+        });
+    }
+
+    // get Donatur Transaction
+    getTransaction = function(req, res) {
+        // get user Access
+        var authAdd = req.AUTH_ADDX;
+        var authEdit = req.AUTH_EDIT;
+        var authDelt = req.AUTH_DELT;
+
+        var transNumber = req.params.transNumber;
+
+        var sql = 'SELECT a.* FROM trans_donatur a WHERE a.transNumber = "'+ transNumber +'"';
+        db.query(sql, function(err, rows, fields) {
+            var output = [];
+
+            rows.forEach(function(row) {
+                var obj = new Object();
+                for(var key in row) {
+                    obj[key] = row[key];
+                }
+
+                obj['AUTH_ADDX'] = authAdd;
+                obj['AUTH_EDIT'] = authEdit;
+                obj['AUTH_DELT'] = authDelt;
+
+                output.push(obj);
+            })
+
+            res.send(output);
         });
     }
 }

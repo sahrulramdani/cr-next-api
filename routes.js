@@ -76,12 +76,17 @@ import * as C from './controller/index.js';
       app.route('/crm/slps').get(C.auth.verifyToken, C.donatur.transSLPAll);
       app.route('/crm/donaturs/verify').post(C.auth.verifyToken, C.donatur.verify);
       app.route('/crm/donaturs/:status').get(C.auth.verifyToken, C.donatur.donaturs);
-      app.route('/crm/donatur/transactions/:donaturID').get(C.auth.verifyToken, C.donatur.getDetTransactions);
+      app.route('/crm/donatur/detail/transactions/:donaturID').get(C.auth.verifyToken, C.donatur.getDetTransactions);
+      app.route('/crm/donatur/transactions/:isValid').get(C.auth.verifyToken, C.donatur.getDonaturTransactions);
       app.route('/crm/donatur/transaction/save').post(C.auth.verifyToken, C.donatur.saveDetTransaction);
+      app.route('/crm/donatur/transaction/update').post(C.auth.verifyToken, C.donatur.updateDonaturTrans);
+      app.route('/crm/donatur/transaction/delete/soft').post(C.auth.verifyToken, C.donatur.deleteSoftDonaturTrans);
       app.route('/crm/donatur/transaction/delete').post(C.auth.verifyToken, C.donatur.deleteDetTransaction);
+      app.route('/crm/donatur/transaction/:transNumber').get(C.auth.verifyToken, C.donatur.getTransaction);
       app.route('/crm/donatur/save').post(C.auth.verifyToken, C.donatur.saveDonatur);
       app.route('/crm/donatur/update').post(C.auth.verifyToken, C.donatur.updateDonatur);
       app.route('/crm/donatur/:id').get(C.auth.verifyToken, C.donatur.getDonatur);
+      app.route('/crm/idDonaturs/all').get(C.auth.verifyToken, C.donatur.idDonatursAll);
       app.route('/crm/idDonaturs/:status').get(C.auth.verifyToken, C.donatur.idDonaturs);
       app.route('/crm/donaturs/level/:level').get(C.auth.verifyToken, C.donatur.getDonatursPerLevel);
 
