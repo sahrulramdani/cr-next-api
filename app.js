@@ -5,6 +5,7 @@ import multer from 'multer';
 import db from './koneksi.js';
 import { auth } from './controller/auth/index.js';
 import * as ca  from './config.js';  // config app
+import fs from 'fs';
 
 const app = express();
 
@@ -41,9 +42,9 @@ app.post("/uploadFile", auth.verifyToken, upload, (req, res, next) => {
    }
 );
 
-// API Upload File for Image Profile
+// API Upload File at Src React Js App
 const storage2 = multer.diskStorage({
-  destination: ca.config.FolderImageFile,   
+  destination: ca.config.FolderFile,   
   filename: function(req, file, cb) {
      cb(null, file.originalname);
   }
@@ -54,7 +55,10 @@ const upload2 = multer({
   limits: {fileSize: 5000000},
 }).single('myFile');
 
-app.post("/uploadImageFile", auth.verifyToken, upload2, (req, res, next) => {
+app.post("/uploadFile2", auth.verifyToken, upload2, (req, res, next) => {
+  while (!fs.existsSync(req.file.path)) {
+  }
+
   res.send({
       status: true
   });

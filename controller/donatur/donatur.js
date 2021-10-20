@@ -17,14 +17,14 @@ export default class Donatur {
                         "WHEN '1' THEN 'Laki-laki' " +
                         "ELSE 'Perempuan' " +
                       "END As Jns_Kelamin, " + 
-                      "a.Email, a.NoHP from tb11_mzjb a where a.Status <> '1' And a.Status <> '3'";
+                      "a.Email, a.NoHP, b.CODD_DESC As Channel from tb11_mzjb a INNER JOIN (select * from tb00_basx where CODD_FLNM = 'CHANNEL_DONATUR') b ON a.Channel = b.CODD_VALU where a.Status <> '1' And a.Status <> '3'";
         } else {
             qryCmd = "select a.NO_ID as id, a.NAMA, " +
                      "CASE a.JNKX_KLMN " +
                         "WHEN '1' THEN 'Laki-laki' " +
                         "ELSE 'Perempuan' " +
                       "END As Jns_Kelamin, " + 
-                      "a.Email, a.NoHP from tb11_mzjb a where a.Status = '" + status + "'";
+                      "a.Email, a.NoHP, b.CODD_DESC As Channel from tb11_mzjb a INNER JOIN (select * from tb00_basx where CODD_FLNM = 'CHANNEL_DONATUR') b ON a.Channel = b.CODD_VALU where a.Status = '" + status + "'";
         };
         
         db.query(qryCmd, function(err, rows, fields) {
@@ -680,6 +680,7 @@ export default class Donatur {
             DonaturID : req.body.DonaturID,
             CurrencyID : req.body.CurrencyID,
             Amount : req.body.Amount,
+            FileName : req.body.FileName,
             isValidate : req.body.isValidate,
             isDelete : req.body.isDelete
         };
@@ -769,6 +770,7 @@ export default class Donatur {
             TransDate : req.body.TransDate,
             CurrencyID : req.body.CurrencyID,
             Amount : req.body.Amount,
+            FileName : req.body.FileName,
             isValidate : req.body.isValidate,
             isDelete : req.body.isDelete
         };
