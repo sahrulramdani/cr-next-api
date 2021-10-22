@@ -191,7 +191,7 @@ export default class Menu {
     }
 
     getMenus = function(req, res) {
-        var sql = 'SELECT a.*, b.id AS USERACCESS_ID, b.RIGH_AUTH, b.AUTH_ADDX, b.AUTH_EDIT, b.AUTH_DELT FROM `tb01_proc` a LEFT JOIN (select * from `tb01_usrd` where USER_IDXX = "' + req.userID + '") b ON a.BUSS_CODE = b.BUSS_CODE AND a.PROC_CODE = b.PROC_CODE WHERE a.NoUrut IS NOT NULL AND a.BUSS_CODE = "' + req.BUSS_CODE0 + '" ORDER BY a.NoUrut';
+        var sql = 'SELECT a.*, b.id AS USERACCESS_ID, b.RIGH_AUTH, b.AUTH_ADDX, b.AUTH_EDIT, b.AUTH_DELT FROM `tb01_proc` a LEFT JOIN (select * from `tb01_usrd` where USER_IDXX = "' + req.userID + '") b ON a.BUSS_CODE = b.BUSS_CODE AND a.PROC_CODE = b.PROC_CODE WHERE a.NoUrut IS NOT NULL ORDER BY a.NoUrut';
         db.query(sql, function(err, rows, fields) {
             var output = [];
 

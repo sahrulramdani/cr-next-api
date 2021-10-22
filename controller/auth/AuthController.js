@@ -105,7 +105,7 @@ export default class AuthController {
                 req.userID = decoded.id;
                 
                 // get User Access
-                var sql = 'SELECT a.*, b.IsValid FROM `tb01_usrd` a INNER JOIN `tb01_lgxh` b on a.USER_IDXX = b.USER_IDXX And a.BUSS_CODE = b.BUSS_CODE  WHERE a.USER_IDXX = "' + decoded.id + '" And ("' + path + '%" like CONCAT(a.PATH,"%") Or "' + path + '%/" like CONCAT(a.PATH,"%")) And a.TYPE_MDUL = "1" ORDER BY a.PATH' ;  // TYPE_MDUL = 1 (API)
+                var sql = 'SELECT a.*, c.IsValid FROM `tb01_usrd` a INNER JOIN `tb01_apix` b on a.PROC_CODE = b.PROC_CODE INNER JOIN `tb01_lgxh` c ON a.USER_IDXX = c.USER_IDXX WHERE a.USER_IDXX = "' + decoded.id + '" And ("' + path + '%" like CONCAT(b.PATH,"%") Or "' + path + '%/" like CONCAT(b.PATH,"%")) ORDER BY b.PATH' ;  
                 
                 db.query(sql, (err, rows) => {
                     if (err)
@@ -140,7 +140,7 @@ export default class AuthController {
                             next();
                         }
                     } else {
-                        const pathPermit = ['/profile', '/'];
+                        const pathPermit = ['/profile', '/', '/menu/menus', '/uploadFile2'];
 
                         if (pathPermit.includes(path)) {
                             next();
