@@ -677,6 +677,7 @@ export default class Donatur {
         var data = {
             TransNumber : req.body.TransNumber,
             TransDate : req.body.TransDate,
+            NoReference : req.body.NoReference,
             DonaturID : req.body.DonaturID,
             CurrencyID : req.body.CurrencyID,
             Amount : req.body.Amount,
@@ -768,6 +769,7 @@ export default class Donatur {
         var sql = 'UPDATE trans_donatur SET ? WHERE TransNumber = "' + transNumber + '"';   
         var data = {
             TransDate : req.body.TransDate,
+            NoReference : req.body.NoReference,
             CurrencyID : req.body.CurrencyID,
             Amount : req.body.Amount,
             FileName : req.body.FileName,
