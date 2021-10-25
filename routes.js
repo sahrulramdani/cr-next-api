@@ -15,6 +15,7 @@ import * as C from './controller/index.js';
       app.route('/setup/unit/delete').post(C.auth.verifyToken, C.setup.deleteUnit);
       app.route('/setup/unit/:id').get(C.auth.verifyToken, C.setup.getUnit);
       app.route('/setup/units').get(C.auth.verifyToken, C.setup.unitAll);
+      app.route('/setup/banks').get(C.auth.verifyToken, C.setup.bankAll);
       app.route('/setup/locations').get(C.auth.verifyToken, C.setup.locationAll);
       app.route('/setup/bussiness-units').get(C.auth.verifyToken, C.setup.bussinessUnitAll);
       app.route('/setup/kelompok-kerjas').get(C.auth.verifyToken, C.setup.kelompokKerjaAll);
@@ -93,6 +94,10 @@ import * as C from './controller/index.js';
       // ------ Accounting --------------
       app.route('/accounting/tahun-buku/save').post(C.auth.verifyToken, C.accounting.saveTahunBuku);
       app.route('/accounting/tahun-bukus').get(C.auth.verifyToken, C.accounting.tahunBukuAll);
+      app.route('/accounting/mutasi/save').post(C.auth.verifyToken, C.accounting.saveMutasi);
+      app.route('/accounting/mutasi/update').post(C.auth.verifyToken, C.accounting.updateMutasi);
+      app.route('/accounting/mutasi/all').get(C.auth.verifyToken, C.accounting.mutasiAll);
+      app.route('/accounting/mutasi/:id').get(C.auth.verifyToken, C.accounting.getMutasi);
 
       // ------ Menu Management --------------
       app.route('/menu/modules/:bussCode/:typeModule').get(C.auth.verifyToken, C.menu.moduleAll);

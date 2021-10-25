@@ -61,4 +61,119 @@ export default class Accounting {
                 });
             });
         }
+
+        mutasiAll = (request, response) => {
+            // get user Access
+            var authAdd = request.AUTH_ADDX;
+            var authEdit = request.AUTH_EDIT;
+            var authDelt = request.AUTH_DELT;
+
+            var qryCmd = "select * from tblMutasi order by TransDate desc";
+            db.query(qryCmd, function(err, rows, fields) {
+                var output = [];
+
+                rows.forEach(function(row) {
+                    var obj = new Object();
+                    for(var key in row) {
+                        obj[key] = row[key];
+                    }
+
+                    obj['AUTH_ADDX'] = authAdd;
+                    obj['AUTH_EDIT'] = authEdit;
+                    obj['AUTH_DELT'] = authDelt;
+
+                    output.push(obj);
+                })
+
+                response.send(output);
+            });
+        }
+
+        saveMutasi = function(req, res) {
+            var rows = req.body.rows;
+            var bank = req.body.bank;
+
+            var sql = 'INSERT INTO tblMutasi (TransDate, ValutaDate, NoReference, Keterangan, DK, Amount, Saldo, Bank) VALUES (';
+            if (rows.length > 1) {
+                rows.forEach((item, index) => {
+                        if (index > 0) {
+                            if (index === 1) {
+                                sql = sql + '"' + item[0] + '","' + item[1] + '","' + item[2] + '","' + item[3] + '","' + item[4] + '",' + item[5] + ',' + item[6] + ',"' + bank + '")';
+                            } else {
+                                sql = sql + ',("' + item[0] + '","' + item[1] + '","' + item[2] + '","' + item[3] + '","' + item[4] + '",' + item[5] + ',' + item[6] + ',"' + bank + '")';
+                            }
+                        }
+                });
+
+                console.log(sql);
+
+                db.query(sql, (err2, result2) => {
+                    if (err2) {
+                        console.log('Error', err2);
+        
+                        res.send({
+                            status: false,
+                            message: err2.sqlMessage
+                        });
+                    } else {
+                        res.send({
+                            status: true
+                        });
+                    }
+                });
+            } else {
+                res.send({
+                    status: true,
+                    message: 'Data empty'
+                });
+            }
+        }
+
+        getMutasi = function(req, res) {
+            // get user Access
+            var authEdit = req.AUTH_EDIT;
+    
+            var id = req.params.id;
+            var sql = 'SELECT * FROM `tblMutasi` WHERE id = '+ id;
+            
+            db.query(sql, function(err, rows, fields) {
+                var output = [];
+    
+                rows.forEach(function(row) {
+                    var obj = new Object();
+                    for(var key in row) {
+                        obj[key] = row[key];
+                    }
+    
+                    obj['AUTH_EDIT'] = authEdit;
+    
+                    output.push(obj);
+                })
+    
+                res.send(output);
+            });
+        }
+
+        updateMutasi = function(req, res) {
+            var id = req.body.id;
+            var sql = 'UPDATE `tblMutasi` SET ? WHERE id = '+ id;
+            var data = {
+                TransNumber : req.body.TransNumber
+            };
+            
+            db.query(sql, data, (err, result) => {
+                if (err) {
+                    console.log('Error', err);
+    
+                    res.send({
+                        status: false,
+                        message: err.sqlMessage
+                    });
+                } else {
+                    res.send({
+                        status: true
+                    });
+                }
+            });
+        }
 }

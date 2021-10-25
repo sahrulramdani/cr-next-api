@@ -56,7 +56,7 @@ export default class Issue {
 
     getIssue = function(req, res) {
         // get user Access
-        var authEdit = request.AUTH_EDIT;
+        var authEdit = req.AUTH_EDIT;
 
         var id = req.params.id;
         var sql = 'SELECT * FROM `tb50_rish` WHERE ACCT_CODE = "'+ id +'" ';

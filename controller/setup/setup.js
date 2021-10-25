@@ -253,6 +253,33 @@ export default class Setup {
         });
     }
 
+    bankAll = (request, response) => {
+        // get user Access
+        var authAdd = request.AUTH_ADDX;
+        var authEdit = request.AUTH_EDIT;
+        var authDelt = request.AUTH_DELT;
+
+        var qryCmd = "select * from tb02_bank where KODE_FLNM = 'KASX_BANK' order by KODE_BANK";
+        db.query(qryCmd, function(err, rows, fields) {
+            var output = [];
+
+            rows.forEach(function(row) {
+                var obj = new Object();
+                for(var key in row) {
+                    obj[key] = row[key];
+                }
+
+                obj['AUTH_ADDX'] = authAdd;
+                obj['AUTH_EDIT'] = authEdit;
+                obj['AUTH_DELT'] = authDelt;
+
+                output.push(obj);
+            })
+
+            response.send(output);
+        });
+    }
+
     locationAll = (request, response) => {
         // get user Access
         var authAdd = request.AUTH_ADDX;
