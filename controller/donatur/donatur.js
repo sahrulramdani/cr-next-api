@@ -738,10 +738,10 @@ export default class Donatur {
         }
 
         if (isValid === 'all') {
-            sql = 'SELECT a.*, b.NAMA, CONCAT(a.NO_ID, " - ", a.NAMA) As Donatur2 FROM trans_donatur a inner join tb11_mzjb b on a.donaturID = b.NO_ID WHERE a.isDelete <> "1"';
+            sql = 'SELECT a.*, b.NAMA, CONCAT(b.NO_ID, " - ", b.NAMA) As Donatur2 FROM trans_donatur a inner join tb11_mzjb b on a.donaturID = b.NO_ID WHERE a.isDelete <> "1"';
         } else {
-            sql = 'SELECT a.*, CONCAT(a.NO_ID, " - ", a.NAMA) As Donatur2 b.NAMA FROM trans_donatur a inner join tb11_mzjb b on a.donaturID = b.NO_ID WHERE a.isValidate in ("' +  
-                isValid +') And (a.isDelete <> "1" OR a.isDelete IS NULL)';
+            sql = 'SELECT a.*, b.NAMA, CONCAT(b.NO_ID, " - ", b.NAMA) As Donatur2 FROM trans_donatur a inner join tb11_mzjb b on a.donaturID = b.NO_ID WHERE a.isValidate in ("' +  
+                isValid + ') And (a.isDelete <> "1" OR a.isDelete IS NULL)';
         }
 
         db.query(sql, function(err, rows, fields) {

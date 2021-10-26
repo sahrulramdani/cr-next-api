@@ -54,7 +54,7 @@ export default class User {
         var authEdit = req.AUTH_EDIT;
 
         var id = req.params.userID;
-        var sql = 'SELECT * FROM `tb01_lgxh` WHERE USER_IDXX = "'+ id +'" ';
+        var sql = 'SELECT a.*, b.Nama FROM `tb01_lgxh` a INNER JOIN (select KodeNik As Nik, NamaKry As Nama from tb21_empl UNION select No_ID, NAMA from tb11_mzjb) b ON a.NO_ID = b.Nik WHERE a.USER_IDXX = "'+ id +'" ';
         
         db.query(sql, function(err, rows, fields) {
             var output = [];
@@ -107,7 +107,8 @@ export default class User {
             Active : req.body.Active,
             IsValid : req.body.IsValid,
             TYPE_PRSON : req.body.TYPE_PRSON,
-            NamaFile : req.body.NamaFile
+            NamaFile : req.body.NamaFile,
+            TemplateRoleID : req.body.TemplateRoleID
         };
         
         db.query(sql, data, (err, result) => {
@@ -128,14 +129,9 @@ export default class User {
 
     // get Detail Privileges User Access (list)
     getDetUserAccesses = function(req, res) {
-        // get user Access
-        var authAdd = req.AUTH_ADDX;
-        var authEdit = req.AUTH_EDIT;
-        var authDelt = req.AUTH_DELT;
-
         var userID = req.params.userID;
 
-        var sql = 'SELECT a.* FROM tb01_usrd a INNER JOIN tb01_lgxh b ON a.USER_IDXX = b.USER_IDXX AND a.BUSS_CODE = b.BUSS_CODE WHERE a.USER_IDXX = "'+ userID +'" ORDER BY a.PATH';
+        var sql = 'SELECT a.*, c.PROC_NAME FROM tb01_usrd a INNER JOIN tb01_lgxh b ON a.USER_IDXX = b.USER_IDXX AND a.BUSS_CODE = b.BUSS_CODE INNER JOIN `tb01_proc` c ON a.PROC_CODE = c.PROC_CODE And a.BUSS_CODE = c.BUSS_CODE WHERE a.USER_IDXX = "'+ userID +'" ORDER BY c.NoUrut';
         db.query(sql, function(err, rows, fields) {
             var output = [];
 
@@ -144,10 +140,6 @@ export default class User {
                 for(var key in row) {
                     obj[key] = row[key];
                 }
-
-                obj['AUTH_ADDX'] = authAdd;
-                obj['AUTH_EDIT'] = authEdit;
-                obj['AUTH_DELT'] = authDelt;
 
                 output.push(obj);
             })
@@ -357,6 +349,26 @@ export default class User {
         });
     }
 
+    // Save User All Detail Privilege
+    saveAllDetPrivilege = function(req, res) {
+        var sql = 'INSERT INTO `tb01_usrd` (USER_IDXX, PROC_CODE, PATH, BUSS_CODE, MDUL_CODE, TYPE_MDUL, RIGH_AUTH, AUTH_ADDX, AUTH_EDIT, AUTH_DELT) SELECT "' + req.body.USER_IDXX + '" As USER_IDXX, PROC_CODE, PATH, BUSS_CODE, MDUL_CODE, TYPE_MDUL, RIGH_AUTH, AUTH_ADDX, AUTH_EDIT, AUTH_DELT from `role_menu` where BUSS_CODE = "' + req.body.BUSS_CODE + '" AND ROLE_IDXX = ' + req.body.ROLE_IDXX;
+        
+        db.query(sql, (err, result) => {
+            if (err) {
+                console.log('Error', err);
+
+                res.send({
+                    status: false,
+                    message: err.sqlMessage
+                });
+            } else {
+                res.send({
+                    status: true
+                });
+            }
+        });
+    }
+
     getRolePrivilege = function(req, res) {
         var id = req.params.id;
         var sql = 'SELECT * FROM `role_menu` WHERE id = ' + id;
@@ -369,6 +381,59 @@ export default class User {
     updateDetPrivilege = function(req, res) {
         var ids = req.body.id;
         var sql = 'UPDATE `role_menu` SET ? WHERE id = '+ ids;
+        var data = {
+            RIGH_AUTH : req.body.RIGH_AUTH,
+            AUTH_ADDX : req.body.AUTH_ADDX,
+            AUTH_EDIT : req.body.AUTH_EDIT,
+            AUTH_DELT : req.body.AUTH_DELT
+        };
+        
+        db.query(sql, data, (err, result) => {
+            if (err) {
+                console.log('Error', err);
+
+                res.send({
+                    status: false,
+                    message: err.sqlMessage
+                });
+            } else {
+                res.send({
+                    status: true
+                });
+            }
+        });
+    }
+
+    roleAll = (request, response) => {
+        // get user Access
+        var authAdd = request.AUTH_ADDX;
+        var authEdit = request.AUTH_EDIT;
+        var authDelt = request.AUTH_DELT;
+
+        var qryCmd = "select * from `role` order by RoleName";
+        db.query(qryCmd, function(err, rows, fields) {
+            var output = [];
+
+            rows.forEach(function(row) {
+                var obj = new Object();
+                for(var key in row) {
+                    obj[key] = row[key];
+                }
+
+                obj['AUTH_ADDX'] = authAdd;
+                obj['AUTH_EDIT'] = authEdit;
+                obj['AUTH_DELT'] = authDelt;
+
+                output.push(obj);
+            })
+
+            response.send(output);
+        });
+    }
+
+    updateUserDetPrivilege = function(req, res) {
+        var ids = req.body.id;
+        var sql = 'UPDATE `tb01_usrd` SET ? WHERE id = '+ ids;
         var data = {
             RIGH_AUTH : req.body.RIGH_AUTH,
             AUTH_ADDX : req.body.AUTH_ADDX,
