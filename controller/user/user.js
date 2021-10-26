@@ -302,14 +302,9 @@ export default class User {
 
     // get Role Detail Privileges User Access (list)
     getRoleDetUserAccesses = function(req, res) {
-        // get user Access
-        var authAdd = req.AUTH_ADDX;
-        var authEdit = req.AUTH_EDIT;
-        var authDelt = req.AUTH_DELT;
-
         var roleID = req.params.roleID;
 
-        var sql = 'SELECT a.*, C.PROC_NAME FROM role_menu a INNER JOIN role b ON a.ROLE_IDXX = b.id AND a.BUSS_CODE = b.UnitID INNER JOIN tb01_proc c ON a.PROC_CODE = c.PROC_CODE WHERE a.ROLE_IDXX = "' + roleID + '" ORDER BY a.PATH';
+        var sql = 'SELECT a.*, C.PROC_NAME FROM role_menu a INNER JOIN role b ON a.ROLE_IDXX = b.id AND a.BUSS_CODE = b.UnitID INNER JOIN tb01_proc c ON a.PROC_CODE = c.PROC_CODE WHERE a.ROLE_IDXX = "' + roleID + '" ORDER BY c.NoUrut';
         db.query(sql, function(err, rows, fields) {
             var output = [];
 
@@ -318,10 +313,6 @@ export default class User {
                 for(var key in row) {
                     obj[key] = row[key];
                 }
-
-                obj['AUTH_ADDX'] = authAdd;
-                obj['AUTH_EDIT'] = authEdit;
-                obj['AUTH_DELT'] = authDelt;
 
                 output.push(obj);
             })
@@ -439,6 +430,55 @@ export default class User {
             AUTH_ADDX : req.body.AUTH_ADDX,
             AUTH_EDIT : req.body.AUTH_EDIT,
             AUTH_DELT : req.body.AUTH_DELT
+        };
+        
+        db.query(sql, data, (err, result) => {
+            if (err) {
+                console.log('Error', err);
+
+                res.send({
+                    status: false,
+                    message: err.sqlMessage
+                });
+            } else {
+                res.send({
+                    status: true
+                });
+            }
+        });
+    }
+
+    getRole = function(req, res) {
+        // get user Access
+        var authEdit = req.AUTH_EDIT;
+
+        var id = req.params.id;
+        var sql = 'select * from `role` where id = '+ id;
+        
+        db.query(sql, function(err, rows, fields) {
+            var output = [];
+
+            rows.forEach(function(row) {
+                var obj = new Object();
+                for(var key in row) {
+                    obj[key] = row[key];
+                }
+
+                obj['AUTH_EDIT'] = authEdit;
+
+                output.push(obj);
+            })
+
+            res.send(output);
+        });
+    }
+
+    updateRole = function(req, res) {
+        var ids = req.body.id;
+        var sql = 'UPDATE `role` SET ? WHERE id = '+ ids;
+        var data = {
+            RoleName : req.body.RoleName,
+            UnitID : req.body.UnitID
         };
         
         db.query(sql, data, (err, result) => {

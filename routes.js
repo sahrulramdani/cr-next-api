@@ -50,6 +50,8 @@ import * as C from './controller/index.js';
       app.route('/user/:userID').get(C.auth.verifyToken, C.user.getUser);
       app.route('/roles').get(C.auth.verifyToken, C.user.roleAll);
       app.route('/role/save').post(C.auth.verifyToken, C.user.saveRole);
+      app.route('/role/update').post(C.auth.verifyToken, C.user.updateRole);
+      app.route('/role/:id').get(C.auth.verifyToken, C.user.getRole);
       app.route('/role/privilege/save').post(C.auth.verifyToken, C.user.saveRoleDetPrivilege);
       app.route('/role/privilege/update').post(C.auth.verifyToken, C.user.updateDetPrivilege);
       app.route('/role/privileges/saveAll').post(C.auth.verifyToken, C.user.saveRoleAllDetPrivilege);
