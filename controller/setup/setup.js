@@ -448,7 +448,9 @@ export default class Setup {
             CODD_FLNM : req.body.CODD_FLNM,
             CODD_VALU : req.body.CODD_VALU,
             CODD_DESC : req.body.CODD_DESC,
-            CODD_VARC : req.body.CODD_VARC 
+            CODD_VARC : req.body.CODD_VARC ,
+            CRTX_DATE : new Date(),
+            CRTX_BYXX : req.userID
         };
         
         db.query(sql, data, (err, result) => {
@@ -474,7 +476,9 @@ export default class Setup {
         var sql = 'UPDATE tb00_basx SET ? WHERE CODD_VALU = "' + value + '" AND CODD_FLNM = "' + type + '"';
         var data = {
             CODD_DESC : req.body.CODD_DESC,
-            CODD_VARC : req.body.CODD_VARC 
+            CODD_VARC : req.body.CODD_VARC,
+            UPDT_DATE : new Date(),
+            UPDT_BYXX : req.userID
         };
         
         db.query(sql, data, (err, result) => {
@@ -542,7 +546,9 @@ export default class Setup {
             KETX_UNIT : req.body.NAMA_UNIT,
             KODE_LOKX : req.body.KODE_LOKX,
             KODE_URUT : req.body.KODE_URUT,
-            Active : req.body.Active
+            Active : req.body.Active,
+            CRTX_DATE : new Date(),
+            CRTX_BYXX : req.userID
         };
         
         db.query(sql, data, (err, result) => {
@@ -570,7 +576,9 @@ export default class Setup {
             KETX_UNIT : req.body.NAMA_UNIT,
             KODE_LOKX : req.body.KODE_LOKX,
             KODE_URUT : req.body.KODE_URUT,
-            Active : req.body.Active
+            Active : req.body.Active,
+            UPDT_DATE : new Date(),
+            UPDT_BYXX : req.userID
         };
         
         db.query(sql, data, (err, result) => {

@@ -1,4 +1,5 @@
 import  db from './../../koneksi.js';
+import moment from 'moment';
 
 export default class User {
     userAll = (request, response) => {
@@ -31,7 +32,9 @@ export default class User {
     // tidak didelete melainkan hanya set Active menjadi 0
     deleteUser = (request, response) => {
         var id = request.body.id;
-        var qryCmd = "update tb01_lgxh set Active='0' where USER_IDXX = '" + id + "'";
+        var tgl = moment(new Date()).format('YYYY-MM-DD');
+
+        var qryCmd = "update tb01_lgxh set Active='0', UPDT_DATE='" + tgl + "', UPDT_BYXX='" + request.userID + "' where USER_IDXX = '" + id + "'";
         
         db.query(qryCmd, (err, result) => {
             if (err) {
@@ -108,7 +111,9 @@ export default class User {
             IsValid : req.body.IsValid,
             TYPE_PRSON : req.body.TYPE_PRSON,
             NamaFile : req.body.NamaFile,
-            TemplateRoleID : req.body.TemplateRoleID
+            TemplateRoleID : req.body.TemplateRoleID,
+            UPDT_DATE : new Date(),
+            UPDT_BYXX : req.userID
         };
         
         db.query(sql, data, (err, result) => {
@@ -205,7 +210,9 @@ export default class User {
             RIGH_AUTH : req.body.RIGH_AUTH,
             AUTH_ADDX : req.body.AUTH_ADDX,
             AUTH_EDIT : req.body.AUTH_EDIT,
-            AUTH_DELT : req.body.AUTH_DELT
+            AUTH_DELT : req.body.AUTH_DELT,
+            CRTX_DATE : new Date(),
+            CRTX_BYXX : req.userID
         };
         
         db.query(sql, data, (err, result) => {
@@ -228,7 +235,9 @@ export default class User {
         var sql = 'INSERT INTO `role` SET ?';
         var data = {
             RoleName : req.body.RoleName,
-            UnitID : req.body.UnitID
+            UnitID : req.body.UnitID,
+            CRTX_DATE : new Date(),
+            CRTX_BYXX : req.userID
         };
         
         db.query(sql, data, (err, result) => {
@@ -262,7 +271,9 @@ export default class User {
             RIGH_AUTH : req.body.RIGH_AUTH,
             AUTH_ADDX : req.body.AUTH_ADDX,
             AUTH_EDIT : req.body.AUTH_EDIT,
-            AUTH_DELT : req.body.AUTH_DELT
+            AUTH_DELT : req.body.AUTH_DELT,
+            CRTX_DATE : new Date(),
+            CRTX_BYXX : req.userID
         };
         
         db.query(sql, data, (err, result) => {
@@ -342,7 +353,9 @@ export default class User {
 
     // Save User All Detail Privilege
     saveAllDetPrivilege = function(req, res) {
-        var sql = 'INSERT INTO `tb01_usrd` (USER_IDXX, PROC_CODE, PATH, BUSS_CODE, MDUL_CODE, TYPE_MDUL, RIGH_AUTH, AUTH_ADDX, AUTH_EDIT, AUTH_DELT) SELECT "' + req.body.USER_IDXX + '" As USER_IDXX, PROC_CODE, PATH, BUSS_CODE, MDUL_CODE, TYPE_MDUL, RIGH_AUTH, AUTH_ADDX, AUTH_EDIT, AUTH_DELT from `role_menu` where BUSS_CODE = "' + req.body.BUSS_CODE + '" AND ROLE_IDXX = ' + req.body.ROLE_IDXX;
+        var tgl = moment(new Date()).format('YYYY-MM-DD');
+
+        var sql = 'INSERT INTO `tb01_usrd` (USER_IDXX, PROC_CODE, PATH, BUSS_CODE, MDUL_CODE, TYPE_MDUL, RIGH_AUTH, AUTH_ADDX, AUTH_EDIT, AUTH_DELT, CRTX_DATE, CRTX_BYXX) SELECT "' + req.body.USER_IDXX + '" As USER_IDXX, PROC_CODE, PATH, BUSS_CODE, MDUL_CODE, TYPE_MDUL, RIGH_AUTH, AUTH_ADDX, AUTH_EDIT, AUTH_DELT, "' + tgl + '","' + req.userID + '" from `role_menu` where BUSS_CODE = "' + req.body.BUSS_CODE + '" AND ROLE_IDXX = ' + req.body.ROLE_IDXX;
         
         db.query(sql, (err, result) => {
             if (err) {
@@ -376,7 +389,9 @@ export default class User {
             RIGH_AUTH : req.body.RIGH_AUTH,
             AUTH_ADDX : req.body.AUTH_ADDX,
             AUTH_EDIT : req.body.AUTH_EDIT,
-            AUTH_DELT : req.body.AUTH_DELT
+            AUTH_DELT : req.body.AUTH_DELT,
+            UPDT_DATE : new Date(),
+            UPDT_BYXX : req.userID
         };
         
         db.query(sql, data, (err, result) => {
@@ -429,7 +444,9 @@ export default class User {
             RIGH_AUTH : req.body.RIGH_AUTH,
             AUTH_ADDX : req.body.AUTH_ADDX,
             AUTH_EDIT : req.body.AUTH_EDIT,
-            AUTH_DELT : req.body.AUTH_DELT
+            AUTH_DELT : req.body.AUTH_DELT,
+            UPDT_DATE : new Date(),
+            UPDT_BYXX : req.userID
         };
         
         db.query(sql, data, (err, result) => {
@@ -478,7 +495,9 @@ export default class User {
         var sql = 'UPDATE `role` SET ? WHERE id = '+ ids;
         var data = {
             RoleName : req.body.RoleName,
-            UnitID : req.body.UnitID
+            UnitID : req.body.UnitID,
+            UPDT_DATE : new Date(),
+            UPDT_BYXX : req.userID
         };
         
         db.query(sql, data, (err, result) => {

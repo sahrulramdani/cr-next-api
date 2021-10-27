@@ -35,7 +35,9 @@ export default class Issue {
             ACCT_CODE : req.body.ACCT_CODE,
             ACCT_NAMA : req.body.ACCT_NAMA,
             CABX_CODE : req.body.CABX_CODE,
-            STATUS : req.body.STATUS
+            STATUS : req.body.STATUS,
+            CRTX_DATE : new Date(),
+            CRTX_BYXX : req.userID
         };
         
         db.query(sql, data, (err, result) => {
@@ -86,7 +88,9 @@ export default class Issue {
             ACCT_CODE : req.body.ACCT_CODE,
             ACCT_NAMA : req.body.ACCT_NAMA,
             CABX_CODE : req.body.CABX_CODE,
-            STATUS : req.body.STATUS
+            STATUS : req.body.STATUS,
+            UPDT_DATE : new Date(),
+            UPDT_BYXX : req.userID
         };
         
         db.query(sql, data, (err, result) => {

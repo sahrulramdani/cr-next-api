@@ -1,5 +1,6 @@
 import  db from './../../koneksi.js';
 import { fncParseComma } from './../../libraries/sisqu/Utility.js';
+import moment from 'moment';
 
 export default class Donatur {
     donaturs = (request, response) => {
@@ -174,7 +175,9 @@ export default class Donatur {
             TypeBadan : req.body.TypeBadan,
             TypeDonatur : req.body.TypeDonatur,
             FlgPlatinum : req.body.FlgPlatinum,
-            Channel : req.body.Channel
+            Channel : req.body.Channel,
+            CRTX_DATE : new Date(),
+            CRTX_BYXX : req.userID
         };
         
         db.query(sql, data, (err, result) => {
@@ -215,7 +218,9 @@ export default class Donatur {
             TypeBadan : req.body.TypeBadan,
             TypeDonatur : req.body.TypeDonatur,
             FlgPlatinum : req.body.FlgPlatinum,
-            Channel : req.body.Channel
+            Channel : req.body.Channel,
+            UPDT_DATE : new Date(),
+            UPDT_BYXX : req.userID
         };
         
         db.query(sql, data, (err, result) => {
@@ -237,13 +242,14 @@ export default class Donatur {
     verify = function(req, res) {
         var status = req.body.Status;
         var typeDonatur = req.body.TypeDonatur;
+        var tgl = moment(new Date()).format('YYYY-MM-DD');
 
         var selectedIds = [];
         selectedIds = fncParseComma(req.body.selectedIds);
         console.log(selectedIds);
         var arrayLength = selectedIds.length;
 
-        var sql = 'UPDATE tb11_mzjb SET Status = "' + status + '", TypeDonatur = "' + typeDonatur + '" WHERE NO_ID in ("';
+        var sql = 'UPDATE tb11_mzjb SET Status = "' + status + '", TypeDonatur = "' + typeDonatur + '", UPDT_DATE = "' + tgl + '", UPDT_BYXX = "' + req.userID + '" WHERE NO_ID in ("';
         if (arrayLength > 0) {
             for(var i=0; i<arrayLength; i++) {
                 if (i === 0) {
@@ -285,7 +291,9 @@ export default class Donatur {
             Nama : req.body.Nama,
             TypeProgram : req.body.TypeProgram,
             TahunBuku : req.body.TahunBuku,
-            Unit : req.body.Unit
+            Unit : req.body.Unit,
+            CRTX_DATE : new Date(),
+            CRTX_BYXX : req.userID
         };
         
         db.query(sql, data, (err, result) => {
@@ -346,7 +354,9 @@ export default class Donatur {
             typeProgram : req.body.typeProgram,
             status : req.body.status,
             tahunBuku : req.body.tahunBuku,
-            unit : req.body.unit
+            unit : req.body.unit,
+            CRTX_DATE : new Date(),
+            CRTX_BYXX : req.userID
         };
         
         db.query(sql, data, (err, result) => {
@@ -370,7 +380,9 @@ export default class Donatur {
         var sql = 'INSERT INTO tb52_slpb SET ?';   
         var data = {
             transNumber : req.body.transNumber,
-            fileID : req.body.fileID
+            fileID : req.body.fileID,
+            CRTX_DATE : new Date(),
+            CRTX_BYXX : req.userID
         };
         
         db.query(sql, data, (err, result) => {
@@ -444,8 +456,9 @@ export default class Donatur {
         var sql = 'INSERT INTO tb52_slpc SET ?';   
         var data = {
             transNumber : req.body.transNumber,
-            donaturID : req.body.donaturID
-            
+            donaturID : req.body.donaturID,
+            CRTX_DATE : new Date(),
+            CRTX_BYXX : req.userID
         };
         
         db.query(sql, data, (err, result) => {
@@ -595,7 +608,9 @@ export default class Donatur {
             typeProgram : req.body.typeProgram,
             status : req.body.status,
             tahunBuku : req.body.tahunBuku,
-            unit : req.body.unit
+            unit : req.body.unit,
+            UPDT_DATE : new Date(),
+            UPDT_BYXX : req.userID
         };
         
         db.query(sql, data, (err, result) => {
@@ -683,7 +698,9 @@ export default class Donatur {
             Amount : req.body.Amount,
             FileName : req.body.FileName,
             isValidate : req.body.isValidate,
-            isDelete : req.body.isDelete
+            isDelete : req.body.isDelete,
+            CRTX_DATE : new Date(),
+            CRTX_BYXX : req.userID
         };
         
         db.query(sql, data, (err, result) => {
@@ -774,7 +791,9 @@ export default class Donatur {
             Amount : req.body.Amount,
             FileName : req.body.FileName,
             isValidate : req.body.isValidate,
-            isDelete : req.body.isDelete
+            isDelete : req.body.isDelete,
+            UPDT_DATE : new Date(),
+            UPDT_BYXX : req.userID
         };
         
         db.query(sql, data, (err, result) => {
@@ -802,7 +821,9 @@ export default class Donatur {
         var transNumber = req.body.transNumber;
         var sql = 'UPDATE trans_donatur SET ? WHERE TransNumber = "' + transNumber + '"';   
         var data = {
-            isDelete : req.body.isDelete
+            isDelete : req.body.isDelete,
+            UPDT_DATE : new Date(),
+            UPDT_BYXX : req.userID
         };
         
         db.query(sql, data, (err, result) => {

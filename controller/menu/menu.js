@@ -105,7 +105,9 @@ export default class Menu {
             BUSS_CODE : req.body.BUSS_CODE,
             MDUL_NAMA : req.body.MDUL_NAMA,
             TYPE_MDUL : req.body.TYPE_MDUL,
-            NoUrut : req.body.NoUrut
+            NoUrut : req.body.NoUrut,
+            UPDT_DATE : new Date(),
+            UPDT_BYXX : req.userID
         };
         
         db.query(sql, data, (err, result) => {
@@ -132,7 +134,9 @@ export default class Menu {
             PATH : req.body.PATH,
             MDUL_CODE : req.body.MDUL_CODE,
             TYPE_MDUL : req.body.TYPE_MDUL,
-            PROC_NAME : req.body.PROC_NAME
+            PROC_NAME : req.body.PROC_NAME,
+            CRTX_DATE : new Date(),
+            CRTX_BYXX : req.userID
         };
         
         db.query(sql, data, (err, result) => {

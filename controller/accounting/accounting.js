@@ -1,4 +1,5 @@
 import  db from './../../koneksi.js';
+import moment from 'moment';
 
 
 export default class Accounting {
@@ -38,7 +39,9 @@ export default class Accounting {
                 KETX_THN : req.body.KETX_THN,
                 TGLX_STRT : req.body.TGLX_STRT,
                 TGLX_ENDX : req.body.TGLX_ENDX,
-                STAT_AKTF : req.body.STAT_AKTF
+                STAT_AKTF : req.body.STAT_AKTF,
+                CRTX_DATE : new Date(),
+                CRTX_BYXX : req.userID
             };
     
             // set seluruh data Non Aktif
@@ -92,15 +95,16 @@ export default class Accounting {
         saveMutasi = function(req, res) {
             var rows = req.body.rows;
             var bank = req.body.bank;
+            var tgl = moment(new Date()).format('YYYY-MM-DD');
 
-            var sql = 'INSERT INTO tblMutasi (TransDate, ValutaDate, NoReference, Keterangan, DK, Amount, Saldo, Bank) VALUES (';
+            var sql = 'INSERT INTO tblMutasi (TransDate, ValutaDate, NoReference, Keterangan, DK, Amount, Saldo, Bank, CRTX_DATE, CRTX_BYXX) VALUES (';
             if (rows.length > 1) {
                 rows.forEach((item, index) => {
                         if (index > 0) {
                             if (index === 1) {
-                                sql = sql + '"' + item[0] + '","' + item[1] + '","' + item[2] + '","' + item[3] + '","' + item[4] + '",' + item[5] + ',' + item[6] + ',"' + bank + '")';
+                                sql = sql + '"' + item[0] + '","' + item[1] + '","' + item[2] + '","' + item[3] + '","' + item[4] + '",' + item[5] + ',' + item[6] + ',"' + bank + '","' + tgl + '","' + req.userID + '")';
                             } else {
-                                sql = sql + ',("' + item[0] + '","' + item[1] + '","' + item[2] + '","' + item[3] + '","' + item[4] + '",' + item[5] + ',' + item[6] + ',"' + bank + '")';
+                                sql = sql + ',("' + item[0] + '","' + item[1] + '","' + item[2] + '","' + item[3] + '","' + item[4] + '",' + item[5] + ',' + item[6] + ',"' + bank + '","' + tgl + '","' + req.userID + '")';
                             }
                         }
                 });
@@ -158,7 +162,9 @@ export default class Accounting {
             var id = req.body.id;
             var sql = 'UPDATE `tblMutasi` SET ? WHERE id = '+ id;
             var data = {
-                TransNumber : req.body.TransNumber
+                TransNumber : req.body.TransNumber,
+                UPDT_DATE : new Date(),
+                UPDT_BYXX : req.userID
             };
             
             db.query(sql, data, (err, result) => {

@@ -43,7 +43,9 @@ export default class Karyawan {
             StatusAktif : '1',
             StatusKawin : req.body.StatusKawin,
             TglMasuk : req.body.TglMasuk,
-            GolDarah : req.body.GolDarah
+            GolDarah : req.body.GolDarah,
+            CRTX_DATE : new Date(),
+            CRTX_BYXX : req.userID
         };
 
         var sqlDelete = 'DELETE FROM tb21_empl WHERE KodeNik = "' + data.KodeNik + '"';
@@ -77,7 +79,9 @@ export default class Karyawan {
         var data = {
             KodeNik : req.body.KodeNik,
             StatusKry : req.body.StatusKry,
-            NPWP : req.body.NPWP
+            NPWP : req.body.NPWP,
+            CRTX_DATE : new Date(),
+            CRTX_BYXX : req.userID
         };
     
         var sqlDelete = 'DELETE FROM tb21_empx WHERE KodeNik = "' + data.KodeNik + '"';
