@@ -105,8 +105,11 @@ import * as C from './controller/index.js';
       app.route('/accounting/mutasi/:id').get(C.auth.verifyToken, C.accounting.getMutasi);
 
       // ------ Menu Management --------------
+      app.route('/menu/modules/all').get(C.auth.verifyToken, C.menu.module0All);
       app.route('/menu/modules/:bussCode/:typeModule').get(C.auth.verifyToken, C.menu.moduleAll);
+      app.route('/menu/module/save').post(C.auth.verifyToken, C.menu.saveModule);
       app.route('/menu/module/update').post(C.auth.verifyToken, C.menu.updateModule);
+      app.route('/menu/module/process/save2').post(C.auth.verifyToken, C.menu.saveDetProcess2);
       app.route('/menu/module/process/save').post(C.auth.verifyToken, C.menu.saveDetProcess);
       app.route('/menu/module/process/delete').post(C.auth.verifyToken, C.menu.deleteDetProcess);
       app.route('/menu/module/:id').get(C.auth.verifyToken, C.menu.getModule);

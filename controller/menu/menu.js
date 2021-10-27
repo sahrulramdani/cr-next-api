@@ -1,5 +1,6 @@
 import  db from './../../koneksi.js';
 import { fncParseComma } from './../../libraries/sisqu/Utility.js';
+import moment from 'moment';
 
 export default class Menu {
     moduleAll = (request, response) => {
@@ -43,6 +44,34 @@ export default class Menu {
         });
     }
 
+    module0All = (request, response) => {
+        // get user Access
+        var authAdd = request.AUTH_ADDX;
+        var authEdit = request.AUTH_EDIT;
+        var authDelt = request.AUTH_DELT;
+
+        var qryCmd = 'select * from tb00_modm order by NoUrut';
+        
+        db.query(qryCmd, function(err, rows, fields) {
+            var output = [];
+
+            rows.forEach(function(row) {
+                var obj = new Object();
+                for(var key in row) {
+                    obj[key] = row[key];
+                }
+
+                obj['AUTH_ADDX'] = authAdd;
+                obj['AUTH_EDIT'] = authEdit;
+                obj['AUTH_DELT'] = authDelt;
+
+                output.push(obj);
+            })
+
+            response.send(output);
+        });
+    }
+
     processAll = (request, response) => {
         // get user Access
         var authAdd = request.AUTH_ADDX;
@@ -52,7 +81,13 @@ export default class Menu {
         var module = request.params.module;
         var bussCode = request.params.bussCode;
 
-        var qryCmd = "select * from tb01_proc where BUSS_CODE = '" + bussCode + "' And MDUL_CODE = '" + module + "'";
+        var qryCmd = '';
+        if (bussCode === '00') {
+            qryCmd = "select * from tb00_proc where MDUL_CODE = '" + module + "'";
+        } else {
+            qryCmd = "select * from tb01_proc where BUSS_CODE = '" + bussCode + "' And MDUL_CODE = '" + module + "'";
+        }
+        
         db.query(qryCmd, function(err, rows, fields) {
             var output = [];
             
@@ -78,7 +113,7 @@ export default class Menu {
         var authEdit = req.AUTH_EDIT;
 
         var id = req.params.id;
-        var sql = 'SELECT * FROM `tb01_modm` WHERE MDUL_CODE = "'+ id +'" ';
+        var sql = 'SELECT * FROM `tb01_modm` WHERE id = '+ id;
         
         db.query(sql, function(err, rows, fields) {
             var output = [];
@@ -99,13 +134,13 @@ export default class Menu {
     }
 
     updateModule = function(req, res) {
-        var ids = req.body.MDUL_CODE;
-        var sql = 'UPDATE `tb01_modm` SET ? WHERE MDUL_CODE = "'+ ids +'" ';
+        var ids = req.body.id;
+        var sql = 'UPDATE `tb01_modm` SET ? WHERE id = ' + ids;
         var data = {
+            MDUL_CODE : req.body.MDUL_CODE,
             BUSS_CODE : req.body.BUSS_CODE,
             MDUL_NAMA : req.body.MDUL_NAMA,
             TYPE_MDUL : req.body.TYPE_MDUL,
-            NoUrut : req.body.NoUrut,
             UPDT_DATE : new Date(),
             UPDT_BYXX : req.userID
         };
@@ -140,6 +175,27 @@ export default class Menu {
         };
         
         db.query(sql, data, (err, result) => {
+            if (err) {
+                console.log('Error', err);
+
+                res.send({
+                    status: false,
+                    message: err.sqlMessage
+                });
+            } else {
+                res.send({
+                    status: true
+                });
+            }
+        });
+    }
+
+    saveDetProcess2 = function(req, res) {
+        var tgl = moment(new Date()).format('YYYY-MM-DD');
+
+        var sql = 'INSERT INTO tb01_proc (PROC_CODE, BUSS_CODE, PATH, MDUL_CODE, TYPE_MDUL, PROC_NAME, CRTX_DATE, CRTX_BYXX) select PROC_CODE, "' + req.body.BUSS_CODE + '","' + req.body.PATH + '", MDUL_CODE, TYPE_MDUL, PROC_NAME, "' + tgl + '","' + req.userID + '" from `tb00_proc` where proc_code = "' + req.body.PROC_CODE + '"';
+        
+        db.query(sql, (err, result) => {
             if (err) {
                 console.log('Error', err);
 
@@ -259,6 +315,25 @@ export default class Menu {
         var sql = 'SELECT a.*, b.id AS USERACCESS_ID, b.RIGH_AUTH, b.AUTH_ADDX, b.AUTH_EDIT, b.AUTH_DELT FROM `tb01_proc` a LEFT JOIN (select * from `tb01_usrd` where USER_IDXX = "' + req.params.userID + '") b ON a.BUSS_CODE = b.BUSS_CODE AND a.PROC_CODE = b.PROC_CODE WHERE a.NoUrut IS NOT NULL  ORDER BY a.NoUrut';
         db.query(sql, function(err, rows, fields) {
             res.send(rows);
+        });
+    }
+
+    saveModule = function(req, res) {
+        var sql = 'INSERT INTO tb01_modm (MDUL_CODE, MDUL_NAMA, TYPE_MDUL, BUSS_CODE, NoUrut) select MDUL_CODE, MDUL_NAMA, TYPE_MDUL, "' + req.body.BUSS_CODE + '", NoUrut from tb00_modm where MDUL_CODE = "' + req.body.MDUL_CODE + '"';
+        
+        db.query(sql, (err, result) => {
+            if (err) {
+                console.log('Error', err);
+
+                res.send({
+                    status: false,
+                    message: err.sqlMessage
+                });
+            } else {
+                res.send({
+                    status: true
+                });
+            }
         });
     }
 }
