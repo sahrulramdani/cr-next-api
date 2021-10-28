@@ -102,6 +102,7 @@ import * as C from './controller/index.js';
       app.route('/accounting/mutasi/save').post(C.auth.verifyToken, C.accounting.saveMutasi);
       app.route('/accounting/mutasi/update').post(C.auth.verifyToken, C.accounting.updateMutasi);
       app.route('/accounting/mutasi/all').get(C.auth.verifyToken, C.accounting.mutasiAll);
+      app.route('/accounting/mutasi/tanggal/:tgl1/:tgl2').get(C.auth.verifyToken, C.accounting.mutasiFilterDate);
       app.route('/accounting/mutasi/:id').get(C.auth.verifyToken, C.accounting.getMutasi);
 
       // ------ Menu Management --------------

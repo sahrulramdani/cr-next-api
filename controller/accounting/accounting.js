@@ -92,6 +92,36 @@ export default class Accounting {
             });
         }
 
+        mutasiFilterDate = (request, response) => {
+            // get user Access
+            var authAdd = request.AUTH_ADDX;
+            var authEdit = request.AUTH_EDIT;
+            var authDelt = request.AUTH_DELT;
+
+            var tgl1 = request.params.tgl1;
+            var tgl2 = request.params.tgl2;
+
+            var qryCmd = "select * from tblMutasi where DATE_FORMAT(TransDate, '%Y-%m-%d') between '" + tgl1 + "' And '" + tgl2 + "' order by TransDate desc";
+            db.query(qryCmd, function(err, rows, fields) {
+                var output = [];
+
+                rows.forEach(function(row) {
+                    var obj = new Object();
+                    for(var key in row) {
+                        obj[key] = row[key];
+                    }
+
+                    obj['AUTH_ADDX'] = authAdd;
+                    obj['AUTH_EDIT'] = authEdit;
+                    obj['AUTH_DELT'] = authDelt;
+
+                    output.push(obj);
+                })
+
+                response.send(output);
+            });
+        }
+
         saveMutasi = function(req, res) {
             var rows = req.body.rows;
             var bank = req.body.bank;
