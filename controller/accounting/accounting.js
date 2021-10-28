@@ -71,7 +71,7 @@ export default class Accounting {
             var authEdit = request.AUTH_EDIT;
             var authDelt = request.AUTH_DELT;
 
-            var qryCmd = "select * from tblMutasi order by TransDate desc";
+            var qryCmd = "select *, DATE_FORMAT(TransDate, '%d/%m/%Y %H:%i') As TransDateFormat, DATE_FORMAT(ValutaDate, '%d/%m/%Y %H:%i') As ValutaDateFormat from tblMutasi order by TransDate desc";
             db.query(qryCmd, function(err, rows, fields) {
                 var output = [];
 
@@ -101,7 +101,8 @@ export default class Accounting {
             var tgl1 = request.params.tgl1;
             var tgl2 = request.params.tgl2;
 
-            var qryCmd = "select * from tblMutasi where DATE_FORMAT(TransDate, '%Y-%m-%d') between '" + tgl1 + "' And '" + tgl2 + "' order by TransDate desc";
+            var qryCmd = "select *, DATE_FORMAT(TransDate, '%d/%m/%Y %H:%i') As TransDateFormat, DATE_FORMAT(ValutaDate, '%d/%m/%Y %H:%i') As ValutaDateFormat from tblMutasi where DATE_FORMAT(TransDate, '%Y-%m-%d') between '" + tgl1 + "' And '" + tgl2 + "' order by TransDate desc";
+            
             db.query(qryCmd, function(err, rows, fields) {
                 var output = [];
 

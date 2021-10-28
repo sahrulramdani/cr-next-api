@@ -531,7 +531,7 @@ export default class Donatur {
         var authEdit = request.AUTH_EDIT;
         var authDelt = request.AUTH_DELT;
 
-        var qryCmd = "select a.*, DATE_FORMAT(a.tglProses, '%Y/%m/%d') As tglProsesFormat, b.CODD_DESC As TypeProgram2 from tb52_slpa a inner join (select * from tb00_basx where CODD_FLNM = 'TYPE_PROGRAM_DONATUR') b on a.typeProgram = b.CODD_VALU order by a.transNumber";
+        var qryCmd = "select a.*, DATE_FORMAT(a.tglProses, '%d/%m/%Y') As tglProsesFormat, b.CODD_DESC As TypeProgram2 from tb52_slpa a inner join (select * from tb00_basx where CODD_FLNM = 'TYPE_PROGRAM_DONATUR') b on a.typeProgram = b.CODD_VALU order by a.transNumber";
         db.query(qryCmd, function(err, rows, fields) {
             var output = [];
 
@@ -757,8 +757,7 @@ export default class Donatur {
         if (isValid === 'all') {
             sql = 'SELECT a.*, b.NAMA, CONCAT(b.NO_ID, " - ", b.NAMA) As Donatur2 FROM trans_donatur a inner join tb11_mzjb b on a.donaturID = b.NO_ID WHERE a.isDelete <> "1"';
         } else {
-            sql = 'SELECT a.*, b.NAMA, CONCAT(b.NO_ID, " - ", b.NAMA) As Donatur2 FROM trans_donatur a inner join tb11_mzjb b on a.donaturID = b.NO_ID WHERE a.isValidate in ("' +  
-                isValid + ') And (a.isDelete <> "1" OR a.isDelete IS NULL)';
+            sql = 'SELECT a.*, b.NAMA, CONCAT(b.NO_ID, " - ", b.NAMA) As Donatur2, DATE_FORMAT(TransDate, "%d/%m/%Y %H:%i") As TransDateFormat FROM trans_donatur a inner join tb11_mzjb b on a.donaturID = b.NO_ID WHERE a.isValidate in ("' + isValid + ') And (a.isDelete <> "1" OR a.isDelete IS NULL)';
         }
 
         db.query(sql, function(err, rows, fields) {
