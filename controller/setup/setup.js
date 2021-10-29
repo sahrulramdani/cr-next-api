@@ -204,7 +204,7 @@ export default class Setup {
         var authEdit = request.AUTH_EDIT;
         var authDelt = request.AUTH_DELT;
 
-        var qryCmd = "select * from tb00_unit";
+        var qryCmd = "select *, CASE Active WHEN '1' THEN 'ACTIVE' ELSE 'NON-ACTIVE' END As Active2 from tb00_unit";
         db.query(qryCmd, function(err, rows, fields) {
             var output = [];
 

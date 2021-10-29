@@ -8,7 +8,7 @@ export default class User {
         var authEdit = request.AUTH_EDIT;
         var authDelt = request.AUTH_DELT;
 
-        var qryCmd = "select USER_IDXX, BUSS_CODE, KETX_USER, `Active`, IsValid from tb01_lgxh order by USER_IDXX";
+        var qryCmd = "select USER_IDXX, BUSS_CODE, KETX_USER, CASE `Active` WHEN '1' THEN 'ACTIVE' ELSE 'NON-ACTIVE' END As Active, CASE IsValid WHEN '1' THEN 'VALID' ELSE 'NON-VALID' END As IsValid from tb01_lgxh order by USER_IDXX";
         db.query(qryCmd, function(err, rows, fields) {
             var output = [];
 
@@ -174,9 +174,6 @@ export default class User {
 
     // get Detail Privilege User Access
     getDetUserAccess = function(req, res) {
-        // get user Access
-        var authEdit = req.AUTH_EDIT;
-
         var id = req.params.id;
         var sql = 'SELECT * FROM `tb01_usrd` WHERE id = "'+ id +'" ';
         
@@ -188,8 +185,6 @@ export default class User {
                 for(var key in row) {
                     obj[key] = row[key];
                 }
-
-                obj['AUTH_EDIT'] = authEdit;
 
                 output.push(obj);
             })

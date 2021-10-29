@@ -807,9 +807,20 @@ export default class Donatur {
                 // update Donatur is verified
                 sql = 'UPDATE `tb11_mzjb` SET Status = "4" WHERE NO_ID = "' + req.body.DonaturID + '" And Status <> "4"';
                 db.query(sql, (err, result) => {
-                    res.send({
-                        status: true
-                    });
+                    // update tabel mutasi - TransNumber (link ke tabel Transaksi Donatur)
+                    if (req.body.NoReference !== null && req.body.NoReference !== undefined) {
+                        sql = 'UPDATE `tblMutasi` SET TransNumber = "' + req.body.transNumber + '" WHERE NoReference = "' + req.body.NoReference + '"';
+
+                        db.query(sql, (err, result) => {
+                            res.send({
+                                status: true
+                            });
+                        });
+                    } else {
+                        res.send({
+                            status: true
+                        });
+                    }
                 });
             }
         });
