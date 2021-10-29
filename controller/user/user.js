@@ -1,5 +1,6 @@
 import  db from './../../koneksi.js';
 import moment from 'moment';
+import bcrypt from 'bcryptjs';
 
 export default class User {
     userAll = (request, response) => {
@@ -509,5 +510,37 @@ export default class User {
                 });
             }
         });
+    }
+
+    saveUser = function(req, res) {
+            var hashedPassword = bcrypt.hashSync(req.body.password, 8);
+
+            var sql = 'INSERT INTO tb01_lgxh SET ?';
+            var data = {
+                USER_IDXX : req.body.USER_IDXX,
+                PASS_IDXX : hashedPassword,
+                KETX_USER : req.body.KETX_USER,
+                BUSS_CODE : req.body.BUSS_CODE,
+                Active : req.body.Active,
+                IsValid : req.body.IsValid,
+                Email : req.body.Email,
+                CRTX_DATE : new Date(),
+                CRTX_BYXX : req.userID
+            };
+        
+            db.query(sql, data, (err, result) => {
+                if (err) {
+                    console.log('Error', err);
+    
+                    res.send({
+                        status: false,
+                        message: err.sqlMessage
+                    });
+                } else {
+                    res.send({
+                        status: true
+                    });
+                }
+            });
     }
 }

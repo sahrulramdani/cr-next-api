@@ -21,7 +21,9 @@ export default class AuthController {
                 BUSS_CODE : req.body.BUSS_CODE,
                 Active : req.body.Active,
                 IsValid : req.body.IsValid,
-                Email : req.body.Email
+                Email : req.body.Email,
+                CRTX_DATE : new Date(),
+                CRTX_BYXX : req.body.USER_IDXX
             };
         
             db.query(sql, data, (err, result) => {

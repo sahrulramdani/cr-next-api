@@ -861,7 +861,7 @@ export default class Donatur {
 
         var transNumber = req.params.transNumber;
 
-        var sql = 'SELECT a.* FROM trans_donatur a WHERE a.transNumber = "'+ transNumber +'"';
+        var sql = 'SELECT a.*, CONCAT(a.DonaturID, " - ", b.NAMA) As Donatur2 FROM trans_donatur a INNER JOIN tb11_mzjb b ON a.DonaturID = b.NO_ID WHERE a.transNumber = "'+ transNumber +'"';
         db.query(sql, function(err, rows, fields) {
             var output = [];
 

@@ -41,6 +41,7 @@ import * as C from './controller/index.js';
       app.route('/users').get(C.auth.verifyToken, C.user.userAll);
       app.route('/user/delete').post(C.auth.verifyToken, C.user.deleteUser);  // delete user hanya menonaktifkan user
       app.route('/user/update').post(C.auth.verifyToken, C.user.updateUser);
+      app.route('/user/save').post(C.auth.verifyToken, C.user.saveUser);
       app.route('/user/privilege/delete').post(C.auth.verifyToken, C.user.deleteDetPrivilege);
       app.route('/user/privilege/save').post(C.auth.verifyToken, C.user.saveDetPrivilege);
       app.route('/user/privilege/update').post(C.auth.verifyToken, C.user.updateUserDetPrivilege);
