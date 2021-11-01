@@ -524,6 +524,7 @@ export default class User {
                 Active : req.body.Active,
                 IsValid : req.body.IsValid,
                 Email : req.body.Email,
+                TemplateRoleID : req.body.TemplateRoleID,
                 CRTX_DATE : new Date(),
                 CRTX_BYXX : req.userID
             };
