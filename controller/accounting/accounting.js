@@ -123,6 +123,41 @@ export default class Accounting {
             });
         }
 
+        mutasiFilter = (request, response) => {
+            var tgl = request.params.tgl;
+            var field = request.params.field;
+            var value = request.params.value;
+            var qryCmd = '';
+
+            if (field !== undefined) {
+                if (field === 'NoReference') {
+                    qryCmd = "select * from tblMutasi where DATE_FORMAT(TransDate, '%Y-%m-%d') = '" + tgl + "' And NoReference = '" + value + "'";
+                } else if (field === 'Description') {
+                    qryCmd = "select * from tblMutasi where DATE_FORMAT(TransDate, '%Y-%m-%d') = '" + tgl + "' And Keterangan like '%" + value + "%'";
+                } else if (field === 'Amount') {
+                    qryCmd = "select * from tblMutasi where DATE_FORMAT(TransDate, '%Y-%m-%d') = '" + tgl + "' And Amount = " + value;
+                } 
+                
+            } else {
+                qryCmd = "select * from tblMutasi where DATE_FORMAT(TransDate, '%Y-%m-%d') = '" + tgl + "'";
+            }
+
+            db.query(qryCmd, function(err, rows, fields) {
+                var output = [];
+
+                rows.forEach(function(row) {
+                    var obj = new Object();
+                    for(var key in row) {
+                        obj[key] = row[key];
+                    }
+
+                    output.push(obj);
+                })
+
+                response.send(output);
+            });
+        }
+
         saveMutasi = function(req, res) {
             var rows = req.body.rows;
             var bank = req.body.bank;

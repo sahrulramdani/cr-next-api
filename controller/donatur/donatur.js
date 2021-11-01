@@ -782,6 +782,8 @@ export default class Donatur {
 
     updateDonaturTrans = function(req, res) {
         var transNumber = req.body.transNumber;
+        var NoReference2 = req.body.NoReference2;
+
         var sql = 'UPDATE trans_donatur SET ? WHERE TransNumber = "' + transNumber + '"';   
         var data = {
             TransDate : req.body.TransDate,
@@ -808,8 +810,8 @@ export default class Donatur {
                 sql = 'UPDATE `tb11_mzjb` SET Status = "4" WHERE NO_ID = "' + req.body.DonaturID + '" And Status <> "4"';
                 db.query(sql, (err, result) => {
                     // update tabel mutasi - TransNumber (link ke tabel Transaksi Donatur)
-                    if (req.body.NoReference !== null && req.body.NoReference !== undefined) {
-                        sql = 'UPDATE `tblMutasi` SET TransNumber = "' + req.body.transNumber + '" WHERE NoReference = "' + req.body.NoReference + '"';
+                    if (NoReference2 !== null && NoReference2 !== undefined) {
+                        sql = 'UPDATE `tblMutasi` SET TransNumber = "' + req.body.transNumber + '" WHERE NoReference = "' + NoReference2 + '"';
 
                         db.query(sql, (err, result) => {
                             res.send({
