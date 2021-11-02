@@ -16,12 +16,14 @@ import * as C from './controller/index.js';
       app.route('/setup/unit/:id').get(C.auth.verifyToken, C.setup.getUnit);
       app.route('/setup/units').get(C.auth.verifyToken, C.setup.unitAll);
       app.route('/setup/banks').get(C.auth.verifyToken, C.setup.bankAll);
+      app.route('/setup/method-payments').get(C.auth.verifyToken, C.setup.methodPaymentAll);
       app.route('/setup/locations').get(C.auth.verifyToken, C.setup.locationAll);
       app.route('/setup/bussiness-units').get(C.auth.verifyToken, C.setup.bussinessUnitAll);
       app.route('/setup/kelompok-kerjas').get(C.auth.verifyToken, C.setup.kelompokKerjaAll);
       app.route('/setup/status-maritals').get(C.auth.verifyToken, C.setup.statusMaritalAll);
       app.route('/setup/gol-darahs').get(C.auth.verifyToken, C.setup.golDarahAll);
       app.route('/setup/currencies').get(C.auth.verifyToken, C.setup.currencyAll);
+      app.route('/setup/prog-donaturs').get(C.auth.verifyToken, C.setup.donaturProgAll);
 
       //---- Penghimpunan ----------------------
       //---- Issue - Master RKAT Issue Header  ------
