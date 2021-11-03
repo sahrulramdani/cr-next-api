@@ -757,7 +757,7 @@ export default class Donatur {
         }
 
         if (isValid === 'all') {
-            sql = 'SELECT a.*, b.NAMA, CONCAT(b.NO_ID, " - ", b.NAMA) As Donatur2 FROM trans_donatur a inner join tb11_mzjb b on a.donaturID = b.NO_ID WHERE a.isDelete <> "1"';
+            sql = 'SELECT a.*, b.NAMA, CONCAT(b.NO_ID, " - ", b.NAMA) As Donatur2 FROM trans_donatur a inner join tb11_mzjb b on a.donaturID = b.NO_ID WHERE (a.isDelete <> "1" Or a.isDelete Is Null)';
         } else {
             sql = 'SELECT a.*, b.NAMA, CONCAT(b.NO_ID, " - ", b.NAMA) As Donatur2, DATE_FORMAT(TransDate, "%d/%m/%Y %H:%i") As TransDateFormat FROM trans_donatur a inner join tb11_mzjb b on a.donaturID = b.NO_ID WHERE a.isValidate in ("' + isValid + ') And (a.isDelete <> "1" OR a.isDelete IS NULL)';
         }

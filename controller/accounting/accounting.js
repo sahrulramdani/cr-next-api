@@ -131,15 +131,14 @@ export default class Accounting {
 
             if (field !== undefined) {
                 if (field === 'NoReference') {
-                    qryCmd = "select * from tblMutasi where DATE_FORMAT(TransDate, '%Y-%m-%d') = '" + tgl + "' And NoReference = '" + value + "'";
+                    qryCmd = "select * from tblMutasi where DATE_FORMAT(TransDate, '%Y-%m-%d') = '" + tgl + "' And NoReference = '" + value + "' And TransNumber is Null";
                 } else if (field === 'Description') {
-                    qryCmd = "select * from tblMutasi where DATE_FORMAT(TransDate, '%Y-%m-%d') = '" + tgl + "' And Keterangan like '%" + value + "%'";
+                    qryCmd = "select * from tblMutasi where DATE_FORMAT(TransDate, '%Y-%m-%d') = '" + tgl + "' And Keterangan like '%" + value + "%' And TransNumber is Null";
                 } else if (field === 'Amount') {
-                    qryCmd = "select * from tblMutasi where DATE_FORMAT(TransDate, '%Y-%m-%d') = '" + tgl + "' And Amount = " + value;
+                    qryCmd = "select * from tblMutasi where DATE_FORMAT(TransDate, '%Y-%m-%d') = '" + tgl + "' And Amount = " + value + " And TransNumber is Null";
                 } 
-                
             } else {
-                qryCmd = "select * from tblMutasi where DATE_FORMAT(TransDate, '%Y-%m-%d') = '" + tgl + "'";
+                qryCmd = "select * from tblMutasi where DATE_FORMAT(TransDate, '%Y-%m-%d') = '" + tgl + "' And TransNumber is Null";
             }
 
             db.query(qryCmd, function(err, rows, fields) {

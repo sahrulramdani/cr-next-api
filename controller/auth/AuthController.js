@@ -44,7 +44,7 @@ export default class AuthController {
         }
 
         signin = function(req, res) {
-            var sql = 'select * from tb01_lgxh where USER_IDXX = "' + req.body.USER_IDXX + '" And Active = "1" And IsValid = "1"';
+            var sql = 'select * from tb01_lgxh where USER_IDXX = "' + req.body.USER_IDXX + '" And Active = "1" And IsValid = "1" And BUSS_CODE = "' + req.body.BUSS_CODE + '"';
             db.query(sql, (err, rows) => {
               if (err) {
                   console.log('Error', err);
