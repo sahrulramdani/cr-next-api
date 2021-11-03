@@ -772,4 +772,32 @@ export default class Setup {
             res.send(output);
         });
     }
+
+    getPaymentMethod = function(req, res) {
+        // get user Access
+        var authAdd = req.AUTH_ADDX;
+        var authEdit = req.AUTH_EDIT;
+        var authDelt = req.AUTH_DELT;
+
+        var id = req.params.id;
+        var sql = 'SELECT * FROM `tb02_bank` WHERE KODE_BANK = "'+ id +'" And KODE_FLNM = "TYPE_BYRX"';
+        db.query(sql, function(err, rows, fields) {
+            var output = [];
+
+            rows.forEach(function(row) {
+                var obj = new Object();
+                for(var key in row) {
+                    obj[key] = row[key];
+                }
+
+                obj['AUTH_ADDX'] = authAdd;
+                obj['AUTH_EDIT'] = authEdit;
+                obj['AUTH_DELT'] = authDelt;
+
+                output.push(obj);
+            })
+
+            res.send(output);
+        });
+    }
 }

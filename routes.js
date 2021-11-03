@@ -21,6 +21,7 @@ import * as C from './controller/index.js';
       app.route('/setup/bank/delete').post(C.auth.verifyToken, C.setup.deleteBank);
       app.route('/setup/bank/:id').get(C.auth.verifyToken, C.setup.getBank);
       app.route('/setup/method-payments').get(C.auth.verifyToken, C.setup.methodPaymentAll);
+      app.route('/setup/method-payment/:id').get(C.auth.verifyToken, C.setup.getPaymentMethod);
       app.route('/setup/locations').get(C.auth.verifyToken, C.setup.locationAll);
       app.route('/setup/bussiness-units').get(C.auth.verifyToken, C.setup.bussinessUnitAll);
       app.route('/setup/kelompok-kerjas').get(C.auth.verifyToken, C.setup.kelompokKerjaAll);
