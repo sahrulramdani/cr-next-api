@@ -286,7 +286,7 @@ export default class Setup {
         var authEdit = request.AUTH_EDIT;
         var authDelt = request.AUTH_DELT;
 
-        var qryCmd = "select * from tb02_bank where KODE_FLNM = 'KASX_BANK' order by KODE_BANK";
+        var qryCmd = "select * from tb02_bank where KODE_FLNM = 'KASX_BANK' And (IsDelete <> '1' Or IsDelete is Null) order by KODE_BANK";
         db.query(qryCmd, function(err, rows, fields) {
             var output = [];
 
@@ -313,7 +313,7 @@ export default class Setup {
         var authEdit = request.AUTH_EDIT;
         var authDelt = request.AUTH_DELT;
 
-        var qryCmd = "select * from tb02_bank where KODE_FLNM = 'TYPE_BYRX' order by KODE_BANK";
+        var qryCmd = "select * from tb02_bank where KODE_FLNM = 'TYPE_BYRX' And (IsDelete <> '1' Or IsDelete is Null) order by KODE_BANK";
         db.query(qryCmd, function(err, rows, fields) {
             var output = [];
 
@@ -622,10 +622,8 @@ export default class Setup {
     }
 
     updateUnit = function(req, res) {
-        var id = req.params.id;
-        var sql = 'UPDATE tb00_unit SET ? WHERE KODE_UNIT = "' + id + '"';
+        var sql = 'UPDATE tb00_unit SET ? WHERE KODE_UNIT = "' + req.body.KODE_UNIT + '"';
         var data = {
-            KODE_UNIT : req.body.KODE_UNIT,
             NAMA_UNIT : req.body.NAMA_UNIT,
             KETX_UNIT : req.body.NAMA_UNIT,
             KODE_LOKX : req.body.KODE_LOKX,
@@ -668,6 +666,110 @@ export default class Setup {
                     status: true
                 });
             }
+        });
+    }
+
+    saveBank = function(req, res) {
+        var sql = 'INSERT INTO tb02_bank SET ?';
+        var data = {
+            KODE_BANK : req.body.KODE_BANK,
+            NAMA_BANK : req.body.NAMA_BANK,
+            NOXX_REKX : req.body.NOXX_REKX,
+            CURR_MNYX : req.body.CURR_MNYX,
+            KODE_FLNM : req.body.KODE_FLNM,
+            CRTX_DATE : new Date(),
+            CRTX_BYXX : req.userID
+        };
+        
+        db.query(sql, data, (err, result) => {
+            if (err) {
+                console.log('Error', err);
+
+                res.send({
+                    status: false,
+                    message: err.sqlMessage
+                });
+            } else {
+                res.send({
+                    status: true
+                });
+            }
+        });
+    }
+
+    updateBank = function(req, res) {
+        var id = req.body.id;
+        var sql = 'UPDATE tb02_bank SET ? WHERE KODE_BANK = "' + id + '" And KODE_FLNM = "' + req.body.KODE_FLNM + '"';
+        var data = {
+            NAMA_BANK : req.body.NAMA_BANK,
+            NOXX_REKX : req.body.NOXX_REKX,
+            CURR_MNYX : req.body.CURR_MNYX,
+            IsDelete : req.body.IsDelete,
+            UPDT_DATE : new Date(),
+            UPDT_BYXX : req.userID
+        };
+        
+        db.query(sql, data, (err, result) => {
+            if (err) {
+                console.log('Error', err);
+
+                res.send({
+                    status: false,
+                    message: err.sqlMessage
+                });
+            } else {
+                res.send({
+                    status: true
+                });
+            }
+        });
+    }
+
+    deleteBank = function(req, res) {
+        var id = req.body.id;
+        var sql = "update `tb02_bank` set IsDelete = '1' where KODE_BANK = '" + id + "' And KODE_FLNM = '" + req.body.KODE_FLNM + "'";
+        
+        db.query(sql, (err, result) => {
+            if (err) {
+                console.log('Error', err);
+
+                res.send({
+                    status: false,
+                    message: err.sqlMessage
+                });
+            } else {
+                res.send({
+                    status: true
+                });
+            }
+        });
+    }
+
+    getBank = function(req, res) {
+        // get user Access
+        var authAdd = req.AUTH_ADDX;
+        var authEdit = req.AUTH_EDIT;
+        var authDelt = req.AUTH_DELT;
+
+        var id = req.params.id;
+        var sql = 'SELECT * FROM `tb02_bank` WHERE KODE_BANK = "'+ id +'" And KODE_FLNM = "KASX_BANK"';
+        db.query(sql, function(err, rows, fields) {
+            var output = [];
+
+            rows.forEach(function(row) {
+                var obj = new Object();
+                for(var key in row) {
+                    obj[key] = row[key];
+                }
+
+                obj['AUTH_ADDX'] = authAdd;
+                obj['AUTH_EDIT'] = authEdit;
+                obj['AUTH_DELT'] = authDelt;
+
+                output.push(obj);
+            })
+
+            res.send(output);
         });
     }
 }

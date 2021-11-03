@@ -16,6 +16,10 @@ import * as C from './controller/index.js';
       app.route('/setup/unit/:id').get(C.auth.verifyToken, C.setup.getUnit);
       app.route('/setup/units').get(C.auth.verifyToken, C.setup.unitAll);
       app.route('/setup/banks').get(C.auth.verifyToken, C.setup.bankAll);
+      app.route('/setup/bank/save').post(C.auth.verifyToken, C.setup.saveBank);
+      app.route('/setup/bank/update').post(C.auth.verifyToken, C.setup.updateBank);
+      app.route('/setup/bank/delete').post(C.auth.verifyToken, C.setup.deleteBank);
+      app.route('/setup/bank/:id').get(C.auth.verifyToken, C.setup.getBank);
       app.route('/setup/method-payments').get(C.auth.verifyToken, C.setup.methodPaymentAll);
       app.route('/setup/locations').get(C.auth.verifyToken, C.setup.locationAll);
       app.route('/setup/bussiness-units').get(C.auth.verifyToken, C.setup.bussinessUnitAll);
@@ -23,7 +27,6 @@ import * as C from './controller/index.js';
       app.route('/setup/status-maritals').get(C.auth.verifyToken, C.setup.statusMaritalAll);
       app.route('/setup/gol-darahs').get(C.auth.verifyToken, C.setup.golDarahAll);
       app.route('/setup/currencies').get(C.auth.verifyToken, C.setup.currencyAll);
-      app.route('/setup/prog-donaturs').get(C.auth.verifyToken, C.setup.donaturProgAll);
 
       //---- Penghimpunan ----------------------
       //---- Issue - Master RKAT Issue Header  ------
@@ -69,6 +72,7 @@ import * as C from './controller/index.js';
       app.route('/crm/setup/channel-donaturs').get(C.auth.verifyToken, C.setup.channelDonaturAll);
       app.route('/crm/setup/type-donaturs').get(C.auth.verifyToken, C.setup.typeDonaturAll);
       app.route('/crm/setup/type-program-donaturs').get(C.auth.verifyToken, C.setup.typeProgramDonaturAll);
+      app.route('/crm/setup/prog-donaturs').get(C.auth.verifyToken, C.setup.donaturProgAll);
       app.route('/crm/slp/save').post(C.auth.verifyToken, C.donatur.saveTransSLP);
       app.route('/crm/slp/delete').post(C.auth.verifyToken, C.donatur.deleteTransSLP);
       app.route('/crm/slp/update').post(C.auth.verifyToken, C.donatur.updateTransSLP);
