@@ -142,7 +142,7 @@ export default class AuthController {
                             next();
                         }
                     } else {
-                        const pathPermit = ['/profile', '/', '/menu/menus', '/uploadFile2'];
+                        const pathPermit = ['/profile', '/', '/menu/menus', '/uploadFile2', '/user/update'];
 
                         if (pathPermit.includes(path)) {
                             next();

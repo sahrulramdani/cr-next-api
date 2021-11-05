@@ -71,7 +71,9 @@ export default class Accounting {
             var authEdit = request.AUTH_EDIT;
             var authDelt = request.AUTH_DELT;
 
-            var qryCmd = "select *, DATE_FORMAT(TransDate, '%d/%m/%Y %H:%i') As TransDateFormat, DATE_FORMAT(ValutaDate, '%d/%m/%Y %H:%i') As ValutaDateFormat from tblMutasi order by TransDate desc";
+            var bankID = request.params.bankID;
+
+            var qryCmd = "select *, DATE_FORMAT(TransDate, '%d/%m/%Y %H:%i') As TransDateFormat, DATE_FORMAT(ValutaDate, '%d/%m/%Y %H:%i') As ValutaDateFormat from tblMutasi where Bank = '" + bankID + "' order by TransDate desc";
             db.query(qryCmd, function(err, rows, fields) {
                 var output = [];
 

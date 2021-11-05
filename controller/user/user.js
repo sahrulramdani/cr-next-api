@@ -9,7 +9,7 @@ export default class User {
         var authEdit = request.AUTH_EDIT;
         var authDelt = request.AUTH_DELT;
 
-        var qryCmd = "select USER_IDXX, BUSS_CODE, KETX_USER, CASE `Active` WHEN '1' THEN 'ACTIVE' ELSE 'NON-ACTIVE' END As Active, CASE IsValid WHEN '1' THEN 'VALID' ELSE 'NON-VALID' END As IsValid from tb01_lgxh order by USER_IDXX";
+        var qryCmd = "select a.USER_IDXX, a.BUSS_CODE, a.KETX_USER, CASE a.Active WHEN '1' THEN 'ACTIVE' ELSE 'NON-ACTIVE' END As Active, CASE a.IsValid WHEN '1' THEN 'VALID' ELSE 'NON-VALID' END As IsValid, b.Nama, c.RoleName from tb01_lgxh a INNER JOIN (select KodeNik As Nik, NamaKry As Nama from tb21_empl UNION select No_ID, NAMA from tb11_mzjb) b ON a.NO_ID = b.Nik INNER JOIN role c ON a.TemplateRoleID = c.id order by a.USER_IDXX";
         db.query(qryCmd, function(err, rows, fields) {
             var output = [];
 
@@ -311,7 +311,7 @@ export default class User {
     getRoleDetUserAccesses = function(req, res) {
         var roleID = req.params.roleID;
 
-        var sql = 'SELECT a.*, C.PROC_NAME FROM role_menu a INNER JOIN role b ON a.ROLE_IDXX = b.id AND a.BUSS_CODE = b.UnitID INNER JOIN tb01_proc c ON a.PROC_CODE = c.PROC_CODE WHERE a.ROLE_IDXX = "' + roleID + '" ORDER BY c.NoUrut';
+        var sql = 'SELECT a.*, C.PROC_NAME FROM role_menu a INNER JOIN role b ON a.ROLE_IDXX = b.id AND a.BUSS_CODE = b.UnitID INNER JOIN tb01_proc c ON a.PROC_CODE = c.PROC_CODE And a.BUSS_CODE = c.BUSS_CODE WHERE a.ROLE_IDXX = ' + roleID + ' ORDER BY c.NoUrut';
         db.query(sql, function(err, rows, fields) {
             var output = [];
 
