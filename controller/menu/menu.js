@@ -27,18 +27,20 @@ export default class Menu {
         db.query(qryCmd, function(err, rows, fields) {
             var output = [];
 
-            rows.forEach(function(row) {
-                var obj = new Object();
-                for(var key in row) {
-                    obj[key] = row[key];
-                }
+            if (rows.length > 0) {
+                rows.forEach(function(row) {
+                    var obj = new Object();
+                    for(var key in row) {
+                        obj[key] = row[key];
+                    }
 
-                obj['AUTH_ADDX'] = authAdd;
-                obj['AUTH_EDIT'] = authEdit;
-                obj['AUTH_DELT'] = authDelt;
+                    obj['AUTH_ADDX'] = authAdd;
+                    obj['AUTH_EDIT'] = authEdit;
+                    obj['AUTH_DELT'] = authDelt;
 
-                output.push(obj);
-            })
+                    output.push(obj);
+                })
+            }
 
             response.send(output);
         });
@@ -55,18 +57,20 @@ export default class Menu {
         db.query(qryCmd, function(err, rows, fields) {
             var output = [];
 
-            rows.forEach(function(row) {
-                var obj = new Object();
-                for(var key in row) {
-                    obj[key] = row[key];
-                }
+            if (rows.length > 0) {
+                rows.forEach(function(row) {
+                    var obj = new Object();
+                    for(var key in row) {
+                        obj[key] = row[key];
+                    }
 
-                obj['AUTH_ADDX'] = authAdd;
-                obj['AUTH_EDIT'] = authEdit;
-                obj['AUTH_DELT'] = authDelt;
+                    obj['AUTH_ADDX'] = authAdd;
+                    obj['AUTH_EDIT'] = authEdit;
+                    obj['AUTH_DELT'] = authDelt;
 
-                output.push(obj);
-            })
+                    output.push(obj);
+                })
+            }
 
             response.send(output);
         });
@@ -91,18 +95,20 @@ export default class Menu {
         db.query(qryCmd, function(err, rows, fields) {
             var output = [];
             
-            rows.forEach(function(row) {
-                var obj = new Object();
-                for(var key in row) {
-                    obj[key] = row[key];
-                }
+            if (rows.length > 0) {
+                rows.forEach(function(row) {
+                    var obj = new Object();
+                    for(var key in row) {
+                        obj[key] = row[key];
+                    }
 
-                obj['AUTH_ADDX'] = authAdd;
-                obj['AUTH_EDIT'] = authEdit;
-                obj['AUTH_DELT'] = authDelt;
+                    obj['AUTH_ADDX'] = authAdd;
+                    obj['AUTH_EDIT'] = authEdit;
+                    obj['AUTH_DELT'] = authDelt;
 
-                output.push(obj);
-            })
+                    output.push(obj);
+                })
+            }
 
             response.send(output);
         });
@@ -118,16 +124,18 @@ export default class Menu {
         db.query(sql, function(err, rows, fields) {
             var output = [];
 
-            rows.forEach(function(row) {
-                var obj = new Object();
-                for(var key in row) {
-                    obj[key] = row[key];
-                }
+            if (rows.length > 0) {
+                rows.forEach(function(row) {
+                    var obj = new Object();
+                    for(var key in row) {
+                        obj[key] = row[key];
+                    }
 
-                obj['AUTH_EDIT'] = authEdit;
+                    obj['AUTH_EDIT'] = authEdit;
 
-                output.push(obj);
-            })
+                    output.push(obj);
+                })
+            }
 
             res.send(output);
         });
@@ -268,43 +276,45 @@ export default class Menu {
                 return 0;
             });
 
-            rows.forEach(function(row) {
-                var obj = new Object();
-                for(var key in row) {
-                    obj[key] = row[key];
-                }
+            if (rows.length > 0) {
+                rows.forEach(function(row) {
+                    var obj = new Object();
+                    for(var key in row) {
+                        obj[key] = row[key];
+                    }
 
-                var check = outputTemp.filter(item => item.PARENT === obj.PROC_CODE);
-                if (check.length > 0) {
-                    // sort NoUrut Asc
-                    check.sort((a, b) => {
-                        if (a.NoUrut < b.NoUrut) {
-                            return -1;
-                        } else if (a.NoUrut > b.NoUrut) {
-                            return 1;
-                        };
-    
-                        return 0;
-                    });
-    
-                    obj.children = check;
-                }
+                    var check = outputTemp.filter(item => item.PARENT === obj.PROC_CODE);
+                    if (check.length > 0) {
+                        // sort NoUrut Asc
+                        check.sort((a, b) => {
+                            if (a.NoUrut < b.NoUrut) {
+                                return -1;
+                            } else if (a.NoUrut > b.NoUrut) {
+                                return 1;
+                            };
+        
+                            return 0;
+                        });
+        
+                        obj.children = check;
+                    }
 
-                outputTemp.push(obj);
-            })
+                    outputTemp.push(obj);
+                })
 
-            output = outputTemp.filter(item => item.PARENT === null);
+                output = outputTemp.filter(item => item.PARENT === null);
 
-            // Sort NoUrut Asc
-            output.sort((a, b) => {
-                if (a.NoUrut < b.NoUrut) {
-                    return -1;
-                } else if (a.NoUrut > b.NoUrut) {
-                    return 1;
-                };
+                // Sort NoUrut Asc
+                output.sort((a, b) => {
+                    if (a.NoUrut < b.NoUrut) {
+                        return -1;
+                    } else if (a.NoUrut > b.NoUrut) {
+                        return 1;
+                    };
 
-                return 0;
-            });
+                    return 0;
+                });
+            }
 
             res.send(output);
         });

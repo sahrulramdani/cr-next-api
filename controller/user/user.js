@@ -13,18 +13,20 @@ export default class User {
         db.query(qryCmd, function(err, rows, fields) {
             var output = [];
 
-            rows.forEach(function(row) {
-                var obj = new Object();
-                for(var key in row) {
-                    obj[key] = row[key];
-                }
+            if (rows.length > 0) {
+                rows.forEach(function(row) {
+                    var obj = new Object();
+                    for(var key in row) {
+                        obj[key] = row[key];
+                    }
 
-                obj['AUTH_ADDX'] = authAdd;
-                obj['AUTH_EDIT'] = authEdit;
-                obj['AUTH_DELT'] = authDelt;
+                    obj['AUTH_ADDX'] = authAdd;
+                    obj['AUTH_EDIT'] = authEdit;
+                    obj['AUTH_DELT'] = authDelt;
 
-                output.push(obj);
-            })
+                    output.push(obj);
+                })
+            }
 
             response.send(output);
         });
@@ -63,16 +65,18 @@ export default class User {
         db.query(sql, function(err, rows, fields) {
             var output = [];
 
-            rows.forEach(function(row) {
-                var obj = new Object();
-                for(var key in row) {
-                    obj[key] = row[key];
-                }
+            if (rows.length > 0) {
+                rows.forEach(function(row) {
+                    var obj = new Object();
+                    for(var key in row) {
+                        obj[key] = row[key];
+                    }
 
-                obj['AUTH_EDIT'] = authEdit;
+                    obj['AUTH_EDIT'] = authEdit;
 
-                output.push(obj);
-            })
+                    output.push(obj);
+                })
+            }
 
             res.send(output);
         });
@@ -86,16 +90,18 @@ export default class User {
         db.query(sql, function(err, rows, fields) {
             var output = [];
 
-            rows.forEach(function(row) {
-                var obj = new Object();
-                for(var key in row) {
-                    obj[key] = row[key];
-                }
+            if (rows.length > 0) {
+                rows.forEach(function(row) {
+                    var obj = new Object();
+                    for(var key in row) {
+                        obj[key] = row[key];
+                    }
 
-                obj['AUTH_EDIT'] = authEdit;
+                    obj['AUTH_EDIT'] = authEdit;
 
-                output.push(obj);
-            })
+                    output.push(obj);
+                })
+            }
 
             res.send(output);
         });
@@ -141,14 +147,16 @@ export default class User {
         db.query(sql, function(err, rows, fields) {
             var output = [];
 
-            rows.forEach(function(row) {
-                var obj = new Object();
-                for(var key in row) {
-                    obj[key] = row[key];
-                }
+            if (rows.length > 0) {
+                rows.forEach(function(row) {
+                    var obj = new Object();
+                    for(var key in row) {
+                        obj[key] = row[key];
+                    }
 
-                output.push(obj);
-            })
+                    output.push(obj);
+                })
+            }
 
             res.send(output);
         });
@@ -181,14 +189,16 @@ export default class User {
         db.query(sql, function(err, rows, fields) {
             var output = [];
 
-            rows.forEach(function(row) {
-                var obj = new Object();
-                for(var key in row) {
-                    obj[key] = row[key];
-                }
+            if (rows.length > 0) {
+                rows.forEach(function(row) {
+                    var obj = new Object();
+                    for(var key in row) {
+                        obj[key] = row[key];
+                    }
 
-                output.push(obj);
-            })
+                    output.push(obj);
+                })
+            }
 
             res.send(output);
         });
@@ -315,14 +325,16 @@ export default class User {
         db.query(sql, function(err, rows, fields) {
             var output = [];
 
-            rows.forEach(function(row) {
-                var obj = new Object();
-                for(var key in row) {
-                    obj[key] = row[key];
-                }
+            if (rows.length > 0) {
+                rows.forEach(function(row) {
+                    var obj = new Object();
+                    for(var key in row) {
+                        obj[key] = row[key];
+                    }
 
-                output.push(obj);
-            })
+                    output.push(obj);
+                })
+            }
 
             res.send(output);
         });
@@ -416,18 +428,20 @@ export default class User {
         db.query(qryCmd, function(err, rows, fields) {
             var output = [];
 
-            rows.forEach(function(row) {
-                var obj = new Object();
-                for(var key in row) {
-                    obj[key] = row[key];
-                }
+            if (rows.length > 0) {
+                rows.forEach(function(row) {
+                    var obj = new Object();
+                    for(var key in row) {
+                        obj[key] = row[key];
+                    }
 
-                obj['AUTH_ADDX'] = authAdd;
-                obj['AUTH_EDIT'] = authEdit;
-                obj['AUTH_DELT'] = authDelt;
+                    obj['AUTH_ADDX'] = authAdd;
+                    obj['AUTH_EDIT'] = authEdit;
+                    obj['AUTH_DELT'] = authDelt;
 
-                output.push(obj);
-            })
+                    output.push(obj);
+                })
+            }
 
             response.send(output);
         });
@@ -471,16 +485,18 @@ export default class User {
         db.query(sql, function(err, rows, fields) {
             var output = [];
 
-            rows.forEach(function(row) {
-                var obj = new Object();
-                for(var key in row) {
-                    obj[key] = row[key];
-                }
+            if (rows.length > 0) {
+                rows.forEach(function(row) {
+                    var obj = new Object();
+                    for(var key in row) {
+                        obj[key] = row[key];
+                    }
 
-                obj['AUTH_EDIT'] = authEdit;
+                    obj['AUTH_EDIT'] = authEdit;
 
-                output.push(obj);
-            })
+                    output.push(obj);
+                })
+            }
 
             res.send(output);
         });
