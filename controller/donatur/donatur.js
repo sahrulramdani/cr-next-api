@@ -635,7 +635,7 @@ export default class Donatur {
 
                 res.send(output);
             } else {
-                response.send([]);
+                res.send([]);
             }
         });
     }
