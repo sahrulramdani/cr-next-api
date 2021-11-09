@@ -18,14 +18,14 @@ export default class Donatur {
                         "WHEN '1' THEN 'Laki-laki' " +
                         "ELSE 'Perempuan' " +
                       "END As Jns_Kelamin, " + 
-                      "a.Email, a.NoHP, b.CODD_DESC As Channel from tb11_mzjb a INNER JOIN (select * from tb00_basx where CODD_FLNM = 'CHANNEL_DONATUR') b ON a.Channel = b.CODD_VALU where a.Status <> '1' And a.Status <> '3'";
+                      "a.Email, a.NoHP, b.CODD_DESC As Channel, CONCAT(a.NAMA, ', ', IFNULL(a.TITLE, '')) As Nama2 from tb11_mzjb a INNER JOIN (select * from tb00_basx where CODD_FLNM = 'CHANNEL_DONATUR') b ON a.Channel = b.CODD_VALU where a.Status <> '1' And a.Status <> '3'";
         } else {
             qryCmd = "select a.NO_ID as id, a.NAMA, " +
                      "CASE a.JNKX_KLMN " +
                         "WHEN '1' THEN 'Laki-laki' " +
                         "ELSE 'Perempuan' " +
                       "END As Jns_Kelamin, " + 
-                      "a.Email, a.NoHP, b.CODD_DESC As Channel from tb11_mzjb a INNER JOIN (select * from tb00_basx where CODD_FLNM = 'CHANNEL_DONATUR') b ON a.Channel = b.CODD_VALU where a.Status = '" + status + "'";
+                      "a.Email, a.NoHP, b.CODD_DESC As Channel, CONCAT(a.NAMA, ', ', IFNULL(a.TITLE, '')) As Nama2 from tb11_mzjb a INNER JOIN (select * from tb00_basx where CODD_FLNM = 'CHANNEL_DONATUR') b ON a.Channel = b.CODD_VALU where a.Status = '" + status + "'";
         };
         
         db.query(qryCmd, function(err, rows, fields) {
@@ -147,7 +147,7 @@ export default class Donatur {
         if (level === 'P') { // Donatur Platinum
             sql = 'SELECT * FROM tb11_mzjb WHERE FlgPlatinum = "1"';
         } else {
-            sql = 'SELECT a.*, b.CODD_DESC As TypeDonatur2, a.flgPlatinum As Platinum, DATE_FORMAT(a.TglX_MASK, "%e-%b-%Y") As TglMasuk FROM tb11_mzjb a inner join (select * from tb00_basx where CODD_FLNM = "TYPE_DONATUR") b on a.TypeDonatur = b.CODD_VALU WHERE b.CODD_VARC >= "'+ level + '" ORDER BY a.NAMA';
+            sql = 'SELECT a.*, b.CODD_DESC As TypeDonatur2, a.flgPlatinum As Platinum, DATE_FORMAT(a.TglX_MASK, "%e-%b-%Y") As TglMasuk, CONCAT(a.NAMA, ", ", IFNULL(a.TITLE, "")) As Nama2 FROM tb11_mzjb a inner join (select * from tb00_basx where CODD_FLNM = "TYPE_DONATUR") b on a.TypeDonatur = b.CODD_VALU WHERE b.CODD_VARC >= "'+ level + '" ORDER BY a.NAMA';
         }
        
         db.query(sql, function(err, rows, fields) {
@@ -196,6 +196,7 @@ export default class Donatur {
             TypeDonatur : req.body.TypeDonatur,
             FlgPlatinum : req.body.FlgPlatinum,
             Channel : req.body.Channel,
+            TITLE : req.body.TITLE,
             CRTX_DATE : new Date(),
             CRTX_BYXX : req.userID
         };
@@ -239,6 +240,7 @@ export default class Donatur {
             TypeDonatur : req.body.TypeDonatur,
             FlgPlatinum : req.body.FlgPlatinum,
             Channel : req.body.Channel,
+            TITLE : req.body.TITLE,
             UPDT_DATE : new Date(),
             UPDT_BYXX : req.userID
         };

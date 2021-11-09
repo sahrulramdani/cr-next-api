@@ -46,6 +46,7 @@ export default class Karyawan {
             StatusKawin : req.body.StatusKawin,
             TglMasuk : req.body.TglMasuk,
             GolDarah : req.body.GolDarah,
+            Title : req.body.Title,
             CRTX_DATE : new Date(),
             CRTX_BYXX : req.userID
         };
