@@ -47,6 +47,9 @@ export default class Karyawan {
             TglMasuk : req.body.TglMasuk,
             GolDarah : req.body.GolDarah,
             Title : req.body.Title,
+            PIC: req.body.PIC,
+            NoHPPIC: req.body.NoHPPIC,
+            EmailPIC: req.body.EmailPIC,
             CRTX_DATE : new Date(),
             CRTX_BYXX : req.userID
         };

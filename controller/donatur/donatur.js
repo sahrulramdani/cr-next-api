@@ -196,6 +196,9 @@ export default class Donatur {
             TypeDonatur : req.body.TypeDonatur,
             FlgPlatinum : req.body.FlgPlatinum,
             Channel : req.body.Channel,
+            PIC: req.body.PIC,
+            NoHPPIC: req.body.NoHPPIC,
+            EmailPIC: req.body.EmailPIC,
             TITLE : req.body.TITLE,
             CRTX_DATE : new Date(),
             CRTX_BYXX : req.userID
@@ -241,6 +244,9 @@ export default class Donatur {
             FlgPlatinum : req.body.FlgPlatinum,
             Channel : req.body.Channel,
             TITLE : req.body.TITLE,
+            PIC: req.body.PIC,
+            NoHPPIC: req.body.NoHPPIC,
+            EmailPIC: req.body.EmailPIC,
             UPDT_DATE : new Date(),
             UPDT_BYXX : req.userID
         };
