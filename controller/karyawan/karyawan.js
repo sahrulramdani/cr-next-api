@@ -37,6 +37,7 @@ export default class Karyawan {
             JenisKel : req.body.JenisKel,
             Alamat1 : req.body.Alamat1,
             Hp : req.body.Hp,
+            CodeCountryHP : req.body.CodeCountryHP,
             email : req.body.email,
             TempatLahir : req.body.TempatLahir,
             TglLahir : req.body.TglLahir,
@@ -49,6 +50,7 @@ export default class Karyawan {
             Title : req.body.Title,
             PIC: req.body.PIC,
             NoHPPIC: req.body.NoHPPIC,
+            CodeCountryHPPIC : req.body.CodeCountryHPPIC,
             EmailPIC: req.body.EmailPIC,
             CRTX_DATE : new Date(),
             CRTX_BYXX : req.userID
