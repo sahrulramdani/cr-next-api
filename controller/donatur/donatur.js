@@ -18,18 +18,22 @@ export default class Donatur {
                         "WHEN '1' THEN 'Laki-laki' " +
                         "ELSE 'Perempuan' " +
                       "END As Jns_Kelamin, " + 
-                      "a.Email, a.NoHP, b.CODD_DESC As Channel, CONCAT(a.NAMA, ', ', IFNULL(a.TITLE, '')) As Nama2, CONCAT(IFNULL(a.CodeCountryHP, ''), a.NoHP) As NoHP2 from tb11_mzjb a INNER JOIN (select * from tb00_basx where CODD_FLNM = 'CHANNEL_DONATUR') b ON a.Channel = b.CODD_VALU where a.Status <> '1' And a.Status <> '3'";
+                      "a.Email, a.NoHP, b.CODD_DESC As Channel, CONCAT(a.NAMA, ', ', IFNULL(a.TITLE, '')) As Nama2, CONCAT(IFNULL(a.CodeCountryHP, ''), a.NoHP) As NoHP2 from tb11_mzjb a INNER JOIN (select * from tb00_basx where CODD_FLNM = 'CHANNEL_DONATUR') b ON a.Channel = b.CODD_VALU INNER JOIN tb00_unit c ON a.BUSS_CODE = c.KODE_UNIT where a.Status <> '1' And a.Status <> '3' And c.KODE_URUT like '" + request.KODE_URUT0 + "%'";
         } else {
             qryCmd = "select a.NO_ID as id, a.NAMA, " +
                      "CASE a.JNKX_KLMN " +
                         "WHEN '1' THEN 'Laki-laki' " +
                         "ELSE 'Perempuan' " +
                       "END As Jns_Kelamin, " + 
-                      "a.Email, a.NoHP, b.CODD_DESC As Channel, CONCAT(a.NAMA, ', ', IFNULL(a.TITLE, '')) As Nama2, CONCAT(IFNULL(a.CodeCountryHP, ''), a.NoHP) As NoHP2 from tb11_mzjb a INNER JOIN (select * from tb00_basx where CODD_FLNM = 'CHANNEL_DONATUR') b ON a.Channel = b.CODD_VALU where a.Status = '" + status + "'";
+                      "a.Email, a.NoHP, b.CODD_DESC As Channel, CONCAT(a.NAMA, ', ', IFNULL(a.TITLE, '')) As Nama2, CONCAT(IFNULL(a.CodeCountryHP, ''), a.NoHP) As NoHP2 from tb11_mzjb a INNER JOIN (select * from tb00_basx where CODD_FLNM = 'CHANNEL_DONATUR') b ON a.Channel = b.CODD_VALU INNER JOIN tb00_unit c ON a.BUSS_CODE = c.KODE_UNIT where a.Status = '" + status + "' And c.KODE_URUT like '" + request.KODE_URUT0 + "%'";
         };
         
         db.query(qryCmd, function(err, rows, fields) {
             var output = [];
+            
+            if (err) {
+                console.log('Error', err);
+            }
 
             if (rows.length > 0) {
                 rows.forEach(function(row) {
@@ -147,7 +151,7 @@ export default class Donatur {
         if (level === 'P') { // Donatur Platinum
             sql = 'SELECT * FROM tb11_mzjb WHERE FlgPlatinum = "1"';
         } else {
-            sql = 'SELECT a.*, b.CODD_DESC As TypeDonatur2, a.flgPlatinum As Platinum, DATE_FORMAT(a.TglX_MASK, "%e-%b-%Y") As TglMasuk, CONCAT(a.NAMA, ", ", IFNULL(a.TITLE, "")) As Nama2, CONCAT(IFNULL(a.CodeCountryHP, ""), a.NoHP) As NoHP2 FROM tb11_mzjb a inner join (select * from tb00_basx where CODD_FLNM = "TYPE_DONATUR") b on a.TypeDonatur = b.CODD_VALU WHERE b.CODD_VARC >= "'+ level + '" ORDER BY a.NAMA';
+            sql = 'SELECT a.*, b.CODD_DESC As TypeDonatur2, a.flgPlatinum As Platinum, DATE_FORMAT(a.TglX_MASK, "%e-%b-%Y") As TglMasuk, CONCAT(a.NAMA, ", ", IFNULL(a.TITLE, "")) As Nama2, CONCAT(IFNULL(a.CodeCountryHP, ""), a.NoHP) As NoHP2 FROM tb11_mzjb a inner join (select * from tb00_basx where CODD_FLNM = "TYPE_DONATUR") b on a.TypeDonatur = b.CODD_VALU inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT WHERE b.CODD_VARC >= "'+ level + '" And c.KODE_URUT like "' + req.KODE_URUT0 + '%" ORDER BY a.NAMA';
         }
        
         db.query(sql, function(err, rows, fields) {
@@ -187,7 +191,7 @@ export default class Donatur {
             Email : req.body.Email,
             TMPX_LHRX : req.body.TMPX_LHRX,
             TGLX_LHRX : req.body.TGLX_LHRX,
-            BUSS_CODE : req.body.BUSS_CODE,
+            BUSS_CODE : req.BUSS_CODE0,
             NoKTP : req.body.NoKTP,
             Stat_aktf : '1',
             StatusKawin : req.body.StatusKawin,
@@ -323,7 +327,7 @@ export default class Donatur {
             Nama : req.body.Nama,
             TypeProgram : req.body.TypeProgram,
             TahunBuku : req.body.TahunBuku,
-            Unit : req.body.Unit,
+            Unit : req.BUSS_CODE0,
             CRTX_DATE : new Date(),
             CRTX_BYXX : req.userID
         };
@@ -390,7 +394,7 @@ export default class Donatur {
             typeProgram : req.body.typeProgram,
             status : req.body.status,
             tahunBuku : req.body.tahunBuku,
-            unit : req.body.unit,
+            unit : req.BUSS_CODE0,
             CRTX_DATE : new Date(),
             CRTX_BYXX : req.userID
         };
@@ -575,7 +579,7 @@ export default class Donatur {
         var authEdit = request.AUTH_EDIT;
         var authDelt = request.AUTH_DELT;
 
-        var qryCmd = "select a.*, DATE_FORMAT(a.tglProses, '%d/%m/%Y') As tglProsesFormat, b.CODD_DESC As TypeProgram2 from tb52_slpa a inner join (select * from tb00_basx where CODD_FLNM = 'TYPE_PROGRAM_DONATUR') b on a.typeProgram = b.CODD_VALU order by a.transNumber";
+        var qryCmd = "select a.*, DATE_FORMAT(a.tglProses, '%d/%m/%Y') As tglProsesFormat, b.CODD_DESC As TypeProgram2 from tb52_slpa a inner join (select * from tb00_basx where CODD_FLNM = 'TYPE_PROGRAM_DONATUR') b on a.typeProgram = b.CODD_VALU inner join tb00_unit c on a.unit = c.KODE_UNIT where c.KODE_URUT like '" + req.KODE_URUT0 + "%' order by a.transNumber";
         db.query(qryCmd, function(err, rows, fields) {
             var output = [];
 
@@ -815,9 +819,9 @@ export default class Donatur {
         }
 
         if (isValid === 'all') {
-            sql = 'SELECT a.*, b.NAMA, CONCAT(b.NO_ID, " - ", b.NAMA) As Donatur2 FROM trans_donatur a inner join tb11_mzjb b on a.donaturID = b.NO_ID WHERE (a.isDelete <> "1" Or a.isDelete Is Null)';
+            sql = 'SELECT a.*, b.NAMA, CONCAT(b.NO_ID, " - ", b.NAMA) As Donatur2 FROM trans_donatur a inner join tb11_mzjb b on a.donaturID = b.NO_ID inner join tb00_unit c on b.BUSS_CODE = c.KODE_UNIT WHERE (a.isDelete <> "1" Or a.isDelete Is Null) And c.KODE_URUT like "' + req.KODE_URUT0 + '%"';
         } else {
-            sql = 'SELECT a.*, b.NAMA, CONCAT(b.NO_ID, " - ", b.NAMA) As Donatur2, DATE_FORMAT(TransDate, "%d/%m/%Y %H:%i") As TransDateFormat FROM trans_donatur a inner join tb11_mzjb b on a.donaturID = b.NO_ID WHERE a.isValidate in ("' + isValid + ') And (a.isDelete <> "1" OR a.isDelete IS NULL)';
+            sql = 'SELECT a.*, b.NAMA, CONCAT(b.NO_ID, " - ", b.NAMA) As Donatur2, DATE_FORMAT(TransDate, "%d/%m/%Y %H:%i") As TransDateFormat FROM trans_donatur a inner join tb11_mzjb b on a.donaturID = b.NO_ID inner join tb00_unit c on b.BUSS_CODE = c.KODE_UNIT WHERE a.isValidate in ("' + isValid + ') And (a.isDelete <> "1" OR a.isDelete IS NULL) And c.KODE_URUT like "' + req.KODE_URUT0 + '%"';
         }
 
         db.query(sql, function(err, rows, fields) {

@@ -107,7 +107,7 @@ export default class AuthController {
                 req.userID = decoded.id;
                 
                 // get User Access
-                var sql = 'SELECT a.*, c.IsValid FROM `tb01_usrd` a INNER JOIN `tb01_apix` b on a.PROC_CODE = b.PROC_CODE INNER JOIN `tb01_lgxh` c ON a.USER_IDXX = c.USER_IDXX WHERE a.USER_IDXX = "' + decoded.id + '" And ("' + path + '%" like CONCAT(b.PATH,"%") Or "' + path + '%/" like CONCAT(b.PATH,"%")) ORDER BY b.PATH' ;  
+                var sql = 'SELECT a.*, c.IsValid, d.KODE_URUT FROM `tb01_usrd` a INNER JOIN `tb01_apix` b on a.PROC_CODE = b.PROC_CODE INNER JOIN `tb01_lgxh` c ON a.USER_IDXX = c.USER_IDXX INNER JOIN tb00_unit d ON a.BUSS_CODE = d.KODE_UNIT WHERE a.USER_IDXX = "' + decoded.id + '" And ("' + path + '%" like CONCAT(b.PATH,"%") Or "' + path + '%/" like CONCAT(b.PATH,"%")) ORDER BY b.PATH';  
                 
                 db.query(sql, (err, rows) => {
                     if (err)
@@ -122,6 +122,7 @@ export default class AuthController {
                         req.AUTH_DELT = userAccess.AUTH_DELT;
                         req.AUTH_PRNT = userAccess.AUTH_PRNT;
                         req.BUSS_CODE0 = userAccess.BUSS_CODE;
+                        req.KODE_URUT0 = userAccess.KODE_URUT;
 
                         if (userAccess.IsValid === '0') {
                             return res.status(403).send({ 

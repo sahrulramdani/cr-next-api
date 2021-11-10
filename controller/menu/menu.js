@@ -178,6 +178,7 @@ export default class Menu {
             MDUL_CODE : req.body.MDUL_CODE,
             TYPE_MDUL : req.body.TYPE_MDUL,
             PROC_NAME : req.body.PROC_NAME,
+            Enabled : req.body.Enabled,
             CRTX_DATE : new Date(),
             CRTX_BYXX : req.userID
         };
@@ -201,7 +202,7 @@ export default class Menu {
     saveDetProcess2 = function(req, res) {
         var tgl = moment(new Date()).format('YYYY-MM-DD');
 
-        var sql = 'INSERT INTO tb01_proc (PROC_CODE, BUSS_CODE, PATH, MDUL_CODE, TYPE_MDUL, PROC_NAME, CRTX_DATE, CRTX_BYXX) select PROC_CODE, "' + req.body.BUSS_CODE + '","' + req.body.PATH + '", MDUL_CODE, TYPE_MDUL, PROC_NAME, "' + tgl + '","' + req.userID + '" from `tb00_proc` where proc_code = "' + req.body.PROC_CODE + '"';
+        var sql = 'INSERT INTO tb01_proc (PROC_CODE, BUSS_CODE, PATH, MDUL_CODE, TYPE_MDUL, PROC_NAME, CRTX_DATE, CRTX_BYXX, Enabled) select PROC_CODE, "' + req.body.BUSS_CODE + '","' + req.body.PATH + '", MDUL_CODE, TYPE_MDUL, PROC_NAME, "' + tgl + '","' + req.userID + '","1" from `tb00_proc` where proc_code = "' + req.body.PROC_CODE + '"';
         
         db.query(sql, (err, result) => {
             if (err) {
@@ -259,7 +260,7 @@ export default class Menu {
     }
 
     getMenus = function(req, res) {
-        var sql = 'SELECT a.*, b.id AS USERACCESS_ID, b.RIGH_AUTH, b.AUTH_ADDX, b.AUTH_EDIT, b.AUTH_DELT FROM `tb01_proc` a LEFT JOIN (select * from `tb01_usrd` where USER_IDXX = "' + req.userID + '") b ON a.BUSS_CODE = b.BUSS_CODE AND a.PROC_CODE = b.PROC_CODE INNER JOIN (select * from `tb01_lgxh` where USER_IDXX = "' + req.userID + '") c ON a.BUSS_CODE = c.BUSS_CODE WHERE a.NoUrut IS NOT NULL ORDER BY a.NoUrut';
+        var sql = 'SELECT a.*, b.id AS USERACCESS_ID, b.RIGH_AUTH, b.AUTH_ADDX, b.AUTH_EDIT, b.AUTH_DELT, d.ICON, d.HasChildren, d.PARENT, d.NoUrut FROM `tb01_proc` a LEFT JOIN (select * from `tb01_usrd` where USER_IDXX = "' + req.userID + '") b ON a.BUSS_CODE = b.BUSS_CODE AND a.PROC_CODE = b.PROC_CODE INNER JOIN (select * from `tb01_lgxh` where USER_IDXX = "' + req.userID + '") c ON a.BUSS_CODE = c.BUSS_CODE INNER JOIN tb00_proc d ON a.PROC_CODE = d.PROC_CODE WHERE d.NoUrut IS NOT NULL ORDER BY d.NoUrut';
         db.query(sql, function(err, rows, fields) {
             var output = [];
 
@@ -322,7 +323,7 @@ export default class Menu {
 
     // get Menus tanpa children
     getMenus2 = function(req, res) {
-        var sql = 'SELECT a.*, b.id AS USERACCESS_ID, b.RIGH_AUTH, b.AUTH_ADDX, b.AUTH_EDIT, b.AUTH_DELT FROM `tb01_proc` a LEFT JOIN (select * from `tb01_usrd` where USER_IDXX = "' + req.params.userID + '") b ON a.BUSS_CODE = b.BUSS_CODE AND a.PROC_CODE = b.PROC_CODE WHERE a.NoUrut IS NOT NULL  ORDER BY a.NoUrut';
+        var sql = 'SELECT a.*, b.id AS USERACCESS_ID, b.RIGH_AUTH, b.AUTH_ADDX, b.AUTH_EDIT, b.AUTH_DELT FROM `tb01_proc` a LEFT JOIN (select * from `tb01_usrd` where USER_IDXX = "' + req.params.userID + '") b ON a.BUSS_CODE = b.BUSS_CODE AND a.PROC_CODE = b.PROC_CODE INNER JOIN tb00_proc c ON a.PROC_CODE = c.PROC_CODE WHERE c.NoUrut IS NOT NULL ORDER BY c.NoUrut';
         db.query(sql, function(err, rows, fields) {
             res.send(rows);
         });
