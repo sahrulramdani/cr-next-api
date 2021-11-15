@@ -8,6 +8,7 @@ export default class Setup {
         var authAdd = request.AUTH_ADDX;
         var authEdit = request.AUTH_EDIT;
         var authDelt = request.AUTH_DELT;
+        var authAppr = request.AUTH_APPR;  // auth Approve
 
         var qryCmd = "select * from tb00_basx where CODD_FLNM = 'PEKERJAAN' order by CODD_DESC";
         db.query(qryCmd, function(err, rows, fields) {
@@ -23,6 +24,7 @@ export default class Setup {
                     obj['AUTH_ADDX'] = authAdd;
                     obj['AUTH_EDIT'] = authEdit;
                     obj['AUTH_DELT'] = authDelt;
+                    obj['AUTH_APPR'] = authAppr;
 
                     output.push(obj);
                 })
@@ -37,6 +39,7 @@ export default class Setup {
         var authAdd = request.AUTH_ADDX;
         var authEdit = request.AUTH_EDIT;
         var authDelt = request.AUTH_DELT;
+        var authAppr = request.AUTH_APPR;  // auth Approve
 
         var qryCmd = "select * from tb00_basx where CODD_FLNM = 'PENDIDIKAN' order by CODD_VALU";
         db.query(qryCmd, function(err, rows, fields) {
@@ -52,6 +55,7 @@ export default class Setup {
                     obj['AUTH_ADDX'] = authAdd;
                     obj['AUTH_EDIT'] = authEdit;
                     obj['AUTH_DELT'] = authDelt;
+                    obj['AUTH_APPR'] = authAppr;
 
                     output.push(obj);
                 })
@@ -66,6 +70,7 @@ export default class Setup {
         var authAdd = request.AUTH_ADDX;
         var authEdit = request.AUTH_EDIT;
         var authDelt = request.AUTH_DELT;
+        var authAppr = request.AUTH_APPR;  // auth Approve
 
         var qryCmd = "select * from tb20_area";
         db.query(qryCmd, function(err, rows, fields) {
@@ -81,6 +86,7 @@ export default class Setup {
                     obj['AUTH_ADDX'] = authAdd;
                     obj['AUTH_EDIT'] = authEdit;
                     obj['AUTH_DELT'] = authDelt;
+                    obj['AUTH_APPR'] = authAppr;
 
                     output.push(obj);
                 })
@@ -95,6 +101,7 @@ export default class Setup {
         var authAdd = request.AUTH_ADDX;
         var authEdit = request.AUTH_EDIT;
         var authDelt = request.AUTH_DELT;
+        var authAppr = request.AUTH_APPR;  // auth Approve
 
         var qryCmd = "select * from tb00_basx where CODD_FLNM = 'TYPE_RELAWAN' order by CODD_VALU";
         db.query(qryCmd, function(err, rows, fields) {
@@ -110,6 +117,7 @@ export default class Setup {
                     obj['AUTH_ADDX'] = authAdd;
                     obj['AUTH_EDIT'] = authEdit;
                     obj['AUTH_DELT'] = authDelt;
+                    obj['AUTH_APPR'] = authAppr;
 
                     output.push(obj);
                 })
@@ -124,6 +132,7 @@ export default class Setup {
         var authAdd = request.AUTH_ADDX;
         var authEdit = request.AUTH_EDIT;
         var authDelt = request.AUTH_DELT;
+        var authAppr = request.AUTH_APPR;  // auth Approve
 
         var qryCmd = "select * from tb00_basx where CODD_FLNM = 'TYPE_DONATUR' order by CODD_VALU";
         db.query(qryCmd, function(err, rows, fields) {
@@ -139,6 +148,7 @@ export default class Setup {
                     obj['AUTH_ADDX'] = authAdd;
                     obj['AUTH_EDIT'] = authEdit;
                     obj['AUTH_DELT'] = authDelt;
+                    obj['AUTH_APPR'] = authAppr;
 
                     output.push(obj);
                 })
@@ -153,6 +163,7 @@ export default class Setup {
         var authAdd = request.AUTH_ADDX;
         var authEdit = request.AUTH_EDIT;
         var authDelt = request.AUTH_DELT;
+        var authAppr = request.AUTH_APPR;  // auth Approve
 
         var qryCmd = "select a.*, " + 
                       "Case a.CODD_VARC " +
@@ -174,6 +185,7 @@ export default class Setup {
                     obj['AUTH_ADDX'] = authAdd;
                     obj['AUTH_EDIT'] = authEdit;
                     obj['AUTH_DELT'] = authDelt;
+                    obj['AUTH_APPR'] = authAppr;
 
                     output.push(obj);
                 })
@@ -188,6 +200,7 @@ export default class Setup {
         var authAdd = request.AUTH_ADDX;
         var authEdit = request.AUTH_EDIT;
         var authDelt = request.AUTH_DELT;
+        var authAppr = request.AUTH_APPR;  // auth Approve
 
         var qryCmd = "select * from tb00_basx where CODD_FLNM = 'CURR_MNYX' order by CODD_VALU";
         db.query(qryCmd, function(err, rows, fields) {
@@ -203,6 +216,7 @@ export default class Setup {
                     obj['AUTH_ADDX'] = authAdd;
                     obj['AUTH_EDIT'] = authEdit;
                     obj['AUTH_DELT'] = authDelt;
+                    obj['AUTH_APPR'] = authAppr;
 
                     output.push(obj);
                 })
@@ -217,6 +231,7 @@ export default class Setup {
         var authAdd = request.AUTH_ADDX;
         var authEdit = request.AUTH_EDIT;
         var authDelt = request.AUTH_DELT;
+        var authAppr = request.AUTH_APPR;  // auth Approve
 
         var qryCmd = "select * from tb00_basx where CODD_FLNM = 'PROGRAM_DONATUR' order by CODD_VALU";
         db.query(qryCmd, function(err, rows, fields) {
@@ -232,6 +247,7 @@ export default class Setup {
                     obj['AUTH_ADDX'] = authAdd;
                     obj['AUTH_EDIT'] = authEdit;
                     obj['AUTH_DELT'] = authDelt;
+                    obj['AUTH_APPR'] = authAppr;
 
                     output.push(obj);
                 })
@@ -246,6 +262,7 @@ export default class Setup {
         var authAdd = request.AUTH_ADDX;
         var authEdit = request.AUTH_EDIT;
         var authDelt = request.AUTH_DELT;
+        var authAppr = request.AUTH_APPR;  // auth Approve
 
         var qryCmd = "select *, CASE Active WHEN '1' THEN 'ACTIVE' ELSE 'NON-ACTIVE' END As Active2 from tb00_unit";
         db.query(qryCmd, function(err, rows, fields) {
@@ -261,6 +278,7 @@ export default class Setup {
                     obj['AUTH_ADDX'] = authAdd;
                     obj['AUTH_EDIT'] = authEdit;
                     obj['AUTH_DELT'] = authDelt;
+                    obj['AUTH_APPR'] = authAppr;
 
                     output.push(obj);
                 })
@@ -275,6 +293,7 @@ export default class Setup {
         var authAdd = request.AUTH_ADDX;
         var authEdit = request.AUTH_EDIT;
         var authDelt = request.AUTH_DELT;
+        var authAppr = request.AUTH_APPR;  // auth Approve
 
         var id = req.params.id;
         var sql = 'SELECT * FROM `tb00_unit` WHERE KODE_UNIT = "'+ id +'" ';
@@ -291,6 +310,7 @@ export default class Setup {
                     obj['AUTH_ADDX'] = authAdd;
                     obj['AUTH_EDIT'] = authEdit;
                     obj['AUTH_DELT'] = authDelt;
+                    obj['AUTH_APPR'] = authAppr;
 
                     output.push(obj);
                 })
@@ -305,6 +325,7 @@ export default class Setup {
         var authAdd = request.AUTH_ADDX;
         var authEdit = request.AUTH_EDIT;
         var authDelt = request.AUTH_DELT;
+        var authAppr = request.AUTH_APPR;  // auth Approve
 
         var qryCmd = "select * from tb02_bank where KODE_FLNM = 'KASX_BANK' And (IsDelete <> '1' Or IsDelete is Null) order by KODE_BANK";
         db.query(qryCmd, function(err, rows, fields) {
@@ -320,6 +341,7 @@ export default class Setup {
                     obj['AUTH_ADDX'] = authAdd;
                     obj['AUTH_EDIT'] = authEdit;
                     obj['AUTH_DELT'] = authDelt;
+                    obj['AUTH_APPR'] = authAppr;
 
                     output.push(obj);
                 })
@@ -334,6 +356,7 @@ export default class Setup {
         var authAdd = request.AUTH_ADDX;
         var authEdit = request.AUTH_EDIT;
         var authDelt = request.AUTH_DELT;
+        var authAppr = request.AUTH_APPR;  // auth Approve
 
         var qryCmd = "select * from tb02_bank where KODE_FLNM = 'TYPE_BYRX' And (IsDelete <> '1' Or IsDelete is Null) order by KODE_BANK";
         db.query(qryCmd, function(err, rows, fields) {
@@ -349,6 +372,7 @@ export default class Setup {
                     obj['AUTH_ADDX'] = authAdd;
                     obj['AUTH_EDIT'] = authEdit;
                     obj['AUTH_DELT'] = authDelt;
+                    obj['AUTH_APPR'] = authAppr;
 
                     output.push(obj);
                 })
@@ -363,6 +387,7 @@ export default class Setup {
         var authAdd = request.AUTH_ADDX;
         var authEdit = request.AUTH_EDIT;
         var authDelt = request.AUTH_DELT;
+        var authAppr = request.AUTH_APPR;  // auth Approve
 
         var qryCmd = "select * from tb00_lokx";
         db.query(qryCmd, function(err, rows, fields) {
@@ -378,6 +403,7 @@ export default class Setup {
                     obj['AUTH_ADDX'] = authAdd;
                     obj['AUTH_EDIT'] = authEdit;
                     obj['AUTH_DELT'] = authDelt;
+                    obj['AUTH_APPR'] = authAppr;
 
                     output.push(obj);
                 })
@@ -392,6 +418,7 @@ export default class Setup {
         var authAdd = request.AUTH_ADDX;
         var authEdit = request.AUTH_EDIT;
         var authDelt = request.AUTH_DELT;
+        var authAppr = request.AUTH_APPR;  // auth Approve
 
         var qryCmd = "select * from tb00_basx where CODD_FLNM = 'BUSSINESS_UNIT' order by CODD_VALU";
         db.query(qryCmd, function(err, rows, fields) {
@@ -407,6 +434,7 @@ export default class Setup {
                     obj['AUTH_ADDX'] = authAdd;
                     obj['AUTH_EDIT'] = authEdit;
                     obj['AUTH_DELT'] = authDelt;
+                    obj['AUTH_APPR'] = authAppr;
 
                     output.push(obj);
                 })
@@ -421,6 +449,7 @@ export default class Setup {
         var authAdd = request.AUTH_ADDX;
         var authEdit = request.AUTH_EDIT;
         var authDelt = request.AUTH_DELT;
+        var authAppr = request.AUTH_APPR;  // auth Approve
 
         var qryCmd = "select * from tb00_basx where CODD_FLNM = 'KELOMPOK_KERJA' order by CODD_VALU";
         db.query(qryCmd, function(err, rows, fields) {
@@ -436,6 +465,7 @@ export default class Setup {
                     obj['AUTH_ADDX'] = authAdd;
                     obj['AUTH_EDIT'] = authEdit;
                     obj['AUTH_DELT'] = authDelt;
+                    obj['AUTH_APPR'] = authAppr;
 
                     output.push(obj);
                 })
@@ -450,6 +480,7 @@ export default class Setup {
         var authAdd = request.AUTH_ADDX;
         var authEdit = request.AUTH_EDIT;
         var authDelt = request.AUTH_DELT;
+        var authAppr = request.AUTH_APPR;  // auth Approve
 
         var qryCmd = "select * from tb00_basx where CODD_FLNM = 'MARY_PART' order by CODD_VALU";
         db.query(qryCmd, function(err, rows, fields) {
@@ -465,6 +496,7 @@ export default class Setup {
                     obj['AUTH_ADDX'] = authAdd;
                     obj['AUTH_EDIT'] = authEdit;
                     obj['AUTH_DELT'] = authDelt;
+                    obj['AUTH_APPR'] = authAppr;
 
                     output.push(obj);
                 })
@@ -479,6 +511,7 @@ export default class Setup {
         var authAdd = request.AUTH_ADDX;
         var authEdit = request.AUTH_EDIT;
         var authDelt = request.AUTH_DELT;
+        var authAppr = request.AUTH_APPR;  // auth Approve
 
         var qryCmd = "select * from tb00_basx where CODD_FLNM = 'CHANNEL_DONATUR' order by CODD_VALU";
         db.query(qryCmd, function(err, rows, fields) {
@@ -494,6 +527,7 @@ export default class Setup {
                     obj['AUTH_ADDX'] = authAdd;
                     obj['AUTH_EDIT'] = authEdit;
                     obj['AUTH_DELT'] = authDelt;
+                    obj['AUTH_APPR'] = authAppr;
 
                     output.push(obj);
                 })
@@ -508,6 +542,7 @@ export default class Setup {
         var authAdd = request.AUTH_ADDX;
         var authEdit = request.AUTH_EDIT;
         var authDelt = request.AUTH_DELT;
+        var authAppr = request.AUTH_APPR;  // auth Approve
 
         var qryCmd = "select * from tb00_basx where CODD_FLNM = 'BLOD_CODE' order by CODD_VALU";
         db.query(qryCmd, function(err, rows, fields) {
@@ -523,6 +558,7 @@ export default class Setup {
                     obj['AUTH_ADDX'] = authAdd;
                     obj['AUTH_EDIT'] = authEdit;
                     obj['AUTH_DELT'] = authDelt;
+                    obj['AUTH_APPR'] = authAppr;
 
                     output.push(obj);
                 })
@@ -786,6 +822,7 @@ export default class Setup {
         var authAdd = req.AUTH_ADDX;
         var authEdit = req.AUTH_EDIT;
         var authDelt = req.AUTH_DELT;
+        var authAppr = request.AUTH_APPR;  // auth Approve
 
         var id = req.params.id;
         var sql = 'SELECT * FROM `tb02_bank` WHERE KODE_BANK = "'+ id +'" And KODE_FLNM = "KASX_BANK"';
@@ -802,6 +839,7 @@ export default class Setup {
                     obj['AUTH_ADDX'] = authAdd;
                     obj['AUTH_EDIT'] = authEdit;
                     obj['AUTH_DELT'] = authDelt;
+                    obj['AUTH_APPR'] = authAppr;
 
                     output.push(obj);
                 })
@@ -816,6 +854,7 @@ export default class Setup {
         var authAdd = req.AUTH_ADDX;
         var authEdit = req.AUTH_EDIT;
         var authDelt = req.AUTH_DELT;
+        var authAppr = request.AUTH_APPR;  // auth Approve
 
         var id = req.params.id;
         var sql = 'SELECT * FROM `tb02_bank` WHERE KODE_BANK = "'+ id +'" And KODE_FLNM = "TYPE_BYRX"';
@@ -832,6 +871,7 @@ export default class Setup {
                     obj['AUTH_ADDX'] = authAdd;
                     obj['AUTH_EDIT'] = authEdit;
                     obj['AUTH_DELT'] = authDelt;
+                    obj['AUTH_APPR'] = authAppr;
 
                     output.push(obj);
                 })

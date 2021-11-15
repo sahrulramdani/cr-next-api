@@ -8,6 +8,7 @@ export default class Accounting {
             var authAdd = request.AUTH_ADDX;
             var authEdit = request.AUTH_EDIT;
             var authDelt = request.AUTH_DELT;
+            var authAppr = request.AUTH_APPR;  // auth Approve
 
             var qryCmd = "select * from tb00_thna order by TGLX_STRT desc";
             db.query(qryCmd, function(err, rows, fields) {
@@ -23,6 +24,7 @@ export default class Accounting {
                         obj['AUTH_ADDX'] = authAdd;
                         obj['AUTH_EDIT'] = authEdit;
                         obj['AUTH_DELT'] = authDelt;
+                        obj['AUTH_APPR'] = authAppr;
 
                         output.push(obj);
                     })
@@ -74,6 +76,7 @@ export default class Accounting {
             var authAdd = request.AUTH_ADDX;
             var authEdit = request.AUTH_EDIT;
             var authDelt = request.AUTH_DELT;
+            var authAppr = request.AUTH_APPR;  // auth Approve
 
             var bankID = request.params.bankID;
 
@@ -91,6 +94,7 @@ export default class Accounting {
                         obj['AUTH_ADDX'] = authAdd;
                         obj['AUTH_EDIT'] = authEdit;
                         obj['AUTH_DELT'] = authDelt;
+                        obj['AUTH_APPR'] = authAppr;
 
                         output.push(obj);
                     })
@@ -107,6 +111,7 @@ export default class Accounting {
             var authAdd = request.AUTH_ADDX;
             var authEdit = request.AUTH_EDIT;
             var authDelt = request.AUTH_DELT;
+            var authAppr = request.AUTH_APPR;  // auth Approve
 
             var tgl1 = request.params.tgl1;
             var tgl2 = request.params.tgl2;
@@ -126,6 +131,7 @@ export default class Accounting {
                         obj['AUTH_ADDX'] = authAdd;
                         obj['AUTH_EDIT'] = authEdit;
                         obj['AUTH_DELT'] = authDelt;
+                        obj['AUTH_APPR'] = authAppr;
 
                         output.push(obj);
                     })
@@ -217,6 +223,7 @@ export default class Accounting {
         getMutasi = function(req, res) {
             // get user Access
             var authEdit = req.AUTH_EDIT;
+            var authAppr = request.AUTH_APPR;  // auth Approve
     
             var id = req.params.id;
             var sql = 'SELECT * FROM `tblMutasi` WHERE id = '+ id;
@@ -232,6 +239,7 @@ export default class Accounting {
                         }
         
                         obj['AUTH_EDIT'] = authEdit;
+                        obj['AUTH_APPR'] = authAppr;
         
                         output.push(obj);
                     })

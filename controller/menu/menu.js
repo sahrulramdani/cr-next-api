@@ -8,6 +8,7 @@ export default class Menu {
         var authAdd = request.AUTH_ADDX;
         var authEdit = request.AUTH_EDIT;
         var authDelt = request.AUTH_DELT;
+        var authAppr = request.AUTH_APPR;  // auth Approve
 
         var typeModule = request.params.typeModule;
         var bussCode = request.params.bussCode;
@@ -37,6 +38,7 @@ export default class Menu {
                     obj['AUTH_ADDX'] = authAdd;
                     obj['AUTH_EDIT'] = authEdit;
                     obj['AUTH_DELT'] = authDelt;
+                    obj['AUTH_APPR'] = authAppr;
 
                     output.push(obj);
                 })
@@ -51,6 +53,7 @@ export default class Menu {
         var authAdd = request.AUTH_ADDX;
         var authEdit = request.AUTH_EDIT;
         var authDelt = request.AUTH_DELT;
+        var authAppr = request.AUTH_APPR;  // auth Approve
 
         var qryCmd = 'select * from tb00_modm order by NoUrut';
         
@@ -67,6 +70,7 @@ export default class Menu {
                     obj['AUTH_ADDX'] = authAdd;
                     obj['AUTH_EDIT'] = authEdit;
                     obj['AUTH_DELT'] = authDelt;
+                    obj['AUTH_APPR'] = authAppr;
 
                     output.push(obj);
                 })
@@ -81,6 +85,7 @@ export default class Menu {
         var authAdd = request.AUTH_ADDX;
         var authEdit = request.AUTH_EDIT;
         var authDelt = request.AUTH_DELT;
+        var authAppr = request.AUTH_APPR;  // auth Approve
 
         var module = request.params.module;
         var bussCode = request.params.bussCode;
@@ -105,6 +110,7 @@ export default class Menu {
                     obj['AUTH_ADDX'] = authAdd;
                     obj['AUTH_EDIT'] = authEdit;
                     obj['AUTH_DELT'] = authDelt;
+                    obj['AUTH_APPR'] = authAppr;
 
                     output.push(obj);
                 })
@@ -117,6 +123,7 @@ export default class Menu {
     getModule = function(req, res) {
         // get user Access
         var authEdit = req.AUTH_EDIT;
+        var authAppr = request.AUTH_APPR;  // auth Approve
 
         var id = req.params.id;
         var sql = 'SELECT * FROM `tb01_modm` WHERE id = '+ id;
@@ -132,6 +139,7 @@ export default class Menu {
                     }
 
                     obj['AUTH_EDIT'] = authEdit;
+                    obj['AUTH_APPR'] = authAppr;
 
                     output.push(obj);
                 })

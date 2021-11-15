@@ -8,6 +8,7 @@ export default class Donatur {
         var authAdd = request.AUTH_ADDX;
         var authEdit = request.AUTH_EDIT;
         var authDelt = request.AUTH_DELT;
+        var authAppr = request.AUTH_APPR;  // auth Approve
 
         var status = request.params.status;
 
@@ -45,6 +46,7 @@ export default class Donatur {
                     obj['AUTH_ADDX'] = authAdd;
                     obj['AUTH_EDIT'] = authEdit;
                     obj['AUTH_DELT'] = authDelt;
+                    obj['AUTH_APPR'] = authAppr;
 
                     output.push(obj);
                 })
@@ -113,6 +115,7 @@ export default class Donatur {
     getDonatur = function(req, res) {
         // get user Access
         var authEdit = req.AUTH_EDIT;
+        var authAppr = request.AUTH_APPR;  // auth Approve
 
         var id = req.params.id;
 
@@ -128,6 +131,7 @@ export default class Donatur {
                     }
 
                     obj['AUTH_EDIT'] = authEdit;
+                    obj['AUTH_APPR'] = authAppr;
 
                     output.push(obj);
                 })
@@ -144,6 +148,7 @@ export default class Donatur {
         var authAdd = req.AUTH_ADDX;
         var authEdit = req.AUTH_EDIT;
         var authDelt = req.AUTH_DELT;
+        var authAppr = request.AUTH_APPR;  // auth Approve
 
         var level = req.params.level;
         var sql = '';
@@ -167,6 +172,7 @@ export default class Donatur {
                     obj['AUTH_ADDX'] = authAdd;
                     obj['AUTH_EDIT'] = authEdit;
                     obj['AUTH_DELT'] = authDelt;
+                    obj['AUTH_APPR'] = authAppr;
 
                     output.push(obj);
                 })
@@ -357,6 +363,7 @@ export default class Donatur {
         var authAdd = request.AUTH_ADDX;
         var authEdit = request.AUTH_EDIT;
         var authDelt = request.AUTH_DELT;
+        var authAppr = request.AUTH_APPR;  // auth Approve
 
         var typeProgram = request.params.typeProgram;
         var tahunBuku = request.params.tahunBuku;
@@ -375,6 +382,7 @@ export default class Donatur {
                     obj['AUTH_ADDX'] = authAdd;
                     obj['AUTH_EDIT'] = authEdit;
                     obj['AUTH_DELT'] = authDelt;
+                    obj['AUTH_APPR'] = authAppr;
 
                     output.push(obj);
                 })
@@ -447,6 +455,7 @@ export default class Donatur {
         var authAdd = req.AUTH_ADDX;
         var authEdit = req.AUTH_EDIT;
         var authDelt = req.AUTH_DELT;
+        var authAppr = request.AUTH_APPR;  // auth Approve
 
         var transNumber = req.params.transNumber;
 
@@ -465,6 +474,7 @@ export default class Donatur {
                     obj['AUTH_ADDX'] = authAdd;
                     obj['AUTH_EDIT'] = authEdit;
                     obj['AUTH_DELT'] = authDelt;
+                    obj['AUTH_APPR'] = authAppr;
 
                     output.push(obj);
                 })
@@ -527,6 +537,7 @@ export default class Donatur {
         var authAdd = req.AUTH_ADDX;
         var authEdit = req.AUTH_EDIT;
         var authDelt = req.AUTH_DELT;
+        var authAppr = request.AUTH_APPR;  // auth Approve
 
         var transNumber = req.params.transNumber;
 
@@ -544,6 +555,7 @@ export default class Donatur {
                     obj['AUTH_ADDX'] = authAdd;
                     obj['AUTH_EDIT'] = authEdit;
                     obj['AUTH_DELT'] = authDelt;
+                    obj['AUTH_APPR'] = authAppr;
 
                     output.push(obj);
                 })
@@ -578,6 +590,7 @@ export default class Donatur {
         var authAdd = request.AUTH_ADDX;
         var authEdit = request.AUTH_EDIT;
         var authDelt = request.AUTH_DELT;
+        var authAppr = request.AUTH_APPR;  // auth Approve
 
         var qryCmd = "select a.*, DATE_FORMAT(a.tglProses, '%d/%m/%Y') As tglProsesFormat, b.CODD_DESC As TypeProgram2 from tb52_slpa a inner join (select * from tb00_basx where CODD_FLNM = 'TYPE_PROGRAM_DONATUR') b on a.typeProgram = b.CODD_VALU inner join tb00_unit c on a.unit = c.KODE_UNIT where c.KODE_URUT like '" + request.KODE_URUT0 + "%' order by a.transNumber";
         db.query(qryCmd, function(err, rows, fields) {
@@ -593,6 +606,7 @@ export default class Donatur {
                     obj['AUTH_ADDX'] = authAdd;
                     obj['AUTH_EDIT'] = authEdit;
                     obj['AUTH_DELT'] = authDelt;
+                    obj['AUTH_APPR'] = authAppr;
 
                     output.push(obj);
                 })
@@ -628,6 +642,7 @@ export default class Donatur {
         var authAdd = req.AUTH_ADDX;
         var authEdit = req.AUTH_EDIT;
         var authDelt = req.AUTH_DELT;
+        var authAppr = request.AUTH_APPR;  // auth Approve
 
         var transNumber = req.params.id;
 
@@ -645,6 +660,7 @@ export default class Donatur {
                     obj['AUTH_ADDX'] = authAdd;
                     obj['AUTH_EDIT'] = authEdit;
                     obj['AUTH_DELT'] = authDelt;
+                    obj['AUTH_APPR'] = authAppr;
 
                     output.push(obj);
                 })
@@ -690,6 +706,7 @@ export default class Donatur {
         var authAdd = request.AUTH_ADDX;
         var authEdit = request.AUTH_EDIT;
         var authDelt = request.AUTH_DELT;
+        var authAppr = request.AUTH_APPR;  // auth Approve
 
         var qryCmd = "select a.*, b.CODD_DESC As TypeProgram2 from tb52_0001 a inner join (select * from tb00_basx where CODD_FLNM = 'TYPE_PROGRAM_DONATUR') b on a.typeProgram = b.CODD_VALU order by a.id desc";
         db.query(qryCmd, function(err, rows, fields) {
@@ -705,6 +722,7 @@ export default class Donatur {
                     obj['AUTH_ADDX'] = authAdd;
                     obj['AUTH_EDIT'] = authEdit;
                     obj['AUTH_DELT'] = authDelt;
+                    obj['AUTH_APPR'] = authAppr;
 
                     output.push(obj);
                 })
@@ -722,6 +740,7 @@ export default class Donatur {
         var authAdd = req.AUTH_ADDX;
         var authEdit = req.AUTH_EDIT;
         var authDelt = req.AUTH_DELT;
+        var authAppr = request.AUTH_APPR;  // auth Approve
 
         var donaturID = req.params.donaturID;
 
@@ -739,6 +758,7 @@ export default class Donatur {
                     obj['AUTH_ADDX'] = authAdd;
                     obj['AUTH_EDIT'] = authEdit;
                     obj['AUTH_DELT'] = authDelt;
+                    obj['AUTH_APPR'] = authAppr;
 
                     output.push(obj);
                 })
@@ -808,6 +828,7 @@ export default class Donatur {
         var authAdd = req.AUTH_ADDX;
         var authEdit = req.AUTH_EDIT;
         var authDelt = req.AUTH_DELT;
+        var authAppr = request.AUTH_APPR;  // auth Approve
 
         var isValid = req.params.isValid;
         var sql = '';
@@ -837,6 +858,7 @@ export default class Donatur {
                     obj['AUTH_ADDX'] = authAdd;
                     obj['AUTH_EDIT'] = authEdit;
                     obj['AUTH_DELT'] = authDelt;
+                    obj['AUTH_APPR'] = authAppr;
 
                     output.push(obj);
                 })
@@ -928,6 +950,7 @@ export default class Donatur {
         var authAdd = req.AUTH_ADDX;
         var authEdit = req.AUTH_EDIT;
         var authDelt = req.AUTH_DELT;
+        var authAppr = request.AUTH_APPR;  // auth Approve
 
         var transNumber = req.params.transNumber;
 
@@ -945,6 +968,7 @@ export default class Donatur {
                     obj['AUTH_ADDX'] = authAdd;
                     obj['AUTH_EDIT'] = authEdit;
                     obj['AUTH_DELT'] = authDelt;
+                    obj['AUTH_APPR'] = authAppr;
 
                     output.push(obj);
                 })
@@ -953,4 +977,6 @@ export default class Donatur {
             res.send(output);
         });
     }
+
+    
 }

@@ -7,6 +7,7 @@ export default class Issue {
         var authAdd = request.AUTH_ADDX;
         var authEdit = request.AUTH_EDIT;
         var authDelt = request.AUTH_DELT;
+        var authAppr = request.AUTH_APPR;  // auth Approve
 
         var qryCmd = "select a.ACCT_CODE as id, a.ACCT_NAMA, b.CODD_DESC, CASE a.STATUS WHEN '1' THEN 'VERIFIKASI' ELSE 'NON-VERIFIKASI' END As STATUS from tb50_rish a left join (select * from tb00_basx where CODD_FLNM='BUSSINESS_UNIT') b on a.CABX_CODE = b.CODD_VALU";
         db.query(qryCmd, function(err, rows, fields) {
@@ -22,6 +23,7 @@ export default class Issue {
                     obj['AUTH_ADDX'] = authAdd;
                     obj['AUTH_EDIT'] = authEdit;
                     obj['AUTH_DELT'] = authDelt;
+                    obj['AUTH_APPR'] = authAppr;
 
                     output.push(obj);
                 })
@@ -61,6 +63,7 @@ export default class Issue {
     getIssue = function(req, res) {
         // get user Access
         var authEdit = req.AUTH_EDIT;
+        var authAppr = request.AUTH_APPR;  // auth Approve
 
         var id = req.params.id;
         var sql = 'SELECT * FROM `tb50_rish` WHERE ACCT_CODE = "'+ id +'" ';
@@ -76,6 +79,7 @@ export default class Issue {
                     }
 
                     obj['AUTH_EDIT'] = authEdit;
+                    obj['AUTH_APPR'] = authAppr;
 
                     output.push(obj);
                 })

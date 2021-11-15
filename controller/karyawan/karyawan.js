@@ -4,6 +4,7 @@ export default class Karyawan {
     getKaryawan = function(req, res) {
         // get user Access
         var authEdit = request.AUTH_EDIT;
+        var authAppr = request.AUTH_APPR;  // auth Approve
 
         var nik = req.params.id;
         var sql = 'SELECT a.* FROM tb21_empl a INNER JOIN tb21_empx b ON a.KodeNik = b.KodeNik WHERE a.KodeNik = "'+ nik +'" ';
@@ -19,6 +20,7 @@ export default class Karyawan {
                     }
 
                     obj['AUTH_EDIT'] = authEdit;
+                    obj['AUTH_APPR'] = authAppr;
 
                     output.push(obj);
                 })

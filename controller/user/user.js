@@ -220,6 +220,7 @@ export default class User {
             AUTH_ADDX : req.body.AUTH_ADDX,
             AUTH_EDIT : req.body.AUTH_EDIT,
             AUTH_DELT : req.body.AUTH_DELT,
+            AUTH_APPR : req.body.AUTH_APPR,
             CRTX_DATE : new Date(),
             CRTX_BYXX : req.userID
         };
@@ -281,6 +282,7 @@ export default class User {
             AUTH_ADDX : req.body.AUTH_ADDX,
             AUTH_EDIT : req.body.AUTH_EDIT,
             AUTH_DELT : req.body.AUTH_DELT,
+            AUTH_APPR : req.body.AUTH_APPR,
             CRTX_DATE : new Date(),
             CRTX_BYXX : req.userID
         };
@@ -401,6 +403,7 @@ export default class User {
             AUTH_ADDX : req.body.AUTH_ADDX,
             AUTH_EDIT : req.body.AUTH_EDIT,
             AUTH_DELT : req.body.AUTH_DELT,
+            AUTH_APPR : req.body.AUTH_APPR,
             UPDT_DATE : new Date(),
             UPDT_BYXX : req.userID
         };
@@ -458,6 +461,7 @@ export default class User {
             AUTH_ADDX : req.body.AUTH_ADDX,
             AUTH_EDIT : req.body.AUTH_EDIT,
             AUTH_DELT : req.body.AUTH_DELT,
+            AUTH_APPR : req.body.AUTH_APPR,
             UPDT_DATE : new Date(),
             UPDT_BYXX : req.userID
         };
