@@ -148,7 +148,7 @@ export default class Donatur {
         var authAdd = req.AUTH_ADDX;
         var authEdit = req.AUTH_EDIT;
         var authDelt = req.AUTH_DELT;
-        var authAppr = request.AUTH_APPR;  // auth Approve
+        var authAppr = req.AUTH_APPR;  // auth Approve
 
         var level = req.params.level;
         var sql = '';
@@ -978,5 +978,27 @@ export default class Donatur {
         });
     }
 
+    getTransactionsFilter = function(req, res) {
+        var tgl1 = req.params.tgl1;
+        var tgl2 = req.params.tgl2;
+
+        var sql = "select c.CODD_DESC As Channel, SUM(a.Amount) As Total from trans_donatur a inner join tb11_mzjb b on a.DonaturID = b.NO_ID inner join (select * from tb00_basx where CODD_FLNM = 'CHANNEL_DONATUR') c on b.Channel = c.CODD_VALU where a.isValidate = '1' And DATE_FORMAT(a.TransDate, '%Y-%m-%d') between '" + tgl1 + "' and '" + tgl2 + "' group by c.CODD_DESC";
     
+        db.query(sql, function(err, rows, fields) {
+            var output = [];
+    
+            if (rows.length > 0) {
+                rows.forEach(function(row) {
+                    var obj = new Object();
+                    for(var key in row) {
+                        obj[key] = row[key]; 
+                    }
+    
+                    output.push(obj);
+                })
+            }
+    
+            res.send(output);
+        });
+    }
 }
