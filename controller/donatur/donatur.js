@@ -28,7 +28,6 @@ export default class Donatur {
                       "END As Jns_Kelamin, " + 
                       "a.Email, a.NoHP, b.CODD_DESC As Channel, CONCAT(a.NAMA, ', ', IFNULL(a.TITLE, '')) As Nama2, CONCAT(IFNULL(a.CodeCountryHP, ''), a.NoHP) As NoHP2 from tb11_mzjb a INNER JOIN (select * from tb00_basx where CODD_FLNM = 'CHANNEL_DONATUR') b ON a.Channel = b.CODD_VALU INNER JOIN tb00_unit c ON a.BUSS_CODE = c.KODE_UNIT where a.Status = '" + status + "' And c.KODE_URUT like '" + request.KODE_URUT0 + "%'";
         };
-        
         db.query(qryCmd, function(err, rows, fields) {
             var output = [];
             
@@ -115,11 +114,11 @@ export default class Donatur {
     getDonatur = function(req, res) {
         // get user Access
         var authEdit = req.AUTH_EDIT;
-        var authAppr = request.AUTH_APPR;  // auth Approve
+        var authAppr = req.AUTH_APPR;  // auth Approve
 
         var id = req.params.id;
 
-        var sql = 'SELECT * FROM tb11_mzjb WHERE NO_ID = "'+ id +'"';
+        var sql = 'SELECT a.* FROM tb11_mzjb a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT WHERE a.NO_ID = "'+ id +'" And b.KODE_URUT like "' + req.KODE_URUT0 + '%"' ;
         db.query(sql, function(err, rows, fields) {
             var output = [];
 
@@ -201,6 +200,8 @@ export default class Donatur {
             NoKTP : req.body.NoKTP,
             Stat_aktf : '1',
             StatusKawin : req.body.StatusKawin,
+            Pendidikan : req.body.Pendidikan,
+            Pekerjaan : req.body.Pekerjaan,
             TglX_MASK : req.body.TglX_MASK,
             Status : req.body.Status,
             TypeBadan : req.body.TypeBadan,
@@ -246,10 +247,11 @@ export default class Donatur {
             Email : req.body.Email,
             TMPX_LHRX : req.body.TMPX_LHRX,
             TGLX_LHRX : req.body.TGLX_LHRX,
-            BUSS_CODE : req.body.BUSS_CODE,
             NoKTP : req.body.NoKTP,
             Stat_aktf : '1',
             StatusKawin : req.body.StatusKawin,
+            Pendidikan : req.body.Pendidikan,
+            Pekerjaan : req.body.Pekerjaan,
             TglX_MASK : req.body.TglX_MASK,
             Status : req.body.Status,
             TypeBadan : req.body.TypeBadan,
@@ -455,7 +457,7 @@ export default class Donatur {
         var authAdd = req.AUTH_ADDX;
         var authEdit = req.AUTH_EDIT;
         var authDelt = req.AUTH_DELT;
-        var authAppr = request.AUTH_APPR;  // auth Approve
+        var authAppr = req.AUTH_APPR;  // auth Approve
 
         var transNumber = req.params.transNumber;
 
@@ -537,7 +539,7 @@ export default class Donatur {
         var authAdd = req.AUTH_ADDX;
         var authEdit = req.AUTH_EDIT;
         var authDelt = req.AUTH_DELT;
-        var authAppr = request.AUTH_APPR;  // auth Approve
+        var authAppr = req.AUTH_APPR;  // auth Approve
 
         var transNumber = req.params.transNumber;
 
@@ -642,7 +644,7 @@ export default class Donatur {
         var authAdd = req.AUTH_ADDX;
         var authEdit = req.AUTH_EDIT;
         var authDelt = req.AUTH_DELT;
-        var authAppr = request.AUTH_APPR;  // auth Approve
+        var authAppr = req.AUTH_APPR;  // auth Approve
 
         var transNumber = req.params.id;
 
@@ -740,7 +742,7 @@ export default class Donatur {
         var authAdd = req.AUTH_ADDX;
         var authEdit = req.AUTH_EDIT;
         var authDelt = req.AUTH_DELT;
-        var authAppr = request.AUTH_APPR;  // auth Approve
+        var authAppr = req.AUTH_APPR;  // auth Approve
 
         var donaturID = req.params.donaturID;
 
@@ -828,7 +830,7 @@ export default class Donatur {
         var authAdd = req.AUTH_ADDX;
         var authEdit = req.AUTH_EDIT;
         var authDelt = req.AUTH_DELT;
-        var authAppr = request.AUTH_APPR;  // auth Approve
+        var authAppr = req.AUTH_APPR;  // auth Approve
 
         var isValid = req.params.isValid;
         var sql = '';
@@ -950,7 +952,7 @@ export default class Donatur {
         var authAdd = req.AUTH_ADDX;
         var authEdit = req.AUTH_EDIT;
         var authDelt = req.AUTH_DELT;
-        var authAppr = request.AUTH_APPR;  // auth Approve
+        var authAppr = req.AUTH_APPR;  // auth Approve
 
         var transNumber = req.params.transNumber;
 
