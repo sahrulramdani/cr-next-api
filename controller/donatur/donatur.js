@@ -871,10 +871,10 @@ export default class Donatur {
     }
 
     updateDonaturTrans = function(req, res) {
-        var transNumber = req.body.transNumber;
+        var id = req.body.id;
         var NoReference2 = req.body.NoReference2;
 
-        var sql = 'UPDATE trans_donatur SET ? WHERE TransNumber = "' + transNumber + '"';   
+        var sql = 'UPDATE trans_donatur SET ? WHERE id = ' + id;   
         var data = {
             TransDate : req.body.TransDate,
             NoReference : req.body.NoReference,
@@ -922,8 +922,8 @@ export default class Donatur {
 
     // soft delete
     deleteSoftDonaturTrans = function(req, res) {
-        var transNumber = req.body.transNumber;
-        var sql = 'UPDATE trans_donatur SET ? WHERE TransNumber = "' + transNumber + '"';   
+        var id = req.body.id;
+        var sql = 'UPDATE trans_donatur SET ? WHERE id = ' + id;   
         var data = {
             isDelete : req.body.isDelete,
             UPDT_DATE : new Date(),
@@ -954,9 +954,9 @@ export default class Donatur {
         var authDelt = req.AUTH_DELT;
         var authAppr = req.AUTH_APPR;  // auth Approve
 
-        var transNumber = req.params.transNumber;
+        var id = req.params.id;
 
-        var sql = 'SELECT a.*, CONCAT(a.DonaturID, " - ", b.NAMA) As Donatur2 FROM trans_donatur a INNER JOIN tb11_mzjb b ON a.DonaturID = b.NO_ID WHERE a.transNumber = "'+ transNumber +'"';
+        var sql = 'SELECT a.*, CONCAT(a.DonaturID, " - ", b.NAMA) As Donatur2 FROM trans_donatur a INNER JOIN tb11_mzjb b ON a.DonaturID = b.NO_ID WHERE a.id = "'+ id +'"';
         db.query(sql, function(err, rows, fields) {
             var output = [];
 

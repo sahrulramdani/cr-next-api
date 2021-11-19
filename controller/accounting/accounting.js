@@ -223,7 +223,7 @@ export default class Accounting {
         getMutasi = function(req, res) {
             // get user Access
             var authEdit = req.AUTH_EDIT;
-            var authAppr = request.AUTH_APPR;  // auth Approve
+            var authAppr = req.AUTH_APPR;  // auth Approve
     
             var id = req.params.id;
             var sql = 'SELECT * FROM `tblMutasi` WHERE id = '+ id;
