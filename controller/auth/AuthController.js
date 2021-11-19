@@ -35,9 +35,22 @@ export default class AuthController {
                         message: err.sqlMessage
                     });
                 } else {
-                    res.send({
-                        status: true,
-                        token: token
+                    sql = 'INSERT INTO tb21_empl SET ?';
+
+                    data = {
+                        KodeNik : req.body.KodeNik,
+                        NamaKry : req.body.NamaKry,
+                        email : req.body.Email,
+                        StatusAktif : req.body.StatusAktif,
+                        CRTX_DATE : new Date(),
+                        CRTX_BYXX : req.body.USER_IDXX
+                    };
+
+                    db.query(sql, data, (err, result) => {
+                        res.send({
+                            status: true,
+                            token: token
+                        });
                     });
                 }
             });

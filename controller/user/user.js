@@ -60,10 +60,10 @@ export default class User {
         var authEdit = req.AUTH_EDIT;
 
         var id = req.params.userID;
-        var sql = 'SELECT a.*, b.Nama FROM `tb01_lgxh` a INNER JOIN (select KodeNik As Nik, NamaKry As Nama from tb21_empl UNION select No_ID, NAMA from tb11_mzjb) b ON a.NO_ID = b.Nik WHERE a.USER_IDXX = "'+ id +'" ';
+        var sql = 'SELECT a.*, b.Nama, c.KODE_URUT FROM `tb01_lgxh` a INNER JOIN (select KodeNik As Nik, NamaKry As Nama from tb21_empl UNION select No_ID, NAMA from tb11_mzjb) b ON a.NO_ID = b.Nik INNER JOIN tb00_unit c ON a.BUSS_CODE = c.KODE_UNIT WHERE a.USER_IDXX = "'+ id +'" ';
         
         db.query(sql, function(err, rows, fields) {
-            var output = [];
+            var output = []; 
 
             if (rows.length > 0) {
                 rows.forEach(function(row) {
@@ -86,7 +86,7 @@ export default class User {
         // get user Access
         var authEdit = req.AUTH_EDIT;
         
-        var sql = 'SELECT a.*, b.NAMA_UNIT FROM `tb01_lgxh` a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT WHERE a.USER_IDXX = "'+ req.userID +'" ';
+        var sql = 'SELECT a.*, b.NAMA_UNIT, b.KODE_URUT FROM `tb01_lgxh` a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT WHERE a.USER_IDXX = "'+ req.userID +'" ';
         db.query(sql, function(err, rows, fields) {
             var output = [];
 
