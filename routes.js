@@ -39,6 +39,7 @@ import * as C from './controller/index.js';
 
       // ----- Payroll --------------
       app.route('/payroll/setup/type-relawans').get(C.auth.verifyToken, C.setup.typeRelawanAll);
+      app.route('/payroll/karyawan/update').post(C.auth.verifyToken, C.karyawan.updateKaryawan);
       app.route('/payroll/karyawan/save').post(C.auth.verifyToken, C.karyawan.saveKaryawan);
       app.route('/payroll/karyawah-prsh/save').post(C.auth.verifyToken, C.karyawan.saveKaryawanPrsh);
       app.route('/payroll/karyawan/:id').get(C.auth.verifyToken, C.karyawan.getKaryawan);
@@ -68,6 +69,10 @@ import * as C from './controller/index.js';
       app.route('/register').post(C.auth.register);
       app.route('/signin').post(C.auth.signin);
       app.route('/profile').get(C.auth.verifyToken, C.user.getProfile);
+      app.route('/profile/karyawan/update').post(C.auth.verifyToken, C.karyawan.updateKaryawan);
+      app.route('/profile/karyawan/save').post(C.auth.verifyToken, C.karyawan.saveKaryawan);
+      app.route('/profile/karyawah-prsh/save').post(C.auth.verifyToken, C.karyawan.saveKaryawanPrsh);
+      app.route('/profile/karyawan').get(C.auth.verifyToken, C.karyawan.getProfileKaryawan);
 
       // ------ CRM --------------
       app.route('/crm/setup/channel-donaturs').get(C.auth.verifyToken, C.setup.channelDonaturAll);

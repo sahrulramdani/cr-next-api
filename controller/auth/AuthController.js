@@ -22,6 +22,8 @@ export default class AuthController {
                 Active : req.body.Active,
                 IsValid : req.body.IsValid,
                 Email : req.body.Email,
+                NO_ID : req.body.NO_ID,
+                TYPE_PRSON : req.body.TYPE_PRSON,    
                 CRTX_DATE : new Date(),
                 CRTX_BYXX : req.body.USER_IDXX
             };
@@ -157,7 +159,7 @@ export default class AuthController {
                             next();
                         }
                     } else {
-                        const pathPermit = ['/profile', '/', '/menu/menus', '/uploadFile2', '/user/update'];
+                        const pathPermit = ['/profile', '/', '/menu/menus', '/uploadFile2', '/user/update', '/profile/karyawan', '/profile/karyawan/update', '/profile/karyawan/save', '/profile/karyawah-prsh/save', '/setup/pekerjaans', '/setup/pendidikans', '/setup/status-maritals', '/setup/gol-darahs'];
 
                         if (pathPermit.includes(path)) {
                             next();
