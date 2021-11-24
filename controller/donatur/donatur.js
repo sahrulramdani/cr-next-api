@@ -1,5 +1,5 @@
 import  db from './../../koneksi.js';
-import { fncParseComma } from './../../libraries/sisqu/Utility.js';
+import { fncParseComma, generateAutonumber } from './../../libraries/sisqu/Utility.js';
 import moment from 'moment';
 
 export default class Donatur {
@@ -63,9 +63,9 @@ export default class Donatur {
         var qryCmd = "";
         if (status === "0") {
             // All, kecuali New dan Send Back
-            qryCmd = "select NO_ID As value, CONCAT(`NO_ID`, ' - ', `NAMA`, ' - ', SUBSTRING(`ALMT_XXX1`, 1, 20)) As label from tb11_mzjb where Status <> '1' And Status <> '3' order by NO_ID";
+            qryCmd = "select a.NO_ID As value, CONCAT(a.NO_ID, ' - ', a.NAMA, ' - ', SUBSTRING(a.ALMT_XXX1, 1, 20)) As label from tb11_mzjb a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where a.Status <> '1' And a.Status <> '3' And b.KODE_URUT like '" + req.KODE_URUT0 + "%' order by a.NO_ID";
         } else {
-            qryCmd = "select NO_ID As value, CONCAT(`NO_ID`, ' - ', `NAMA`, ' - ', SUBSTRING(`ALMT_XXX1`, 1, 20)) As label from tb11_mzjb where Status = '" + status + "'  order by NO_ID";
+            qryCmd = "select a.NO_ID As value, CONCAT(a.NO_ID, ' - ', a.NAMA, ' - ', SUBSTRING(a.ALMT_XXX1, 1, 20)) As label from tb11_mzjb a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where a.Status = '" + status + "' And b.KODE_URUT like '" + req.KODE_URUT0 + "%'  order by a.NO_ID";
         }
         
         db.query(qryCmd, function(err, rows, fields) {
@@ -184,9 +184,17 @@ export default class Donatur {
     }
 
     saveDonatur = function(req, res) {
+        var noID;
+        if (req.body.NO_ID === null || req.body.NO_ID === undefined) {
+            noID = generateAutonumber(req.body.Initial, req.SequenceUnitCode0, req.body.Tahun, 
+                req.body.NextSequenceFormat);
+        } else {
+            noID = req.body.NO_ID;
+        }
+
         var sql = 'INSERT INTO tb11_mzjb SET ?';
         var data = {
-            NO_ID : req.body.NO_ID,
+            NO_ID : noID,
             NPWP : req.body.NPWP,
             NAMA : req.body.NAMA,
             JNKX_KLMN : req.body.JNKX_KLMN,
@@ -773,8 +781,17 @@ export default class Donatur {
     // Save Detail Transaction Donatur
     saveDetTransaction = function(req, res) {
         var sql = 'INSERT INTO trans_donatur SET ?';   
+
+        var transNumber;
+        if (req.body.TransNumber === null || req.body.TransNumber === undefined) {
+            transNumber = generateAutonumber(req.body.Initial, req.SequenceUnitCode0, req.body.Tahun, 
+                req.body.NextSequenceFormat);
+        } else {
+            transNumber = req.body.TransNumber;
+        }
+
         var data = {
-            TransNumber : req.body.TransNumber,
+            TransNumber : transNumber,
             TransDate : req.body.TransDate,
             NoReference : req.body.NoReference,
             DonaturID : req.body.DonaturID,

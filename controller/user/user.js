@@ -111,21 +111,39 @@ export default class User {
     updateUser = function(req, res) {
         var ids = req.body.USER_IDXX;
         var sql = 'UPDATE `tb01_lgxh` SET ? WHERE USER_IDXX = "'+ ids +'" ';
-        var hashedPassword = bcrypt.hashSync(req.body.Password, 8);
 
-        var data = {
-            BUSS_CODE : req.body.BUSS_CODE,
-            KETX_USER : req.body.KETX_USER,
-            NO_ID : req.body.NO_ID,
-            Active : req.body.Active,
-            IsValid : req.body.IsValid,
-            TYPE_PRSON : req.body.TYPE_PRSON,
-            NamaFile : req.body.NamaFile,
-            TemplateRoleID : req.body.TemplateRoleID,
-            PASS_IDXX : hashedPassword,
-            UPDT_DATE : new Date(),
-            UPDT_BYXX : req.userID
-        };
+        var hashedPassword;
+        var data;
+        if (req.body.password === undefined) {
+            data = {
+                BUSS_CODE : req.body.BUSS_CODE,
+                KETX_USER : req.body.KETX_USER,
+                NO_ID : req.body.NO_ID,
+                Active : req.body.Active,
+                IsValid : req.body.IsValid,
+                TYPE_PRSON : req.body.TYPE_PRSON,
+                NamaFile : req.body.NamaFile,
+                TemplateRoleID : req.body.TemplateRoleID,
+                UPDT_DATE : new Date(),
+                UPDT_BYXX : req.userID
+            };
+             
+        } else {
+            hashedPassword = bcrypt.hashSync(req.body.Password, 8);
+            data = {
+                BUSS_CODE : req.body.BUSS_CODE,
+                KETX_USER : req.body.KETX_USER,
+                NO_ID : req.body.NO_ID,
+                Active : req.body.Active,
+                IsValid : req.body.IsValid,
+                TYPE_PRSON : req.body.TYPE_PRSON,
+                NamaFile : req.body.NamaFile,
+                TemplateRoleID : req.body.TemplateRoleID,
+                PASS_IDXX : hashedPassword,
+                UPDT_DATE : new Date(),
+                UPDT_BYXX : req.userID
+            };
+        }
         
         db.query(sql, data, (err, result) => {
             if (err) {

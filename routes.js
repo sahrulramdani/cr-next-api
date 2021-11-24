@@ -41,7 +41,7 @@ import * as C from './controller/index.js';
       app.route('/payroll/setup/type-relawans').get(C.auth.verifyToken, C.setup.typeRelawanAll);
       app.route('/payroll/karyawan/update').post(C.auth.verifyToken, C.karyawan.updateKaryawan);
       app.route('/payroll/karyawan/save').post(C.auth.verifyToken, C.karyawan.saveKaryawan);
-      app.route('/payroll/karyawah-prsh/save').post(C.auth.verifyToken, C.karyawan.saveKaryawanPrsh);
+      app.route('/payroll/karyawan-prsh/save').post(C.auth.verifyToken, C.karyawan.saveKaryawanPrsh);
       app.route('/payroll/karyawan/:id').get(C.auth.verifyToken, C.karyawan.getKaryawan);
 
       // ------ Management User --------------
@@ -70,8 +70,8 @@ import * as C from './controller/index.js';
       app.route('/signin').post(C.auth.signin);
       app.route('/profile').get(C.auth.verifyToken, C.user.getProfile);
       app.route('/profile/karyawan/update').post(C.auth.verifyToken, C.karyawan.updateKaryawan);
-      app.route('/profile/karyawan/save').post(C.auth.verifyToken, C.karyawan.saveKaryawan);
-      app.route('/profile/karyawah-prsh/save').post(C.auth.verifyToken, C.karyawan.saveKaryawanPrsh);
+      app.route('/profile/karyawan/save').post(C.auth.verifyToken, C.karyawan.saveKaryawanProfile);
+      app.route('/profile/karyawan-prsh/save').post(C.auth.verifyToken, C.karyawan.saveKaryawanPrsh);
       app.route('/profile/karyawan').get(C.auth.verifyToken, C.karyawan.getProfileKaryawan);
 
       // ------ CRM --------------
@@ -133,6 +133,11 @@ import * as C from './controller/index.js';
       app.route('/menu/processes/:bussCode/:module').get(C.auth.verifyToken, C.menu.processAll);
       app.route('/menu/menus').get(C.auth.verifyToken, C.menu.getMenus);
       app.route('/menu/menus2/:userID').get(C.auth.verifyToken, C.menu.getMenus2);
+
+      // ------ Utility --------------
+      app.route('/utility/sequence/save').post(C.auth.verifyToken, C.utility.saveSequence);
+      app.route('/utility/sequence/update').post(C.auth.verifyToken, C.utility.updateSequence);
+      app.route('/utility/sequence/:initial/:tahun/:bussCode').get(C.auth.verifyToken, C.utility.getSequence);
 }
 
 

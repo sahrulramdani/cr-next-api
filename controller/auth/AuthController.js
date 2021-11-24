@@ -37,29 +37,22 @@ export default class AuthController {
                         message: err.sqlMessage
                     });
                 } else {
-                    sql = 'INSERT INTO tb21_empl SET ?';
-
-                    data = {
-                        KodeNik : req.body.KodeNik,
-                        NamaKry : req.body.NamaKry,
-                        email : req.body.Email,
-                        StatusAktif : req.body.StatusAktif,
-                        CRTX_DATE : new Date(),
-                        CRTX_BYXX : req.body.USER_IDXX
-                    };
-
-                    db.query(sql, data, (err, result) => {
-                        res.send({
-                            status: true,
-                            token: token
-                        });
+                    res.send({
+                        status: true,
+                        token: token
                     });
                 }
             });
         }
 
         signin = function(req, res) {
-            var sql = 'select * from tb01_lgxh where USER_IDXX = "' + req.body.USER_IDXX + '" And Active = "1" And IsValid = "1" And BUSS_CODE = "' + req.body.BUSS_CODE + '"';
+            var sql = '';
+
+            if (req.body.NotRequiredEntity === '1') {
+                sql = 'select * from tb01_lgxh where UPPER(USER_IDXX) = "' + req.body.USER_IDXX.toUpperCase() + '" And Active = "1" And IsValid = "1"';
+            } else {
+                sql = 'select * from tb01_lgxh where UPPER(USER_IDXX) = "' + req.body.USER_IDXX.toUpperCase() + '" And Active = "1" And IsValid = "1" And BUSS_CODE = "' + req.body.BUSS_CODE + '"';
+            }
             db.query(sql, (err, rows) => {
               if (err) {
                   console.log('Error', err);
@@ -122,7 +115,7 @@ export default class AuthController {
                 req.userID = decoded.id;
                 
                 // get User Access
-                var sql = 'SELECT a.*, c.IsValid, d.KODE_URUT FROM `tb01_usrd` a INNER JOIN `tb01_apix` b on a.PROC_CODE = b.PROC_CODE INNER JOIN `tb01_lgxh` c ON a.USER_IDXX = c.USER_IDXX INNER JOIN tb00_unit d ON a.BUSS_CODE = d.KODE_UNIT WHERE a.USER_IDXX = "' + decoded.id + '" And ("' + path + '%" like CONCAT(b.PATH,"%") Or "' + path + '%/" like CONCAT(b.PATH,"%")) ORDER BY b.PATH';  
+                var sql = 'SELECT a.*, c.IsValid, d.KODE_URUT, d.SequenceUnitCode FROM `tb01_usrd` a INNER JOIN `tb01_apix` b on a.PROC_CODE = b.PROC_CODE INNER JOIN `tb01_lgxh` c ON a.USER_IDXX = c.USER_IDXX INNER JOIN tb00_unit d ON a.BUSS_CODE = d.KODE_UNIT WHERE a.USER_IDXX = "' + decoded.id + '" And ("' + path + '%" like CONCAT(b.PATH,"%") Or "' + path + '%/" like CONCAT(b.PATH,"%")) ORDER BY b.PATH';  
                 
                 db.query(sql, (err, rows) => {
                     if (err)
@@ -139,6 +132,7 @@ export default class AuthController {
                         req.AUTH_PRNT = userAccess.AUTH_PRNT;
                         req.BUSS_CODE0 = userAccess.BUSS_CODE;
                         req.KODE_URUT0 = userAccess.KODE_URUT;
+                        req.SequenceUnitCode0 = userAccess.SequenceUnitCode;
 
                         if (userAccess.IsValid === '0') {
                             return res.status(403).send({ 
@@ -159,7 +153,25 @@ export default class AuthController {
                             next();
                         }
                     } else {
-                        const pathPermit = ['/profile', '/', '/menu/menus', '/uploadFile2', '/user/update', '/profile/karyawan', '/profile/karyawan/update', '/profile/karyawan/save', '/profile/karyawah-prsh/save', '/setup/pekerjaans', '/setup/pendidikans', '/setup/status-maritals', '/setup/gol-darahs'];
+                        var j = 0;
+                        for(var obj in req.params) {
+                            j++;
+                        }
+                        
+                        if (j > 0) {
+                            var pathArrays = path.split('/');
+                            var pathLength = pathArrays.length;
+
+                            path = '';
+                            for(var i=0; i < pathLength-j; i++) {
+                                if (i>0) {
+                                    path += '/' + pathArrays[i];
+                                }
+                            }
+                        }
+
+                        const pathPermit = ['/profile', '/', '/menu/menus', '/uploadFile2', '/user/update', '/profile/karyawan', '/profile/karyawan/update', '/profile/karyawan/save', '/profile/karyawan-prsh/save', '/setup/pekerjaans', '/setup/pendidikans', '/setup/status-maritals', '/setup/gol-darahs', '/utility/sequence', '/utility/sequence/save', '/utility/sequence/update'];
+
 
                         if (pathPermit.includes(path)) {
                             next();

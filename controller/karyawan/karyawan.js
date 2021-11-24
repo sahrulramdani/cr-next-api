@@ -1,10 +1,20 @@
 import  db from './../../koneksi.js';
+import { generateAutonumber } from './../../libraries/sisqu/Utility.js';
+
 
 export default class Karyawan {
     saveKaryawan = function(req, res) {
+        var kodeNik;
+        if (req.body.KodeNik === null || req.body.KodeNik === undefined) {
+            kodeNik = generateAutonumber(req.body.Initial, req.SequenceUnitCode0, req.body.Tahun, 
+                req.body.NextSequenceFormat);
+        } else {
+            kodeNik = req.body.KodeNik;
+        }
+
         var sql = 'INSERT INTO tb21_empl SET ?';
         var data = {
-            KodeNik : req.body.KodeNik,
+            KodeNik : kodeNik,
             noxx_NPWP : req.body.noxx_NPWP,
             NamaKry : req.body.NamaKry,
             JenisKel : req.body.JenisKel,
@@ -51,6 +61,75 @@ export default class Karyawan {
                     } else {
                         res.send({
                             status: true
+                        });
+                    }
+                });
+            }
+        });
+    }
+
+    saveKaryawanProfile = function(req, res) {
+        var kodeNik;
+        if (req.body.KodeNik === null || req.body.KodeNik === undefined) {
+            kodeNik = generateAutonumber(req.body.Initial, req.SequenceUnitCode0, req.body.Tahun, 
+                req.body.NextSequenceFormat);
+        } else {
+            kodeNik = req.body.KodeNik;
+        }
+
+        var sql = 'INSERT INTO tb21_empl SET ?';
+        var data = {
+            KodeNik : kodeNik,
+            noxx_NPWP : req.body.noxx_NPWP,
+            NamaKry : req.body.NamaKry,
+            JenisKel : req.body.JenisKel,
+            Alamat1 : req.body.Alamat1,
+            Hp : req.body.Hp,
+            CodeCountryHP : req.body.CodeCountryHP,
+            email : req.body.email,
+            TempatLahir : req.body.TempatLahir,
+            TglLahir : req.body.TglLahir,
+            BUSS_CODE : req.BUSS_CODE0,
+            NoKTP : req.body.NoKTP,
+            StatusAktif : '1',
+            StatusKawin : req.body.StatusKawin,
+            TglMasuk : req.body.TglMasuk,
+            GolDarah : req.body.GolDarah,
+            Title : req.body.Title,
+            PIC: req.body.PIC,
+            NoHPPIC: req.body.NoHPPIC,
+            CodeCountryHPPIC : req.body.CodeCountryHPPIC,
+            EmailPIC: req.body.EmailPIC,
+            TypeRelawan : req.body.TypeRelawan,
+            Pendidikan : req.body.Pendidikan,
+            Pekerjaan : req.body.Pekerjaan,
+            CRTX_DATE : new Date(),
+            CRTX_BYXX : req.userID
+        };
+
+        var sqlDelete = 'DELETE FROM tb21_empl WHERE KodeNik = "' + data.KodeNik + '"';
+        
+        // execute query Delete
+        db.query(sqlDelete, (err, result) => {
+            if (err) {
+                console.log('Error', err);
+            } else {
+                // execute query Save
+                db.query(sql, data, (err2, result2) => {
+                    if (err2) {
+                        console.log('Error', err2);
+
+                        res.send({
+                            status: false,
+                            message: err2.sqlMessage
+                        });
+                    } else {
+                        // update tabel tb01_lgxh, field NO_ID
+                        sql = 'update tb01_lgxh set NO_ID = "' + kodeNik + '" where USER_IDXX = "' + req.userID + '"';
+                        db.query(sql, (err2, result2) => {
+                            res.send({
+                                status: true
+                            });
                         });
                     }
                 });
