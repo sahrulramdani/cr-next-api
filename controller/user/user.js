@@ -61,7 +61,7 @@ export default class User {
         var authEdit = req.AUTH_EDIT;
 
         var id = req.params.userID;
-        var sql = 'SELECT a.*, b.Nama, c.KODE_URUT FROM `tb01_lgxh` a LEFT JOIN (select KodeNik As Nik, NamaKry As Nama from tb21_empl UNION select No_ID, NAMA from tb11_mzjb) b ON a.NO_ID = b.Nik LEFT JOIN tb00_unit c ON a.BUSS_CODE = c.KODE_UNIT WHERE a.USER_IDXX = "'+ id +'" ';
+        var sql = 'SELECT a.*, b.Nama, c.KODE_URUT FROM `tb01_lgxh` a LEFT JOIN (select KodeNik As Nik, NamaKry As Nama from tb21_empl UNION select No_ID, NAMA from tb11_mzjb) b ON a.NO_ID = b.Nik LEFT JOIN tb00_unit c ON a.BUSS_CODE = c.KODE_UNIT WHERE a.USER_IDXX = "'+ id +'" And c.KODE_URUT like "' + req.KODE_URUT0 + '%" ';
         
         db.query(sql, function(err, rows, fields) {
             var output = []; 
@@ -165,7 +165,7 @@ export default class User {
     getDetUserAccesses = function(req, res) {
         var userID = req.params.userID;
 
-        var sql = 'SELECT a.*, c.PROC_NAME FROM tb01_usrd a INNER JOIN tb01_lgxh b ON a.USER_IDXX = b.USER_IDXX AND a.BUSS_CODE = b.BUSS_CODE INNER JOIN `tb01_proc` c ON a.PROC_CODE = c.PROC_CODE And a.BUSS_CODE = c.BUSS_CODE INNER JOIN tb00_proc d ON a.PROC_CODE = d.PROC_CODE WHERE a.USER_IDXX = "'+ userID +'" ORDER BY d.NoUrut';
+        var sql = 'SELECT a.*, d.PROC_NAME FROM tb01_usrd a INNER JOIN tb01_lgxh b ON a.USER_IDXX = b.USER_IDXX AND a.BUSS_CODE = b.BUSS_CODE INNER JOIN `tb01_proc` c ON a.PROC_CODE = c.PROC_CODE And a.BUSS_CODE = c.BUSS_CODE INNER JOIN tb00_proc d ON a.PROC_CODE = d.PROC_CODE WHERE a.USER_IDXX = "'+ userID +'" ORDER BY d.NoUrut';
         db.query(sql, function(err, rows, fields) {
             var output = [];
 
@@ -345,7 +345,7 @@ export default class User {
     getRoleDetUserAccesses = function(req, res) {
         var roleID = req.params.roleID;
 
-        var sql = 'SELECT a.*, C.PROC_NAME FROM role_menu a INNER JOIN role b ON a.ROLE_IDXX = b.id AND a.BUSS_CODE = b.UnitID INNER JOIN tb01_proc c ON a.PROC_CODE = c.PROC_CODE And a.BUSS_CODE = c.BUSS_CODE WHERE a.ROLE_IDXX = ' + roleID + ' ORDER BY c.NoUrut';
+        var sql = 'SELECT a.*, d.PROC_NAME FROM role_menu a INNER JOIN role b ON a.ROLE_IDXX = b.id AND a.BUSS_CODE = b.UnitID INNER JOIN tb01_proc c ON a.PROC_CODE = c.PROC_CODE And a.BUSS_CODE = c.BUSS_CODE INNER JOIN tb00_proc d ON c.PROC_CODE = d.PROC_CODE WHERE a.ROLE_IDXX = ' + roleID + ' ORDER BY d.NoUrut';
         db.query(sql, function(err, rows, fields) {
             var output = [];
 
@@ -449,7 +449,7 @@ export default class User {
         var authEdit = request.AUTH_EDIT;
         var authDelt = request.AUTH_DELT;
 
-        var qryCmd = "select * from `role` order by RoleName";
+        var qryCmd = "select a.* from `role` a inner join tb00_unit b on a.UnitID = b.KODE_UNIT where b.KODE_URUT like '" + request.KODE_URUT0 + "%' order by a.RoleName";
         db.query(qryCmd, function(err, rows, fields) {
             var output = [];
 
@@ -506,7 +506,7 @@ export default class User {
         var authEdit = req.AUTH_EDIT;
 
         var id = req.params.id;
-        var sql = 'select * from `role` where id = '+ id;
+        var sql = 'select a.* from `role` a inner join tb00_unit b on a.UnitID = b.KODE_UNIT where a.id = '+ id + ' And b.KODE_URUT like "' + req.KODE_URUT0 + '%"';
         
         db.query(sql, function(err, rows, fields) {
             var output = [];

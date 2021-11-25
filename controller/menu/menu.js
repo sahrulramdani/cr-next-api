@@ -16,7 +16,7 @@ export default class Menu {
         var qryCmd = '';
 
         if (bussCode === '00' && typeModule === '---') {  // All BUSS_CODE (Entity/Unit), All Type Module
-            qryCmd = "select * from tb01_modm order by NoUrut";
+            qryCmd = "select a.* from tb01_modm a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where b.KODE_URUT like '" + request.KODE_URUT0 + "%' order by a.NoUrut";
         } else {
             if (typeModule === '---') {  // All type Module
                 qryCmd = "select * from tb01_modm where BUSS_CODE = '" + bussCode + "' order by NoUrut";
@@ -92,9 +92,9 @@ export default class Menu {
 
         var qryCmd = '';
         if (bussCode === '00') {
-            qryCmd = "select * from tb00_proc where MDUL_CODE = '" + module + "' order by NoUrut";
+            qryCmd = "select a.*, a.PROC_NAME from tb00_proc a where a.MDUL_CODE = '" + module + "' order by a.NoUrut";
         } else {
-            qryCmd = "select * from tb01_proc where BUSS_CODE = '" + bussCode + "' And MDUL_CODE = '" + module + "' order by NoUrut";
+            qryCmd = "select a.*, b.PROC_NAME from tb01_proc a inner join tb00_proc b on a.PROC_CODE = b.PROC_CODE where a.BUSS_CODE = '" + bussCode + "' And a.MDUL_CODE = '" + module + "' order by a.NoUrut";
         }
         
         db.query(qryCmd, function(err, rows, fields) {
@@ -123,7 +123,7 @@ export default class Menu {
     getModule = function(req, res) {
         // get user Access
         var authEdit = req.AUTH_EDIT;
-        var authAppr = request.AUTH_APPR;  // auth Approve
+        var authAppr = req.AUTH_APPR;  // auth Approve
 
         var id = req.params.id;
         var sql = 'SELECT * FROM `tb01_modm` WHERE id = '+ id;

@@ -43,6 +43,8 @@ import * as C from './controller/index.js';
       app.route('/payroll/karyawan/save').post(C.auth.verifyToken, C.karyawan.saveKaryawan);
       app.route('/payroll/karyawan-prsh/save').post(C.auth.verifyToken, C.karyawan.saveKaryawanPrsh);
       app.route('/payroll/karyawan/:id').get(C.auth.verifyToken, C.karyawan.getKaryawan);
+      app.route('/payroll/karyawans/:status').get(C.auth.verifyToken, C.karyawan.getEmployees);  // status: Status Karyawan
+      app.route('/payroll/idKaryawans/:status').get(C.auth.verifyToken, C.karyawan.idKaryawans);
 
       // ------ Management User --------------
       app.route('/users').get(C.auth.verifyToken, C.user.userAll);

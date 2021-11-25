@@ -89,7 +89,7 @@ export default class Donatur {
     }
 
     idDonatursAll = (request, response) => {
-        var qryCmd = "select NO_ID As value, CONCAT(`NO_ID`, ' - ', `NAMA`, ' - ', SUBSTRING(`ALMT_XXX1`, 1, 20)) As label from tb11_mzjb order by NO_ID";
+        var qryCmd = "select a.NO_ID As value, CONCAT(a.NO_ID, ' - ', a.NAMA, ' - ', SUBSTRING(a.ALMT_XXX1, 1, 20)) As label from a.tb11_mzjb a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where b.KODE_URUT like '" + req.KODE_URUT0 + "%' order by a.NO_ID";
         
         db.query(qryCmd, function(err, rows, fields) {
             var output = [];
@@ -244,7 +244,7 @@ export default class Donatur {
     updateDonatur = function(req, res) {
         var id = req.body.NO_ID;
 
-        var sql = 'UPDATE tb11_mzjb SET ? WHERE NO_ID = "' + id + '"';
+        var sql = 'UPDATE tb11_mzjb a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT SET ? WHERE a.NO_ID = "' + id + '" And b.KODE_URUT like "' + req.KODE_URUT0 + '%"';
         var data = {
             NPWP : req.body.NPWP,
             NAMA : req.body.NAMA,
@@ -891,7 +891,8 @@ export default class Donatur {
         var id = req.body.id;
         var NoReference2 = req.body.NoReference2;
 
-        var sql = 'UPDATE trans_donatur SET ? WHERE id = ' + id;   
+        var sql = 'UPDATE trans_donatur a INNER JOIN tb11_mzjb b ON a.DonaturID = b.NO_ID INNER JOIN tb00_unit ON b.BUSS_CODE = c.KODE_UNIT SET ? WHERE a.id = ' + id + ' And c.KODE_URUT like "' + req.KODE_URUT0 + '%"';
+           
         var data = {
             TransDate : req.body.TransDate,
             NoReference : req.body.NoReference,
@@ -973,7 +974,8 @@ export default class Donatur {
 
         var id = req.params.id;
 
-        var sql = 'SELECT a.*, CONCAT(a.DonaturID, " - ", b.NAMA) As Donatur2 FROM trans_donatur a INNER JOIN tb11_mzjb b ON a.DonaturID = b.NO_ID WHERE a.id = "'+ id +'"';
+        var sql = 'SELECT a.*, CONCAT(a.DonaturID, " - ", b.NAMA) As Donatur2 FROM trans_donatur a INNER JOIN tb11_mzjb b ON a.DonaturID = b.NO_ID inner join tb00_unit c on b.BUSS_CODE = c.KODE_UNIT WHERE a.id = "'+ id +'" And c.KODE_URUT like "' + req.KODE_URUT0 + '%"';
+
         db.query(sql, function(err, rows, fields) {
             var output = [];
 

@@ -1,5 +1,6 @@
 import  db from './../../koneksi.js';
 import { generateAutonumber } from './../../libraries/sisqu/Utility.js';
+import { fncCheckProcCode } from './../../libraries/local/localUtility.js';
 
 
 export default class Karyawan {
@@ -38,6 +39,7 @@ export default class Karyawan {
             TypeRelawan : req.body.TypeRelawan,
             Pendidikan : req.body.Pendidikan,
             Pekerjaan : req.body.Pekerjaan,
+            StatusKry : req.body.StatusKry,
             CRTX_DATE : new Date(),
             CRTX_BYXX : req.userID
         };
@@ -77,6 +79,13 @@ export default class Karyawan {
             kodeNik = req.body.KodeNik;
         }
 
+        var bussCode;
+        if (req.body.BUSS_CODE === null || req.body.BUSS_CODE === undefined) {
+            bussCode = req.BUSS_CODE0;
+        } else {
+            bussCode = req.body.BUSS_CODE;
+        }
+
         var sql = 'INSERT INTO tb21_empl SET ?';
         var data = {
             KodeNik : kodeNik,
@@ -89,7 +98,7 @@ export default class Karyawan {
             email : req.body.email,
             TempatLahir : req.body.TempatLahir,
             TglLahir : req.body.TglLahir,
-            BUSS_CODE : req.BUSS_CODE0,
+            BUSS_CODE : bussCode,
             NoKTP : req.body.NoKTP,
             StatusAktif : '1',
             StatusKawin : req.body.StatusKawin,
@@ -103,6 +112,7 @@ export default class Karyawan {
             TypeRelawan : req.body.TypeRelawan,
             Pendidikan : req.body.Pendidikan,
             Pekerjaan : req.body.Pekerjaan,
+            StatusKry : req.body.StatusKry,
             CRTX_DATE : new Date(),
             CRTX_BYXX : req.userID
         };
@@ -175,7 +185,7 @@ export default class Karyawan {
         var authAppr = req.AUTH_APPR;  // auth Approve
 
         var nik = req.params.id;
-        var sql = 'SELECT a.* FROM tb21_empl a INNER JOIN tb21_empx b ON a.KodeNik = b.KodeNik WHERE a.KodeNik = "'+ nik +'" ';
+        var sql = 'SELECT a.* FROM tb21_empl a INNER JOIN tb00_unit c ON a.BUSS_CODE = c.KODE_UNIT WHERE a.KodeNik = "'+ nik +'" And c.KODE_URUT like "' + req.KODE_URUT0 + '%" ';
         
         db.query(sql, function(err, rows, fields) {
             var output = [];
@@ -199,10 +209,20 @@ export default class Karyawan {
     }
 
     updateKaryawan = function(req, res) {
+        // check Access PROC_CODE 
+        if (fncCheckProcCode(req.body.ProcCode, req.procCodes) === false) {
+            res.status(403).send({ 
+                status: false, 
+                message: 'Access Denied',
+                userAccess: false
+            });
+
+            return;
+        }
+
         var id = req.body.id;  // id = nik
-        var sql = 'UPDATE `tb21_empl` SET ? WHERE KodeNik = "'+ id +'" ';
+        var sql = 'UPDATE `tb21_empl` a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT SET ? WHERE a.KodeNik = "'+ id +'" And b.KODE_URUT like "' + req.KODE_URUT0 + '%" ';
         var data = {
-            KodeNik : req.body.KodeNik,
             noxx_NPWP : req.body.noxx_NPWP,
             NamaKry : req.body.NamaKry,
             JenisKel : req.body.JenisKel,
@@ -226,8 +246,8 @@ export default class Karyawan {
             TypeRelawan : req.body.TypeRelawan,
             Pendidikan : req.body.Pendidikan,
             Pekerjaan : req.body.Pekerjaan,
-            UPDT_DATE : new Date(),
-            UPDT_BYXX : req.userID
+            'a.UPDT_DATE' : new Date(),
+            'a.UPDT_BYXX' : req.userID
         };
         
         db.query(sql, data, (err, result) => {
@@ -251,6 +271,69 @@ export default class Karyawan {
         
         db.query(sql, function(err, rows, fields) {
             res.send(rows);
+        });
+    }
+
+    getEmployees = (request, response) => {
+        // get user Access
+        var authAdd = request.AUTH_ADDX;
+        var authEdit = request.AUTH_EDIT;
+        var authDelt = request.AUTH_DELT;
+        var authAppr = request.AUTH_APPR;  // auth Approve
+
+        var status = request.params.status;  // Status karyawan
+
+        var qryCmd = "select a.*, CONCAT(IFNULL(a.CodeCountryHP, ''), a.Hp) As NoHP2, " + 
+        "CASE a.StatusAktif " +
+            "WHEN '1' THEN 'ACTIVE' " +
+            "ELSE 'NOT ACTIVE' " +
+        "END As StatusAktif2 " + 
+        "from tb21_empl a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where b.KODE_URUT like '" + request.KODE_URUT0 + "%' And a.StatusKry = '" + status + "'";
+
+        db.query(qryCmd, function(err, rows, fields) {
+            var output = [];
+
+            if (rows.length > 0) {
+                rows.forEach(function(row) {
+                    var obj = new Object();
+                    for(var key in row) {
+                        obj[key] = row[key];
+                    }
+
+                    obj['AUTH_ADDX'] = authAdd;
+                    obj['AUTH_EDIT'] = authEdit;
+                    obj['AUTH_DELT'] = authDelt;
+                    obj['AUTH_APPR'] = authAppr;
+
+                    output.push(obj);
+                })
+            }
+
+            response.send(output);
+        });
+    }
+
+    idKaryawans = (request, response) => {
+        var status = request.params.status;
+        var qryCmd = "select a.KodeNik As value, CONCAT(a.KodeNik, ' - ', a.NamaKry, ' - ', SUBSTRING(a.Alamat1, 1, 20)) As label from tb21_empl a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where b.KODE_URUT like '" + request.KODE_URUT0 + "%' And a.StatusKry = '" + status + "' order by a.KodeNik";
+        
+        db.query(qryCmd, function(err, rows, fields) {
+            var output = [];
+
+            if (rows.length > 0) {
+                rows.forEach(function(row) {
+                    var obj = new Object();
+                    for(var key in row) {
+                        obj[key] = row[key];
+                    }
+
+                    output.push(obj);
+                })
+
+                response.send(output);
+            } else {
+                response.send([]);
+            }
         });
     }
     

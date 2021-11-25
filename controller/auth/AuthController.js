@@ -115,8 +115,9 @@ export default class AuthController {
                 req.userID = decoded.id;
                 
                 // get User Access
-                var sql = 'SELECT a.*, c.IsValid, d.KODE_URUT, d.SequenceUnitCode FROM `tb01_usrd` a INNER JOIN `tb01_apix` b on a.PROC_CODE = b.PROC_CODE INNER JOIN `tb01_lgxh` c ON a.USER_IDXX = c.USER_IDXX INNER JOIN tb00_unit d ON a.BUSS_CODE = d.KODE_UNIT WHERE a.USER_IDXX = "' + decoded.id + '" And ("' + path + '%" like CONCAT(b.PATH,"%") Or "' + path + '%/" like CONCAT(b.PATH,"%")) ORDER BY b.PATH';  
+                var sql = 'SELECT a.*, c.IsValid, d.KODE_URUT, d.SequenceUnitCode FROM `tb01_usrd` a INNER JOIN `tb01_apix` b on a.PROC_CODE = b.PROC_CODE INNER JOIN `tb01_lgxh` c ON a.USER_IDXX = c.USER_IDXX And a.BUSS_CODE = c.BUSS_CODE INNER JOIN tb00_unit d ON a.BUSS_CODE = d.KODE_UNIT WHERE a.USER_IDXX = "' + decoded.id + '" And ("' + path + '%" like CONCAT(b.PATH,"%") Or "' + path + '%/" like CONCAT(b.PATH,"%")) ORDER BY b.PATH';  
                 
+                var procCodes = [];
                 db.query(sql, (err, rows) => {
                     if (err)
                         throw err;
@@ -134,6 +135,10 @@ export default class AuthController {
                         req.KODE_URUT0 = userAccess.KODE_URUT;
                         req.SequenceUnitCode0 = userAccess.SequenceUnitCode;
 
+                        rows.forEach((item) => {
+                            procCodes.push(item.PROC_CODE);
+                        });
+
                         if (userAccess.IsValid === '0') {
                             return res.status(403).send({ 
                                 status: false, 
@@ -150,6 +155,7 @@ export default class AuthController {
                                 userAccess: false
                             });
                         } else {
+                            req.procCodes = procCodes;
                             next();
                         }
                     } else {
