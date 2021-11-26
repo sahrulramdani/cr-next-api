@@ -151,14 +151,14 @@ export default class Menu {
 
     updateModule = function(req, res) {
         var ids = req.body.id;
-        var sql = 'UPDATE `tb01_modm` SET ? WHERE id = ' + ids;
+        var sql = 'UPDATE `tb01_modm` a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT SET ? WHERE a.id = ' + ids + ' And b.KODE_URUT like "' + req.KODE_URUT0 + '%"';
         var data = {
             MDUL_CODE : req.body.MDUL_CODE,
             BUSS_CODE : req.body.BUSS_CODE,
             MDUL_NAMA : req.body.MDUL_NAMA,
             TYPE_MDUL : req.body.TYPE_MDUL,
-            UPDT_DATE : new Date(),
-            UPDT_BYXX : req.userID
+            'a.UPDT_DATE' : new Date(),
+            'a.UPDT_BYXX' : req.userID
         };
         
         db.query(sql, data, (err, result) => {

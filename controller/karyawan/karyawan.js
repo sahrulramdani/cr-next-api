@@ -266,6 +266,65 @@ export default class Karyawan {
         });
     }
 
+    updateKaryawanProfile = function(req, res) {
+        // check Access PROC_CODE 
+        if (fncCheckProcCode(req.body.ProcCode, req.procCodes) === false) {
+            res.status(403).send({ 
+                status: false, 
+                message: 'Access Denied',
+                userAccess: false
+            });
+
+            return;
+        }
+
+        var id = req.body.id;  // id = nik
+        var sql = 'UPDATE `tb21_empl` a INNER JOIN tb01_lgxh b ON a.KodeNik = b.NO_ID SET ? WHERE a.KodeNik = "' + id + '" And b.USER_IDXX = "' + req.userID + '"';
+        console.log(sql);
+        var data = {
+            noxx_NPWP : req.body.noxx_NPWP,
+            NamaKry : req.body.NamaKry,
+            JenisKel : req.body.JenisKel,
+            Alamat1 : req.body.Alamat1,
+            Hp : req.body.Hp,
+            CodeCountryHP : req.body.CodeCountryHP,
+            'a.email' : req.body.email,
+            TempatLahir : req.body.TempatLahir,
+            TglLahir : req.body.TglLahir,
+            'a.BUSS_CODE' : req.body.BUSS_CODE,
+            NoKTP : req.body.NoKTP,
+            StatusAktif : '1',
+            StatusKawin : req.body.StatusKawin, 
+            TglMasuk : req.body.TglMasuk,
+            GolDarah : req.body.GolDarah,
+            Title : req.body.Title,
+            PIC: req.body.PIC,
+            NoHPPIC: req.body.NoHPPIC,
+            CodeCountryHPPIC : req.body.CodeCountryHPPIC,
+            EmailPIC: req.body.EmailPIC,
+            TypeRelawan : req.body.TypeRelawan,
+            Pendidikan : req.body.Pendidikan,
+            Pekerjaan : req.body.Pekerjaan,
+            'a.UPDT_DATE' : new Date(),
+            'a.UPDT_BYXX' : req.userID
+        };
+        
+        db.query(sql, data, (err, result) => {
+            if (err) {
+                console.log('Error', err);
+
+                res.send({
+                    status: false,
+                    message: err.sqlMessage
+                });
+            } else {
+                res.send({
+                    status: true
+                });
+            }
+        });
+    }
+
     getProfileKaryawan = function(req, res) {
         var sql = 'SELECT a.* FROM tb21_empl a INNER JOIN tb01_lgxh b ON b.NO_ID = a.KodeNik WHERE b.USER_IDXX = "'+ req.userID +'" ';
         

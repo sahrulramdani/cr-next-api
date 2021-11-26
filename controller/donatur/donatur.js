@@ -271,8 +271,8 @@ export default class Donatur {
             NoHPPIC: req.body.NoHPPIC, 
             CodeCountryHPPIC : req.body.CodeCountryHPPIC,
             EmailPIC: req.body.EmailPIC,
-            UPDT_DATE : new Date(),
-            UPDT_BYXX : req.userID
+            'a.UPDT_DATE' : new Date(),
+            'a.UPDT_BYXX' : req.userID
         };
         
         db.query(sql, data, (err, result) => {
@@ -901,10 +901,10 @@ export default class Donatur {
             FileName : req.body.FileName,
             ProgDonatur : req.body.ProgDonatur,
             MethodPayment : req.body.MethodPayment,
-            isValidate : req.body.isValidate,
-            isDelete : req.body.isDelete,
-            UPDT_DATE : new Date(),
-            UPDT_BYXX : req.userID
+            'a.isValidate' : req.body.isValidate,
+            'a.isDelete' : req.body.isDelete,
+            'a.UPDT_DATE' : new Date(),
+            'a.UPDT_BYXX' : req.userID
         };
         
         db.query(sql, data, (err, result) => {

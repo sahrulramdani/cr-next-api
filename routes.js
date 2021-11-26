@@ -71,7 +71,7 @@ import * as C from './controller/index.js';
       app.route('/register').post(C.auth.register);
       app.route('/signin').post(C.auth.signin);
       app.route('/profile').get(C.auth.verifyToken, C.user.getProfile);
-      app.route('/profile/karyawan/update').post(C.auth.verifyToken, C.karyawan.updateKaryawan);
+      app.route('/profile/karyawan/update').post(C.auth.verifyToken, C.karyawan.updateKaryawanProfile);
       app.route('/profile/karyawan/save').post(C.auth.verifyToken, C.karyawan.saveKaryawanProfile);
       app.route('/profile/karyawan-prsh/save').post(C.auth.verifyToken, C.karyawan.saveKaryawanPrsh);
       app.route('/profile/karyawan').get(C.auth.verifyToken, C.karyawan.getProfileKaryawan);

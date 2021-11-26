@@ -2,6 +2,10 @@ const fncCheckProcCode = (postProcCode, procCodes) => {
     // postProcCode from req.body.ProcCode
     // procCodes from req.procCodes (from Auth - verifyToken)
 
+    if (postProcCode === undefined) {
+        return true;
+    }
+
     var temp = postProcCode.split(';');
     var cek = false;
     for(var i=0; i<temp.length; i++) {

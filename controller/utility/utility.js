@@ -46,9 +46,15 @@ export default class Utility {
                     message: err.sqlMessage
                 });
             } else {
-                res.send({
-                    status: true
+                sql = 'update tblsequence a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT set a.SequenceUnitCode = b.SequenceUnitCode where a.Initial = "' + req.body.Initial + '" And a.BUSS_CODE = "' + bussCode + '" And a.Tahun = "' + req.body.Tahun + '"';
+
+                db.query(sql, (err, result) => {
+                    res.send({
+                        status: true
+                    });
                 });
+
+                
             }
         });
     }

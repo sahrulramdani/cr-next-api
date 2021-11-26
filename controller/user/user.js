@@ -110,7 +110,7 @@ export default class User {
 
     updateUser = function(req, res) {
         var ids = req.body.USER_IDXX;
-        var sql = 'UPDATE `tb01_lgxh` SET ? WHERE USER_IDXX = "'+ ids +'" ';
+        var sql = 'UPDATE `tb01_lgxh` a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT SET ? WHERE a.USER_IDXX = "'+ ids +'"  And b.KODE_URUT like "' + req.KODE_URUT0 + '%"';
 
         var hashedPassword;
         var data;
@@ -119,13 +119,13 @@ export default class User {
                 BUSS_CODE : req.body.BUSS_CODE,
                 KETX_USER : req.body.KETX_USER,
                 NO_ID : req.body.NO_ID,
-                Active : req.body.Active,
+                'a.Active' : req.body.Active,
                 IsValid : req.body.IsValid,
                 TYPE_PRSON : req.body.TYPE_PRSON,
                 NamaFile : req.body.NamaFile,
                 TemplateRoleID : req.body.TemplateRoleID,
-                UPDT_DATE : new Date(),
-                UPDT_BYXX : req.userID
+                'a.UPDT_DATE' : new Date(),
+                'a.UPDT_BYXX' : req.userID
             };
              
         } else {
@@ -140,8 +140,8 @@ export default class User {
                 NamaFile : req.body.NamaFile,
                 TemplateRoleID : req.body.TemplateRoleID,
                 PASS_IDXX : hashedPassword,
-                UPDT_DATE : new Date(),
-                UPDT_BYXX : req.userID
+                'a.UPDT_DATE' : new Date(),
+                'a.UPDT_BYXX' : req.userID
             };
         }
         
