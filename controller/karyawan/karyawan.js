@@ -148,9 +148,17 @@ export default class Karyawan {
     }
 
     saveKaryawanPrsh = function(req, res) {
+        var kodeNik;
+        if (req.body.KodeNik === null || req.body.KodeNik === undefined) {
+            kodeNik = generateAutonumber(req.body.Initial, req.SequenceUnitCode0, req.body.Tahun, 
+                req.body.NextSequenceFormat);
+        } else {
+            kodeNik = req.body.KodeNik;
+        }
+
         var sql = 'INSERT INTO tb21_empx SET ?';
         var data = {
-            KodeNik : req.body.KodeNik,
+            KodeNik : kodeNik,
             StatusKry : req.body.StatusKry,
             NPWP : req.body.NPWP,
             CRTX_DATE : new Date(),
@@ -280,7 +288,7 @@ export default class Karyawan {
 
         var id = req.body.id;  // id = nik
         var sql = 'UPDATE `tb21_empl` a INNER JOIN tb01_lgxh b ON a.KodeNik = b.NO_ID SET ? WHERE a.KodeNik = "' + id + '" And b.USER_IDXX = "' + req.userID + '"';
-        console.log(sql);
+        
         var data = {
             noxx_NPWP : req.body.noxx_NPWP,
             NamaKry : req.body.NamaKry,

@@ -112,6 +112,60 @@ export default class User {
         var ids = req.body.USER_IDXX;
         var sql = 'UPDATE `tb01_lgxh` a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT SET ? WHERE a.USER_IDXX = "'+ ids +'"  And b.KODE_URUT like "' + req.KODE_URUT0 + '%"';
 
+        console.log(sql);
+        var hashedPassword;
+        var data;
+        if (req.body.password === undefined) {
+            data = {
+                BUSS_CODE : req.body.BUSS_CODE,
+                KETX_USER : req.body.KETX_USER,
+                NO_ID : req.body.NO_ID,
+                'a.Active' : req.body.Active,
+                IsValid : req.body.IsValid,
+                TYPE_PRSON : req.body.TYPE_PRSON,
+                NamaFile : req.body.NamaFile,
+                TemplateRoleID : req.body.TemplateRoleID,
+                'a.UPDT_DATE' : new Date(),
+                'a.UPDT_BYXX' : req.userID
+            };
+             
+        } else {
+            hashedPassword = bcrypt.hashSync(req.body.Password, 8);
+            data = {
+                BUSS_CODE : req.body.BUSS_CODE,
+                KETX_USER : req.body.KETX_USER,
+                NO_ID : req.body.NO_ID,
+                Active : req.body.Active,
+                IsValid : req.body.IsValid,
+                TYPE_PRSON : req.body.TYPE_PRSON,
+                NamaFile : req.body.NamaFile,
+                TemplateRoleID : req.body.TemplateRoleID,
+                PASS_IDXX : hashedPassword,
+                'a.UPDT_DATE' : new Date(),
+                'a.UPDT_BYXX' : req.userID
+            };
+        }
+        
+        db.query(sql, data, (err, result) => {
+            if (err) {
+                console.log('Error', err);
+
+                res.send({
+                    status: false,
+                    message: err.sqlMessage
+                });
+            } else {
+                res.send({
+                    status: true
+                });
+            }
+        });
+    }
+
+    updateUserProfile = function(req, res) {
+        var ids = req.userID;
+        var sql = 'UPDATE `tb01_lgxh` a SET ? WHERE a.USER_IDXX = "'+ ids + '"  ';
+
         var hashedPassword;
         var data;
         if (req.body.password === undefined) {

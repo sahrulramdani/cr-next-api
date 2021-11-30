@@ -165,12 +165,19 @@ export default class Setup {
         var authDelt = request.AUTH_DELT;
         var authAppr = request.AUTH_APPR;  // auth Approve
 
-        var qryCmd = "select a.*, " + 
+        /* var qryCmd = "select a.*, " + 
                       "Case a.CODD_VARC " +
                           "WHEN 'PLATINUM' Then 'P' "  +
                           "ELSE b.CODD_VARC " +
                        "End As Level " +
-                       "from tb00_basx a left join (select * from tb00_basx where CODD_FLNM = 'TYPE_DONATUR') b on a.CODD_VARC = b.CODD_DESC where a.CODD_FLNM = 'TYPE_PROGRAM_DONATUR' order by a.CODD_VALU";
+                       "from tb00_basx a left join (select * from tb00_basx where CODD_FLNM = 'TYPE_DONATUR') b on a.CODD_VARC = b.CODD_DESC where a.CODD_FLNM = 'TYPE_PROGRAM_DONATUR' order by a.CODD_VALU"; */
+
+        var qryCmd = "select a.*, " + 
+        "Case a.TypeDonaturMin " +
+            "WHEN 'PLATINUM' Then 'P' "  +
+            "ELSE b.CODD_VARC " +
+        "End As Level " +
+        "from typeslp a left join (select * from tb00_basx where CODD_FLNM = 'TYPE_DONATUR') b on a.TypeDonaturMin = b.CODD_DESC order by a.id";
         
         db.query(qryCmd, function(err, rows, fields) {
             var output = [];
@@ -664,6 +671,112 @@ export default class Setup {
         }
     }
 
+    saveTypeProgramDonatur = function(req, res) {
+        var sql = 'INSERT INTO typeslp SET ?';
+        var data = {
+            id : req.body.id,
+            Description : req.body.Description,
+            TypeDonaturMin : req.body.TypeDonaturMin,
+            Initial : req.body.Initial,
+            CRTX_DATE : new Date(),
+            CRTX_BYXX : req.userID
+        };
+        
+        db.query(sql, data, (err, result) => {
+            if (err) {
+                console.log('Error', err);
+
+                res.send({
+                    status: false,
+                    message: err.sqlMessage
+                });
+            } else {
+                res.send({
+                    status: true
+                });
+            }
+        });
+    }
+
+    updateTypeProgramDonatur = function(req, res) {
+        var sql = 'UPDATE typeslp SET ? WHERE id = "' + req.body.id + '"';
+        var data = {
+            Description : req.body.Description,
+            TypeDonaturMin : req.body.TypeDonaturMin,
+            Initial : req.body.Initial,
+            Message : req.body.Message,
+            UPDT_DATE : new Date(),
+            UPDT_BYXX : req.userID
+        };
+        
+        db.query(sql, data, (err, result) => {
+            if (err) {
+                console.log('Error', err);
+
+                res.send({
+                    status: false,
+                    message: err.sqlMessage
+                });
+            } else {
+                res.send({
+                    status: true
+                });
+            }
+        });
+    }
+
+    deleteTypeProgramDonatur = function(req, res) {
+        var id = req.body.id;
+        var sql = "delete from `typeslp` where id = '" + id + "'";
+        
+        db.query(sql, (err, result) => {
+            if (err) {
+                console.log('Error', err);
+
+                res.send({
+                    status: false,
+                    message: err.sqlMessage
+                });
+            } else {
+                res.send({
+                    status: true
+                });
+            }
+        });
+    }
+
+    getTypeProgramDonatur = function(req, res) {
+        // get user Access
+        var authAdd = req.AUTH_ADDX;
+        var authEdit = req.AUTH_EDIT;
+        var authDelt = req.AUTH_DELT;
+        var authAppr = req.AUTH_APPR;  // auth Approve
+
+        var id = req.params.id;
+        var sql = 'SELECT * FROM `typeslp` WHERE id = "'+ id +'" ';
+        db.query(sql, function(err, rows, fields) {
+            var output = [];
+
+            if (rows.length > 0) {
+                rows.forEach(function(row) {
+                    var obj = new Object();
+                    for(var key in row) {
+                        obj[key] = row[key];
+                    }
+
+                    obj['AUTH_ADDX'] = authAdd;
+                    obj['AUTH_EDIT'] = authEdit;
+                    obj['AUTH_DELT'] = authDelt;
+                    obj['AUTH_APPR'] = authAppr;
+
+                    output.push(obj);
+                })
+            }
+
+            res.send(output);
+        });
+    }
+
     saveUnit = function(req, res) {
         var sql = 'INSERT INTO tb00_unit SET ?';
         var data = {
@@ -671,6 +784,7 @@ export default class Setup {
             NAMA_UNIT : req.body.NAMA_UNIT,
             KETX_UNIT : req.body.NAMA_UNIT,
             KODE_LOKX : req.body.KODE_LOKX,
+            SequenceUnitCode : req.body.SequenceUnitCode,
             KODE_URUT : req.body.KODE_URUT,
             Active : req.body.Active,
             CRTX_DATE : new Date(),
@@ -700,6 +814,7 @@ export default class Setup {
             KETX_UNIT : req.body.NAMA_UNIT,
             KODE_LOKX : req.body.KODE_LOKX,
             KODE_URUT : req.body.KODE_URUT,
+            SequenceUnitCode : req.body.SequenceUnitCode,
             Active : req.body.Active,
             UPDT_DATE : new Date(),
             UPDT_BYXX : req.userID
@@ -822,7 +937,7 @@ export default class Setup {
         var authAdd = req.AUTH_ADDX;
         var authEdit = req.AUTH_EDIT;
         var authDelt = req.AUTH_DELT;
-        var authAppr = request.AUTH_APPR;  // auth Approve
+        var authAppr = req.AUTH_APPR;  // auth Approve
 
         var id = req.params.id;
         var sql = 'SELECT * FROM `tb02_bank` WHERE KODE_BANK = "'+ id +'" And KODE_FLNM = "KASX_BANK"';

@@ -75,11 +75,16 @@ import * as C from './controller/index.js';
       app.route('/profile/karyawan/save').post(C.auth.verifyToken, C.karyawan.saveKaryawanProfile);
       app.route('/profile/karyawan-prsh/save').post(C.auth.verifyToken, C.karyawan.saveKaryawanPrsh);
       app.route('/profile/karyawan').get(C.auth.verifyToken, C.karyawan.getProfileKaryawan);
+      app.route('/profile/user/update').post(C.auth.verifyToken, C.user.updateUserProfile);
 
       // ------ CRM --------------
       app.route('/crm/setup/channel-donaturs').get(C.auth.verifyToken, C.setup.channelDonaturAll);
       app.route('/crm/setup/type-donaturs').get(C.auth.verifyToken, C.setup.typeDonaturAll);
       app.route('/crm/setup/type-program-donaturs').get(C.auth.verifyToken, C.setup.typeProgramDonaturAll);
+      app.route('/crm/setup/type-program-donatur/save').post(C.auth.verifyToken, C.setup.saveTypeProgramDonatur);
+      app.route('/crm/setup/type-program-donatur/update').post(C.auth.verifyToken, C.setup.updateTypeProgramDonatur);
+      app.route('/crm/setup/type-program-donatur/delete').post(C.auth.verifyToken, C.setup.deleteTypeProgramDonatur);
+      app.route('/crm/setup/type-program-donatur/:id').get(C.auth.verifyToken, C.setup.getTypeProgramDonatur);
       app.route('/crm/setup/prog-donaturs').get(C.auth.verifyToken, C.setup.donaturProgAll);
       app.route('/crm/slp/save').post(C.auth.verifyToken, C.donatur.saveTransSLP);
       app.route('/crm/slp/delete').post(C.auth.verifyToken, C.donatur.deleteTransSLP);
@@ -91,10 +96,11 @@ import * as C from './controller/index.js';
       app.route('/crm/slp/attachment/save').post(C.auth.verifyToken, C.donatur.saveDetTransSLP1);   // Save Transaksi SLP Attachments
       app.route('/crm/slp/attachment/delete').post(C.auth.verifyToken, C.donatur.deleteSLPAttachment);
       app.route('/crm/slp/donatur/save').post(C.auth.verifyToken, C.donatur.saveDetTransSLP2);   // Save Transaksi SLP Donaturs
-      app.route('/crm/slp/donatur/delete').post(C.auth.verifyToken, C.donatur.deleteSLPDonatur);
+      app.route('/crm/slp/donatur/save').post(C.auth.verifyToken, C.donatur.saveDetTransSLP2);
+      app.route('/crm/slp/donatur/update').post(C.auth.verifyToken, C.donatur.updateTransSLPDonatur);
       app.route('/crm/slp/donaturs/:transNumber').get(C.auth.verifyToken, C.donatur.getSLPDonaturs);
       app.route('/crm/slp/:id').get(C.auth.verifyToken, C.donatur.getTransSLP);
-      app.route('/crm/slps').get(C.auth.verifyToken, C.donatur.transSLPAll);
+      app.route('/crm/slps/:status').get(C.auth.verifyToken, C.donatur.transSLPAll);
       app.route('/crm/donaturs/verify').post(C.auth.verifyToken, C.donatur.verify);
       app.route('/crm/donaturs/level/:level').get(C.auth.verifyToken, C.donatur.getDonatursPerLevel);
       app.route('/crm/donaturs/:status').get(C.auth.verifyToken, C.donatur.donaturs);

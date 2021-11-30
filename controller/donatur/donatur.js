@@ -1,6 +1,8 @@
 import  db from './../../koneksi.js';
 import { fncParseComma, generateAutonumber } from './../../libraries/sisqu/Utility.js';
 import moment from 'moment';
+import { fncCheckProcCode } from './../../libraries/local/localUtility.js';
+
 
 export default class Donatur {
     donaturs = (request, response) => {
@@ -89,7 +91,7 @@ export default class Donatur {
     }
 
     idDonatursAll = (request, response) => {
-        var qryCmd = "select a.NO_ID As value, CONCAT(a.NO_ID, ' - ', a.NAMA, ' - ', SUBSTRING(a.ALMT_XXX1, 1, 20)) As label from a.tb11_mzjb a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where b.KODE_URUT like '" + req.KODE_URUT0 + "%' order by a.NO_ID";
+        var qryCmd = "select a.NO_ID As value, CONCAT(a.NO_ID, ' - ', a.NAMA, ' - ', SUBSTRING(a.ALMT_XXX1, 1, 20)) As label from tb11_mzjb a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where b.KODE_URUT like '" + request.KODE_URUT0 + "%' order by a.NO_ID";
         
         db.query(qryCmd, function(err, rows, fields) {
             var output = [];
@@ -406,12 +408,22 @@ export default class Donatur {
 
     saveTransSLP = function(req, res) {
         var sql = 'INSERT INTO tb52_slpa SET ?';   
+
+        var transNumber;
+        if (req.body.transNumber === null || req.body.transNumber === undefined) {
+            transNumber = generateAutonumber(req.body.Initial, req.SequenceUnitCode0, req.body.Tahun, 
+                req.body.NextSequenceFormat);
+        } else {
+            transNumber = req.body.transNumber;
+        }
+
         var data = {
-            transNumber : req.body.transNumber,
+            transNumber : transNumber,
             tglProses : req.body.tglProses,
             typeProgram : req.body.typeProgram,
             status : req.body.status,
             tahunBuku : req.body.tahunBuku,
+            Message : req.body.Message,
             unit : req.BUSS_CODE0,
             CRTX_DATE : new Date(),
             CRTX_BYXX : req.userID
@@ -602,8 +614,26 @@ export default class Donatur {
         var authDelt = request.AUTH_DELT;
         var authAppr = request.AUTH_APPR;  // auth Approve
 
-        var qryCmd = "select a.*, DATE_FORMAT(a.tglProses, '%d/%m/%Y') As tglProsesFormat, b.CODD_DESC As TypeProgram2 from tb52_slpa a inner join (select * from tb00_basx where CODD_FLNM = 'TYPE_PROGRAM_DONATUR') b on a.typeProgram = b.CODD_VALU inner join tb00_unit c on a.unit = c.KODE_UNIT where c.KODE_URUT like '" + request.KODE_URUT0 + "%' order by a.transNumber";
+        var status = request.params.status;
+
+        var qryCmd = '';
+        if (status === 'all') {
+            qryCmd = "select a.*, DATE_FORMAT(a.tglProses, '%d/%m/%Y') As tglProsesFormat, b.CODD_DESC As TypeProgram2, " + 
+            "Case a.status " + 
+            "When '1' Then 'SEND'" + 
+            "Else 'NOT SEND YET'" +
+            "End As Status2 " +
+            "from tb52_slpa a inner join (select * from tb00_basx where CODD_FLNM = 'TYPE_PROGRAM_DONATUR') b on a.typeProgram = b.CODD_VALU inner join tb00_unit c on a.unit = c.KODE_UNIT where c.KODE_URUT like '" + request.KODE_URUT0 + "%' order by a.transNumber";
+        } else {
+            qryCmd = "select a.transNumber, CONCAT(IFNULL(e.CodeCountryHP, ''), e.NoHP) As NoHP2, a.Message, f.FilePath, CONCAT(f.fileID, '|', f.FileName) As FileName from tb52_slpa a left join (select * from tb00_basx where CODD_FLNM = 'TYPE_PROGRAM_DONATUR') b on a.typeProgram = b.CODD_VALU inner join tb00_unit c on a.unit = c.KODE_UNIT inner join tb52_slpc d on a.transNumber = d.transNumber inner join tb11_mzjb e on d.donaturID = e.NO_ID left join vslpattach f on a.transNumber = f.transNumber where c.KODE_URUT like '" + request.KODE_URUT0 + "%' And d.status = '" + status + "' And a.Message is not null order by a.transNumber";
+        }
+
         db.query(qryCmd, function(err, rows, fields) {
+            if (err) {
+                throw err;
+                return;
+            }
+
             var output = [];
 
             if (rows.length > 0) {
@@ -690,6 +720,7 @@ export default class Donatur {
             typeProgram : req.body.typeProgram,
             status : req.body.status,
             tahunBuku : req.body.tahunBuku,
+            Message : req.body.Message,
             unit : req.body.unit,
             UPDT_DATE : new Date(),
             UPDT_BYXX : req.userID
@@ -1020,6 +1051,40 @@ export default class Donatur {
             }
     
             res.send(output);
+        });
+    }
+
+    updateTransSLPDonatur = function(req, res) {
+        // check Access PROC_CODE 
+        if (fncCheckProcCode(req.body.ProcCode, req.procCodes) === false) {
+            res.status(403).send({ 
+                status: false, 
+                message: 'Access Denied',
+                userAccess: false
+            });
+
+            return;
+        }
+
+        var transNumber = req.body.transNumber;
+        var noHP = req.body.NoHP;
+        var status = req.body.status;
+
+        var sql = 'UPDATE tb52_slpc a INNER JOIN tb52_slpa b ON a.transNumber = b.transNumber INNER JOIN tb00_unit c ON b.unit = c.KODE_UNIT INNER JOIN tb11_mzjb d ON a.donaturID = d.NO_ID SET a.status = "' + status + '" WHERE a.transNumber = "' + transNumber + '" And d.NoHP = "' + noHP + '" And c.KODE_URUT like "' + req.KODE_URUT0 + '%"';
+        
+        db.query(sql, (err, result) => {
+            if (err) {
+                console.log('Error', err);
+
+                res.send({
+                    status: false,
+                    message: err.sqlMessage
+                });
+            } else {
+                res.send({
+                    status: true
+                });
+            }
         });
     }
 }

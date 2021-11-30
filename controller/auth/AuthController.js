@@ -72,8 +72,14 @@ export default class AuthController {
                             message: 'wrong password!'
                         });
                     } else {
+                        var tokenExpiresIn = ca.config.TokenExpired;
+                        
+                        if (user.USER_IDXX === '00006') {
+                            tokenExpiresIn = 1261440000;       // 40 tahun, utk Operator WA
+                        } 
+
                         var token = jwt.sign({ id: user.USER_IDXX }, config.secret, {
-                          expiresIn: ca.config.TokenExpired   
+                            expiresIn: tokenExpiresIn   
                         });
 
                         res.send({
@@ -114,79 +120,101 @@ export default class AuthController {
                 // if everything good, save to request for use in other routes
                 req.userID = decoded.id;
                 
+                // potong parameter path
+                var j = 0;
+                for(var obj in req.params) {
+                    j++;
+                }
+                
+                if (j > 0) {
+                    var pathArrays = path.split('/');
+                    var pathLength = pathArrays.length;
+
+                    path = '';
+                    for(var i=0; i < pathLength-j; i++) {
+                        if (i>0) {
+                            path += '/' + pathArrays[i];
+                        }
+                    }
+                }
+
                 // get User Access
-                var sql = 'SELECT a.*, c.IsValid, d.KODE_URUT, d.SequenceUnitCode FROM `tb01_usrd` a INNER JOIN `tb01_apix` b on a.PROC_CODE = b.PROC_CODE INNER JOIN `tb01_lgxh` c ON a.USER_IDXX = c.USER_IDXX And a.BUSS_CODE = c.BUSS_CODE INNER JOIN tb00_unit d ON a.BUSS_CODE = d.KODE_UNIT WHERE a.USER_IDXX = "' + decoded.id + '" And ("' + path + '%" like CONCAT(b.PATH,"%") Or "' + path + '%/" like CONCAT(b.PATH,"%")) ORDER BY b.PATH';  
+                var sql = 'SELECT a.*, c.IsValid, d.KODE_URUT, d.SequenceUnitCode FROM `tb01_usrd` a INNER JOIN `tb01_apix` b on a.PROC_CODE = b.PROC_CODE INNER JOIN `tb01_lgxh` c ON a.USER_IDXX = c.USER_IDXX And a.BUSS_CODE = c.BUSS_CODE INNER JOIN tb00_unit d ON a.BUSS_CODE = d.KODE_UNIT WHERE a.USER_IDXX = "' + decoded.id + '" And ("' + path + '" = b.PATH) ORDER BY b.PATH, a.RIGH_AUTH DESC';  
+
+                console.log(sql);
                 
                 var procCodes = [];
                 db.query(sql, (err, rows) => {
-                    if (err)
+                    if (err) {
                         throw err;
-
-                    if (rows.length > 0) {
-                        var userAccess = rows[0];
-
-                        var authRight = userAccess.RIGH_AUTH;
-                        req.AUTH_ADDX = userAccess.AUTH_ADDX;
-                        req.AUTH_EDIT = userAccess.AUTH_EDIT;
-                        req.AUTH_DELT = userAccess.AUTH_DELT;
-                        req.AUTH_APPR = userAccess.AUTH_APPR;
-                        req.AUTH_PRNT = userAccess.AUTH_PRNT;
-                        req.BUSS_CODE0 = userAccess.BUSS_CODE;
-                        req.KODE_URUT0 = userAccess.KODE_URUT;
-                        req.SequenceUnitCode0 = userAccess.SequenceUnitCode;
-
-                        rows.forEach((item) => {
-                            procCodes.push(item.PROC_CODE);
-                        });
-
-                        if (userAccess.IsValid === '0') {
-                            return res.status(403).send({ 
-                                status: false, 
-                                message: 'Need Verification!',
-                                userAccess: false,
-                                isValid: false
-                            });
-                        }
-
-                        if (authRight === '0') {
-                            return res.status(403).send({ 
-                                status: false, 
-                                message: 'Access Denied',
-                                userAccess: false
-                            });
-                        } else {
-                            req.procCodes = procCodes;
-                            next();
-                        }
                     } else {
-                        var j = 0;
-                        for(var obj in req.params) {
-                            j++;
-                        }
-                        
-                        if (j > 0) {
-                            var pathArrays = path.split('/');
-                            var pathLength = pathArrays.length;
+                        if (rows.length > 0) {
+                            var userAccess = rows[0];
 
-                            path = '';
-                            for(var i=0; i < pathLength-j; i++) {
-                                if (i>0) {
-                                    path += '/' + pathArrays[i];
+                            var authRight = userAccess.RIGH_AUTH;
+                            req.AUTH_ADDX = userAccess.AUTH_ADDX;
+                            req.AUTH_EDIT = userAccess.AUTH_EDIT;
+                            req.AUTH_DELT = userAccess.AUTH_DELT;
+                            req.AUTH_APPR = userAccess.AUTH_APPR;
+                            req.AUTH_PRNT = userAccess.AUTH_PRNT;
+                            req.BUSS_CODE0 = userAccess.BUSS_CODE;
+                            req.KODE_URUT0 = userAccess.KODE_URUT;
+                            req.SequenceUnitCode0 = userAccess.SequenceUnitCode;
+
+                            rows.forEach((item) => {
+                                procCodes.push(item.PROC_CODE);
+                            });
+
+                            if (userAccess.IsValid === '0') {
+                                return res.status(403).send({ 
+                                    status: false, 
+                                    message: 'Need Verification!',
+                                    userAccess: false,
+                                    isValid: false
+                                });
+                            }
+
+                            if (authRight === '0') {
+                                return res.status(403).send({ 
+                                    status: false, 
+                                    message: 'Access Denied',
+                                    userAccess: false
+                                });
+                            } else {
+                                req.procCodes = procCodes;
+                                next();
+                            }
+                        } else {
+                            // potong parameter path
+                            var j = 0;
+                            for(var obj in req.params) {
+                                j++;
+                            }
+                            
+                            if (j > 0) {
+                                var pathArrays = path.split('/');
+                                var pathLength = pathArrays.length;
+
+                                path = '';
+                                for(var i=0; i < pathLength-j; i++) {
+                                    if (i>0) {
+                                        path += '/' + pathArrays[i];
+                                    }
                                 }
                             }
-                        }
 
-                        const pathPermit = ['/profile', '/', '/menu/menus', '/uploadFile2', '/user/update', '/profile/karyawan', '/profile/karyawan/update', '/profile/karyawan/save', '/profile/karyawan-prsh/save', '/setup/pekerjaans', '/setup/pendidikans', '/setup/status-maritals', '/setup/gol-darahs', '/utility/sequence', '/utility/sequence/save', '/utility/sequence/update'];
+                            const pathPermit = ['/profile', '/', '/menu/menus', '/uploadFile2', '/user/update', '/profile/karyawan', '/profile/karyawan/update', '/profile/karyawan/save', '/profile/karyawan-prsh/save', '/setup/pekerjaans', '/setup/pendidikans', '/setup/status-maritals', '/setup/gol-darahs', '/utility/sequence', '/utility/sequence/save', '/utility/sequence/update', '/profile/user/update'];
 
 
-                        if (pathPermit.includes(path)) {
-                            next();
-                        } else {
-                            return res.status(403).send({ 
-                                status: false, 
-                                message: 'Access Denied',
-                                userAccess: false
-                            });
+                            if (pathPermit.includes(path)) {
+                                next();
+                            } else {
+                                return res.status(403).send({ 
+                                    status: false, 
+                                    message: 'Access Denied',
+                                    userAccess: false
+                                });
+                            }
                         }
                     }
                 });
