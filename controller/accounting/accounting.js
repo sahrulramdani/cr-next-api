@@ -92,7 +92,8 @@ export default class Accounting {
 
             var bankID = request.params.bankID;
 
-            var qryCmd = "select *, DATE_FORMAT(TransDate, '%d/%m/%Y %H:%i') As TransDateFormat, DATE_FORMAT(ValutaDate, '%d/%m/%Y %H:%i') As ValutaDateFormat from tblMutasi where Bank = '" + bankID + "' order by TransDate desc";
+            var qryCmd = "select *, DATE_FORMAT(TransDate, '%d/%m/%Y %H:%i') As TransDateFormat, DATE_FORMAT(ValutaDate, '%d/%m/%Y %H:%i') As ValutaDateFormat from tblMutasi where Bank = '" + bankID + "' And BUSS_CODE = '" + req.BUSS_CODE0 + "' order by TransDate desc";
+
             db.query(qryCmd, function(err, rows, fields) {
                 var output = [];
 
@@ -163,14 +164,14 @@ export default class Accounting {
 
             if (field !== undefined) {
                 if (field === 'NoReference') {
-                    qryCmd = "select * from tblMutasi where DATE_FORMAT(TransDate, '%Y-%m-%d') = '" + tgl + "' And NoReference = '" + value + "' And TransNumber is Null";
+                    qryCmd = "select * from tblMutasi where DATE_FORMAT(TransDate, '%Y-%m-%d') = '" + tgl + "' And NoReference = '" + value + "' And TransNumber is Null And BUSS_CODE = '" + req.BUSS_CODE0 + "'";
                 } else if (field === 'Description') {
-                    qryCmd = "select * from tblMutasi where DATE_FORMAT(TransDate, '%Y-%m-%d') = '" + tgl + "' And Keterangan like '%" + value + "%' And TransNumber is Null";
+                    qryCmd = "select * from tblMutasi where DATE_FORMAT(TransDate, '%Y-%m-%d') = '" + tgl + "' And Keterangan like '%" + value + "%' And TransNumber is Null And BUSS_CODE = '" + req.BUSS_CODE0 + "'";
                 } else if (field === 'Amount') {
-                    qryCmd = "select * from tblMutasi where DATE_FORMAT(TransDate, '%Y-%m-%d') = '" + tgl + "' And Amount = " + value + " And TransNumber is Null";
+                    qryCmd = "select * from tblMutasi where DATE_FORMAT(TransDate, '%Y-%m-%d') = '" + tgl + "' And Amount = " + value + " And TransNumber is Null And BUSS_CODE = '" + req.BUSS_CODE0 + "'";
                 } 
             } else {
-                qryCmd = "select * from tblMutasi where DATE_FORMAT(TransDate, '%Y-%m-%d') = '" + tgl + "' And TransNumber is Null";
+                qryCmd = "select * from tblMutasi where DATE_FORMAT(TransDate, '%Y-%m-%d') = '" + tgl + "' And TransNumber is Null And BUSS_CODE = '" + req.BUSS_CODE0 + '"';
             }
 
             db.query(qryCmd, function(err, rows, fields) {
@@ -208,15 +209,16 @@ export default class Accounting {
             var rows = req.body.rows;
             var bank = req.body.bank;
             var tgl = moment(new Date()).format('YYYY-MM-DD');
+            var bussCode = req.BUSS_CODE0;
 
-            var sql = 'INSERT INTO tblMutasi (TransDate, ValutaDate, NoReference, Keterangan, DK, Amount, Saldo, Bank, CRTX_DATE, CRTX_BYXX) VALUES (';
+            var sql = 'INSERT INTO tblMutasi (TransDate, ValutaDate, NoReference, Keterangan, DK, Amount, Saldo, Bank, CRTX_DATE, CRTX_BYXX, BUSS_CODE) VALUES (';
             if (rows.length > 1) {
                 rows.forEach((item, index) => {
                         if (index > 0) {
                             if (index === 1) {
-                                sql = sql + '"' + item[0] + '","' + item[1] + '","' + item[2] + '","' + item[3] + '","' + item[4] + '",' + item[5] + ',' + item[6] + ',"' + bank + '","' + tgl + '","' + req.userID + '")';
+                                sql = sql + '"' + item[0] + '","' + item[1] + '","' + item[2] + '","' + item[3] + '","' + item[4] + '",' + item[5] + ',' + item[6] + ',"' + bank + '","' + tgl + '","' + req.userID + '","' + bussCode + '")';
                             } else {
-                                sql = sql + ',("' + item[0] + '","' + item[1] + '","' + item[2] + '","' + item[3] + '","' + item[4] + '",' + item[5] + ',' + item[6] + ',"' + bank + '","' + tgl + '","' + req.userID + '")';
+                                sql = sql + ',("' + item[0] + '","' + item[1] + '","' + item[2] + '","' + item[3] + '","' + item[4] + '",' + item[5] + ',' + item[6] + ',"' + bank + '","' + tgl + '","' + req.userID + '","' + bussCode + '")';
                             }
                         }
                 });
