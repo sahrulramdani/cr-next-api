@@ -1,5 +1,6 @@
 import  db from './../../koneksi.js';
 import { fncParseComma } from './../../libraries/sisqu/Utility.js';
+import { fncCheckProcCode } from './../../libraries/local/localUtility.js';
 
 
 export default class Setup {
@@ -297,10 +298,10 @@ export default class Setup {
 
     getUnit = function(req, res) {
         // get user Access
-        var authAdd = request.AUTH_ADDX;
-        var authEdit = request.AUTH_EDIT;
-        var authDelt = request.AUTH_DELT;
-        var authAppr = request.AUTH_APPR;  // auth Approve
+        var authAdd = req.AUTH_ADDX;
+        var authEdit = req.AUTH_EDIT;
+        var authDelt = req.AUTH_DELT;
+        var authAppr = req.AUTH_APPR;  // auth Approve
 
         var id = req.params.id;
         var sql = 'SELECT * FROM `tb00_unit` WHERE KODE_UNIT = "'+ id +'" ';
@@ -778,6 +779,17 @@ export default class Setup {
     }
 
     saveUnit = function(req, res) {
+        // check Access PROC_CODE 
+        if (fncCheckProcCode(req.body.ProcCode, req.procCodes) === false) {
+            res.status(403).send({ 
+                status: false, 
+                message: 'Access Denied',
+                userAccess: false
+            });
+
+            return;
+        }
+
         var sql = 'INSERT INTO tb00_unit SET ?';
         var data = {
             KODE_UNIT : req.body.KODE_UNIT,
@@ -808,6 +820,17 @@ export default class Setup {
     }
 
     updateUnit = function(req, res) {
+        // check Access PROC_CODE 
+        if (fncCheckProcCode(req.body.ProcCode, req.procCodes) === false) {
+            res.status(403).send({ 
+                status: false, 
+                message: 'Access Denied',
+                userAccess: false
+            });
+
+            return;
+        }
+
         var sql = 'UPDATE tb00_unit SET ? WHERE KODE_UNIT = "' + req.body.KODE_UNIT + '"';
         var data = {
             NAMA_UNIT : req.body.NAMA_UNIT,
@@ -857,6 +880,17 @@ export default class Setup {
     }
 
     saveBank = function(req, res) {
+        // check Access PROC_CODE 
+        if (fncCheckProcCode(req.body.ProcCode, req.procCodes) === false) {
+            res.status(403).send({ 
+                status: false, 
+                message: 'Access Denied',
+                userAccess: false
+            });
+
+            return;
+        }
+
         var sql = 'INSERT INTO tb02_bank SET ?';
         var data = {
             KODE_BANK : req.body.KODE_BANK,
@@ -885,6 +919,17 @@ export default class Setup {
     }
 
     updateBank = function(req, res) {
+        // check Access PROC_CODE 
+        if (fncCheckProcCode(req.body.ProcCode, req.procCodes) === false) {
+            res.status(403).send({ 
+                status: false, 
+                message: 'Access Denied',
+                userAccess: false
+            });
+
+            return;
+        }
+        
         var id = req.body.id;
         var sql = 'UPDATE tb02_bank SET ? WHERE KODE_BANK = "' + id + '" And KODE_FLNM = "' + req.body.KODE_FLNM + '"';
         var data = {

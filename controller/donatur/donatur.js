@@ -186,6 +186,17 @@ export default class Donatur {
     }
 
     saveDonatur = function(req, res) {
+        // check Access PROC_CODE 
+        if (fncCheckProcCode(req.body.ProcCode, req.procCodes) === false) {
+            res.status(403).send({ 
+                status: false, 
+                message: 'Access Denied',
+                userAccess: false
+            });
+
+            return;
+        }
+
         var noID;
         if (req.body.NO_ID === null || req.body.NO_ID === undefined) {
             noID = generateAutonumber(req.body.Initial, req.SequenceUnitCode0, req.body.Tahun, 
@@ -244,6 +255,17 @@ export default class Donatur {
     }
 
     updateDonatur = function(req, res) {
+        // check Access PROC_CODE 
+        if (fncCheckProcCode(req.body.ProcCode, req.procCodes) === false) {
+            res.status(403).send({ 
+                status: false, 
+                message: 'Access Denied',
+                userAccess: false
+            });
+
+            return;
+        }
+
         var id = req.body.NO_ID;
 
         var sql = 'UPDATE tb11_mzjb a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT SET ? WHERE a.NO_ID = "' + id + '" And b.KODE_URUT like "' + req.KODE_URUT0 + '%"';
@@ -338,6 +360,17 @@ export default class Donatur {
     }
 
     saveMasterFile = function(req, res) {
+        // check Access PROC_CODE 
+        if (fncCheckProcCode(req.body.ProcCode, req.procCodes) === false) {
+            res.status(403).send({ 
+                status: false, 
+                message: 'Access Denied',
+                userAccess: false
+            });
+
+            return;
+        }
+
         var sql = 'INSERT INTO tb52_0001 SET ?';   // Tabel Master File Type Program Donatur
         var data = {
             FileName : req.body.FileName,
@@ -407,6 +440,17 @@ export default class Donatur {
     }
 
     saveTransSLP = function(req, res) {
+        // check Access PROC_CODE 
+        if (fncCheckProcCode(req.body.ProcCode, req.procCodes) === false) {
+            res.status(403).send({ 
+                status: false, 
+                message: 'Access Denied',
+                userAccess: false
+            });
+
+            return;
+        }
+
         var sql = 'INSERT INTO tb52_slpa SET ?';   
 
         var transNumber;
@@ -713,6 +757,17 @@ export default class Donatur {
     }
 
     updateTransSLP = function(req, res) {
+        // check Access PROC_CODE 
+        if (fncCheckProcCode(req.body.ProcCode, req.procCodes) === false) {
+            res.status(403).send({ 
+                status: false, 
+                message: 'Access Denied',
+                userAccess: false
+            });
+
+            return;
+        }
+        
         var transNumber = req.body.transNumber;
         var sql = 'UPDATE tb52_slpa SET ? WHERE transNumber = "' + transNumber + '"';   
         var data = {
@@ -721,7 +776,7 @@ export default class Donatur {
             status : req.body.status,
             tahunBuku : req.body.tahunBuku,
             Message : req.body.Message,
-            unit : req.body.unit,
+            unit : req.BUSS_CODE0,
             UPDT_DATE : new Date(),
             UPDT_BYXX : req.userID
         };
@@ -919,10 +974,21 @@ export default class Donatur {
     }
 
     updateDonaturTrans = function(req, res) {
+        // check Access PROC_CODE 
+        if (fncCheckProcCode(req.body.ProcCode, req.procCodes) === false) {
+            res.status(403).send({ 
+                status: false, 
+                message: 'Access Denied',
+                userAccess: false
+            });
+
+            return;
+        }
+
         var id = req.body.id;
         var NoReference2 = req.body.NoReference2;
 
-        var sql = 'UPDATE trans_donatur a INNER JOIN tb11_mzjb b ON a.DonaturID = b.NO_ID INNER JOIN tb00_unit ON b.BUSS_CODE = c.KODE_UNIT SET ? WHERE a.id = ' + id + ' And c.KODE_URUT like "' + req.KODE_URUT0 + '%"';
+        var sql = 'UPDATE trans_donatur a INNER JOIN tb11_mzjb b ON a.DonaturID = b.NO_ID INNER JOIN tb00_unit c ON b.BUSS_CODE = c.KODE_UNIT SET ? WHERE a.id = ' + id + ' And c.KODE_URUT like "' + req.KODE_URUT0 + '%"';
            
         var data = {
             TransDate : req.body.TransDate,

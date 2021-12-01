@@ -1,6 +1,8 @@
 import  db from './../../koneksi.js';
 import moment from 'moment';
 import bcrypt from 'bcryptjs';
+import { fncCheckProcCode } from './../../libraries/local/localUtility.js';
+
 
 export default class User {
     userAll = (request, response) => {
@@ -109,6 +111,17 @@ export default class User {
     }
 
     updateUser = function(req, res) {
+        // check Access PROC_CODE 
+        if (fncCheckProcCode(req.body.ProcCode, req.procCodes) === false) {
+            res.status(403).send({ 
+                status: false, 
+                message: 'Access Denied',
+                userAccess: false
+            });
+
+            return;
+        }
+
         var ids = req.body.USER_IDXX;
         var sql = 'UPDATE `tb01_lgxh` a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT SET ? WHERE a.USER_IDXX = "'+ ids +'"  And b.KODE_URUT like "' + req.KODE_URUT0 + '%"';
 
@@ -239,6 +252,17 @@ export default class User {
     }
 
     deleteDetPrivilege = function(req, res) {
+        // check Access PROC_CODE 
+        if (fncCheckProcCode(req.body.ProcCode, req.procCodes) === false) {
+            res.status(403).send({ 
+                status: false, 
+                message: 'Access Denied',
+                userAccess: false
+            });
+
+            return;
+        }
+        
         var id = req.body.id;
         var sql = "delete from `tb01_usrd` where id = " + id;
         db.query(sql, (err, result) => {
@@ -281,6 +305,17 @@ export default class User {
     }
 
     saveDetPrivilege = function(req, res) {
+        // check Access PROC_CODE 
+        if (fncCheckProcCode(req.body.ProcCode, req.procCodes) === false) {
+            res.status(403).send({ 
+                status: false, 
+                message: 'Access Denied',
+                userAccess: false
+            });
+
+            return;
+        }
+
         var sql = 'INSERT INTO tb01_usrd SET ?';
         var data = {
             USER_IDXX : req.body.USER_IDXX ,
@@ -315,6 +350,17 @@ export default class User {
     }
 
     saveRole = function(req, res) {
+        // check Access PROC_CODE 
+        if (fncCheckProcCode(req.body.ProcCode, req.procCodes) === false) {
+            res.status(403).send({ 
+                status: false, 
+                message: 'Access Denied',
+                userAccess: false
+            });
+
+            return;
+        }
+
         var sql = 'INSERT INTO `role` SET ?';
         var data = {
             RoleName : req.body.RoleName,
@@ -342,6 +388,17 @@ export default class User {
     }
 
     saveRoleDetPrivilege = function(req, res) {
+        // check Access PROC_CODE 
+        if (fncCheckProcCode(req.body.ProcCode, req.procCodes) === false) {
+            res.status(403).send({ 
+                status: false, 
+                message: 'Access Denied',
+                userAccess: false
+            });
+
+            return;
+        }
+
         var sql = 'INSERT INTO `role_menu` SET ?';
         var data = {
             ROLE_IDXX : req.body.ROLE_IDXX ,
@@ -377,6 +434,17 @@ export default class User {
     }
 
     deleteRoleDetPrivilege = function(req, res) {
+        // check Access PROC_CODE 
+        if (fncCheckProcCode(req.body.ProcCode, req.procCodes) === false) {
+            res.status(403).send({ 
+                status: false, 
+                message: 'Access Denied',
+                userAccess: false
+            });
+
+            return;
+        }
+
         var id = req.body.id;
         var sql = "delete from `role_menu` where id = " + id;
         db.query(sql, (err, result) => {
@@ -419,6 +487,17 @@ export default class User {
     }
 
     saveRoleAllDetPrivilege = function(req, res) {
+        // check Access PROC_CODE 
+        if (fncCheckProcCode(req.body.ProcCode, req.procCodes) === false) {
+            res.status(403).send({ 
+                status: false, 
+                message: 'Access Denied',
+                userAccess: false
+            });
+
+            return;
+        }
+
         var sql = 'INSERT INTO `role_menu` (ROLE_IDXX, PROC_CODE, PATH, BUSS_CODE, MDUL_CODE, TYPE_MDUL, RIGH_AUTH, AUTH_ADDX, AUTH_EDIT, AUTH_DELT) SELECT "' + req.body.ROLE_IDXX + '" As ROLE_IDXX, PROC_CODE, PATH, BUSS_CODE, MDUL_CODE, TYPE_MDUL, "1" As RIGH_AUTH, "1" As AUTH_ADDX, "1" As AUTH_EDIT, "1" As AUTH_DELT from `tb01_proc` where BUSS_CODE = "' + req.body.BUSS_CODE + '"';
         
         db.query(sql, (err, result) => {
@@ -469,6 +548,17 @@ export default class User {
     }
 
     updateDetPrivilege = function(req, res) {
+        // check Access PROC_CODE 
+        if (fncCheckProcCode(req.body.ProcCode, req.procCodes) === false) {
+            res.status(403).send({ 
+                status: false, 
+                message: 'Access Denied',
+                userAccess: false
+            });
+
+            return;
+        }
+
         var ids = req.body.id;
         var sql = 'UPDATE `role_menu` SET ? WHERE id = '+ ids;
         var data = {
@@ -583,6 +673,17 @@ export default class User {
     }
 
     updateRole = function(req, res) {
+        // check Access PROC_CODE 
+        if (fncCheckProcCode(req.body.ProcCode, req.procCodes) === false) {
+            res.status(403).send({ 
+                status: false, 
+                message: 'Access Denied',
+                userAccess: false
+            });
+
+            return;
+        }
+
         var ids = req.body.id;
         var sql = 'UPDATE `role` SET ? WHERE id = '+ ids;
         var data = {
@@ -609,6 +710,17 @@ export default class User {
     }
 
     saveUser = function(req, res) {
+            // check Access PROC_CODE 
+            if (fncCheckProcCode(req.body.ProcCode, req.procCodes) === false) {
+                res.status(403).send({ 
+                    status: false, 
+                    message: 'Access Denied',
+                    userAccess: false
+                });
+
+                return;
+            }
+
             var hashedPassword = bcrypt.hashSync(req.body.password, 8);
 
             var sql = 'INSERT INTO tb01_lgxh SET ?';

@@ -1,5 +1,7 @@
 import  db from './../../koneksi.js';
 import { fncParseComma } from './../../libraries/sisqu/Utility.js';
+import { fncCheckProcCode } from './../../libraries/local/localUtility.js';
+
 
 export default class Issue {
     issueAll = (request, response) => {
@@ -34,6 +36,17 @@ export default class Issue {
     }
 
     saveIssue = function(req, res) {
+        // check Access PROC_CODE 
+        if (fncCheckProcCode(req.body.ProcCode, req.procCodes) === false) {
+            res.status(403).send({ 
+                status: false, 
+                message: 'Access Denied',
+                userAccess: false
+            });
+
+            return;
+        }
+
         var sql = 'INSERT INTO tb50_rish SET ?';
         var data = {
             ACCT_CODE : req.body.ACCT_CODE,
@@ -90,6 +103,17 @@ export default class Issue {
     }
 
     updateIssue = function(req, res) {
+        // check Access PROC_CODE 
+        if (fncCheckProcCode(req.body.ProcCode, req.procCodes) === false) {
+            res.status(403).send({ 
+                status: false, 
+                message: 'Access Denied',
+                userAccess: false
+            });
+
+            return;
+        }
+        
         var ids = req.body.ACCT_CODE;
         var sql = 'UPDATE `tb50_rish` SET ? WHERE ACCT_CODE = "'+ ids +'" ';
         var data = {

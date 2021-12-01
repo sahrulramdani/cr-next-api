@@ -5,6 +5,17 @@ import { fncCheckProcCode } from './../../libraries/local/localUtility.js';
 
 export default class Karyawan {
     saveKaryawan = function(req, res) {
+        // check Access PROC_CODE 
+        if (fncCheckProcCode(req.body.ProcCode, req.procCodes) === false) {
+            res.status(403).send({ 
+                status: false, 
+                message: 'Access Denied',
+                userAccess: false
+            });
+
+            return;
+        }
+        
         var kodeNik;
         if (req.body.KodeNik === null || req.body.KodeNik === undefined) {
             kodeNik = generateAutonumber(req.body.Initial, req.SequenceUnitCode0, req.body.Tahun, 

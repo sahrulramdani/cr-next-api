@@ -1,6 +1,8 @@
 import  db from './../../koneksi.js';
 import { fncParseComma } from './../../libraries/sisqu/Utility.js';
 import moment from 'moment';
+import { fncCheckProcCode } from './../../libraries/local/localUtility.js';
+
 
 export default class Menu {
     moduleAll = (request, response) => {
@@ -343,6 +345,17 @@ export default class Menu {
     }
 
     saveModule = function(req, res) {
+        // check Access PROC_CODE 
+        if (fncCheckProcCode(req.body.ProcCode, req.procCodes) === false) {
+            res.status(403).send({ 
+                status: false, 
+                message: 'Access Denied',
+                userAccess: false
+            });
+
+            return;
+        }
+        
         var sql = 'INSERT INTO tb01_modm (MDUL_CODE, MDUL_NAMA, TYPE_MDUL, BUSS_CODE, NoUrut) select MDUL_CODE, MDUL_NAMA, TYPE_MDUL, "' + req.body.BUSS_CODE + '", NoUrut from tb00_modm where MDUL_CODE = "' + req.body.MDUL_CODE + '"';
         
         db.query(sql, (err, result) => {

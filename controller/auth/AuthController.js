@@ -139,9 +139,7 @@ export default class AuthController {
                 }
 
                 // get User Access
-                var sql = 'SELECT a.*, c.IsValid, d.KODE_URUT, d.SequenceUnitCode FROM `tb01_usrd` a INNER JOIN `tb01_apix` b on a.PROC_CODE = b.PROC_CODE INNER JOIN `tb01_lgxh` c ON a.USER_IDXX = c.USER_IDXX And a.BUSS_CODE = c.BUSS_CODE INNER JOIN tb00_unit d ON a.BUSS_CODE = d.KODE_UNIT WHERE a.USER_IDXX = "' + decoded.id + '" And ("' + path + '" = b.PATH) ORDER BY b.PATH, a.RIGH_AUTH DESC';  
-
-                console.log(sql);
+                var sql = 'SELECT a.*, c.IsValid, d.KODE_URUT, d.SequenceUnitCode FROM `tb01_usrd` a INNER JOIN `tb01_apix` b on a.PROC_CODE = b.PROC_CODE INNER JOIN `tb01_lgxh` c ON a.USER_IDXX = c.USER_IDXX And a.BUSS_CODE = c.BUSS_CODE INNER JOIN tb00_unit d ON a.BUSS_CODE = d.KODE_UNIT WHERE a.USER_IDXX = "' + decoded.id + '" And ("' + path + '" = b.PATH) And a.RIGH_AUTH = "1" ORDER BY b.PATH';  
                 
                 var procCodes = [];
                 db.query(sql, (err, rows) => {

@@ -1,5 +1,6 @@
 import  db from './../../koneksi.js';
 import moment from 'moment';
+import { fncCheckProcCode } from './../../libraries/local/localUtility.js';
 
 
 export default class Accounting {
@@ -38,6 +39,17 @@ export default class Accounting {
         }
 
         saveTahunBuku = function(req, res) {
+            // check Access PROC_CODE 
+            if (fncCheckProcCode(req.body.ProcCode, req.procCodes) === false) {
+                res.status(403).send({ 
+                    status: false, 
+                    message: 'Access Denied',
+                    userAccess: false
+                });
+
+                return;
+            }
+
             var sql = 'INSERT INTO tb00_thna SET ?';
             var data = {
                 THNX_AJAR : req.body.THNX_AJAR,
@@ -182,6 +194,17 @@ export default class Accounting {
         }
 
         saveMutasi = function(req, res) {
+            // check Access PROC_CODE 
+            if (fncCheckProcCode(req.body.ProcCode, req.procCodes) === false) {
+                res.status(403).send({ 
+                    status: false, 
+                    message: 'Access Denied',
+                    userAccess: false
+                });
+
+                return;
+            }
+            
             var rows = req.body.rows;
             var bank = req.body.bank;
             var tgl = moment(new Date()).format('YYYY-MM-DD');
