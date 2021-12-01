@@ -609,7 +609,8 @@ export default class Donatur {
 
         var transNumber = req.params.transNumber;
 
-        var sql = 'SELECT a.*, b.NAMA FROM tb52_slpc a inner join tb11_mzjb b on a.donaturID = b.NO_ID  WHERE a.transNumber = "'+ transNumber +'"';
+        var sql = 'SELECT a.*, b.NAMA, CONCAT(IFNULL(b.CodeCountryHP, ""), b.NoHP) As NoHP2 FROM tb52_slpc a inner join tb11_mzjb b on a.donaturID = b.NO_ID inner join tb00_unit c on b.BUSS_CODE = c.KODE_UNIT WHERE a.transNumber = "'+ transNumber +'" And c.KODE_URUT like "' + req.KODE_URUT0 + '%"';
+
         db.query(sql, function(err, rows, fields) {
             var output = [];
 
