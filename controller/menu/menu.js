@@ -235,7 +235,8 @@ export default class Menu {
         selectedIds = fncParseComma(req.body.selectedIds);
     
         var arrayLength = selectedIds.length;
-        var sql = 'delete from `tb01_proc` where PROC_CODE in ("';
+        var sql = 'delete a from `tb01_proc` a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where b.KODE_URUT like "' + req.KODE_URUT0 + '%" And a.BUSS_CODE = "' + req.body.BUSS_CODE + '" And a.PROC_CODE in ("';
+        
         if (arrayLength > 0) {
             for(var i=0; i<arrayLength; i++) {
                 if (i === 0) {

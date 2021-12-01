@@ -210,6 +210,7 @@ export default class Donatur {
             NO_ID : noID,
             NPWP : req.body.NPWP,
             NAMA : req.body.NAMA,
+            NICK_NAME : req.body.NICK_NAME,
             JNKX_KLMN : req.body.JNKX_KLMN,
             ALMT_XXX1 : req.body.ALMT_XXX1,
             NoHP : req.body.NoHP,
@@ -272,6 +273,7 @@ export default class Donatur {
         var data = {
             NPWP : req.body.NPWP,
             NAMA : req.body.NAMA,
+            NICK_NAME : req.body.NICK_NAME,
             JNKX_KLMN : req.body.JNKX_KLMN,
             ALMT_XXX1 : req.body.ALMT_XXX1,
             NoHP : req.body.NoHP,
