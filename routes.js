@@ -10,6 +10,7 @@ import * as C from './controller/index.js';
       app.route('/setup/pekerjaans').get(C.auth.verifyToken, C.setup.pekerjaanAll);
       app.route('/setup/pendidikans').get(C.auth.verifyToken, C.setup.pendidikanAll);
       app.route('/setup/wilayah-kerjas').get(C.auth.verifyToken, C.setup.wilayahKerjaAll);
+      app.route('/setup/bank-umums').get(C.auth.verifyToken, C.setup.bankUmumAll);
       app.route('/setup/unit/save').post(C.auth.verifyToken, C.setup.saveUnit);
       app.route('/setup/unit/update').post(C.auth.verifyToken, C.setup.updateUnit);
       app.route('/setup/unit/delete').post(C.auth.verifyToken, C.setup.deleteUnit);
