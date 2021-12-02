@@ -296,6 +296,38 @@ export default class Setup {
         });
     }
 
+    departmentAll = (request, response) => {
+        // get user Access
+        var authAdd = request.AUTH_ADDX;
+        var authEdit = request.AUTH_EDIT;
+        var authDelt = request.AUTH_DELT;
+        var authAppr = request.AUTH_APPR;  // auth Approve
+
+        var qryCmd = "select a.* from tb00_basx a inner join tb00_unit b on a.CODD_VARC = b.KODE_UNIT where a.CODD_FLNM = 'DEPARTMENT' And b.KODE_URUT like '" + request.KODE_URUT0 + "%'  order by a.CODD_DESC";
+        
+        db.query(qryCmd, function(err, rows, fields) {
+            var output = [];
+
+            if (rows.length > 0) {
+                rows.forEach(function(row) {
+                    var obj = new Object();
+                    for(var key in row) {
+                        obj[key] = row[key];
+                    }
+
+                    obj['AUTH_ADDX'] = authAdd;
+                    obj['AUTH_EDIT'] = authEdit;
+                    obj['AUTH_DELT'] = authDelt;
+                    obj['AUTH_APPR'] = authAppr;
+
+                    output.push(obj);
+                })
+            }
+
+            response.send(output);
+        });
+    }
+
     unitAll = (request, response) => {
         // get user Access
         var authAdd = request.AUTH_ADDX;
