@@ -206,7 +206,7 @@ export default class Karyawan {
         var authAppr = req.AUTH_APPR;  // auth Approve
 
         var nik = req.params.id;
-        var sql = 'SELECT a.* FROM tb21_empl a INNER JOIN tb00_unit c ON a.BUSS_CODE = c.KODE_UNIT WHERE a.KodeNik = "'+ nik +'" And c.KODE_URUT like "' + req.KODE_URUT0 + '%" ';
+        var sql = 'SELECT a.*, b.NAMA_UNIT FROM tb21_empl a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT WHERE a.KodeNik = "'+ nik +'" And b.KODE_URUT like "' + req.KODE_URUT0 + '%" ';
         
         db.query(sql, function(err, rows, fields) {
             var output = [];
@@ -254,7 +254,6 @@ export default class Karyawan {
             email : req.body.email,
             TempatLahir : req.body.TempatLahir,
             TglLahir : req.body.TglLahir,
-            BUSS_CODE : req.BUSS_CODE0,
             NoKTP : req.body.NoKTP,
             StatusAktif : '1',
             StatusKawin : req.body.StatusKawin,
@@ -300,6 +299,13 @@ export default class Karyawan {
             return;
         }
 
+        var bussCode;
+        if (req.body.BUSS_CODE === null || req.body.BUSS_CODE === undefined) {
+            bussCode = req.BUSS_CODE0;
+        } else {
+            bussCode = req.body.BUSS_CODE;
+        }
+
         var id = req.body.id;  // id = nik
         var sql = 'UPDATE `tb21_empl` a INNER JOIN tb01_lgxh b ON a.KodeNik = b.NO_ID SET ? WHERE a.KodeNik = "' + id + '" And b.USER_IDXX = "' + req.userID + '"';
         
@@ -314,7 +320,7 @@ export default class Karyawan {
             'a.email' : req.body.email,
             TempatLahir : req.body.TempatLahir,
             TglLahir : req.body.TglLahir,
-            'a.BUSS_CODE' : req.body.BUSS_CODE,
+            'a.BUSS_CODE' : bussCode,
             NoKTP : req.body.NoKTP,
             StatusAktif : '1',
             StatusKawin : req.body.StatusKawin, 
@@ -369,7 +375,7 @@ export default class Karyawan {
         "CASE a.StatusAktif " +
             "WHEN '1' THEN 'ACTIVE' " +
             "ELSE 'NOT ACTIVE' " +
-        "END As StatusAktif2 " + 
+        "END As StatusAktif2, b.KODE_UNIT " + 
         "from tb21_empl a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where b.KODE_URUT like '" + request.KODE_URUT0 + "%' And a.StatusKry = '" + status + "'";
 
         db.query(qryCmd, function(err, rows, fields) {
