@@ -185,6 +185,48 @@ export default class Donatur {
         });
     }
 
+    getDonatursPerLevelPlatinum = function(req, res) {
+        // get user Access
+        var authAdd = req.AUTH_ADDX;
+        var authEdit = req.AUTH_EDIT;
+        var authDelt = req.AUTH_DELT;
+        var authAppr = req.AUTH_APPR;  // auth Approve
+
+        var level = req.params.level;  // Level : TypeDonatur (NEW, RETENSI, dll)
+        var platinum = req.params.platinum;
+        var sql = '';
+
+        if (level === 'ALL') {
+            sql = 'SELECT a.*, b.CODD_DESC As TypeDonatur2, a.flgPlatinum As Platinum, DATE_FORMAT(a.TglX_MASK, "%e-%b-%Y") As TglMasuk, CONCAT(a.NAMA, ", ", IFNULL(a.TITLE, "")) As Nama2, CONCAT(IFNULL(a.CodeCountryHP, ""), a.NoHP) As NoHP2, d.CODD_DESC As Profesi, IFNULL(e.TotalDonasi, 0) As TotalDonasi, e.TahunDonasi, e.Januari, e.Februari, e.Maret, e.April, e.Mei, e.Juni, e.Juli, e.Agustus, e.September, e.Oktober, e.November, e.Desember, CASE a.FlgPlatinum When "1" Then "v" Else "" End As Platinum2 FROM tb11_mzjb a inner join (select * from tb00_basx where CODD_FLNM = "TYPE_DONATUR") b on a.TypeDonatur = b.CODD_VALU inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT left join (select * from tb00_basx where CODD_FLNM = "PEKERJAAN") d on a.Pekerjaan = d.CODD_VALU left join (select * from vtrans_donatur) e on a.NO_ID = e.DonaturID WHERE c.KODE_URUT like "' + req.KODE_URUT0 + '%" And a.FlgPlatinum = "' + platinum + '" ORDER BY a.NAMA';
+        } else {
+            sql = 'SELECT a.*, b.CODD_DESC As TypeDonatur2, a.flgPlatinum As Platinum, DATE_FORMAT(a.TglX_MASK, "%e-%b-%Y") As TglMasuk, CONCAT(a.NAMA, ", ", IFNULL(a.TITLE, "")) As Nama2, CONCAT(IFNULL(a.CodeCountryHP, ""), a.NoHP) As NoHP2, d.CODD_DESC As Profesi, IFNULL(e.TotalDonasi, 0) As TotalDonasi, e.TahunDonasi, e.Januari, e.Februari, e.Maret, e.April, e.Mei, e.Juni, e.Juli, e.Agustus, e.September, e.Oktober, e.November, e.Desember, CASE a.FlgPlatinum When "1" Then "v" Else "" End As Platinum2 FROM tb11_mzjb a inner join (select * from tb00_basx where CODD_FLNM = "TYPE_DONATUR") b on a.TypeDonatur = b.CODD_VALU inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT left join (select * from tb00_basx where CODD_FLNM = "PEKERJAAN") d on a.Pekerjaan = d.CODD_VALU left join (select * from vtrans_donatur) e on a.NO_ID = e.DonaturID WHERE b.CODD_DESC = "'+ level + '" And c.KODE_URUT like "' + req.KODE_URUT0 + '%" And a.FlgPlatinum = "' + platinum + '" ORDER BY a.NAMA';
+        }
+       
+        db.query(sql, function(err, rows, fields) {
+            var output = [];
+
+            if (rows.length > 0) {
+                rows.forEach(function(row) {
+                    var obj = new Object();
+                    for(var key in row) {
+                        obj[key] = row[key];
+                    }
+
+                    obj['AUTH_ADDX'] = authAdd;
+                    obj['AUTH_EDIT'] = authEdit;
+                    obj['AUTH_DELT'] = authDelt;
+                    obj['AUTH_APPR'] = authAppr;
+
+                    output.push(obj);
+                })
+
+                res.send(output);
+            } else {
+                res.send([]);
+            }
+        });
+    }
+
     saveDonatur = function(req, res) {
         // check Access PROC_CODE 
         if (fncCheckProcCode(req.body.ProcCode, req.procCodes) === false) {
