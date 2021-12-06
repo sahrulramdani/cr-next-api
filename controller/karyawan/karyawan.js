@@ -125,6 +125,7 @@ export default class Karyawan {
             TypeRelawan : req.body.TypeRelawan,
             Pendidikan : req.body.Pendidikan,
             Pekerjaan : req.body.Pekerjaan,
+            DepartmentID : req.body.DepartmentID,
             StatusKry : req.body.StatusKry,
             CRTX_DATE : new Date(),
             CRTX_BYXX : req.userID
@@ -334,6 +335,7 @@ export default class Karyawan {
             TypeRelawan : req.body.TypeRelawan,
             Pendidikan : req.body.Pendidikan,
             Pekerjaan : req.body.Pekerjaan,
+            DepartmentID : req.body.DepartmentID,
             'a.UPDT_DATE' : new Date(),
             'a.UPDT_BYXX' : req.userID
         };
