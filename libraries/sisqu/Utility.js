@@ -53,6 +53,29 @@ function ExcelDateToJSDate(serial) {
     return new Date(date_info.getFullYear(), date_info.getMonth(), date_info.getDate(), hours, minutes, seconds);
  }
 
+ function weekOfMonth(tgl) {
+    // Jika param tgl bukan Object Date, maka menggunakan tanggal sekarang
+    // output : Week 1 s.d. Week 4/5
+
+   if (!(tgl instanceof Date)) {
+       var tgl2 = new Date();
+
+       var date = tgl2.getDate();
+       var day = tgl2.getDay();
+   
+       var output = (Math.abs(Math.ceil((date - 1 - day) / 7))) + 1;
+
+       return output;
+   } else {
+       var date = tgl.getDate();
+       var day = tgl.getDay();
+   
+       var output = (Math.abs(Math.ceil((date - 1 - day) / 7))) + 1;
+
+       return output;
+   }
+}
+
 // ------------- Sisqu Utilities --------------
 const generateAutonumber = (initial, sequenceUnitCode, tahun, nextSequenceFormat) => {
     var output = initial + sequenceUnitCode + tahun.toString().substring(2) + nextSequenceFormat;
@@ -61,6 +84,7 @@ const generateAutonumber = (initial, sequenceUnitCode, tahun, nextSequenceFormat
 }
 
 
-export { fncUnionComma, fncParseComma, ExcelDateToJSDate, 
-        generateAutonumber
+export { 
+    fncUnionComma, fncParseComma, ExcelDateToJSDate, 
+    generateAutonumber, weekOfMonth
 };
