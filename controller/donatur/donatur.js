@@ -1047,6 +1047,7 @@ export default class Donatur {
             FileName : req.body.FileName,
             ProgDonatur : req.body.ProgDonatur,
             MethodPayment : req.body.MethodPayment,
+            TransactionIDSLP : req.body.TransactionIDSLP,
             BankFrom : req.body.BankFrom,
             BankTo : req.body.BankTo,
             Catatan : req.body.Catatan,

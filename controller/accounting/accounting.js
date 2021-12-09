@@ -92,7 +92,7 @@ export default class Accounting {
 
             var bankID = request.params.bankID;
 
-            var qryCmd = "select *, DATE_FORMAT(TransDate, '%d/%m/%Y %H:%i') As TransDateFormat, DATE_FORMAT(ValutaDate, '%d/%m/%Y %H:%i') As ValutaDateFormat from tblMutasi where Bank = '" + bankID + "' And BUSS_CODE = '" + req.BUSS_CODE0 + "' order by TransDate desc";
+            var qryCmd = "select a.*, DATE_FORMAT(a.TransDate, '%d/%m/%Y %H:%i') As TransDateFormat, DATE_FORMAT(a.ValutaDate, '%d/%m/%Y %H:%i') As ValutaDateFormat from tblMutasi a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where a.Bank = '" + bankID + "' And b.KODE_URUT like '" + request.KODE_URUT0 + "%' order by a.TransDate desc";
 
             db.query(qryCmd, function(err, rows, fields) {
                 var output = [];
@@ -164,15 +164,17 @@ export default class Accounting {
 
             if (field !== undefined) {
                 if (field === 'NoReference') {
-                    qryCmd = "select * from tblMutasi where DATE_FORMAT(TransDate, '%Y-%m-%d') = '" + tgl + "' And NoReference = '" + value + "' And TransNumber is Null And BUSS_CODE = '" + req.BUSS_CODE0 + "'";
+                    qryCmd = "select a.* from tblMutasi a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where DATE_FORMAT(a.TransDate, '%Y-%m-%d') = '" + tgl + "' And a.NoReference = '" + value + "' And a.TransNumber is Null And b.KODE_URUT like '" + request.KODE_URUT0 + "%'";
                 } else if (field === 'Description') {
-                    qryCmd = "select * from tblMutasi where DATE_FORMAT(TransDate, '%Y-%m-%d') = '" + tgl + "' And Keterangan like '%" + value + "%' And TransNumber is Null And BUSS_CODE = '" + req.BUSS_CODE0 + "'";
+                    qryCmd = "select a.* from tblMutasi a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where DATE_FORMAT(a.TransDate, '%Y-%m-%d') = '" + tgl + "' And a.Keterangan like '%" + value + "%' And a.TransNumber is Null And b.KODE_URUT like '" + request.KODE_URUT0 + "%'";
                 } else if (field === 'Amount') {
-                    qryCmd = "select * from tblMutasi where DATE_FORMAT(TransDate, '%Y-%m-%d') = '" + tgl + "' And Amount = " + value + " And TransNumber is Null And BUSS_CODE = '" + req.BUSS_CODE0 + "'";
+                    qryCmd = "select a.* from tblMutasi a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where DATE_FORMAT(a.TransDate, '%Y-%m-%d') = '" + tgl + "' And a.Amount = " + value + " And a.TransNumber is Null And b.KODE_URUT like '" + request.KODE_URUT0 + "%'";
                 } 
             } else {
-                qryCmd = "select * from tblMutasi where DATE_FORMAT(TransDate, '%Y-%m-%d') = '" + tgl + "' And TransNumber is Null And BUSS_CODE = '" + req.BUSS_CODE0 + '"';
+                qryCmd = "select a.* from tblMutasi a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where DATE_FORMAT(a.TransDate, '%Y-%m-%d') = '" + tgl + "' And a.TransNumber is Null And b.KODE_URUT like '" + request.KODE_URUT0 + "%'";
             }
+
+            console.log(qryCmd);
 
             db.query(qryCmd, function(err, rows, fields) {
                 var output = [];

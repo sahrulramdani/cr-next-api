@@ -166,13 +166,6 @@ export default class Setup {
         var authDelt = request.AUTH_DELT;
         var authAppr = request.AUTH_APPR;  // auth Approve
 
-        /* var qryCmd = "select a.*, " + 
-                      "Case a.CODD_VARC " +
-                          "WHEN 'PLATINUM' Then 'P' "  +
-                          "ELSE b.CODD_VARC " +
-                       "End As Level " +
-                       "from tb00_basx a left join (select * from tb00_basx where CODD_FLNM = 'TYPE_DONATUR') b on a.CODD_VARC = b.CODD_DESC where a.CODD_FLNM = 'TYPE_PROGRAM_DONATUR' order by a.CODD_VALU"; */
-
         var qryCmd = "select a.*, " + 
         "Case a.TypeDonaturMin " +
             "WHEN 'PLATINUM' Then 'P' "  +
