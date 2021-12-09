@@ -174,8 +174,6 @@ export default class Accounting {
                 qryCmd = "select a.* from tblMutasi a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where DATE_FORMAT(a.TransDate, '%Y-%m-%d') = '" + tgl + "' And a.TransNumber is Null And b.KODE_URUT like '" + request.KODE_URUT0 + "%'";
             }
 
-            console.log(qryCmd);
-
             db.query(qryCmd, function(err, rows, fields) {
                 var output = [];
 
