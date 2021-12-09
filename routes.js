@@ -98,7 +98,6 @@ import * as C from './controller/index.js';
       app.route('/crm/slp/attachment/save').post(C.auth.verifyToken, C.donatur.saveDetTransSLP1);   // Save Transaksi SLP Attachments
       app.route('/crm/slp/attachment/delete').post(C.auth.verifyToken, C.donatur.deleteSLPAttachment);
       app.route('/crm/slp/donatur/save').post(C.auth.verifyToken, C.donatur.saveDetTransSLP2);   // Save Transaksi SLP Donaturs
-      app.route('/crm/slp/donatur/save').post(C.auth.verifyToken, C.donatur.saveDetTransSLP2);
       app.route('/crm/slp/donatur/update').post(C.auth.verifyToken, C.donatur.updateTransSLPDonatur);
       app.route('/crm/slp/donaturs/:transNumber').get(C.auth.verifyToken, C.donatur.getSLPDonaturs);
       app.route('/crm/slp/:id').get(C.auth.verifyToken, C.donatur.getTransSLP);
@@ -123,6 +122,7 @@ import * as C from './controller/index.js';
 
       // ------ Accounting --------------
       app.route('/accounting/tahun-buku/save').post(C.auth.verifyToken, C.accounting.saveTahunBuku);
+      app.route('/accounting/tahun-buku/active').get(C.auth.verifyToken, C.accounting.getActiveTahunBuku);
       app.route('/accounting/tahun-bukus').get(C.auth.verifyToken, C.accounting.tahunBukuAll);
       app.route('/accounting/mutasi/save').post(C.auth.verifyToken, C.accounting.saveMutasi);
       app.route('/accounting/mutasi/update').post(C.auth.verifyToken, C.accounting.updateMutasi);

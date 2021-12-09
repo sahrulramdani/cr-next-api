@@ -618,6 +618,17 @@ export default class Donatur {
 
     // Save Detail Transaksi SLP Donaturs
     saveDetTransSLP2 = function(req, res) {
+        // check Access PROC_CODE 
+        if (fncCheckProcCode(req.body.ProcCode, req.procCodes) === false) {
+            res.status(403).send({ 
+                status: false, 
+                message: 'Access Denied',
+                userAccess: false
+            });
+
+            return;
+        }
+        
         var sql = 'INSERT INTO tb52_slpc SET ?';   
         var data = {
             transNumber : req.body.transNumber,
@@ -936,6 +947,7 @@ export default class Donatur {
             BankFrom : req.body.BankFrom,
             BankTo : req.body.BankTo,
             Catatan : req.body.Catatan,
+            TahunBuku : req.body.TahunBuku,
             isValidate : req.body.isValidate,
             isDelete : req.body.isDelete,
             CRTX_DATE : new Date(),

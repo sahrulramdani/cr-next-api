@@ -271,7 +271,7 @@ export default class Accounting {
         
                     res.send(output);
                 } else {
-                    response.send([]);
+                    res.send([]);
                 }
             });
         }
@@ -298,6 +298,14 @@ export default class Accounting {
                         status: true
                     });
                 }
+            });
+        }
+
+        getActiveTahunBuku = function(req, res) {
+            var sql = 'SELECT * FROM `tb00_thna` WHERE STAT_AKTF = "1"';
+            
+            db.query(sql, function(err, rows, fields) {
+                res.send(rows);
             });
         }
 }
