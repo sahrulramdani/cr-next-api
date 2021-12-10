@@ -157,7 +157,7 @@ export default class Donatur {
         if (level === 'P') { // Donatur Platinum
             sql = 'SELECT * FROM tb11_mzjb WHERE FlgPlatinum = "1"';
         } else {
-            sql = 'SELECT a.*, b.CODD_DESC As TypeDonatur2, a.flgPlatinum As Platinum, DATE_FORMAT(a.TglX_MASK, "%e-%b-%Y") As TglMasuk, CONCAT(a.NAMA, ", ", IFNULL(a.TITLE, "")) As Nama2, CONCAT(IFNULL(a.CodeCountryHP, ""), a.NoHP) As NoHP2, d.CODD_DESC As Profesi, IFNULL(e.TotalDonasi, 0) As TotalDonasi, e.TahunDonasi, e.Januari, e.Februari, e.Maret, e.April, e.Mei, e.Juni, e.Juli, e.Agustus, e.September, e.Oktober, e.November, e.Desember FROM tb11_mzjb a inner join (select * from tb00_basx where CODD_FLNM = "TYPE_DONATUR") b on a.TypeDonatur = b.CODD_VALU inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT left join (select * from tb00_basx where CODD_FLNM = "PEKERJAAN") d on a.Pekerjaan = d.CODD_VALU left join (select * from vtrans_donatur) e on a.NO_ID = e.DonaturID WHERE b.CODD_VARC >= "'+ level + '" And c.KODE_URUT like "' + req.KODE_URUT0 + '%" ORDER BY a.NAMA';
+            sql = 'SELECT a.*, b.CODD_DESC As TypeDonatur2, a.flgPlatinum As Platinum, DATE_FORMAT(a.TglX_MASK, "%e-%b-%Y") As TglMasuk, CONCAT(a.NAMA, ", ", IFNULL(a.TITLE, "")) As Nama2, CONCAT(IFNULL(a.CodeCountryHP, ""), a.NoHP) As NoHP2, d.CODD_DESC As Profesi, IFNULL(e.TotalDonasi, 0) As TotalDonasi, e.TahunDonasi, e.Januari, e.Februari, e.Maret, e.April, e.Mei, e.Juni, e.Juli, e.Agustus, e.September, e.Oktober, e.November, e.Desember, f.CODD_DESC As SegmenProfil  FROM tb11_mzjb a inner join (select * from tb00_basx where CODD_FLNM = "TYPE_DONATUR") b on a.TypeDonatur = b.CODD_VALU inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT left join (select * from tb00_basx where CODD_FLNM = "PEKERJAAN") d on a.Pekerjaan = d.CODD_VALU left join (select * from vtrans_donatur) e on a.NO_ID = e.DonaturID left join (select * from tb00_basx where CODD_FLNM = "SEGMENT_PROFILING") f on a.SEGMX_PROF = f.CODD_VALU WHERE b.CODD_VARC >= "'+ level + '" And c.KODE_URUT like "' + req.KODE_URUT0 + '%" ORDER BY a.NAMA';
         }
        
         db.query(sql, function(err, rows, fields) {
@@ -197,9 +197,9 @@ export default class Donatur {
         var sql = '';
 
         if (level === 'ALL') {
-            sql = 'SELECT a.*, b.CODD_DESC As TypeDonatur2, a.flgPlatinum As Platinum, DATE_FORMAT(a.TglX_MASK, "%e-%b-%Y") As TglMasuk, CONCAT(a.NAMA, ", ", IFNULL(a.TITLE, "")) As Nama2, CONCAT(IFNULL(a.CodeCountryHP, ""), a.NoHP) As NoHP2, d.CODD_DESC As Profesi, IFNULL(e.TotalDonasi, 0) As TotalDonasi, e.TahunDonasi, e.Januari, e.Februari, e.Maret, e.April, e.Mei, e.Juni, e.Juli, e.Agustus, e.September, e.Oktober, e.November, e.Desember, CASE a.FlgPlatinum When "1" Then "v" Else "" End As Platinum2 FROM tb11_mzjb a inner join (select * from tb00_basx where CODD_FLNM = "TYPE_DONATUR") b on a.TypeDonatur = b.CODD_VALU inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT left join (select * from tb00_basx where CODD_FLNM = "PEKERJAAN") d on a.Pekerjaan = d.CODD_VALU left join (select * from vtrans_donatur) e on a.NO_ID = e.DonaturID WHERE c.KODE_URUT like "' + req.KODE_URUT0 + '%" And a.FlgPlatinum = "' + platinum + '" ORDER BY a.NAMA';
+            sql = 'SELECT a.*, b.CODD_DESC As TypeDonatur2, a.flgPlatinum As Platinum, DATE_FORMAT(a.TglX_MASK, "%e-%b-%Y") As TglMasuk, CONCAT(a.NAMA, ", ", IFNULL(a.TITLE, "")) As Nama2, CONCAT(IFNULL(a.CodeCountryHP, ""), a.NoHP) As NoHP2, d.CODD_DESC As Profesi, IFNULL(e.TotalDonasi, 0) As TotalDonasi, e.TahunDonasi, e.Januari, e.Februari, e.Maret, e.April, e.Mei, e.Juni, e.Juli, e.Agustus, e.September, e.Oktober, e.November, e.Desember, CASE a.FlgPlatinum When "1" Then "v" Else "" End As Platinum2, f.CODD_DESC As SegmenProfil FROM tb11_mzjb a inner join (select * from tb00_basx where CODD_FLNM = "TYPE_DONATUR") b on a.TypeDonatur = b.CODD_VALU inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT left join (select * from tb00_basx where CODD_FLNM = "PEKERJAAN") d on a.Pekerjaan = d.CODD_VALU left join (select * from vtrans_donatur) e on a.NO_ID = e.DonaturID left join (select * from tb00_basx where CODD_FLNM = "SEGMENT_PROFILING") f on a.SEGMX_PROF = f.CODD_VALU WHERE c.KODE_URUT like "' + req.KODE_URUT0 + '%" And a.FlgPlatinum = "' + platinum + '" And b.CODD_VARC >= 2 ORDER BY a.NAMA';
         } else {
-            sql = 'SELECT a.*, b.CODD_DESC As TypeDonatur2, a.flgPlatinum As Platinum, DATE_FORMAT(a.TglX_MASK, "%e-%b-%Y") As TglMasuk, CONCAT(a.NAMA, ", ", IFNULL(a.TITLE, "")) As Nama2, CONCAT(IFNULL(a.CodeCountryHP, ""), a.NoHP) As NoHP2, d.CODD_DESC As Profesi, IFNULL(e.TotalDonasi, 0) As TotalDonasi, e.TahunDonasi, e.Januari, e.Februari, e.Maret, e.April, e.Mei, e.Juni, e.Juli, e.Agustus, e.September, e.Oktober, e.November, e.Desember, CASE a.FlgPlatinum When "1" Then "v" Else "" End As Platinum2 FROM tb11_mzjb a inner join (select * from tb00_basx where CODD_FLNM = "TYPE_DONATUR") b on a.TypeDonatur = b.CODD_VALU inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT left join (select * from tb00_basx where CODD_FLNM = "PEKERJAAN") d on a.Pekerjaan = d.CODD_VALU left join (select * from vtrans_donatur) e on a.NO_ID = e.DonaturID WHERE b.CODD_DESC = "'+ level + '" And c.KODE_URUT like "' + req.KODE_URUT0 + '%" And a.FlgPlatinum = "' + platinum + '" ORDER BY a.NAMA';
+            sql = 'SELECT a.*, b.CODD_DESC As TypeDonatur2, a.flgPlatinum As Platinum, DATE_FORMAT(a.TglX_MASK, "%e-%b-%Y") As TglMasuk, CONCAT(a.NAMA, ", ", IFNULL(a.TITLE, "")) As Nama2, CONCAT(IFNULL(a.CodeCountryHP, ""), a.NoHP) As NoHP2, d.CODD_DESC As Profesi, IFNULL(e.TotalDonasi, 0) As TotalDonasi, e.TahunDonasi, e.Januari, e.Februari, e.Maret, e.April, e.Mei, e.Juni, e.Juli, e.Agustus, e.September, e.Oktober, e.November, e.Desember, CASE a.FlgPlatinum When "1" Then "v" Else "" End As Platinum2, f.CODD_DESC As SegmenProfil FROM tb11_mzjb a inner join (select * from tb00_basx where CODD_FLNM = "TYPE_DONATUR") b on a.TypeDonatur = b.CODD_VALU inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT left join (select * from tb00_basx where CODD_FLNM = "PEKERJAAN") d on a.Pekerjaan = d.CODD_VALU left join (select * from vtrans_donatur) e on a.NO_ID = e.DonaturID left join (select * from tb00_basx where CODD_FLNM = "SEGMENT_PROFILING") f on a.SEGMX_PROF = f.CODD_VALU WHERE b.CODD_DESC = "'+ level + '" And c.KODE_URUT like "' + req.KODE_URUT0 + '%" And a.FlgPlatinum = "' + platinum + '" ORDER BY a.NAMA';
         }
        
         db.query(sql, function(err, rows, fields) {
@@ -272,6 +272,7 @@ export default class Donatur {
             TypeDonatur : req.body.TypeDonatur,
             FlgPlatinum : req.body.FlgPlatinum,
             Channel : req.body.Channel,
+            SEGMX_PROF : req.body.SEGMX_PROF,
             PIC: req.body.PIC,
             NoHPPIC: req.body.NoHPPIC,
             CodeCountryHPPIC : req.body.CodeCountryHPPIC,
@@ -312,6 +313,7 @@ export default class Donatur {
         var id = req.body.NO_ID;
 
         var sql = 'UPDATE tb11_mzjb a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT SET ? WHERE a.NO_ID = "' + id + '" And b.KODE_URUT like "' + req.KODE_URUT0 + '%"';
+
         var data = {
             NPWP : req.body.NPWP,
             NAMA : req.body.NAMA,
@@ -334,6 +336,7 @@ export default class Donatur {
             TypeDonatur : req.body.TypeDonatur,
             FlgPlatinum : req.body.FlgPlatinum,
             Channel : req.body.Channel,
+            SEGMX_PROF : req.body.SEGMX_PROF,
             TITLE : req.body.TITLE,
             PIC: req.body.PIC,
             NoHPPIC: req.body.NoHPPIC, 
@@ -1009,7 +1012,7 @@ export default class Donatur {
         if (isValid === 'all') {
             sql = 'SELECT a.*, b.NAMA, CONCAT(b.NO_ID, " - ", b.NAMA) As Donatur2, d.CODD_DESC As Channel FROM trans_donatur a inner join tb11_mzjb b on a.donaturID = b.NO_ID inner join tb00_unit c on b.BUSS_CODE = c.KODE_UNIT inner join (select * from tb00_basx where CODD_FLNM = "CHANNEL_DONATUR") d on b.Channel = d.CODD_VALU WHERE (a.isDelete <> "1" Or a.isDelete Is Null) And c.KODE_URUT like "' + req.KODE_URUT0 + '%"';
         } else {
-            sql = 'SELECT a.*, b.NAMA, CONCAT(b.NO_ID, " - ", b.NAMA) As Donatur2, DATE_FORMAT(TransDate, "%Y%m%d") As TransDateFormat, d.CODD_DESC As Channel, e.TahunDonasi, b.TITLE, CONCAT(IFNULL(b.CodeCountryHP, ""), b.NoHP) As NoHP2, f.CODD_DESC As ProgDonatur, g.Department, h.NAMA_BANK As Bank FROM trans_donatur a inner join tb11_mzjb b on a.donaturID = b.NO_ID inner join tb00_unit c on b.BUSS_CODE = c.KODE_UNIT left join (select * from tb00_basx where CODD_FLNM = "CHANNEL_DONATUR") d on b.Channel = d.CODD_VALU left join vfirst_transaction e on a.DonaturID = e.DonaturID left join (select * from tb00_basx where CODD_FLNM = "PROGRAM_DONATUR") f on a.ProgDonatur = f.CODD_VALU left join vdepartment g on a.CRTX_BYXX = g.USER_IDXX left join (select KODE_BANK, NAMA_BANK from tb02_bank where KODE_FLNM = "KASX_BANK") h on a.BankTo = h.KODE_BANK WHERE a.isValidate in ("' + isValid + ') And (a.isDelete <> "1" OR a.isDelete IS NULL) And c.KODE_URUT like "' + req.KODE_URUT0 + '%"';
+            sql = 'SELECT a.*, b.NAMA, CONCAT(b.NO_ID, " - ", b.NAMA) As Donatur2, DATE_FORMAT(TransDate, "%Y%m%d") As TransDateFormat, d.CODD_DESC As Channel, e.TahunDonasi, b.TITLE, CONCAT(IFNULL(b.CodeCountryHP, ""), b.NoHP) As NoHP2, f.CODD_DESC As ProgDonatur, g.Department, h.NAMA_BANK As Bank, i.CODD_DESC As SegmenProfil FROM trans_donatur a inner join tb11_mzjb b on a.donaturID = b.NO_ID inner join tb00_unit c on b.BUSS_CODE = c.KODE_UNIT left join (select * from tb00_basx where CODD_FLNM = "CHANNEL_DONATUR") d on b.Channel = d.CODD_VALU left join vfirst_transaction e on a.DonaturID = e.DonaturID left join (select * from tb00_basx where CODD_FLNM = "PROGRAM_DONATUR") f on a.ProgDonatur = f.CODD_VALU left join vdepartment g on a.CRTX_BYXX = g.USER_IDXX left join (select KODE_BANK, NAMA_BANK from tb02_bank where KODE_FLNM = "KASX_BANK") h on a.BankTo = h.KODE_BANK left join (select * from tb00_basx where CODD_FLNM = "SEGMENT_PROFILING") i on b.SEGMX_PROF = i.CODD_VALU WHERE a.isValidate in ("' + isValid + ') And (a.isDelete <> "1" OR a.isDelete IS NULL) And c.KODE_URUT like "' + req.KODE_URUT0 + '%"';
         }
 
         db.query(sql, function(err, rows, fields) {

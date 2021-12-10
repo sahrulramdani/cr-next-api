@@ -326,6 +326,37 @@ export default class Setup {
         });
     }
 
+    segmenProfilAll = (request, response) => {
+        // get user Access
+        var authAdd = request.AUTH_ADDX;
+        var authEdit = request.AUTH_EDIT;
+        var authDelt = request.AUTH_DELT;
+        var authAppr = request.AUTH_APPR;  // auth Approve
+
+        var qryCmd = "select * from tb00_basx where CODD_FLNM = 'SEGMENT_PROFILING' order by CODD_DESC";
+        db.query(qryCmd, function(err, rows, fields) {
+            var output = [];
+
+            if (rows.length > 0) {
+                rows.forEach(function(row) {
+                    var obj = new Object();
+                    for(var key in row) {
+                        obj[key] = row[key];
+                    }
+
+                    obj['AUTH_ADDX'] = authAdd;
+                    obj['AUTH_EDIT'] = authEdit;
+                    obj['AUTH_DELT'] = authDelt;
+                    obj['AUTH_APPR'] = authAppr;
+
+                    output.push(obj);
+                })
+            }
+
+            response.send(output);
+        });
+    }
+
     unitAll = (request, response) => {
         // get user Access
         var authAdd = request.AUTH_ADDX;
