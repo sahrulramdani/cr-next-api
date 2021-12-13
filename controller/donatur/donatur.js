@@ -129,9 +129,9 @@ export default class Donatur {
         var id = req.params.id;
 
         var sql = '';
-        if (typePrson === '1') {  // 1: Relawan
+        if (typePrson === '1' || typePrson === '4') {  // 1: Relawan. 4: Officer
             sql = 'SELECT a.* FROM tb11_mzjb a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT INNER JOIN tb01_lgxh c ON a.CRTX_BYXX = c.USER_IDXX WHERE a.NO_ID = "'+ id +'" And b.KODE_URUT like "' + req.KODE_URUT0 + '%" And c.USER_IDXX = "' + req.userID + '"';
-        } else {
+        } else if (typePrson === '2') {   // 2: Donatur
             sql = 'SELECT a.* FROM tb11_mzjb a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT WHERE a.NO_ID = "'+ id +'" And b.KODE_URUT like "' + req.KODE_URUT0 + '%"';
         }
 

@@ -11,7 +11,7 @@ export default class User {
         var authEdit = request.AUTH_EDIT;
         var authDelt = request.AUTH_DELT;
 
-        var qryCmd = "select a.USER_IDXX, a.BUSS_CODE, a.KETX_USER, CASE a.Active WHEN '1' THEN 'ACTIVE' ELSE 'NON-ACTIVE' END As Active, CASE a.IsValid WHEN '1' THEN 'VALID' ELSE 'NON-VALID' END As IsValid, b.Nama, c.RoleName from tb01_lgxh a LEFT JOIN (select KodeNik As Nik, NamaKry As Nama from tb21_empl UNION select No_ID, NAMA from tb11_mzjb) b ON a.NO_ID = b.Nik LEFT JOIN role c ON a.TemplateRoleID = c.id LEFT JOIN tb00_unit d ON a.BUSS_CODE = d.KODE_UNIT WHERE d.KODE_URUT like '" + request.KODE_URUT0 + "%' OR a.BUSS_CODE = '00' order by a.USER_IDXX";
+        var qryCmd = "select a.USER_IDXX, a.BUSS_CODE, a.KETX_USER, CASE a.Active WHEN '1' THEN 'ACTIVE' ELSE 'NON-ACTIVE' END As Active, CASE a.IsValid WHEN '1' THEN 'VALID' ELSE 'NON-VALID' END As IsValid, b.Nama, c.RoleName from tb01_lgxh a LEFT JOIN (select a.Nik, a.Nama from (select KodeNik As Nik, NamaKry As Nama from tb21_empl UNION select No_ID, NAMA from tb11_mzjb) a group by a.Nik) b ON a.NO_ID = b.Nik LEFT JOIN role c ON a.TemplateRoleID = c.id LEFT JOIN tb00_unit d ON a.BUSS_CODE = d.KODE_UNIT WHERE d.KODE_URUT like '" + request.KODE_URUT0 + "%' OR a.BUSS_CODE = '00' order by a.USER_IDXX";
 
         db.query(qryCmd, function(err, rows, fields) {
             var output = [];
@@ -122,6 +122,8 @@ export default class User {
             return;
         }
 
+        var typePrson = req.body.TYPE_PRSON;
+        var bussCode = req.body.BUSS_CODE;
         var ids = req.body.USER_IDXX;
         var sql = 'UPDATE `tb01_lgxh` a LEFT JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT SET ? WHERE a.USER_IDXX = "'+ ids +'"  And (b.KODE_URUT like "' + req.KODE_URUT0 + '%" Or a.BUSS_CODE = "00")';
 
@@ -129,12 +131,12 @@ export default class User {
         var data;
         if (req.body.password === undefined) {
             data = {
-                BUSS_CODE : req.body.BUSS_CODE,
+                BUSS_CODE : bussCode,
                 KETX_USER : req.body.KETX_USER,
                 NO_ID : req.body.NO_ID,
                 'a.Active' : req.body.Active,
                 IsValid : req.body.IsValid,
-                TYPE_PRSON : req.body.TYPE_PRSON,
+                TYPE_PRSON : typePrson,
                 NamaFile : req.body.NamaFile,
                 TemplateRoleID : req.body.TemplateRoleID,
                 'a.UPDT_DATE' : new Date(),
@@ -144,12 +146,12 @@ export default class User {
         } else {
             hashedPassword = bcrypt.hashSync(req.body.Password, 8);
             data = {
-                BUSS_CODE : req.body.BUSS_CODE,
+                BUSS_CODE : bussCode,
                 KETX_USER : req.body.KETX_USER,
                 NO_ID : req.body.NO_ID,
                 Active : req.body.Active,
                 IsValid : req.body.IsValid,
-                TYPE_PRSON : req.body.TYPE_PRSON,
+                TYPE_PRSON : typePrson,
                 NamaFile : req.body.NamaFile,
                 TemplateRoleID : req.body.TemplateRoleID,
                 PASS_IDXX : hashedPassword,
@@ -167,8 +169,18 @@ export default class User {
                     message: err.sqlMessage
                 });
             } else {
-                res.send({
-                    status: true
+
+                // update data karyawan atau donatur
+                if (typePrson === '1' || typePrson === '4') {     // 1: Karyawan
+                    sql = 'update a set a.BUSS_CODE = "' + bussCode + '" from tb21_empl a inner join tb01_lgxh b on a.KodeNik = b.NO_ID where b.USER_IDXX = "' + ids + '"';
+                } else if (typePrson === '2') {  // 2: Donatur
+                    sql = 'update a set a.BUSS_CODE = "' + bussCode + '" from tb11_mzjb a inner join tb01_lgxh b on a.NO_ID = b.NO_ID where b.USER_IDXX = "' + ids + '"';
+                }
+
+                db.query(sql, (err, result) => {
+                    res.send({
+                        status: true
+                    });
                 });
             }
         });
