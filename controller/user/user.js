@@ -63,7 +63,7 @@ export default class User {
         var authEdit = req.AUTH_EDIT;
 
         var id = req.params.userID;
-        var sql = 'SELECT a.*, b.Nama, c.KODE_URUT FROM `tb01_lgxh` a LEFT JOIN (select KodeNik As Nik, NamaKry As Nama from tb21_empl UNION select No_ID, NAMA from tb11_mzjb) b ON a.NO_ID = b.Nik LEFT JOIN tb00_unit c ON a.BUSS_CODE = c.KODE_UNIT WHERE a.USER_IDXX = "'+ id +'" And (c.KODE_URUT like "' + req.KODE_URUT0 + '%" Or a.BUSS_CODE = "00")';
+        var sql = 'SELECT a.*, b.Nama, c.KODE_URUT FROM `tb01_lgxh` a LEFT JOIN (select KodeNik As Nik, NamaKry As Nama from tb21_empl UNION select No_ID, NAMA from tb11_mzjb) b ON a.NO_ID = b.Nik LEFT JOIN tb00_unit c ON a.BUSS_CODE = c.KODE_UNIT WHERE UPPER(a.USER_IDXX) = "'+ id.toUpperCase() +'" And (c.KODE_URUT like "' + req.KODE_URUT0 + '%" Or a.BUSS_CODE = "00")';
         
         db.query(sql, function(err, rows, fields) {
             var output = []; 
@@ -89,7 +89,7 @@ export default class User {
         // get user Access
         var authEdit = req.AUTH_EDIT;
         
-        var sql = 'SELECT a.*, b.NAMA_UNIT, b.KODE_URUT FROM `tb01_lgxh` a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT WHERE a.USER_IDXX = "'+ req.userID +'" ';
+        var sql = 'SELECT a.*, b.NAMA_UNIT, b.KODE_URUT FROM `tb01_lgxh` a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT WHERE UPPER(a.USER_IDXX) = "'+ req.userID.toUpperCase() +'" ';
         db.query(sql, function(err, rows, fields) {
             var output = [];
 
@@ -125,7 +125,7 @@ export default class User {
         var typePrson = req.body.TYPE_PRSON;
         var bussCode = req.body.BUSS_CODE;
         var ids = req.body.USER_IDXX;
-        var sql = 'UPDATE `tb01_lgxh` a LEFT JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT SET ? WHERE a.USER_IDXX = "'+ ids +'"  And (b.KODE_URUT like "' + req.KODE_URUT0 + '%" Or a.BUSS_CODE = "00")';
+        var sql = 'UPDATE `tb01_lgxh` a LEFT JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT SET ? WHERE UPPER(a.USER_IDXX) = "'+ ids.toUpperCase() +'"  And (b.KODE_URUT like "' + req.KODE_URUT0 + '%" Or a.BUSS_CODE = "00")';
 
         var hashedPassword;
         var data;
@@ -172,9 +172,9 @@ export default class User {
 
                 // update data karyawan atau donatur
                 if (typePrson === '1' || typePrson === '4') {     // 1: Karyawan
-                    sql = 'update a set a.BUSS_CODE = "' + bussCode + '" from tb21_empl a inner join tb01_lgxh b on a.KodeNik = b.NO_ID where b.USER_IDXX = "' + ids + '"';
+                    sql = 'update a set a.BUSS_CODE = "' + bussCode + '" from tb21_empl a inner join tb01_lgxh b on a.KodeNik = b.NO_ID where UPPER(b.USER_IDXX) = "' + ids.toUpperCase() + '"';
                 } else if (typePrson === '2') {  // 2: Donatur
-                    sql = 'update a set a.BUSS_CODE = "' + bussCode + '" from tb11_mzjb a inner join tb01_lgxh b on a.NO_ID = b.NO_ID where b.USER_IDXX = "' + ids + '"';
+                    sql = 'update a set a.BUSS_CODE = "' + bussCode + '" from tb11_mzjb a inner join tb01_lgxh b on a.NO_ID = b.NO_ID where UPPER(b.USER_IDXX) = "' + ids.toUpperCase() + '"';
                 }
 
                 db.query(sql, (err, result) => {
@@ -188,7 +188,7 @@ export default class User {
 
     updateUserProfile = function(req, res) {
         var ids = req.userID;
-        var sql = 'UPDATE `tb01_lgxh` a SET ? WHERE a.USER_IDXX = "'+ ids + '"  ';
+        var sql = 'UPDATE `tb01_lgxh` a SET ? WHERE UPPER(a.USER_IDXX) = "'+ ids.toUpperCase() + '"  ';
 
         var hashedPassword;
         var data;
@@ -243,7 +243,7 @@ export default class User {
     getDetUserAccesses = function(req, res) {
         var userID = req.params.userID;
 
-        var sql = 'SELECT a.*, d.PROC_NAME FROM tb01_usrd a INNER JOIN tb01_lgxh b ON a.USER_IDXX = b.USER_IDXX AND a.BUSS_CODE = b.BUSS_CODE INNER JOIN `tb01_proc` c ON a.PROC_CODE = c.PROC_CODE And a.BUSS_CODE = c.BUSS_CODE INNER JOIN tb00_proc d ON a.PROC_CODE = d.PROC_CODE WHERE a.USER_IDXX = "'+ userID +'" ORDER BY d.NoUrut';
+        var sql = 'SELECT a.*, d.PROC_NAME FROM tb01_usrd a INNER JOIN tb01_lgxh b ON a.USER_IDXX = b.USER_IDXX AND a.BUSS_CODE = b.BUSS_CODE INNER JOIN `tb01_proc` c ON a.PROC_CODE = c.PROC_CODE And a.BUSS_CODE = c.BUSS_CODE INNER JOIN tb00_proc d ON a.PROC_CODE = d.PROC_CODE WHERE UPPER(a.USER_IDXX) = "'+ userID.toUpperCase() +'" ORDER BY d.NoUrut';
         db.query(sql, function(err, rows, fields) {
             var output = [];
 

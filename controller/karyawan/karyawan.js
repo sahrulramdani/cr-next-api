@@ -357,7 +357,7 @@ export default class Karyawan {
     }
 
     getProfileKaryawan = function(req, res) {
-        var sql = 'SELECT a.* FROM tb21_empl a INNER JOIN tb01_lgxh b ON b.NO_ID = a.KodeNik WHERE b.USER_IDXX = "'+ req.userID +'" ';
+        var sql = 'SELECT a.* FROM tb21_empl a INNER JOIN tb01_lgxh b ON b.NO_ID = a.KodeNik WHERE UPPER(b.USER_IDXX) = "'+ req.userID.toUpperCase() +'" ';
         
         db.query(sql, function(err, rows, fields) {
             res.send(rows);

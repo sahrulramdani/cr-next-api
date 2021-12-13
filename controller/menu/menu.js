@@ -271,7 +271,8 @@ export default class Menu {
     }
 
     getMenus = function(req, res) {
-        var sql = 'SELECT a.*, b.id AS USERACCESS_ID, b.RIGH_AUTH, b.AUTH_ADDX, b.AUTH_EDIT, b.AUTH_DELT, d.ICON, d.HasChildren, d.PARENT, d.NoUrut, d.PROC_NAME FROM `tb01_proc` a LEFT JOIN (select * from `tb01_usrd` where USER_IDXX = "' + req.userID + '") b ON a.BUSS_CODE = b.BUSS_CODE AND a.PROC_CODE = b.PROC_CODE INNER JOIN (select * from `tb01_lgxh` where USER_IDXX = "' + req.userID + '") c ON a.BUSS_CODE = c.BUSS_CODE INNER JOIN tb00_proc d ON a.PROC_CODE = d.PROC_CODE WHERE d.NoUrut IS NOT NULL ORDER BY d.NoUrut';
+        var sql = 'SELECT a.*, b.id AS USERACCESS_ID, b.RIGH_AUTH, b.AUTH_ADDX, b.AUTH_EDIT, b.AUTH_DELT, d.ICON, d.HasChildren, d.PARENT, d.NoUrut, d.PROC_NAME FROM `tb01_proc` a LEFT JOIN (select * from `tb01_usrd` where UPPER(USER_IDXX) = "' + req.userID.toUpperCase() + '") b ON a.BUSS_CODE = b.BUSS_CODE AND a.PROC_CODE = b.PROC_CODE INNER JOIN (select * from `tb01_lgxh` where UPPER(USER_IDXX) = "' + req.userID.toUpperCase() + '") c ON a.BUSS_CODE = c.BUSS_CODE INNER JOIN tb00_proc d ON a.PROC_CODE = d.PROC_CODE WHERE d.NoUrut IS NOT NULL ORDER BY d.NoUrut';
+
         db.query(sql, function(err, rows, fields) {
             if (err) {
                 throw err;
@@ -339,7 +340,7 @@ export default class Menu {
 
     // get Menus tanpa children
     getMenus2 = function(req, res) {
-        var sql = 'SELECT a.*, b.id AS USERACCESS_ID, b.RIGH_AUTH, b.AUTH_ADDX, b.AUTH_EDIT, b.AUTH_DELT FROM `tb01_proc` a LEFT JOIN (select * from `tb01_usrd` where USER_IDXX = "' + req.params.userID + '") b ON a.BUSS_CODE = b.BUSS_CODE AND a.PROC_CODE = b.PROC_CODE INNER JOIN tb00_proc c ON a.PROC_CODE = c.PROC_CODE WHERE c.NoUrut IS NOT NULL ORDER BY c.NoUrut';
+        var sql = 'SELECT a.*, b.id AS USERACCESS_ID, b.RIGH_AUTH, b.AUTH_ADDX, b.AUTH_EDIT, b.AUTH_DELT FROM `tb01_proc` a LEFT JOIN (select * from `tb01_usrd` where UPPER(USER_IDXX) = "' + req.params.userID.toUpperCase() + '") b ON a.BUSS_CODE = b.BUSS_CODE AND a.PROC_CODE = b.PROC_CODE INNER JOIN tb00_proc c ON a.PROC_CODE = c.PROC_CODE WHERE c.NoUrut IS NOT NULL ORDER BY c.NoUrut';
         db.query(sql, function(err, rows, fields) {
             res.send(rows);
         });

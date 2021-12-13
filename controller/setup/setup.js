@@ -298,7 +298,7 @@ export default class Setup {
 
         var qryCmd;
         if (request.KODE_URUT0 === null || request.KODE_URUT0 === undefined) {
-            qryCmd = "select a.* from tb00_basx a inner join tb01_lgxh b on a.CODD_VARC = b.BUSS_CODE where a.CODD_FLNM = 'DEPARTMENT' And b.USER_IDXX = '" + request.userID + "' order by a.CODD_DESC";
+            qryCmd = "select a.* from tb00_basx a inner join tb01_lgxh b on a.CODD_VARC = b.BUSS_CODE where a.CODD_FLNM = 'DEPARTMENT' And UPPER(b.USER_IDXX) = '" + request.userID.toUpperCase() + "' order by a.CODD_DESC";
         } else {
             qryCmd = "select a.* from tb00_basx a inner join tb00_unit b on a.CODD_VARC = b.KODE_UNIT where a.CODD_FLNM = 'DEPARTMENT' And b.KODE_URUT like '" + request.KODE_URUT0 + "%'  order by a.CODD_DESC";
         }
