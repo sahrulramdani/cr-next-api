@@ -63,7 +63,7 @@ export default class User {
         var authEdit = req.AUTH_EDIT;
 
         var id = req.params.userID;
-        var sql = 'SELECT a.*, b.Nama, c.KODE_URUT FROM `tb01_lgxh` a LEFT JOIN (select KodeNik As Nik, NamaKry As Nama from tb21_empl UNION select No_ID, NAMA from tb11_mzjb) b ON a.NO_ID = b.Nik LEFT JOIN tb00_unit c ON a.BUSS_CODE = c.KODE_UNIT WHERE a.USER_IDXX = "'+ id +'" And c.KODE_URUT like "' + req.KODE_URUT0 + '%" ';
+        var sql = 'SELECT a.*, b.Nama, c.KODE_URUT FROM `tb01_lgxh` a LEFT JOIN (select KodeNik As Nik, NamaKry As Nama from tb21_empl UNION select No_ID, NAMA from tb11_mzjb) b ON a.NO_ID = b.Nik LEFT JOIN tb00_unit c ON a.BUSS_CODE = c.KODE_UNIT WHERE a.USER_IDXX = "'+ id +'" And (c.KODE_URUT like "' + req.KODE_URUT0 + '%" Or a.BUSS_CODE = "00")';
         
         db.query(sql, function(err, rows, fields) {
             var output = []; 
@@ -123,9 +123,8 @@ export default class User {
         }
 
         var ids = req.body.USER_IDXX;
-        var sql = 'UPDATE `tb01_lgxh` a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT SET ? WHERE a.USER_IDXX = "'+ ids +'"  And b.KODE_URUT like "' + req.KODE_URUT0 + '%"';
+        var sql = 'UPDATE `tb01_lgxh` a LEFT JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT SET ? WHERE a.USER_IDXX = "'+ ids +'"  And (b.KODE_URUT like "' + req.KODE_URUT0 + '%" Or a.BUSS_CODE = "00")';
 
-        console.log(sql);
         var hashedPassword;
         var data;
         if (req.body.password === undefined) {

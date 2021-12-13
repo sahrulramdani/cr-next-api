@@ -91,7 +91,14 @@ export default class Donatur {
     }
 
     idDonatursAll = (request, response) => {
-        var qryCmd = "select a.NO_ID As value, CONCAT(a.NO_ID, ' - ', a.NAMA, ' - ', SUBSTRING(a.ALMT_XXX1, 1, 20)) As label from tb11_mzjb a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where b.KODE_URUT like '" + request.KODE_URUT0 + "%' order by a.NO_ID";
+        var typePrson = request.TYPE_PRSON0;
+        var qryCmd = '';
+        
+        if (typePrson === '1') {  // 1: Relawan
+            qryCmd = "select a.NO_ID As value, CONCAT(a.NO_ID, ' - ', a.NAMA, ' - ', SUBSTRING(a.ALMT_XXX1, 1, 20)) As label from tb11_mzjb a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT inner join tb01_lgxh c on a.CRTX_BYXX = c.USER_IDXX where b.KODE_URUT like '" + request.KODE_URUT0 + "%' And c.USER_IDXX = '" + request.userID + "' order by a.NO_ID";
+        } else {
+            qryCmd = "select a.NO_ID As value, CONCAT(a.NO_ID, ' - ', a.NAMA, ' - ', SUBSTRING(a.ALMT_XXX1, 1, 20)) As label from tb11_mzjb a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where b.KODE_URUT like '" + request.KODE_URUT0 + "%' order by a.NO_ID";
+        }
         
         db.query(qryCmd, function(err, rows, fields) {
             var output = [];
@@ -118,9 +125,16 @@ export default class Donatur {
         var authEdit = req.AUTH_EDIT;
         var authAppr = req.AUTH_APPR;  // auth Approve
 
+        var typePrson = req.TYPE_PRSON0;
         var id = req.params.id;
 
-        var sql = 'SELECT a.* FROM tb11_mzjb a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT WHERE a.NO_ID = "'+ id +'" And b.KODE_URUT like "' + req.KODE_URUT0 + '%"' ;
+        var sql = '';
+        if (typePrson === '1') {  // 1: Relawan
+            sql = 'SELECT a.* FROM tb11_mzjb a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT INNER JOIN tb01_lgxh c ON a.CRTX_BYXX = c.USER_IDXX WHERE a.NO_ID = "'+ id +'" And b.KODE_URUT like "' + req.KODE_URUT0 + '%" And c.USER_IDXX = "' + req.userID + '"';
+        } else {
+            sql = 'SELECT a.* FROM tb11_mzjb a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT WHERE a.NO_ID = "'+ id +'" And b.KODE_URUT like "' + req.KODE_URUT0 + '%"';
+        }
+
         db.query(sql, function(err, rows, fields) {
             var output = [];
 
@@ -1220,6 +1234,47 @@ export default class Donatur {
                     status: true
                 });
             }
+        });
+    }
+
+    getTransRelation = function(req, res) {
+        // get user Access
+        var authAdd = req.AUTH_ADDX;
+        var authEdit = req.AUTH_EDIT;
+        var authDelt = req.AUTH_DELT;
+        var authAppr = req.AUTH_APPR;  // auth Approve
+
+        var isValid = req.params.isValid;
+        var sql = '';
+
+        if (isValid === '0') {
+            isValid = '0",null';
+        } else if (isValid === '1') {
+            isValid = '1"';
+        }
+        
+        sql = 'SELECT a.*, b.NAMA, CONCAT(b.NO_ID, " - ", b.NAMA) As Donatur2, DATE_FORMAT(TransDate, "%Y%m%d") As TransDateFormat, d.CODD_DESC As Channel, e.TahunDonasi, b.TITLE, CONCAT(IFNULL(b.CodeCountryHP, ""), b.NoHP) As NoHP2, f.CODD_DESC As ProgDonatur, g.Department, h.NAMA_BANK As Bank, i.CODD_DESC As SegmenProfil, k.NamaKry As NamaRelawan, CONCAT(IFNULL(b.CodeCountryHP, ""), b.NoHP) As NoHPRelawan FROM trans_donatur a inner join tb11_mzjb b on a.donaturID = b.NO_ID inner join tb00_unit c on b.BUSS_CODE = c.KODE_UNIT left join (select * from tb00_basx where CODD_FLNM = "CHANNEL_DONATUR") d on b.Channel = d.CODD_VALU left join vfirst_transaction e on a.DonaturID = e.DonaturID left join (select * from tb00_basx where CODD_FLNM = "PROGRAM_DONATUR") f on a.ProgDonatur = f.CODD_VALU left join vdepartment g on a.CRTX_BYXX = g.USER_IDXX left join (select KODE_BANK, NAMA_BANK from tb02_bank where KODE_FLNM = "KASX_BANK") h on a.BankTo = h.KODE_BANK left join (select * from tb00_basx where CODD_FLNM = "SEGMENT_PROFILING") i on b.SEGMX_PROF = i.CODD_VALU inner join tb01_lgxh j on a.CRTX_BYXX = j.USER_IDXX inner join tb21_empl k on j.NO_ID = k.KodeNik WHERE a.isValidate in ("' + isValid + ') And (a.isDelete <> "1" OR a.isDelete IS NULL) And c.KODE_URUT like "' + req.KODE_URUT0 + '%" And j.USER_IDXX = "' + req.userID + '" And k';
+
+        db.query(sql, function(err, rows, fields) {
+            var output = [];
+
+            if (rows.length > 0) {
+                rows.forEach(function(row) {
+                    var obj = new Object();
+                    for(var key in row) {
+                        obj[key] = row[key];
+                    }
+
+                    obj['AUTH_ADDX'] = authAdd;
+                    obj['AUTH_EDIT'] = authEdit;
+                    obj['AUTH_DELT'] = authDelt;
+                    obj['AUTH_APPR'] = authAppr;
+
+                    output.push(obj);
+                })
+            }
+
+            res.send(output);
         });
     }
 }

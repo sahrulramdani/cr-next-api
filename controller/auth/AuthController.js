@@ -139,7 +139,7 @@ export default class AuthController {
                 }
 
                 // get User Access
-                var sql = 'SELECT a.*, c.IsValid, d.KODE_URUT, d.SequenceUnitCode FROM `tb01_usrd` a INNER JOIN `tb01_apix` b on a.PROC_CODE = b.PROC_CODE INNER JOIN `tb01_lgxh` c ON a.USER_IDXX = c.USER_IDXX And a.BUSS_CODE = c.BUSS_CODE INNER JOIN tb00_unit d ON a.BUSS_CODE = d.KODE_UNIT WHERE a.USER_IDXX = "' + decoded.id + '" And ("' + path + '" = b.PATH) And a.RIGH_AUTH = "1" ORDER BY b.PATH';  
+                var sql = 'SELECT a.*, c.IsValid, d.KODE_URUT, d.SequenceUnitCode, c.TYPE_PRSON, d.NAMA_UNIT FROM `tb01_usrd` a INNER JOIN `tb01_apix` b on a.PROC_CODE = b.PROC_CODE INNER JOIN `tb01_lgxh` c ON a.USER_IDXX = c.USER_IDXX And a.BUSS_CODE = c.BUSS_CODE INNER JOIN tb00_unit d ON a.BUSS_CODE = d.KODE_UNIT WHERE a.USER_IDXX = "' + decoded.id + '" And ("' + path + '" = b.PATH) And a.RIGH_AUTH = "1" ORDER BY b.PATH';  
                 
                 var procCodes = [];
                 db.query(sql, (err, rows) => {
@@ -155,9 +155,12 @@ export default class AuthController {
                             req.AUTH_DELT = userAccess.AUTH_DELT;
                             req.AUTH_APPR = userAccess.AUTH_APPR;
                             req.AUTH_PRNT = userAccess.AUTH_PRNT;
+
                             req.BUSS_CODE0 = userAccess.BUSS_CODE;
                             req.KODE_URUT0 = userAccess.KODE_URUT;
                             req.SequenceUnitCode0 = userAccess.SequenceUnitCode;
+                            req.TYPE_PRSON0 = userAccess.TYPE_PRSON;
+                            req.NAMA_UNIT0 = userAccess.NAMA_UNIT;
 
                             rows.forEach((item) => {
                                 procCodes.push(item.PROC_CODE);
