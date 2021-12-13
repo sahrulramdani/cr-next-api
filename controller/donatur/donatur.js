@@ -129,9 +129,9 @@ export default class Donatur {
         var id = req.params.id;
 
         var sql = '';
-        if (typePrson === '1' || typePrson === '4') {  // 1: Relawan. 4: Officer
+        if (typePrson === '1') {  // 1: Relawan. 4: Officer
             sql = 'SELECT a.* FROM tb11_mzjb a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT INNER JOIN tb01_lgxh c ON a.CRTX_BYXX = c.USER_IDXX WHERE a.NO_ID = "'+ id +'" And b.KODE_URUT like "' + req.KODE_URUT0 + '%" And c.USER_IDXX = "' + req.userID + '"';
-        } else if (typePrson === '2') {   // 2: Donatur
+        } else if (typePrson === '2' || typePrson === '4') {   // 2: Donatur
             sql = 'SELECT a.* FROM tb11_mzjb a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT WHERE a.NO_ID = "'+ id +'" And b.KODE_URUT like "' + req.KODE_URUT0 + '%"';
         }
 
@@ -1154,7 +1154,7 @@ export default class Donatur {
 
         var id = req.params.id;
 
-        var sql = 'SELECT a.*, CONCAT(a.DonaturID, " - ", b.NAMA) As Donatur2 FROM trans_donatur a INNER JOIN tb11_mzjb b ON a.DonaturID = b.NO_ID inner join tb00_unit c on b.BUSS_CODE = c.KODE_UNIT WHERE a.id = "'+ id +'" And c.KODE_URUT like "' + req.KODE_URUT0 + '%"';
+        var sql = 'SELECT a.*, CONCAT(a.DonaturID, " - ", b.NAMA) As Donatur2, b.BUSS_CODE FROM trans_donatur a INNER JOIN tb11_mzjb b ON a.DonaturID = b.NO_ID inner join tb00_unit c on b.BUSS_CODE = c.KODE_UNIT WHERE a.id = "'+ id +'" And c.KODE_URUT like "' + req.KODE_URUT0 + '%"';
 
         db.query(sql, function(err, rows, fields) {
             var output = [];

@@ -187,6 +187,7 @@ export default class AuthController {
                             }
                         } else {
                             // potong parameter path
+                            path = req.url;
                             var j = 0;
                             for(var obj in req.params) {
                                 j++;
@@ -205,7 +206,6 @@ export default class AuthController {
                             }
 
                             const pathPermit = ['/profile', '/', '/menu/menus', '/uploadFile2', '/user/update', '/profile/karyawan', '/profile/karyawan/update', '/profile/karyawan/save', '/profile/karyawan-prsh/save', '/setup/pekerjaans', '/setup/pendidikans', '/setup/status-maritals', '/setup/gol-darahs', '/utility/sequence', '/utility/sequence/save', '/utility/sequence/update', '/profile/user/update', '/setup/departments'];
-
 
                             if (pathPermit.includes(path)) {
                                 next();

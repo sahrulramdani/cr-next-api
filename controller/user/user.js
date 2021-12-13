@@ -531,7 +531,7 @@ export default class User {
     saveAllDetPrivilege = function(req, res) {
         var tgl = moment(new Date()).format('YYYY-MM-DD');
 
-        var sql = 'INSERT INTO `tb01_usrd` (USER_IDXX, PROC_CODE, PATH, BUSS_CODE, MDUL_CODE, TYPE_MDUL, RIGH_AUTH, AUTH_ADDX, AUTH_EDIT, AUTH_DELT, CRTX_DATE, CRTX_BYXX) SELECT "' + req.body.USER_IDXX + '" As USER_IDXX, PROC_CODE, PATH, BUSS_CODE, MDUL_CODE, TYPE_MDUL, RIGH_AUTH, AUTH_ADDX, AUTH_EDIT, AUTH_DELT, "' + tgl + '","' + req.userID + '" from `role_menu` where BUSS_CODE = "' + req.body.BUSS_CODE + '" AND ROLE_IDXX = ' + req.body.ROLE_IDXX;
+        var sql = 'INSERT INTO `tb01_usrd` (USER_IDXX, PROC_CODE, PATH, BUSS_CODE, MDUL_CODE, TYPE_MDUL, RIGH_AUTH, AUTH_ADDX, AUTH_EDIT, AUTH_DELT, AUTH_APPR, CRTX_DATE, CRTX_BYXX) SELECT "' + req.body.USER_IDXX + '" As USER_IDXX, PROC_CODE, PATH, BUSS_CODE, MDUL_CODE, TYPE_MDUL, RIGH_AUTH, AUTH_ADDX, AUTH_EDIT, AUTH_DELT, AUTH_APPR, "' + tgl + '","' + req.userID + '" from `role_menu` where BUSS_CODE = "' + req.body.BUSS_CODE + '" AND ROLE_IDXX = ' + req.body.ROLE_IDXX;
         
         db.query(sql, (err, result) => {
             if (err) {
