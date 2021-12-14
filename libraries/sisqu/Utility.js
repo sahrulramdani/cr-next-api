@@ -76,6 +76,42 @@ function ExcelDateToJSDate(serial) {
    }
 }
 
+// -----  MANIPULATION NUMBER -------------
+function separatorNumber(angka) {
+    // separator ','   descimal '.'
+
+    if (angka === null) {
+        angka = 0;
+    }
+
+    angka = angka.toString().replaceAll(',', '');
+
+    if (angka.length>3) {
+        var temp = angka.split('.');
+        var bilangan = temp[0];
+
+        var ok = '';
+        var i = -2;
+        for (var j=bilangan.length; j>=0; j--) {
+            i = i + 1;
+            var separator = ''
+            
+            separator = i == 3 ?  ',' : '';
+            
+            i = i == 3 ? 0 : i;
+            ok = bilangan.substring(j, j+1) + separator + ok; 
+        }
+
+        angka = ok;
+
+        if (temp.length > 1) {
+            angka = angka + '.' + temp[1];
+        }
+    }
+
+    return angka;
+}
+
 // ------------- Sisqu Utilities --------------
 const generateAutonumber = (initial, sequenceUnitCode, tahun, nextSequenceFormat) => {
     var output = initial + sequenceUnitCode + tahun.toString().substring(2) + nextSequenceFormat;
@@ -86,5 +122,5 @@ const generateAutonumber = (initial, sequenceUnitCode, tahun, nextSequenceFormat
 
 export { 
     fncUnionComma, fncParseComma, ExcelDateToJSDate, 
-    generateAutonumber, weekOfMonth
+    generateAutonumber, weekOfMonth, separatorNumber
 };
