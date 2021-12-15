@@ -89,6 +89,7 @@ function separatorNumber(angka) {
     if (angka.length>3) {
         var temp = angka.split('.');
         var bilangan = temp[0];
+        bilangan = bilangan.replace(/[^0-9]/g,"");   // bersihkan selain angka
 
         var ok = '';
         var i = -2;
@@ -105,7 +106,7 @@ function separatorNumber(angka) {
         angka = ok;
 
         if (temp.length > 1) {
-            angka = angka + '.' + temp[1];
+            angka = angka + '.' + temp[1].replace(/[^0-9]/g,"");
         }
     }
 

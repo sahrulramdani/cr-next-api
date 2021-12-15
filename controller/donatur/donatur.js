@@ -513,7 +513,7 @@ export default class Donatur {
         }
 
         var sql = 'INSERT INTO tb52_slpa SET ?';   
-
+        
         var transNumber;
         if (req.body.transNumber === null || req.body.transNumber === undefined) {
             transNumber = generateAutonumber(req.body.Initial, req.SequenceUnitCode0, req.body.Tahun, 
