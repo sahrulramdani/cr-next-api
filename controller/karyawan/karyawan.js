@@ -373,12 +373,22 @@ export default class Karyawan {
 
         var status = request.params.status;  // Status karyawan
 
-        var qryCmd = "select a.*, CONCAT(IFNULL(a.CodeCountryHP, ''), a.Hp) As NoHP2, " + 
-        "CASE a.StatusAktif " +
-            "WHEN '1' THEN 'ACTIVE' " +
-            "ELSE 'NOT ACTIVE' " +
-        "END As StatusAktif2, b.KODE_UNIT " + 
-        "from tb21_empl a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where b.KODE_URUT like '" + request.KODE_URUT0 + "%' And a.StatusKry = '" + status + "'";
+        var qryCmd = '';
+        if (status === 'all') {
+            qryCmd = "select a.*, CONCAT(IFNULL(a.CodeCountryHP, ''), a.Hp) As NoHP2, " + 
+            "CASE a.StatusAktif " +
+                "WHEN '1' THEN 'ACTIVE' " +
+                "ELSE 'NOT ACTIVE' " +
+            "END As StatusAktif2, b.KODE_UNIT, SUBSTRING(a.Alamat1, 1, 20) As Alamat " + 
+            "FROM tb21_empl a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where b.KODE_URUT like '" + request.KODE_URUT0 + "%'";
+        } else {
+            qryCmd = "select a.*, CONCAT(IFNULL(a.CodeCountryHP, ''), a.Hp) As NoHP2, " + 
+            "CASE a.StatusAktif " +
+                "WHEN '1' THEN 'ACTIVE' " +
+                "ELSE 'NOT ACTIVE' " +
+            "END As StatusAktif2, b.KODE_UNIT " + 
+            "from tb21_empl a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where b.KODE_URUT like '" + request.KODE_URUT0 + "%' And a.StatusKry = '" + status + "'";
+        }
 
         db.query(qryCmd, function(err, rows, fields) {
             var output = [];

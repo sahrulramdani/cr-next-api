@@ -95,7 +95,9 @@ export default class Donatur {
         var qryCmd = '';
         
         if (typePrson === '1') {  // 1: Relawan
-            qryCmd = "select a.NO_ID As value, CONCAT(a.NO_ID, ' - ', a.NAMA, ' - ', SUBSTRING(a.ALMT_XXX1, 1, 20)) As label from tb11_mzjb a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT inner join tb01_lgxh c on a.CRTX_BYXX = c.USER_IDXX where b.KODE_URUT like '" + request.KODE_URUT0 + "%' And UPPER(c.USER_IDXX) = '" + request.userID.toUpperCase() + "' order by a.NO_ID";
+            qryCmd = "select a.NO_ID As value, CONCAT(a.NO_ID, ' - ', a.NAMA, ' - ', SUBSTRING(a.ALMT_XXX1, 1, 20)) As label from tb11_mzjb a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT inner join tb01_lgxh c on a.RelawanID = c.NO_ID where b.KODE_URUT like '" + request.KODE_URUT0 + "%' And UPPER(c.USER_IDXX) = '" + request.userID.toUpperCase() + "' order by a.NO_ID";
+        } else if (typePrson === '2') {  // 2: Donatur
+            qryCmd = "select a.NO_ID As value, CONCAT(a.NO_ID, ' - ', a.NAMA, ' - ', SUBSTRING(a.ALMT_XXX1, 1, 20)) As label from tb11_mzjb a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT inner join tb01_lgxh c on a.NO_ID = c.NO_ID where b.KODE_URUT like '" + request.KODE_URUT0 + "%' And UPPER(c.USER_IDXX) = '" + request.userID.toUpperCase() + "' order by a.NO_ID";
         } else {
             qryCmd = "select a.NO_ID As value, CONCAT(a.NO_ID, ' - ', a.NAMA, ' - ', SUBSTRING(a.ALMT_XXX1, 1, 20)) As label from tb11_mzjb a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where b.KODE_URUT like '" + request.KODE_URUT0 + "%' order by a.NO_ID";
         }
@@ -131,7 +133,9 @@ export default class Donatur {
         var sql = '';
         if (typePrson === '1') {  // 1: Relawan. 4: Officer
             sql = 'SELECT a.* FROM tb11_mzjb a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT INNER JOIN tb01_lgxh c ON a.CRTX_BYXX = c.USER_IDXX WHERE a.NO_ID = "'+ id +'" And b.KODE_URUT like "' + req.KODE_URUT0 + '%" And UPPER(c.USER_IDXX) = "' + req.userID.toUpperCase() + '"';
-        } else if (typePrson === '2' || typePrson === '4') {   // 2: Donatur
+        } else if (typePrson === '2') {   // 2: Donatur
+            sql = 'SELECT a.* FROM tb11_mzjb a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT inner join tb01_lgxh c on a.NO_ID = c.NO_ID WHERE a.NO_ID = "'+ id +'" And b.KODE_URUT like "' + req.KODE_URUT0 + '%" And UPPER(c.USER_IDXX) = "' + req.userID + '"';
+        } else {
             sql = 'SELECT a.* FROM tb11_mzjb a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT WHERE a.NO_ID = "'+ id +'" And b.KODE_URUT like "' + req.KODE_URUT0 + '%"';
         }
 
@@ -253,6 +257,17 @@ export default class Donatur {
             return;
         }
 
+        // get user Access
+        var authAdd = req.AUTH_ADDX;
+
+        if (authAdd === '0') {
+            return res.status(403).send({ 
+                status: false, 
+                message: 'Access Denied',
+                userAccess: false
+            });
+        }
+
         var noID;
         if (req.body.NO_ID === null || req.body.NO_ID === undefined) {
             noID = generateAutonumber(req.body.Initial, req.SequenceUnitCode0, req.body.Tahun, 
@@ -287,6 +302,7 @@ export default class Donatur {
             FlgPlatinum : req.body.FlgPlatinum,
             Channel : req.body.Channel,
             SEGMX_PROF : req.body.SEGMX_PROF,
+            RelawanID : req.body.RelawanID,
             PIC: req.body.PIC,
             NoHPPIC: req.body.NoHPPIC,
             CodeCountryHPPIC : req.body.CodeCountryHPPIC,
@@ -351,6 +367,7 @@ export default class Donatur {
             FlgPlatinum : req.body.FlgPlatinum,
             Channel : req.body.Channel,
             SEGMX_PROF : req.body.SEGMX_PROF,
+            RelawanID : req.body.RelawanID,
             TITLE : req.body.TITLE,
             PIC: req.body.PIC,
             NoHPPIC: req.body.NoHPPIC, 
