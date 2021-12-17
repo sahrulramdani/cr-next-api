@@ -152,7 +152,8 @@ export default class Karyawan {
                         sql = 'update tb01_lgxh set NO_ID = "' + kodeNik + '" where USER_IDXX = "' + req.userID + '"';
                         db.query(sql, (err2, result2) => {
                             res.send({
-                                status: true
+                                status: true,
+                                NO_ID: kodeNik
                             });
                         });
                     }
@@ -289,26 +290,14 @@ export default class Karyawan {
     }
 
     updateKaryawanProfile = function(req, res) {
-        // check Access PROC_CODE 
-        if (fncCheckProcCode(req.body.ProcCode, req.procCodes) === false) {
-            res.status(403).send({ 
-                status: false, 
-                message: 'Access Denied',
-                userAccess: false
-            });
-
-            return;
-        }
-
         var bussCode;
         if (req.body.BUSS_CODE === null || req.body.BUSS_CODE === undefined) {
             bussCode = req.BUSS_CODE0;
         } else {
             bussCode = req.body.BUSS_CODE;
         }
-
-        var id = req.body.id;  // id = nik
-        var sql = 'UPDATE `tb21_empl` a INNER JOIN tb01_lgxh b ON a.KodeNik = b.NO_ID SET ? WHERE a.KodeNik = "' + id + '" And b.USER_IDXX = "' + req.userID + '"';
+        
+        var sql = 'UPDATE `tb21_empl` a INNER JOIN tb01_lgxh b ON a.KodeNik = b.NO_ID SET ? WHERE UPPER(b.USER_IDXX) = "' + req.userID.toUpperCase() + '"';
         
         var data = {
             noxx_NPWP : req.body.noxx_NPWP,

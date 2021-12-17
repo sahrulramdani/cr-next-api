@@ -122,6 +122,14 @@ export default class Donatur {
         });
     }
 
+    getDonaturProfile = function(req, res) {
+        var sql = 'SELECT a.* FROM tb11_mzjb a inner join tb01_lgxh b on a.NO_ID = b.NO_ID WHERE UPPER(b.USER_IDXX) = "' + req.userID.toUpperCase() + '"';
+
+        db.query(sql, function(err, rows, fields) {
+            res.send(rows);
+        });
+    }
+
     getDonatur = function(req, res) {
         // get user Access
         var authEdit = req.AUTH_EDIT;
@@ -134,7 +142,7 @@ export default class Donatur {
         if (typePrson === '1') {  // 1: Relawan. 4: Officer
             sql = 'SELECT a.* FROM tb11_mzjb a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT INNER JOIN tb01_lgxh c ON a.CRTX_BYXX = c.USER_IDXX WHERE a.NO_ID = "'+ id +'" And b.KODE_URUT like "' + req.KODE_URUT0 + '%" And UPPER(c.USER_IDXX) = "' + req.userID.toUpperCase() + '"';
         } else if (typePrson === '2') {   // 2: Donatur
-            sql = 'SELECT a.* FROM tb11_mzjb a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT inner join tb01_lgxh c on a.NO_ID = c.NO_ID WHERE a.NO_ID = "'+ id +'" And b.KODE_URUT like "' + req.KODE_URUT0 + '%" And UPPER(c.USER_IDXX) = "' + req.userID + '"';
+            sql = 'SELECT a.* FROM tb11_mzjb a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT inner join tb01_lgxh c on a.NO_ID = c.NO_ID WHERE a.NO_ID = "'+ id +'" And b.KODE_URUT like "' + req.KODE_URUT0 + '%" And UPPER(c.USER_IDXX) = "' + req.userID.toUpperCase() + '"';
         } else {
             sql = 'SELECT a.* FROM tb11_mzjb a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT WHERE a.NO_ID = "'+ id +'" And b.KODE_URUT like "' + req.KODE_URUT0 + '%"';
         }
@@ -245,6 +253,76 @@ export default class Donatur {
         });
     }
 
+    saveDonaturProfile = function(req, res) {
+        var noID;
+        if (req.body.NO_ID === null || req.body.NO_ID === undefined) {
+            noID = generateAutonumber(req.body.Initial, req.SequenceUnitCode0, req.body.Tahun, 
+                req.body.NextSequenceFormat);
+        } else {
+            noID = req.body.NO_ID;
+        }
+
+        var bussCode;
+        if (req.body.BUSS_CODE === null || req.body.BUSS_CODE === undefined) {
+            bussCode = req.BUSS_CODE0;
+        } else {
+            bussCode = req.body.BUSS_CODE;
+        }
+
+        var sql = 'INSERT INTO tb11_mzjb SET ?';
+        var data = {
+            NO_ID : noID,
+            NPWP : req.body.NPWP,
+            NAMA : req.body.NAMA,
+            NICK_NAME : req.body.NICK_NAME,
+            JNKX_KLMN : req.body.JNKX_KLMN,
+            ALMT_XXX1 : req.body.ALMT_XXX1,
+            NoHP : req.body.NoHP,
+            CodeCountryHP : req.body.CodeCountryHP,
+            Email : req.body.Email,
+            TMPX_LHRX : req.body.TMPX_LHRX,
+            TGLX_LHRX : req.body.TGLX_LHRX,
+            BUSS_CODE : bussCode,
+            NoKTP : req.body.NoKTP,
+            Stat_aktf : '1',
+            StatusKawin : req.body.StatusKawin,
+            Pendidikan : req.body.Pendidikan,
+            Pekerjaan : req.body.Pekerjaan,
+            TglX_MASK : req.body.TglX_MASK,
+            Status : req.body.Status,
+            TypeBadan : req.body.TypeBadan,
+            TypeDonatur : req.body.TypeDonatur,
+            FlgPlatinum : req.body.FlgPlatinum,
+            PIC: req.body.PIC,
+            NoHPPIC: req.body.NoHPPIC,
+            CodeCountryHPPIC : req.body.CodeCountryHPPIC,
+            EmailPIC: req.body.EmailPIC,
+            TITLE : req.body.TITLE,
+            CRTX_DATE : new Date(),
+            CRTX_BYXX : req.userID
+        };
+        
+        db.query(sql, data, (err, result) => {
+            if (err) {
+                console.log('Error', err);
+
+                res.send({
+                    status: false,
+                    message: err.sqlMessage
+                });
+            } else {
+                // update tabel tb01_lgxh, field NO_ID
+                sql = 'update tb01_lgxh set NO_ID = "' + noID + '" where USER_IDXX = "' + req.userID + '"';
+                db.query(sql, (err2, result2) => {
+                    res.send({
+                        status: true,
+                        NO_ID: noID
+                    });
+                });
+            }
+        });
+    }
+
     saveDonatur = function(req, res) {
         // check Access PROC_CODE 
         if (fncCheckProcCode(req.body.ProcCode, req.procCodes) === false) {
@@ -310,6 +388,52 @@ export default class Donatur {
             TITLE : req.body.TITLE,
             CRTX_DATE : new Date(),
             CRTX_BYXX : req.userID
+        };
+        
+        db.query(sql, data, (err, result) => {
+            if (err) {
+                console.log('Error', err);
+
+                res.send({
+                    status: false,
+                    message: err.sqlMessage
+                });
+            } else {
+                res.send({
+                    status: true
+                });
+            }
+        });
+    }
+
+    updateDonaturProfile = function(req, res) {
+        var sql = 'UPDATE tb11_mzjb a INNER JOIN tb01_lgxh b ON a.NO_ID = b.NO_ID SET ? WHERE UPPER(b.USER_IDXX) = "' + req.userID.toUpperCase() + '"';
+
+        var data = {
+            NPWP : req.body.NPWP,
+            NAMA : req.body.NAMA,
+            NICK_NAME : req.body.NICK_NAME,
+            JNKX_KLMN : req.body.JNKX_KLMN,
+            ALMT_XXX1 : req.body.ALMT_XXX1,
+            NoHP : req.body.NoHP,
+            CodeCountryHP : req.body.CodeCountryHP,
+            'a.Email' : req.body.Email,
+            TMPX_LHRX : req.body.TMPX_LHRX,
+            TGLX_LHRX : req.body.TGLX_LHRX,
+            NoKTP : req.body.NoKTP,
+            Stat_aktf : '1',
+            StatusKawin : req.body.StatusKawin,
+            Pendidikan : req.body.Pendidikan,
+            Pekerjaan : req.body.Pekerjaan,
+            TglX_MASK : req.body.TglX_MASK,
+            TypeBadan : req.body.TypeBadan,
+            TITLE : req.body.TITLE,
+            PIC: req.body.PIC,
+            NoHPPIC: req.body.NoHPPIC, 
+            CodeCountryHPPIC : req.body.CodeCountryHPPIC,
+            EmailPIC: req.body.EmailPIC,
+            'a.UPDT_DATE' : new Date(),
+            'a.UPDT_BYXX' : req.userID
         };
         
         db.query(sql, data, (err, result) => {

@@ -78,6 +78,9 @@ import * as C from './controller/index.js';
       app.route('/profile/karyawan-prsh/save').post(C.auth.verifyToken, C.karyawan.saveKaryawanPrsh);
       app.route('/profile/karyawan').get(C.auth.verifyToken, C.karyawan.getProfileKaryawan);
       app.route('/profile/user/update').post(C.auth.verifyToken, C.user.updateUserProfile);
+      app.route('/profile/donatur/save').post(C.auth.verifyToken, C.donatur.saveDonaturProfile);
+      app.route('/profile/donatur/update').post(C.auth.verifyToken, C.donatur.updateDonaturProfile);
+      app.route('/profile/donatur').get(C.auth.verifyToken, C.donatur.getDonaturProfile);
 
       // ------ CRM --------------
       app.route('/crm/setup/channel-donaturs').get(C.auth.verifyToken, C.setup.channelDonaturAll);
