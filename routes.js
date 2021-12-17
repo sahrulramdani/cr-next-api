@@ -107,7 +107,7 @@ import * as C from './controller/index.js';
       app.route('/crm/slp/:id').get(C.auth.verifyToken, C.donatur.getTransSLP);
       app.route('/crm/slps/:status').get(C.auth.verifyToken, C.donatur.transSLPAll);
       app.route('/crm/donaturs/verify').post(C.auth.verifyToken, C.donatur.verify);
-      app.route('/crm/donaturs/level/platinum/:level/:platinum').get(C.auth.verifyToken, C.donatur.getDonatursPerLevelPlatinum);
+      app.route('/crm/donaturs/level/platinum/active/:level/:platinum/:active').get(C.auth.verifyToken, C.donatur.getDonatursPerLevelPlatinum);
       app.route('/crm/donaturs/level/:level').get(C.auth.verifyToken, C.donatur.getDonatursPerLevel);
       app.route('/crm/donaturs/:status').get(C.auth.verifyToken, C.donatur.donaturs);
       app.route('/crm/donatur/detail/transactions/:donaturID').get(C.auth.verifyToken, C.donatur.getDetTransactions);
