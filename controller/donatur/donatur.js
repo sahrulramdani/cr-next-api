@@ -1441,4 +1441,12 @@ export default class Donatur {
             res.send(rows);
         });
     }
+
+    getSummaryTransactionPerProgram = function(req, res) {
+        var sql = "select c.NAMA_UNIT, DATE_FORMAT(a.TransDate,'%Y-%m') As TahunBulan, CONCAT(MONTHNAME(a.TransDate),' ',YEAR(a.TransDate)) As BulanTahun, d.CODD_DESC As ProgramDonatur, e.CODD_DESC As SegmenProfil, COUNT(distinct a.DonaturID) As JumlahDonatur, COUNT(a.Amount) As JumlahTransaksi, SUM(a.Amount) As JumlahDonasi FROM trans_donatur a inner join tb11_mzjb b on a.DonaturID = b.NO_ID inner join tb00_unit c on b.BUSS_CODE = c.KODE_UNIT left join (select * from tb00_basx where CODD_FLNM = 'PROGRAM_DONATUR') d on a.ProgDonatur = d.CODD_VALU left join (select * from tb00_basx where CODD_FLNM = 'SEGMENT_PROFILING') e on b.SEGMX_PROF = e.CODD_VALU WHERE b.BUSS_CODE = '" + req.BUSS_CODE0 +  "' And a.ProgDonatur is not null group by c.NAMA_UNIT, DATE_FORMAT(a.TransDate,'%Y-%m'), d.CODD_DESC";
+
+        db.query(sql, function(err, rows, fields) {
+            res.send(rows);
+        });
+    }
 }

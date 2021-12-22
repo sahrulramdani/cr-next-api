@@ -126,6 +126,7 @@ import * as C from './controller/index.js';
       app.route('/crm/idDonaturs/:status').get(C.auth.verifyToken, C.donatur.idDonaturs);
       app.route('/crm/summary/transactions').get(C.auth.verifyToken, C.donatur.getSummaryTransaction);
       app.route('/crm/summary/transactions-per-week').get(C.auth.verifyToken, C.donatur.getSummaryTransactionPerWeek);
+      app.route('/crm/summary/transactions-per-program').get(C.auth.verifyToken, C.donatur.getSummaryTransactionPerProgram);
 
       // ------ Accounting --------------
       app.route('/accounting/tahun-buku/save').post(C.auth.verifyToken, C.accounting.saveTahunBuku);
