@@ -1,5 +1,6 @@
 import  db from './../../../koneksi.js';
-import { fncParseComma, generateAutonumber } from './../../../libraries/sisqu/Utility.js';
+import { generateAutonumber } from './../../../libraries/sisqu/Utility.js';
+import { fncCheckProcCode } from './../../../libraries/local/localUtility.js';
 
 
 export default class Event {
@@ -158,6 +159,128 @@ export default class Event {
         var id = req.body.id;
         var sql = "delete from `tblEvent_donatur` where id = " + id;
         db.query(sql, (err, result) => {
+            if (err) {
+                console.log('Error', err);
+
+                res.send({
+                    status: false,
+                    message: err.sqlMessage
+                });
+            } else {
+                res.send({
+                    status: true
+                });
+            }
+        });
+    }
+
+    getEvents = (request, response) => {
+        // get user Access
+        var authAdd = request.AUTH_ADDX;
+        var authEdit = request.AUTH_EDIT;
+        var authDelt = request.AUTH_DELT;
+        var authAppr = request.AUTH_APPR;  // auth Approve
+        
+        var qryCmd = "select a.*, c.CODD_DESC As ProgDonatur, DATE_FORMAT(Tgl1, '%Y%m%d') As Tgl1Format, DATE_FORMAT(Tgl2, '%Y%m%d') As Tgl2Format FROM tblEvent a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT left join (select * from tb00_basx where CODD_FLNM = 'PROGRAM_DONATUR') c on a.ProgramID = c.CODD_VALU where b.KODE_URUT like '" + request.KODE_URUT0 + "%'";
+        
+        db.query(qryCmd, function(err, rows, fields) {
+            var output = [];
+            
+            if (err) {
+                console.log('Error', err);
+            }
+
+            if (rows.length > 0) {
+                rows.forEach(function(row) {
+                    var obj = new Object();
+                    for(var key in row) {
+                        obj[key] = row[key];
+                    }
+
+                    obj['AUTH_ADDX'] = authAdd;
+                    obj['AUTH_EDIT'] = authEdit;
+                    obj['AUTH_DELT'] = authDelt;
+                    obj['AUTH_APPR'] = authAppr;
+
+                    output.push(obj);
+                })
+
+                response.send(output);
+            } else {
+                response.send([]);
+            }
+        });
+    }
+
+    getEvent = (request, response) => {
+        // get user Access
+        var authAdd = request.AUTH_ADDX;
+        var authEdit = request.AUTH_EDIT;
+        var authDelt = request.AUTH_DELT;
+        var authAppr = request.AUTH_APPR;  // auth Approve
+
+        var id = request.params.id;   // EventID
+        
+        var qryCmd = "select a.*, c.CODD_DESC As ProgDonatur, DATE_FORMAT(Tgl1, '%Y%m%d') As Tgl1Format, DATE_FORMAT(Tgl2, '%Y%m%d') As Tgl2Format FROM tblEvent a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT left join (select * from tb00_basx where CODD_FLNM = 'PROGRAM_DONATUR') c on a.ProgramID = c.CODD_VALU where b.KODE_URUT like '" + request.KODE_URUT0 + "%' And a.EventID = '" + id + "'";
+
+        console.log(qryCmd);
+        
+        db.query(qryCmd, function(err, rows, fields) {
+            var output = [];
+            
+            if (err) {
+                console.log('Error', err);
+            }
+
+            if (rows.length > 0) {
+                rows.forEach(function(row) {
+                    var obj = new Object();
+                    for(var key in row) {
+                        obj[key] = row[key];
+                    }
+
+                    obj['AUTH_ADDX'] = authAdd;
+                    obj['AUTH_EDIT'] = authEdit;
+                    obj['AUTH_DELT'] = authDelt;
+                    obj['AUTH_APPR'] = authAppr;
+
+                    output.push(obj);
+                })
+
+                response.send(output);
+            } else {
+                response.send([]);
+            }
+        });
+    }
+
+    updateEvent = function(req, res) {
+        // check Access PROC_CODE 
+        /* if (fncCheckProcCode(req.body.ProcCode, req.procCodes) === false) {
+            res.status(403).send({ 
+                status: false, 
+                message: 'Access Denied',
+                userAccess: false
+            });
+
+            return;
+        } */
+
+        var id = req.body.id;
+
+        var sql = 'UPDATE tblEvent a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT SET ? WHERE a.EventID = "' + id + '" And b.KODE_URUT like "' + req.KODE_URUT0 + '%"';
+
+        var data = {
+            EventName : req.body.EventName,
+            Description : req.body.Description,
+            Tgl1 : req.body.Tgl1,
+            Tgl2 : req.body.Tgl2,
+            ProgramID : req.body.ProgramID,
+            'a.UPDT_DATE' : new Date(),
+            'a.UPDT_BYXX' : req.userID
+        };
+        
+        db.query(sql, data, (err, result) => {
             if (err) {
                 console.log('Error', err);
 
