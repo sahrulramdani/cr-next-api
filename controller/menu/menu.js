@@ -375,4 +375,23 @@ export default class Menu {
             }
         });
     }
+
+    saveDetProcessAll = function(req, res) {
+        var sql = 'INSERT INTO tb01_proc (PROC_CODE, BUSS_CODE, PATH, MDUL_CODE, TYPE_MDUL, PROC_NAME, Enabled, CRTX_DATE, CRTX_BYXX) select PROC_CODE, "' + req.body.BUSS_CODE + '", PATH, MDUL_CODE, TYPE_MDUL, PROC_NAME, Enabled, "' + moment(new Date()).format('YYYY-MM-DD') + '", "' + req.userID + '" from tb00_proc where MDUL_CODE = "' + req.body.MDUL_CODE + '"';
+        
+        db.query(sql, (err, result) => {
+            if (err) {
+                console.log('Error', err);
+
+                res.send({
+                    status: false,
+                    message: err.sqlMessage
+                });
+            } else {
+                res.send({
+                    status: true
+                });
+            }
+        });
+    }
 }

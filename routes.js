@@ -134,6 +134,7 @@ import * as C from './controller/index.js';
       app.route('/crm/summary/transactions').get(C.auth.verifyToken, C.donatur.getSummaryTransaction);
       app.route('/crm/summary/transactions-per-week').get(C.auth.verifyToken, C.donatur.getSummaryTransactionPerWeek);
       app.route('/crm/summary/transactions-per-program').get(C.auth.verifyToken, C.donatur.getSummaryTransactionPerProgram);
+      app.route('/crm/partner/transactions-per-month').get(C.auth.verifyToken, C.donatur.getPartnerTransactions);
 
       // ------ Accounting --------------
       app.route('/accounting/tahun-buku/save').post(C.auth.verifyToken, C.accounting.saveTahunBuku);
@@ -146,6 +147,8 @@ import * as C from './controller/index.js';
       app.route('/accounting/mutasi/filter-field/:tgl/:field/:value').get(C.auth.verifyToken, C.accounting.mutasiFilter);
       app.route('/accounting/mutasi/filter/:tgl').get(C.auth.verifyToken, C.accounting.mutasiFilter);
       app.route('/accounting/mutasi/:id').get(C.auth.verifyToken, C.accounting.getMutasi);
+      app.route('/accounting/mutasi-per-month').get(C.auth.verifyToken, C.accounting.getMutasiPerMonth);
+      app.route('/accounting/summary/bank').get(C.auth.verifyToken, C.accounting.summaryBank);
 
       // ------ Menu Management --------------
       app.route('/menu/modules/all').get(C.auth.verifyToken, C.menu.module0All);
@@ -153,6 +156,7 @@ import * as C from './controller/index.js';
       app.route('/menu/module/save').post(C.auth.verifyToken, C.menu.saveModule);
       app.route('/menu/module/update').post(C.auth.verifyToken, C.menu.updateModule);
       app.route('/menu/module/process/save2').post(C.auth.verifyToken, C.menu.saveDetProcess2);
+      app.route('/menu/module/process/saveAll').post(C.auth.verifyToken, C.menu.saveDetProcessAll);
       app.route('/menu/module/process/save').post(C.auth.verifyToken, C.menu.saveDetProcess);
       app.route('/menu/module/process/delete').post(C.auth.verifyToken, C.menu.deleteDetProcess);
       app.route('/menu/module/:id').get(C.auth.verifyToken, C.menu.getModule);

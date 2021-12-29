@@ -1449,4 +1449,12 @@ export default class Donatur {
             res.send(rows);
         });
     }
+
+    getPartnerTransactions = function(req, res) {
+        var sql = 'select b.NAMA, a.Amount, DATE_FORMAT(a.TransDate, "%Y-%b-%e") As TglFormat from trans_donatur a inner join tblPartner b on a.DonaturID = b.NO_ID where MONTH(a.TransDate) = MONTH(NOW()) And YEAR(a.TransDate) = YEAR(NOW()) And b.BUSS_CODE = "' + req.BUSS_CODE0 + '" order by a.TransDate Desc';
+       
+        db.query(sql, function(err, rows, fields) {
+            res.send(rows);
+        });
+    }
 }
