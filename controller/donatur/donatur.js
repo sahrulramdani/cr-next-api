@@ -1161,6 +1161,7 @@ export default class Donatur {
         var authAppr = req.AUTH_APPR;  // auth Approve
 
         var isValid = req.params.isValid;
+        var bussCode = '%';
         var sql = '';
 
         if (isValid === '0') {
@@ -1169,8 +1170,12 @@ export default class Donatur {
             isValid = '1"';
         }
 
+        if (req.params.bussCode !== undefined) {
+            bussCode = req.params.bussCode;
+        }
+
         if (isValid === 'all') {
-            sql = 'SELECT a.*, b.NAMA, CONCAT(b.NO_ID, " - ", b.NAMA) As Donatur2, d.CODD_DESC As Channel FROM trans_donatur a inner join tb11_mzjb b on a.donaturID = b.NO_ID inner join tb00_unit c on b.BUSS_CODE = c.KODE_UNIT inner join (select * from tb00_basx where CODD_FLNM = "CHANNEL_DONATUR") d on b.Channel = d.CODD_VALU WHERE (a.isDelete <> "1" Or a.isDelete Is Null) And c.KODE_URUT like "' + req.KODE_URUT0 + '%" order by a.TransDate Desc';
+            sql = 'SELECT a.*, b.NAMA, CONCAT(b.NO_ID, " - ", b.NAMA) As Donatur2, d.CODD_DESC As Channel, DATE_FORMAT(a.TransDate, "%Y-%b-%e") As TglFormat FROM trans_donatur a inner join tb11_mzjb b on a.donaturID = b.NO_ID inner join tb00_unit c on b.BUSS_CODE = c.KODE_UNIT inner join (select * from tb00_basx where CODD_FLNM = "CHANNEL_DONATUR") d on b.Channel = d.CODD_VALU WHERE (a.isDelete <> "1" Or a.isDelete Is Null) And c.KODE_URUT like "' + req.KODE_URUT0 + '%" And c.KODE_UNIT like "' + bussCode + '" order by a.TransDate Desc';
         } else {
             sql = 'SELECT a.*, b.NAMA, CONCAT(b.NO_ID, " - ", b.NAMA) As Donatur2, DATE_FORMAT(TransDate, "%Y%m%d") As TransDateFormat, d.CODD_DESC As Channel, e.TahunDonasi, b.TITLE, CONCAT(IFNULL(b.CodeCountryHP, ""), b.NoHP) As NoHP2, f.CODD_DESC As ProgDonatur, g.Department, h.NAMA_BANK As Bank, i.CODD_DESC As SegmenProfil, c.NAMA_UNIT, CASE b.Stat_aktf When "1" Then "AKTIF" Else "NON-AKTIF" END As Active FROM trans_donatur a inner join tb11_mzjb b on a.donaturID = b.NO_ID inner join tb00_unit c on b.BUSS_CODE = c.KODE_UNIT left join (select * from tb00_basx where CODD_FLNM = "CHANNEL_DONATUR") d on b.Channel = d.CODD_VALU left join vfirst_transaction e on a.DonaturID = e.DonaturID left join (select * from tb00_basx where CODD_FLNM = "PROGRAM_DONATUR") f on a.ProgDonatur = f.CODD_VALU left join vdepartment g on a.CRTX_BYXX = g.USER_IDXX left join (select KODE_BANK, NAMA_BANK from tb02_bank where KODE_FLNM = "KASX_BANK") h on a.BankTo = h.KODE_BANK left join (select * from tb00_basx where CODD_FLNM = "SEGMENT_PROFILING") i on b.SEGMX_PROF = i.CODD_VALU WHERE a.isValidate in ("' + isValid + ') And (a.isDelete <> "1" OR a.isDelete IS NULL) And c.KODE_URUT like "' + req.KODE_URUT0 + '%" order by c.KODE_URUT, a.TransDate Desc';
         }
@@ -1443,7 +1448,12 @@ export default class Donatur {
     }
 
     getSummaryTransactionPerProgram = function(req, res) {
-        var sql = "select c.NAMA_UNIT, DATE_FORMAT(a.TransDate,'%Y-%m') As TahunBulan, CONCAT(MONTHNAME(a.TransDate),' ',YEAR(a.TransDate)) As BulanTahun, d.CODD_DESC As ProgramDonatur, e.CODD_DESC As SegmenProfil, COUNT(distinct a.DonaturID) As JumlahDonatur, COUNT(a.Amount) As JumlahTransaksi, SUM(a.Amount) As JumlahDonasi FROM trans_donatur a inner join tb11_mzjb b on a.DonaturID = b.NO_ID inner join tb00_unit c on b.BUSS_CODE = c.KODE_UNIT left join (select * from tb00_basx where CODD_FLNM = 'PROGRAM_DONATUR') d on a.ProgDonatur = d.CODD_VALU left join (select * from tb00_basx where CODD_FLNM = 'SEGMENT_PROFILING') e on b.SEGMX_PROF = e.CODD_VALU WHERE b.BUSS_CODE = '" + req.BUSS_CODE0 +  "' And a.ProgDonatur is not null group by c.NAMA_UNIT, DATE_FORMAT(a.TransDate,'%Y-%m'), d.CODD_DESC";
+        var period = '%';
+        if (req.params.period !== undefined) {
+            period = req.params.period;
+        }
+
+        var sql = "select c.NAMA_UNIT, DATE_FORMAT(a.TransDate,'%Y-%m') As TahunBulan, CONCAT(MONTHNAME(a.TransDate),' ',YEAR(a.TransDate)) As BulanTahun, d.CODD_DESC As ProgramDonatur, e.CODD_DESC As SegmenProfil, COUNT(distinct a.DonaturID) As JumlahDonatur, COUNT(a.Amount) As JumlahTransaksi, SUM(a.Amount) As JumlahDonasi FROM trans_donatur a inner join tb11_mzjb b on a.DonaturID = b.NO_ID inner join tb00_unit c on b.BUSS_CODE = c.KODE_UNIT left join (select * from tb00_basx where CODD_FLNM = 'PROGRAM_DONATUR') d on a.ProgDonatur = d.CODD_VALU left join (select * from tb00_basx where CODD_FLNM = 'SEGMENT_PROFILING') e on b.SEGMX_PROF = e.CODD_VALU WHERE b.BUSS_CODE = '" + req.BUSS_CODE0 +  "' And a.ProgDonatur is not null And DATE_FORMAT(a.TransDate,'%Y-%m') like '" + period + "' group by c.NAMA_UNIT, DATE_FORMAT(a.TransDate,'%Y-%m'), d.CODD_DESC";
 
         db.query(sql, function(err, rows, fields) {
             res.send(rows);
@@ -1453,6 +1463,14 @@ export default class Donatur {
     getPartnerTransactions = function(req, res) {
         var sql = 'select b.NAMA, a.Amount, DATE_FORMAT(a.TransDate, "%Y-%b-%e") As TglFormat from trans_donatur a inner join tblPartner b on a.DonaturID = b.NO_ID where MONTH(a.TransDate) = MONTH(NOW()) And YEAR(a.TransDate) = YEAR(NOW()) And b.BUSS_CODE = "' + req.BUSS_CODE0 + '" order by a.TransDate Desc';
        
+        db.query(sql, function(err, rows, fields) {
+            res.send(rows);
+        });
+    }
+
+    getSummaryTransactionPerMonth = function(req, res) {
+        var sql = "select c.NAMA_UNIT, c.KODE_UNIT, SUM(a.Amount) As JumlahDonasi, SUM(Case a.isValidate When '1' Then a.Amount Else 0 End) As JumlahValidasi, SUM(Case d.CHKX_BANK When '1' Then a.Amount Else 0 End) As JumlahTransfer, SUM(Case d.CHKX_BANK When '0' Then a.Amount Else 0 End) As JumlahTunai FROM trans_donatur a inner join (select * from tb11_mzjb union select * from tblPartner) b on a.DonaturID = b.NO_ID inner join tb00_unit c on b.BUSS_CODE = c.KODE_UNIT left join tb02_bank d on a.MethodPayment = d.KODE_BANK And d.KODE_FLNM = 'TYPE_BYRX' And b.BUSS_CODE = d.BUSS_CODE WHERE b.BUSS_CODE = '" + req.BUSS_CODE0 + "' And MONTH(a.TransDate) = MONTH(NOW()) And YEAR(a.TransDate) = YEAR(NOW()) group by c.NAMA_UNIT";
+
         db.query(sql, function(err, rows, fields) {
             res.send(rows);
         });

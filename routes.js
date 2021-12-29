@@ -113,7 +113,7 @@ import * as C from './controller/index.js';
       app.route('/crm/donatur/detail/transactions/:donaturID').get(C.auth.verifyToken, C.donatur.getDetTransactions);
       app.route('/crm/donatur/relawan/transactions/:isValid').get(C.auth.verifyToken, C.donatur.getTransRelation);
       app.route('/crm/donatur/transactions/filter/:tgl1/:tgl2').get(C.auth.verifyToken, C.donatur.getTransactionsFilter);
-      app.route('/crm/donatur/transactions/:isValid').get(C.auth.verifyToken, C.donatur.getDonaturTransactions);
+      app.route('/crm/donatur/transactions/:isValid/:bussCode').get(C.auth.verifyToken, C.donatur.getDonaturTransactions);
       app.route('/crm/donatur/transaction/save').post(C.auth.verifyToken, C.donatur.saveDetTransaction);
       app.route('/crm/donatur/transaction/update').post(C.auth.verifyToken, C.donatur.updateDonaturTrans);
       app.route('/crm/donatur/transaction/delete/soft').post(C.auth.verifyToken, C.donatur.deleteSoftDonaturTrans);
@@ -131,9 +131,10 @@ import * as C from './controller/index.js';
       app.route('/crm/event/save').post(C.auth.verifyToken, C.event.saveEvent);
       app.route('/crm/event/update').post(C.auth.verifyToken, C.event.updateEvent);
       app.route('/crm/event/:id').get(C.auth.verifyToken, C.event.getEvent);
-      app.route('/crm/summary/transactions').get(C.auth.verifyToken, C.donatur.getSummaryTransaction);
+      app.route('/crm/summary/transactions').get(C.auth.verifyToken, C.donatur.getSummaryTransaction); 
       app.route('/crm/summary/transactions-per-week').get(C.auth.verifyToken, C.donatur.getSummaryTransactionPerWeek);
-      app.route('/crm/summary/transactions-per-program').get(C.auth.verifyToken, C.donatur.getSummaryTransactionPerProgram);
+      app.route('/crm/summary/transactions-per-program/:period').get(C.auth.verifyToken, C.donatur.getSummaryTransactionPerProgram);
+      app.route('/crm/summary/transactions-per-month').get(C.auth.verifyToken, C.donatur.getSummaryTransactionPerMonth);
       app.route('/crm/partner/transactions-per-month').get(C.auth.verifyToken, C.donatur.getPartnerTransactions);
 
       // ------ Accounting --------------
