@@ -1,4 +1,5 @@
 import  db from './../../koneksi.js';
+import moment from 'moment';
 
 export default class Utility {
     getSequence = function(req, res) {
@@ -20,24 +21,14 @@ export default class Utility {
     }
 
     saveSequence = function(req, res) {
-        var bussCode;
-        if (req.body.BUSS_CODE === null || req.body.BUSS_CODE === undefined) {
-            bussCode = req.BUSS_CODE0;
-        } else {
-            bussCode = req.body.BUSS_CODE;
-        }
+        var bussCode = req.body.BUSS_CODE;
+        if (req.body.BUSS_CODE === undefined) {
+            bussCode = null;
+        } 
 
-        var sql = 'INSERT INTO tblsequence SET ?';
-        var data = {
-            Initial : req.body.Initial,
-            BUSS_CODE : bussCode,
-            Tahun : req.body.Tahun,
-            SequenceUnitCode : req.SequenceUnitCode0,
-            NOXX_URUT : req.body.NOXX_URUT,
-            TGLX_PROC : new Date()
-        };
+        var sql = 'INSERT INTO tblsequence (Initial, BUSS_CODE, Tahun, SequenceUnitCode, NOXX_URUT, TGLX_PROC) select "' + req.body.Initial + '", IFNULL(' + bussCode + ', a.BUSS_CODE),' + req.body.Tahun + ', b.SequenceUnitCode,"' + req.body.NOXX_URUT + '","' + moment(new Date()).format('YYYY-MM-DD') +  '" from tb01_lgxh a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where UPPER(a.USER_IDXX) = "' + req.userID.toUpperCase() + '"';
         
-        db.query(sql, data, (err, result) => {
+        db.query(sql, (err, result) => {
             if (err) {
                 console.log('Error', err);
 
@@ -46,7 +37,11 @@ export default class Utility {
                     message: err.sqlMessage
                 });
             } else {
-                sql = 'update tblsequence a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT set a.SequenceUnitCode = b.SequenceUnitCode where a.Initial = "' + req.body.Initial + '" And a.BUSS_CODE = "' + bussCode + '" And a.Tahun = "' + req.body.Tahun + '"';
+                if (bussCode === null) {
+                    sql = 'update tblsequence a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT inner join tb01_lgxh c on b.KODE_UNIT = c.BUSS_CODE set a.SequenceUnitCode = b.SequenceUnitCode where a.Initial = "' + req.body.Initial + '" And a.Tahun = "' + req.body.Tahun + '" And UPPER(c.USER_IDXX) = "' + req.userID.toUpperCase() + '"';
+                } else {
+                    sql = 'update tblsequence a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT set a.SequenceUnitCode = b.SequenceUnitCode where a.Initial = "' + req.body.Initial + '" And a.Tahun = "' + req.body.Tahun + '" And a.BUSS_CODE = "' + bussCode + '"';
+                }
 
                 db.query(sql, (err, result) => {
                     res.send({

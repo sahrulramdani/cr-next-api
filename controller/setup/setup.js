@@ -728,9 +728,17 @@ export default class Setup {
         selectedIds = fncParseComma(req.body.selectedIds);
 
         var category = req.body.CODD_FLNM;
+        var CODD_VARC = req.body.CODD_VARC;
+        var sql = '';
+
+        if (CODD_VARC === undefined) {
+            sql = "delete from `tb00_basx` where CODD_FLNM = '" + category + "' And CODD_VALU in (";
+        } else {
+            sql = "delete from `tb00_basx` where CODD_FLNM = '" + category + "' And CODD_VARC = '" + CODD_VARC + "' And CODD_VALU in (";
+        }
     
         var arrayLength = selectedIds.length;
-        var sql = "delete from `tb00_basx` where CODD_FLNM = '" + category + "' And CODD_VALU in (";
+        
         if (arrayLength > 0) {
             for(var i=0; i<arrayLength; i++) {
                 if (i === 0) {
