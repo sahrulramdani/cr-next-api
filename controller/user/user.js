@@ -763,4 +763,12 @@ export default class User {
                 }
             });
     }
+
+    getProcessPrivilege = function(req, res) {
+        var sql = 'select a.*, c.TYPE_PRSON, d.KODE_URUT from tb01_usrd a inner join tb00_proc b on a.PROC_CODE = b.PROC_CODE inner join tb01_lgxh c on a.USER_IDXX = c.USER_IDXX inner join tb00_unit d on c.BUSS_CODE = d.KODE_UNIT where UPPER(a.USER_IDXX) = "' + req.userID.toUpperCase() + '" And b.PATH = "' + req.body.path + '"';
+
+        db.query(sql, function(err, rows, fields) {
+            res.send(rows);
+        });
+    }
 }

@@ -234,7 +234,7 @@ export default class Setup {
         var authDelt = request.AUTH_DELT;
         var authAppr = request.AUTH_APPR;  // auth Approve
 
-        var qryCmd = "select * from tb00_basx where CODD_FLNM = 'PROGRAM_DONATUR' order by CODD_VALU";
+        var qryCmd = "select a.* from tb00_basx a inner join tb00_unit b on a.CODD_VARC = b.KODE_UNIT And a.CODD_FLNM = 'PROGRAM_DONATUR' where b.KODE_URUT like '" + request.KODE_URUT0 + "%' order by a.CODD_VALU";
         db.query(qryCmd, function(err, rows, fields) {
             var output = [];
 
@@ -674,7 +674,7 @@ export default class Setup {
             CODD_FLNM : req.body.CODD_FLNM,
             CODD_VALU : req.body.CODD_VALU,
             CODD_DESC : req.body.CODD_DESC,
-            CODD_VARC : req.body.CODD_VARC ,
+            CODD_VARC : req.body.CODD_VARC,
             CRTX_DATE : new Date(),
             CRTX_BYXX : req.userID
         };

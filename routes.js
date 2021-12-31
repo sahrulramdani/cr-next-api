@@ -81,6 +81,7 @@ import * as C from './controller/index.js';
       app.route('/profile/donatur/save').post(C.auth.verifyToken, C.donatur.saveDonaturProfile);
       app.route('/profile/donatur/update').post(C.auth.verifyToken, C.donatur.updateDonaturProfile);
       app.route('/profile/donatur').get(C.auth.verifyToken, C.donatur.getDonaturProfile);
+      app.route('/process/privilege').post(C.auth.verifyToken, C.user.getProcessPrivilege);
 
       // ------ CRM --------------
       app.route('/crm/setup/channel-donaturs').get(C.auth.verifyToken, C.setup.channelDonaturAll);
@@ -113,6 +114,7 @@ import * as C from './controller/index.js';
       app.route('/crm/donatur/detail/transactions/:donaturID').get(C.auth.verifyToken, C.donatur.getDetTransactions);
       app.route('/crm/donatur/relawan/transactions/:isValid').get(C.auth.verifyToken, C.donatur.getTransRelation);
       app.route('/crm/donatur/transactions/filter/:tgl1/:tgl2').get(C.auth.verifyToken, C.donatur.getTransactionsFilter);
+      app.route('/crm/donatur/transactions/:isValid').get(C.auth.verifyToken, C.donatur.getDonaturTransactions);
       app.route('/crm/donatur/transactions/:isValid/:bussCode').get(C.auth.verifyToken, C.donatur.getDonaturTransactions);
       app.route('/crm/donatur/transaction/save').post(C.auth.verifyToken, C.donatur.saveDetTransaction);
       app.route('/crm/donatur/transaction/update').post(C.auth.verifyToken, C.donatur.updateDonaturTrans);
