@@ -181,7 +181,7 @@ export default class Event {
         var authDelt = request.AUTH_DELT;
         var authAppr = request.AUTH_APPR;  // auth Approve
         
-        var qryCmd = "select a.*, c.CODD_DESC As ProgDonatur, DATE_FORMAT(Tgl1, '%Y-%m-%d') As Tgl1Format, DATE_FORMAT(Tgl2, '%Y-%m-%d') As Tgl2Format FROM tblEvent a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT left join (select * from tb00_basx where CODD_FLNM = 'PROGRAM_DONATUR') c on a.ProgramID = c.CODD_VALU where b.KODE_URUT like '" + request.KODE_URUT0 + "%'";
+        var qryCmd = "select a.*, c.CODD_DESC As ProgDonatur, DATE_FORMAT(Tgl1, '%Y-%m-%d') As Tgl1Format, DATE_FORMAT(Tgl2, '%Y-%m-%d') As Tgl2Format FROM tblEvent a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT left join tb00_basx c on a.ProgramID = c.CODD_VALU And c.CODD_FLNM = 'PROGRAM_DONATUR' And b.KODE_UNIT = c.CODD_VARC where b.KODE_URUT like '" + request.KODE_URUT0 + "%'";
         
         db.query(qryCmd, function(err, rows, fields) {
             var output = [];

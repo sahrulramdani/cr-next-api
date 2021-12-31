@@ -990,6 +990,10 @@ export default class Setup {
             NOXX_REKX : req.body.NOXX_REKX,
             CURR_MNYX : req.body.CURR_MNYX,
             KODE_FLNM : req.body.KODE_FLNM,
+            BUSS_CODE : req.BUSS_CODE0,
+            NOXX_VAXX : req.body.NOXX_VAXX,
+            AccountID : req.body.AccountID === '' ? null : req.body.AccountID,
+            CHKX_BANK : req.body.CHKX_BANK,
             CRTX_DATE : new Date(),
             CRTX_BYXX : req.userID
         };
@@ -1003,8 +1007,21 @@ export default class Setup {
                     message: err.sqlMessage
                 });
             } else {
-                res.send({
-                    status: true
+                sql = 'insert into tb02_bnkh set ?';
+
+                data = {
+                    KODE_BANK : req.body.KODE_BANK,
+                    NOXX_REKX : req.body.NOXX_REKX,
+                    VALU_SATX : req.body.CURR_MNYX,
+                    VALU_SLDO : 0,
+                    CRTX_DATE : new Date(),
+                    CRTX_BYXX : req.userID
+                }
+
+                db.query(sql, data, (err, result) => {
+                    res.send({
+                        status: true
+                    });
                 });
             }
         });
@@ -1028,6 +1045,9 @@ export default class Setup {
             NAMA_BANK : req.body.NAMA_BANK,
             NOXX_REKX : req.body.NOXX_REKX,
             CURR_MNYX : req.body.CURR_MNYX,
+            NOXX_VAXX : req.body.NOXX_VAXX,
+            AccountID : req.body.AccountID === '' ? null : req.body.AccountID,
+            CHKX_BANK : req.body.CHKX_BANK,
             IsDelete : req.body.IsDelete,
             UPDT_DATE : new Date(),
             UPDT_BYXX : req.userID
