@@ -140,7 +140,7 @@ export default class Donatur {
 
         var sql = '';
         if (typePrson === '1') {  // 1: Relawan. 4: Officer
-            sql = 'SELECT a.* FROM tb11_mzjb a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT INNER JOIN tb01_lgxh c ON a.CRTX_BYXX = c.USER_IDXX WHERE a.NO_ID = "'+ id +'" And b.KODE_URUT like "' + req.KODE_URUT0 + '%" And UPPER(c.USER_IDXX) = "' + req.userID.toUpperCase() + '"';
+            sql = 'SELECT a.* FROM tb11_mzjb a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT INNER JOIN tb11_mzjb d on a.RelawanID = d.NO_ID INNER JOIN tb01_lgxh c ON d.NO_ID = c.NO_ID WHERE a.NO_ID = "'+ id +'" And b.KODE_URUT like "' + req.KODE_URUT0 + '%" And UPPER(c.USER_IDXX) = "' + req.userID.toUpperCase() + '"';
         } else if (typePrson === '2') {   // 2: Donatur
             sql = 'SELECT a.* FROM tb11_mzjb a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT inner join tb01_lgxh c on a.NO_ID = c.NO_ID WHERE a.NO_ID = "'+ id +'" And b.KODE_URUT like "' + req.KODE_URUT0 + '%" And UPPER(c.USER_IDXX) = "' + req.userID.toUpperCase() + '"';
         } else {

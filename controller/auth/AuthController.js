@@ -208,7 +208,17 @@ export default class AuthController {
                             const pathPermit = ['/profile', '/', '/menu/menus', '/uploadFile2', '/user/update', '/profile/karyawan', '/profile/karyawan/update', '/profile/karyawan/save', '/profile/karyawan-prsh/save', '/setup/pekerjaans', '/setup/pendidikans', '/setup/status-maritals', '/setup/gol-darahs', '/utility/sequence', '/utility/sequence/save', '/utility/sequence/update', '/profile/user/update', '/setup/departments', '/user/privileges', '/profile/donatur/save', '/profile/donatur', '/profile/donatur/update', '/process/privilege'];
 
                             if (pathPermit.includes(path)) {
-                                next();
+                                sql = 'select b.KODE_UNIT, b.SequenceUnitCode, b.KODE_URUT from tb01_lgxh a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where UPPER(a.USER_IDXX) = "' + decoded.id.toUpperCase() +  '"';
+
+                                db.query(sql, (err, rows) => {
+                                    if (rows.length > 0) {
+                                        req.BUSS_CODE0 = rows[0].KODE_UNIT;
+                                        req.SequenceUnitCode0 = rows[0].SequenceUnitCode;
+                                        req.KODE_URUT0 = rows[0].KODE_URUT;
+
+                                        next();
+                                    }
+                                });
                             } else {
                                 return res.status(403).send({ 
                                     status: false, 

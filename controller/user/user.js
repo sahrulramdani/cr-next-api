@@ -172,9 +172,9 @@ export default class User {
 
                 // update data karyawan atau donatur
                 if (typePrson === '1' || typePrson === '4') {     // 1: Karyawan
-                    sql = 'update a set a.BUSS_CODE = "' + bussCode + '" from tb21_empl a inner join tb01_lgxh b on a.KodeNik = b.NO_ID where UPPER(b.USER_IDXX) = "' + ids.toUpperCase() + '"';
+                    sql = 'update tb21_empl a inner join tb01_lgxh b on a.KodeNik = b.NO_ID set a.BUSS_CODE = "' + bussCode + '" where UPPER(b.USER_IDXX) = "' + ids.toUpperCase() + '"';
                 } else if (typePrson === '2') {  // 2: Donatur
-                    sql = 'update a set a.BUSS_CODE = "' + bussCode + '" from tb11_mzjb a inner join tb01_lgxh b on a.NO_ID = b.NO_ID where UPPER(b.USER_IDXX) = "' + ids.toUpperCase() + '"';
+                    sql = 'update tb11_mzjb a inner join tb01_lgxh b on a.NO_ID = b.NO_ID set a.BUSS_CODE = "' + bussCode + '" where UPPER(b.USER_IDXX) = "' + ids.toUpperCase() + '"';
                 }
 
                 db.query(sql, (err, result) => {

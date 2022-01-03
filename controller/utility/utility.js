@@ -26,7 +26,7 @@ export default class Utility {
             bussCode = null;
         } 
 
-        var sql = 'INSERT INTO tblsequence (Initial, BUSS_CODE, Tahun, SequenceUnitCode, NOXX_URUT, TGLX_PROC) select "' + req.body.Initial + '", IFNULL(' + bussCode + ', a.BUSS_CODE),' + req.body.Tahun + ', b.SequenceUnitCode,"' + req.body.NOXX_URUT + '","' + moment(new Date()).format('YYYY-MM-DD') +  '" from tb01_lgxh a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where UPPER(a.USER_IDXX) = "' + req.userID.toUpperCase() + '"';
+        var sql = 'INSERT INTO tblsequence (Initial, BUSS_CODE, Tahun, SequenceUnitCode, NOXX_URUT, TGLX_PROC) select "' + req.body.Initial + '", IFNULL("' + bussCode + '", a.BUSS_CODE),' + req.body.Tahun + ', b.SequenceUnitCode,"' + req.body.NOXX_URUT + '","' + moment(new Date()).format('YYYY-MM-DD') +  '" from tb01_lgxh a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where UPPER(a.USER_IDXX) = "' + req.userID.toUpperCase() + '"';
         
         db.query(sql, (err, result) => {
             if (err) {
