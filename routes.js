@@ -42,6 +42,7 @@ import * as C from './controller/index.js';
       // ----- Payroll --------------
       app.route('/payroll/setup/type-relawans').get(C.auth.verifyToken, C.setup.typeRelawanAll);
       app.route('/payroll/karyawan/update').post(C.auth.verifyToken, C.karyawan.updateKaryawan);
+      app.route('/payroll/karyawan/donaturs/:id').get(C.auth.verifyToken, C.karyawan.getKaryawanDonaturs);
       app.route('/payroll/karyawan/save').post(C.auth.verifyToken, C.karyawan.saveKaryawan);
       app.route('/payroll/karyawan-prsh/save').post(C.auth.verifyToken, C.karyawan.saveKaryawanPrsh);
       app.route('/payroll/karyawan/:id').get(C.auth.verifyToken, C.karyawan.getKaryawan);
@@ -106,6 +107,7 @@ import * as C from './controller/index.js';
       app.route('/crm/slp/donatur/update').post(C.auth.verifyToken, C.donatur.updateTransSLPDonatur);
       app.route('/crm/slp/donaturs/:transNumber').get(C.auth.verifyToken, C.donatur.getSLPDonaturs);
       app.route('/crm/slp/:id').get(C.auth.verifyToken, C.donatur.getTransSLP);
+      app.route('/crm/relawan/donatur/:id').get(C.auth.verifyToken, C.donatur.getRelawanDonatur);
       app.route('/crm/slps/:status').get(C.auth.verifyToken, C.donatur.transSLPAll);
       app.route('/crm/donaturs/verify').post(C.auth.verifyToken, C.donatur.verify);
       app.route('/crm/donaturs/level/platinum/active/:level/:platinum/:active').get(C.auth.verifyToken, C.donatur.getDonatursPerLevelPlatinum);

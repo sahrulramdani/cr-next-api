@@ -170,6 +170,38 @@ export default class Donatur {
         });
     }
 
+    getRelawanDonatur = function(req, res) {
+        // get user Access
+        var authEdit = req.AUTH_EDIT;
+        var authAppr = req.AUTH_APPR;  // auth Approve
+        
+        var id = req.params.id;   // NO_ID
+        
+        var sql = 'select * from tb11_mzjb a inner join tb21_emp b on a.RelawanID = b.KodeNik inner join tb00_unit c 0n b.BUSS_CODE = c.KODE_UNIT where c.KODE_URUT like "' + req.KODE_URUT0 + '%" And a.NO_ID = "' + id + '"';
+
+        db.query(sql, function(err, rows, fields) {
+            var output = [];
+
+            if (rows.length > 0) {
+                rows.forEach(function(row) {
+                    var obj = new Object();
+                    for(var key in row) {
+                        obj[key] = row[key];
+                    }
+
+                    obj['AUTH_EDIT'] = authEdit;
+                    obj['AUTH_APPR'] = authAppr;
+
+                    output.push(obj);
+                })
+
+                res.send(output);
+            } else {
+                res.send([]);
+            }
+        });
+    }
+
     getDonatursPerLevel = function(req, res) {
         // get user Access
         var authAdd = req.AUTH_ADDX;

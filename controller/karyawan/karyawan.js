@@ -24,6 +24,13 @@ export default class Karyawan {
             kodeNik = req.body.KodeNik;
         }
 
+        var bussCode;
+        if (req.body.BUSS_CODE === null || req.body.BUSS_CODE === undefined) {
+            bussCode = req.BUSS_CODE0;
+        } else {
+            bussCode = req.body.BUSS_CODE;
+        }
+
         var sql = 'INSERT INTO tb21_empl SET ?';
         var data = {
             KodeNik : kodeNik,
@@ -39,7 +46,7 @@ export default class Karyawan {
             email : req.body.email,
             TempatLahir : req.body.TempatLahir,
             TglLahir : req.body.TglLahir,
-            BUSS_CODE : req.BUSS_CODE0,
+            BUSS_CODE : bussCode,
             NoKTP : req.body.NoKTP,
             StatusAktif : '1',
             StatusKawin : req.body.StatusKawin,
@@ -245,11 +252,19 @@ export default class Karyawan {
             return;
         }
 
+        var bussCode;
+        if (req.body.BUSS_CODE === null || req.body.BUSS_CODE === undefined) {
+            bussCode = req.BUSS_CODE0;
+        } else {
+            bussCode = req.body.BUSS_CODE;
+        }
+
         var id = req.body.id;  // id = nik
         var sql = 'UPDATE `tb21_empl` a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT SET ? WHERE a.KodeNik = "'+ id +'" And b.KODE_URUT like "' + req.KODE_URUT0 + '%" ';
         var data = {
             noxx_NPWP : req.body.noxx_NPWP,
             NamaKry : req.body.NamaKry,
+            BUSS_CODE : bussCode,
             NICK_NAME : req.body.NICK_NAME,
             JenisKel : req.body.JenisKel,
             Alamat1 : req.body.Alamat1,
@@ -427,6 +442,41 @@ export default class Karyawan {
             } else {
                 response.send([]);
             }
+        });
+    }
+
+    // get Detail Donaturs dari Karyawan
+    getKaryawanDonaturs = (request, response) => {
+        // get user Access
+        var authAdd = request.AUTH_ADDX;
+        var authEdit = request.AUTH_EDIT;
+        var authDelt = request.AUTH_DELT;
+        var authAppr = request.AUTH_APPR;  // auth Approve
+
+        var id = request.params.id;
+        
+        var qryCmd = "select a.* from tb11_mzjb a inner join tb21_empl b on a.RelawanID = b.KodeNik inner join tb00_unit c on b.BUSS_CODE = c.KODE_UNIT where c.KODE_URUT like '" + request.KODE_URUT0 + "%' And b.KodeNik = '" + id + "'";
+
+        db.query(qryCmd, function(err, rows, fields) {
+            var output = [];
+
+            if (rows.length > 0) {
+                rows.forEach(function(row) {
+                    var obj = new Object();
+                    for(var key in row) {
+                        obj[key] = row[key];
+                    }
+
+                    obj['AUTH_ADDX'] = authAdd;
+                    obj['AUTH_EDIT'] = authEdit;
+                    obj['AUTH_DELT'] = authDelt;
+                    obj['AUTH_APPR'] = authAppr;
+
+                    output.push(obj);
+                })
+            }
+
+            response.send(output);
         });
     }
     
