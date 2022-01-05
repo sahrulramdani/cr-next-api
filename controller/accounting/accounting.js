@@ -310,7 +310,7 @@ export default class Accounting {
         }
 
         summaryBank = (request, response) => {
-            var qryCmd = "select b.BUSS_CODE, b.CURR_MNYX, b.CHKX_BANK, IFNULL(c.TotalDebit,0) As TotalDebit, IFNULL(c.TotalKredit,0) As TotalKredit, SUM(a.VALU_SLDO) As TotalSaldo from tb02_bnkh a inner join tb02_bank b on a.KODE_BANK = b.KODE_BANK left join (select KODE_BANK, SUM(Case TYPE_TRNX When 'D' Then VALU_TRNX Else 0 End) As TotalDebit, SUM(Case TYPE_TRNX When 'K' Then VALU_TRNX Else 0 End) As TotalKredit from tb02_bnkm where MONTH(TGLX_TRNX) = MONTH(NOW()) And YEAR(TGLX_TRNX) = YEAR(NOW()) group by KODE_BANK) c on b.KODE_BANK = c.KODE_BANK where b.BUSS_CODE = '" + request.BUSS_CODE0 + "' group by b.BUSS_CODE, b.CURR_MNYX, b.CHKX_BANK";
+            var qryCmd = "select b.BUSS_CODE, b.CURR_MNYX, b.CHKX_BANK, SUM(IFNULL(c.TotalDebit,0)) As TotalDebit, SUM(IFNULL(c.TotalKredit,0)) As TotalKredit, SUM(a.VALU_SLDO) As TotalSaldo from tb02_bnkh a inner join tb02_bank b on a.KODE_BANK = b.KODE_BANK left join (select KODE_BANK, SUM(Case TYPE_TRNX When 'D' Then VALU_TRNX Else 0 End) As TotalDebit, SUM(Case TYPE_TRNX When 'K' Then VALU_TRNX Else 0 End) As TotalKredit from tb02_bnkm where MONTH(TGLX_TRNX) = MONTH(NOW()) And YEAR(TGLX_TRNX) = YEAR(NOW()) group by KODE_BANK) c on b.KODE_BANK = c.KODE_BANK where b.BUSS_CODE = '" + request.BUSS_CODE0 + "' group by b.BUSS_CODE, b.CURR_MNYX, b.CHKX_BANK";
 
             db.query(qryCmd, function(err, rows, fields) {
                 response.send(rows);
