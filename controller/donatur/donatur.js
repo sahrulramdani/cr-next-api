@@ -177,7 +177,7 @@ export default class Donatur {
         
         var id = req.params.id;   // NO_ID
         
-        var sql = 'select * from tb11_mzjb a inner join tb21_emp b on a.RelawanID = b.KodeNik inner join tb00_unit c 0n b.BUSS_CODE = c.KODE_UNIT where c.KODE_URUT like "' + req.KODE_URUT0 + '%" And a.NO_ID = "' + id + '"';
+        var sql = 'select * from tb11_mzjb a inner join tb21_empl b on a.RelawanID = b.KodeNik inner join tb00_unit c on b.BUSS_CODE = c.KODE_UNIT where c.KODE_URUT like "' + req.KODE_URUT0 + '%" And a.NO_ID = "' + id + '"';
 
         db.query(sql, function(err, rows, fields) {
             var output = [];
@@ -506,7 +506,7 @@ export default class Donatur {
 
         var data = {
             NPWP : req.body.NPWP,
-            NAMA : req.body.NAMA,
+            NAMA : req.body.NAMA, 
             NICK_NAME : req.body.NICK_NAME,
             JNKX_KLMN : req.body.JNKX_KLMN,
             ALMT_XXX1 : req.body.ALMT_XXX1,
@@ -547,8 +547,12 @@ export default class Donatur {
                     message: err.sqlMessage
                 });
             } else {
-                res.send({
-                    status: true
+                sql = 'update tb11_mzjb a inner join tb21_empl b on a.RelawanID = b.KodeNik inner join tb00_unit c on b.BUSS_CODE = c.KODE_UNIT set a.BUSS_CODE = b.BUSS_CODE where a.NO_ID = "' + id + '" And c.KODE_URUT like "' + req.KODE_URUT0 + '%"';
+
+                db.query(sql, (err, result) => {
+                    res.send({
+                        status: true
+                    });
                 });
             }
         });
@@ -841,6 +845,7 @@ export default class Donatur {
                     message: err.sqlMessage
                 });
             } else {
+
                 res.send({
                     status: true
                 });

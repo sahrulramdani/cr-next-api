@@ -318,7 +318,7 @@ export default class Accounting {
         }
 
         getMutasiPerMonth = (request, response) => {
-            var qryCmd = "select a.*, b.NAMA_BANK, DATE_FORMAT(a.TGLX_TRNX,'%Y-%b-%e') As TglFormat from tb02_bnkm a inner join tb02_bank b on a.KODE_BANK = b.KODE_BANK where MONTH(a.TGLX_TRNX) = MONTH(NOW()) And YEAR(a.TGLX_TRNX) = YEAR(NOW()) And b.BUSS_CODE = '" + request.BUSS_CODE0 + "' order by TglFormat DESC";
+            var qryCmd = "select a.*, b.NAMA_BANK, DATE_FORMAT(a.TGLX_TRNX,'%e-%b-%Y') As TglFormat from tb02_bnkm a inner join tb02_bank b on a.KODE_BANK = b.KODE_BANK where MONTH(a.TGLX_TRNX) = MONTH(NOW()) And YEAR(a.TGLX_TRNX) = YEAR(NOW()) And b.BUSS_CODE = '" + request.BUSS_CODE0 + "' order by TglFormat DESC";
 
             db.query(qryCmd, function(err, rows, fields) {
                 response.send(rows);
