@@ -22,11 +22,11 @@ export default class Utility {
 
     saveSequence = function(req, res) {
         var bussCode = req.body.BUSS_CODE;
-        if (req.body.BUSS_CODE === undefined) {
-            bussCode = null;
+        if (req.body.BUSS_CODE === undefined || req.body.BUSS_CODE === null) {
+            bussCode = '';
         } 
 
-        var sql = 'INSERT INTO tblsequence (Initial, BUSS_CODE, Tahun, SequenceUnitCode, NOXX_URUT, TGLX_PROC) select "' + req.body.Initial + '", IFNULL("' + bussCode + '", a.BUSS_CODE),' + req.body.Tahun + ', b.SequenceUnitCode,"' + req.body.NOXX_URUT + '","' + moment(new Date()).format('YYYY-MM-DD') +  '" from tb01_lgxh a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where UPPER(a.USER_IDXX) = "' + req.userID.toUpperCase() + '"';
+        var sql = 'INSERT INTO tblsequence (Initial, BUSS_CODE, Tahun, SequenceUnitCode, NOXX_URUT, TGLX_PROC) select "' + req.body.Initial + '", CASE "' + bussCode + '" When "" Then a.BUSS_CODE Else "' + bussCode + '" END,' + req.body.Tahun + ', b.SequenceUnitCode,"' + req.body.NOXX_URUT + '","' + moment(new Date()).format('YYYY-MM-DD') +  '" from tb01_lgxh a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where UPPER(a.USER_IDXX) = "' + req.userID.toUpperCase() + '"';
         
         db.query(sql, (err, result) => {
             if (err) {
@@ -37,7 +37,7 @@ export default class Utility {
                     message: err.sqlMessage
                 });
             } else {
-                if (bussCode === null) {
+                if (bussCode === '') {
                     sql = 'update tblsequence a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT inner join tb01_lgxh c on b.KODE_UNIT = c.BUSS_CODE set a.SequenceUnitCode = b.SequenceUnitCode where a.Initial = "' + req.body.Initial + '" And a.Tahun = "' + req.body.Tahun + '" And UPPER(c.USER_IDXX) = "' + req.userID.toUpperCase() + '"';
                 } else {
                     sql = 'update tblsequence a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT set a.SequenceUnitCode = b.SequenceUnitCode where a.Initial = "' + req.body.Initial + '" And a.Tahun = "' + req.body.Tahun + '" And a.BUSS_CODE = "' + bussCode + '"';

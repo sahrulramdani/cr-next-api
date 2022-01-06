@@ -1134,6 +1134,11 @@ export default class Donatur {
             transNumber = req.body.TransNumber;
         }
 
+        var namaFile = '';
+        if (req.body.extension !== undefined) {
+            namaFile = 'transaction_' + transNumber + '.' + req.body.extension;
+        }
+
         var data = {
             TransNumber : transNumber,
             TransDate : req.body.TransDate,
@@ -1141,7 +1146,7 @@ export default class Donatur {
             DonaturID : req.body.DonaturID,
             CurrencyID : req.body.CurrencyID,
             Amount : req.body.Amount,
-            FileName : req.body.FileName,
+            FileName : namaFile,
             ProgDonatur : req.body.ProgDonatur,
             MethodPayment : req.body.MethodPayment,
             BankFrom : req.body.BankFrom,
@@ -1164,6 +1169,7 @@ export default class Donatur {
                 });
             } else {
                 res.send({
+                    transNumber: transNumber,
                     status: true
                 });
             }
