@@ -140,7 +140,7 @@ export default class Donatur {
 
         var sql = '';
         if (typePrson === '1') {  // 1: Relawan. 4: Officer
-            sql = 'SELECT a.* FROM tb11_mzjb a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT INNER JOIN tb11_mzjb d on a.RelawanID = d.NO_ID INNER JOIN tb01_lgxh c ON d.NO_ID = c.NO_ID WHERE a.NO_ID = "'+ id +'" And b.KODE_URUT like "' + req.KODE_URUT0 + '%" And UPPER(c.USER_IDXX) = "' + req.userID.toUpperCase() + '"';
+            sql = 'SELECT a.* FROM tb11_mzjb a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT INNER JOIN tb21_empl d on a.RelawanID = d.KodeNik INNER JOIN tb01_lgxh c ON d.KodeNik = c.NO_ID WHERE a.NO_ID = "'+ id +'" And b.KODE_URUT like "' + req.KODE_URUT0 + '%" And UPPER(c.USER_IDXX) = "' + req.userID.toUpperCase() + '"';
         } else if (typePrson === '2') {   // 2: Donatur
             sql = 'SELECT a.* FROM tb11_mzjb a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT inner join tb01_lgxh c on a.NO_ID = c.NO_ID WHERE a.NO_ID = "'+ id +'" And b.KODE_URUT like "' + req.KODE_URUT0 + '%" And UPPER(c.USER_IDXX) = "' + req.userID.toUpperCase() + '"';
         } else {
@@ -1506,7 +1506,8 @@ export default class Donatur {
     }
 
     getPartnerTransactions = function(req, res) {
-        var sql = 'select b.NAMA, a.Amount, DATE_FORMAT(a.TransDate, "%Y-%b-%e") As TglFormat from trans_donatur a inner join tblPartner b on a.DonaturID = b.NO_ID where MONTH(a.TransDate) = MONTH(NOW()) And YEAR(a.TransDate) = YEAR(NOW()) And b.BUSS_CODE = "' + req.BUSS_CODE0 + '" order by a.TransDate Desc';
+        // type badan : 4 (CHANNEL)
+        var sql = 'select b.NAMA, a.Amount, DATE_FORMAT(a.TransDate, "%e-%b-%Y") As TglFormat from trans_donatur a inner join tb11_mzjb b on a.DonaturID = b.NO_ID where MONTH(a.TransDate) = MONTH(NOW()) And YEAR(a.TransDate) = YEAR(NOW()) And b.BUSS_CODE = "' + req.BUSS_CODE0 + '" And b.TypeBadan = "4" order by a.TransDate Desc';
        
         db.query(sql, function(err, rows, fields) {
             res.send(rows);
