@@ -9,7 +9,7 @@ export default class Event {
 
     saveEvent = function(req, res) {
         // check Access PROC_CODE 
-        /* if (fncCheckProcCode(req.body.ProcCode, req.procCodes) === false) {
+        if (fncCheckProcCode(req.body.ProcCode, req.procCodes) === false) {
             res.status(403).send({ 
                 status: false, 
                 message: 'Access Denied',
@@ -17,7 +17,7 @@ export default class Event {
             });
 
             return;
-        } */
+        }
 
         // get user Access
         var authAdd = req.AUTH_ADDX;
@@ -71,7 +71,7 @@ export default class Event {
 
     saveEventDonatur = function(req, res) {
         // check Access PROC_CODE 
-        /* if (fncCheckProcCode(req.body.ProcCode, req.procCodes) === false) {
+        if (fncCheckProcCode(req.body.ProcCode, req.procCodes) === false) {
             res.status(403).send({ 
                 status: false, 
                 message: 'Access Denied',
@@ -79,7 +79,7 @@ export default class Event {
             });
 
             return;
-        } */
+        }
 
         // get user Access
         var authAdd = req.AUTH_ADDX;
