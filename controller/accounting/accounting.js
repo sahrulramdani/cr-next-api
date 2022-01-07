@@ -57,6 +57,8 @@ export default class Accounting {
                 KETX_THN : req.body.KETX_THN,
                 TGLX_STRT : req.body.TGLX_STRT,
                 TGLX_ENDX : req.body.TGLX_ENDX,
+                TGLX_STRT2 : req.body.TGLX_STRT2,
+                TGLX_ENDX2 : req.body.TGLX_ENDX2,
                 STAT_AKTF : req.body.STAT_AKTF,
                 CRTX_DATE : new Date(),
                 CRTX_BYXX : req.userID
