@@ -428,6 +428,7 @@ export default class Setup {
 
         var id = req.params.id;
         var sql = 'SELECT * FROM `tb00_unit` WHERE KODE_UNIT = "'+ id +'" ';
+
         db.query(sql, function(err, rows, fields) {
             var output = [];
 
@@ -447,7 +448,7 @@ export default class Setup {
                 })
             }
 
-            response.send(output);
+            res.send(output);
         });
     }
 
