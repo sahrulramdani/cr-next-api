@@ -1517,10 +1517,177 @@ export default class Donatur {
     getSummaryTransactionPerMonth = function(req, res) {
         var sql = "select c.NAMA_UNIT, c.KODE_UNIT, SUM(a.Amount) As JumlahDonasi, SUM(Case a.isValidate When '1' Then a.Amount Else 0 End) As JumlahValidasi, SUM(Case d.CHKX_BANK When '1' Then a.Amount Else 0 End) As JumlahTransfer, SUM(Case d.CHKX_BANK When '0' Then a.Amount Else 0 End) As JumlahTunai FROM trans_donatur a inner join tb11_mzjb b on a.DonaturID = b.NO_ID inner join tb00_unit c on b.BUSS_CODE = c.KODE_UNIT left join tb02_bank d on a.MethodPayment = d.KODE_BANK And d.KODE_FLNM = 'TYPE_BYRX' And b.BUSS_CODE = d.BUSS_CODE WHERE b.BUSS_CODE = '" + req.BUSS_CODE0 + "' And MONTH(a.TransDate) = MONTH(NOW()) And YEAR(a.TransDate) = YEAR(NOW()) group by c.NAMA_UNIT";
 
-        console.log(sql);
-
         db.query(sql, function(err, rows, fields) {
             res.send(rows);
+        });
+    }
+
+    saveGroup = function(req, res) {
+        // check Access PROC_CODE 
+       /*  if (fncCheckProcCode(req.body.ProcCode, req.procCodes) === false) {
+            res.status(403).send({ 
+                status: false, 
+                message: 'Access Denied',
+                userAccess: false
+            });
+
+            return;
+        } */
+
+        // get user Access
+        var authAdd = req.AUTH_ADDX;
+
+        if (authAdd === '0') {
+            return res.status(403).send({ 
+                status: false, 
+                message: 'Access Denied',
+                userAccess: false
+            });
+        }
+
+        var groupID;
+        if (req.body.groupID === null || req.body.groupID === undefined) {
+            groupID = generateAutonumber(req.body.Initial, req.SequenceUnitCode0, req.body.Tahun, 
+                req.body.NextSequenceFormat);
+        } else {
+            groupID = req.body.groupID;
+        }
+
+        var sql = 'INSERT INTO grpx_relx SET ?';
+        var data = {
+            IDXX_GRPX : groupID,
+            NAMA_GRPX : req.body.NAMA_GRPX,
+            KodeKecamatan: req.body.KodeKecamatan,
+            KodeKelurahan: req.body.KodeKelurahan,
+            BUSS_CODE: req.BUSS_CODE0,
+            CRTX_DATE : new Date(),
+            CRTX_BYXX : req.userID
+        };
+        
+        db.query(sql, data, (err, result) => {
+            if (err) {
+                console.log('Error', err);
+
+                res.send({
+                    status: false,
+                    message: err.sqlMessage
+                });
+            } else {
+                res.send({
+                    groupID: groupID,
+                    status: true
+                });
+            }
+        });
+    }
+
+    getGroups = (request, response) => {
+        // get user Access
+        var authAdd = request.AUTH_ADDX;
+        var authEdit = request.AUTH_EDIT;
+        var authDelt = request.AUTH_DELT;
+        var authAppr = request.AUTH_APPR;  // auth Approve
+        
+        var qryCmd = "select * from grpx_relx a inner join tb01_lgxh b on a.CRTX_BYXX = b.USER_IDXX inner join tb21_empl c on b.NO_ID = c.KodeNik where UPPER(b.USER_IDXX) = '" + request.userID.toUpperCase() + "' And a.BUSS_CODE = '" + request.params.bussCode + "'";
+        
+        db.query(qryCmd, function(err, rows, fields) {
+            var output = [];
+            
+            if (err) {
+                console.log('Error', err);
+            }
+
+            if (rows.length > 0) {
+                rows.forEach(function(row) {
+                    var obj = new Object();
+                    for(var key in row) {
+                        obj[key] = row[key];
+                    }
+
+                    obj['AUTH_ADDX'] = authAdd;
+                    obj['AUTH_EDIT'] = authEdit;
+                    obj['AUTH_DELT'] = authDelt;
+                    obj['AUTH_APPR'] = authAppr;
+
+                    output.push(obj);
+                })
+
+                response.send(output);
+            } else {
+                response.send([]);
+            }
+        });
+    }
+
+    getGroup = function(req, res) {
+        // get user Access
+        var authEdit = req.AUTH_EDIT;
+        var authAppr = req.AUTH_APPR;  // auth Approve
+
+        var id = req.params.id;   // IDXX_GRPX
+
+        var sql = 'select a.* from `grpx_relx` a inner join tb00_unit b on a.BUSS_CODe = b.KODE_UNIT where IDXX_GRPX = "' + id + '" And b.KODE_URUT like "' + req.KODE_URUT0 + '%"';
+
+        db.query(sql, function(err, rows, fields) {
+            var output = [];
+
+            if (rows.length > 0) {
+                rows.forEach(function(row) {
+                    var obj = new Object();
+                    for(var key in row) {
+                        obj[key] = row[key];
+                    }
+
+                    obj['AUTH_EDIT'] = authEdit;
+                    obj['AUTH_APPR'] = authAppr;
+
+                    output.push(obj);
+                })
+
+                res.send(output);
+            } else {
+                res.send([]);
+            }
+        });
+    }
+
+    updateGroup = function(req, res) {
+        // check Access PROC_CODE 
+        /* if (fncCheckProcCode(req.body.ProcCode, req.procCodes) === false) {
+            res.status(403).send({ 
+                status: false, 
+                message: 'Access Denied',
+                userAccess: false
+            });
+
+            return;
+        } */
+
+        var id = req.body.id;
+
+        var sql = 'UPDATE grpx_relx a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT SET ? WHERE a.IDXX_GRPX = "' + id + '" And b.KODE_URUT like "' + req.KODE_URUT0 + '%"';
+
+        var data = {
+            NAMA_GRPX: req.body.NAMA_GRPX,
+            KodeKecamatan: req.body.KodeKecamatan, 
+            KodeKelurahan : req.body.KodeKelurahan,
+            'a.UPDT_DATE' : new Date(),
+            'a.UPDT_BYXX' : req.userID
+        };
+        
+        db.query(sql, data, (err, result) => {
+            if (err) {
+                console.log('Error', err);
+
+                res.send({
+                    status: false,
+                    message: err.sqlMessage
+                });
+            } else {
+                res.send({
+                    status: true
+                });
+            }
         });
     }
 }

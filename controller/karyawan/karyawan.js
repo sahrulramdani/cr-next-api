@@ -1,4 +1,5 @@
 import  db from './../../koneksi.js';
+import moment from 'moment';
 import { generateAutonumber } from './../../libraries/sisqu/Utility.js';
 import { fncCheckProcCode } from './../../libraries/local/localUtility.js';
 
@@ -81,9 +82,26 @@ export default class Karyawan {
                             message: err2.sqlMessage
                         });
                     } else {
-                        res.send({
-                            status: true
-                        });
+                        if (req.body.IDXX_GRPX !== '' && req.body.IDXX_GRPX !== null && req.body.IDXX_GRPX !== undefined) {
+                            // hapus di tabel relawan detail
+                            sql = 'delete from tblRelawanDet where RelawanID = "' + kodeNik + '"';
+                            db.query(sql, (err2, result2) => {
+                                // insert to tabel relawan detail
+                                var tglNow = moment(new Date()).format('YYYY-MM-DD');
+
+                                sql = 'insert into tblRelawanDet (RelawanID, IDXX_GRPX, CRTXX_BYXX, CRTXX_DATE) values ("' + kodeNik + '", "' + req.body.IDXX_GRPX + '", "' + req.userID + '", "' + tglNow + '")';
+
+                                db.query(sql, (err2, result2) => {
+                                    res.send({
+                                        status: true
+                                    });
+                                });
+                            });
+                        } else {
+                            res.send({
+                                status: true
+                            });
+                        }
                     }
                 });
             }
@@ -217,7 +235,7 @@ export default class Karyawan {
         var authAppr = req.AUTH_APPR;  // auth Approve
 
         var nik = req.params.id;
-        var sql = 'SELECT a.*, b.NAMA_UNIT FROM tb21_empl a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT WHERE a.KodeNik = "'+ nik +'" And b.KODE_URUT like "' + req.KODE_URUT0 + '%" ';
+        var sql = 'SELECT a.*, b.NAMA_UNIT, c.IDXX_GRPX FROM tb21_empl a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT LEFT JOIN tblRelawanDet c ON a.KodeNik = c.RelawanID WHERE a.KodeNik = "'+ nik +'" And b.KODE_URUT like "' + req.KODE_URUT0 + '%" ';
         
         db.query(sql, function(err, rows, fields) {
             var output = [];
@@ -300,9 +318,27 @@ export default class Karyawan {
                     message: err.sqlMessage
                 });
             } else {
-                res.send({
-                    status: true
-                });
+                if (req.body.IDXX_GRPX !== '' && req.body.IDXX_GRPX !== null && req.body.IDXX_GRPX !== undefined) {
+                    // hapus di tabel relawan detail
+                    sql = 'delete from tblRelawanDet where RelawanID = "' + id + '"';
+                    db.query(sql, (err2, result2) => {
+                        // insert to tabel relawan detail
+                        var tglNow = moment(new Date()).format('YYYY-MM-DD');
+
+                        sql = 'insert into tblRelawanDet (RelawanID, IDXX_GRPX, CRTX_BYXX, CRTX_DATE) values ("' + id + '", "' + req.body.IDXX_GRPX + '", "' + req.userID + '", "' + tglNow + '")';
+
+                        console.log(sql);
+                        db.query(sql, (err2, result2) => {
+                            res.send({
+                                status: true
+                            });
+                        });
+                    });
+                } else {
+                    res.send({
+                        status: true
+                    });
+                }
             }
         });
     }
