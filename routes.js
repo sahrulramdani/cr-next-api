@@ -157,7 +157,7 @@ import * as C from './controller/index.js';
       app.route('/accounting/mutasi/filter-field/:tgl/:field/:value').get(C.auth.verifyToken, C.accounting.mutasiFilter);
       app.route('/accounting/mutasi/filter/:tgl').get(C.auth.verifyToken, C.accounting.mutasiFilter);
       app.route('/accounting/mutasi/:id').get(C.auth.verifyToken, C.accounting.getMutasi);
-      app.route('/accounting/mutasi-per-month').get(C.auth.verifyToken, C.accounting.getMutasiPerMonth);
+      app.route('/accounting/saldo-bank').get(C.auth.verifyToken, C.accounting.getSaldoBank);
       app.route('/accounting/summary/bank').get(C.auth.verifyToken, C.accounting.summaryBank);
 
       // ------ Menu Management --------------
