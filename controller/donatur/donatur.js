@@ -1152,7 +1152,6 @@ export default class Donatur {
             BankFrom : req.body.BankFrom,
             BankTo : req.body.BankTo,
             Catatan : req.body.Catatan,
-            CATX_DONX : req.body.CATX_DONX,
             TahunBuku : req.body.TahunBuku,
             isValidate : req.body.isValidate,
             isDelete : req.body.isDelete,
@@ -1272,7 +1271,6 @@ export default class Donatur {
             FileName : req.body.FileName,
             ProgDonatur : req.body.ProgDonatur,
             MethodPayment : req.body.MethodPayment,
-            CATX_DONX : req.body.CATX_DONX,
             TransactionIDSLP : req.body.TransactionIDSLP,
             BankFrom : req.body.BankFrom,
             BankTo : req.body.BankTo,
@@ -1588,7 +1586,13 @@ export default class Donatur {
         var authDelt = request.AUTH_DELT;
         var authAppr = request.AUTH_APPR;  // auth Approve
         
-        var qryCmd = "select * from grpx_relx a inner join tb01_lgxh b on a.CRTX_BYXX = b.USER_IDXX inner join tb21_empl c on b.NO_ID = c.KodeNik where UPPER(b.USER_IDXX) = '" + request.userID.toUpperCase() + "' And a.BUSS_CODE = '" + request.params.bussCode + "'";
+        var qryCmd = '';
+
+        if (request.params.bussCode === 'all') {
+            qryCmd = "select * from grpx_relx a inner join tb01_lgxh b on a.CRTX_BYXX = b.USER_IDXX inner join tb21_empl c on b.NO_ID = c.KodeNik where UPPER(b.USER_IDXX) = '" + request.userID.toUpperCase() + "'";
+        } else {
+            qryCmd = "select * from grpx_relx a inner join tb01_lgxh b on a.CRTX_BYXX = b.USER_IDXX inner join tb21_empl c on b.NO_ID = c.KodeNik where UPPER(b.USER_IDXX) = '" + request.userID.toUpperCase() + "' And a.BUSS_CODE = '" + request.params.bussCode + "'";
+        }
         
         db.query(qryCmd, function(err, rows, fields) {
             var output = [];

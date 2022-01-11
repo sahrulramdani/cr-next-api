@@ -706,6 +706,7 @@ export default class Setup {
             CODD_VALU : req.body.CODD_VALU,
             CODD_DESC : req.body.CODD_DESC,
             CODD_VARC : req.body.CODD_VARC,
+            CODD_VAR1 : req.body.CODD_VAR1,
             CRTX_DATE : new Date(),
             CRTX_BYXX : req.userID
         };
@@ -734,6 +735,7 @@ export default class Setup {
         var data = {
             CODD_DESC : req.body.CODD_DESC,
             CODD_VARC : req.body.CODD_VARC,
+            CODD_VAR1 : req.body.CODD_VAR1,
             UPDT_DATE : new Date(),
             UPDT_BYXX : req.userID
         };
