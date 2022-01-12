@@ -1036,6 +1036,7 @@ export default class Setup {
             NOXX_VAXX : req.body.NOXX_VAXX,
             AccountID : req.body.AccountID === '' ? null : req.body.AccountID,
             CHKX_BANK : req.body.CHKX_BANK,
+            CHKX_CASH : req.body.CHKX_CASH,
             CRTX_DATE : new Date(),
             CRTX_BYXX : req.userID
         };
@@ -1090,6 +1091,7 @@ export default class Setup {
             NOXX_VAXX : req.body.NOXX_VAXX,
             AccountID : req.body.AccountID === '' ? null : req.body.AccountID,
             CHKX_BANK : req.body.CHKX_BANK,
+            CHKX_CASH : req.body.CHKX_CASH,
             IsDelete : req.body.IsDelete,
             UPDT_DATE : new Date(),
             UPDT_BYXX : req.userID
@@ -1168,7 +1170,7 @@ export default class Setup {
         var authAdd = req.AUTH_ADDX;
         var authEdit = req.AUTH_EDIT;
         var authDelt = req.AUTH_DELT;
-        var authAppr = request.AUTH_APPR;  // auth Approve
+        var authAppr = req.AUTH_APPR;  // auth Approve
 
         var id = req.params.id;
         var sql = 'SELECT * FROM `tb02_bank` WHERE KODE_BANK = "'+ id +'" And KODE_FLNM = "TYPE_BYRX"';
