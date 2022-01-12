@@ -152,11 +152,12 @@ import * as C from './controller/index.js';
       app.route('/accounting/tahun-bukus').get(C.auth.verifyToken, C.accounting.tahunBukuAll);
       app.route('/accounting/mutasi/save').post(C.auth.verifyToken, C.accounting.saveMutasi);
       app.route('/accounting/mutasi/update').post(C.auth.verifyToken, C.accounting.updateMutasi);
-      app.route('/accounting/mutasi/all/:bankID').get(C.auth.verifyToken, C.accounting.mutasiAll);
+      app.route('/accounting/mutasi/all/:bankID/:limit/:offset').get(C.auth.verifyToken, C.accounting.mutasiAll);
       //app.route('/accounting/mutasi/tanggal/:tgl1/:tgl2').get(C.auth.verifyToken, C.accounting.mutasiFilterDate);
       app.route('/accounting/mutasi/filter-field/:tgl/:field/:value').get(C.auth.verifyToken, C.accounting.mutasiFilter);
       app.route('/accounting/mutasi/filter/:tgl').get(C.auth.verifyToken, C.accounting.mutasiFilter);
       app.route('/accounting/mutasi/:id').get(C.auth.verifyToken, C.accounting.getMutasi);
+      app.route('/accounting/mutasi/total/:bankID').get(C.auth.verifyToken, C.accounting.getCountMutasi);
       app.route('/accounting/saldo-bank').get(C.auth.verifyToken, C.accounting.getSaldoBank);
       app.route('/accounting/summary/bank').get(C.auth.verifyToken, C.accounting.summaryBank);
 
