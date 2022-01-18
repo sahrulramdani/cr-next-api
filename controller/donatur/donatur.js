@@ -140,11 +140,11 @@ export default class Donatur {
 
         var sql = '';
         if (typePrson === '1') {  // 1: Relawan. 4: Officer
-            sql = 'SELECT a.* FROM tb11_mzjb a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT INNER JOIN tb21_empl d on a.RelawanID = d.KodeNik INNER JOIN tb01_lgxh c ON d.KodeNik = c.NO_ID WHERE a.NO_ID = "'+ id +'" And b.KODE_URUT like "' + req.KODE_URUT0 + '%" And UPPER(c.USER_IDXX) = "' + req.userID.toUpperCase() + '"';
+            sql = 'SELECT a.*, c.TYPE_PRSON, a.RelawanID, d.groupID FROM tb11_mzjb a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT INNER JOIN tb21_empl d on a.RelawanID = d.KodeNik INNER JOIN tb01_lgxh c ON d.KodeNik = c.NO_ID left join vfirst_relawanDet d on a.RelawanID = d.RelawanID WHERE a.NO_ID = "'+ id +'" And b.KODE_URUT like "' + req.KODE_URUT0 + '%" And UPPER(c.USER_IDXX) = "' + req.userID.toUpperCase() + '"';
         } else if (typePrson === '2') {   // 2: Donatur
-            sql = 'SELECT a.* FROM tb11_mzjb a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT inner join tb01_lgxh c on a.NO_ID = c.NO_ID WHERE a.NO_ID = "'+ id +'" And b.KODE_URUT like "' + req.KODE_URUT0 + '%" And UPPER(c.USER_IDXX) = "' + req.userID.toUpperCase() + '"';
+            sql = 'SELECT a.*, c.TYPE_PRSON, a.RelawanID, d.groupID FROM tb11_mzjb a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT inner join tb01_lgxh c on a.NO_ID = c.NO_ID left join vfirst_relawanDet d on a.RelawanID = d.RelawanID WHERE a.NO_ID = "'+ id +'" And b.KODE_URUT like "' + req.KODE_URUT0 + '%" And UPPER(c.USER_IDXX) = "' + req.userID.toUpperCase() + '"';
         } else {
-            sql = 'SELECT a.* FROM tb11_mzjb a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT WHERE a.NO_ID = "'+ id +'" And b.KODE_URUT like "' + req.KODE_URUT0 + '%"';
+            sql = 'SELECT a.*, a.RelawanID, c.groupID FROM tb11_mzjb a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT left join vfirst_relawanDet c on a.RelawanID = c.RelawanID WHERE a.NO_ID = "'+ id +'" And b.KODE_URUT like "' + req.KODE_URUT0 + '%"';
         }
 
         db.query(sql, function(err, rows, fields) {
@@ -177,7 +177,7 @@ export default class Donatur {
         
         var id = req.params.id;   // NO_ID
         
-        var sql = 'select * from tb11_mzjb a inner join tb21_empl b on a.RelawanID = b.KodeNik inner join tb00_unit c on b.BUSS_CODE = c.KODE_UNIT where c.KODE_URUT like "' + req.KODE_URUT0 + '%" And a.NO_ID = "' + id + '"';
+        var sql = 'select a.*, d.TYPE_PRSON FROM tb11_mzjb a inner join tb21_empl b on a.RelawanID = b.KodeNik inner join tb00_unit c on b.BUSS_CODE = c.KODE_UNIT left join tb01_lgxh d on a.NO_ID = d.NO_ID where c.KODE_URUT like "' + req.KODE_URUT0 + '%" And a.NO_ID = "' + id + '"';
 
         db.query(sql, function(err, rows, fields) {
             var output = [];
@@ -1098,7 +1098,8 @@ export default class Donatur {
 
         var donaturID = req.params.donaturID;
 
-        var sql = 'SELECT a.*, b.NAMA, DATE_FORMAT(a.TransDate, "%d/%m/%Y") As TransDateFormat FROM trans_donatur a inner join tb11_mzjb b on a.donaturID = b.NO_ID WHERE b.NO_ID = "'+ donaturID +'" And (a.isDelete <> "1" OR a.isDelete IS NULL)';
+        var sql = 'SELECT a.*, b.NAMA, DATE_FORMAT(a.TransDate, "%d/%m/%Y") As TransDateFormat FROM trans_donatur a inner join tb11_mzjb b on a.donaturID = b.NO_ID inner join tb00_unit c on b.BUSS_CODE = c.KODE_UNIT WHERE b.NO_ID = "'+ donaturID +'" And (a.isDelete <> "1" OR a.isDelete IS NULL) And c.KODE_URUT like "' + req.KODE_URUT0 + '%"';
+
         db.query(sql, function(err, rows, fields) {
             var output = [];
 
@@ -1152,6 +1153,8 @@ export default class Donatur {
             BankFrom : req.body.BankFrom,
             BankTo : req.body.BankTo,
             Catatan : req.body.Catatan,
+            KodeNik : req.body.KodeNik,
+            KODE_KLSX : req.body.KODE_KLSX,
             TahunBuku : req.body.TahunBuku,
             isValidate : req.body.isValidate,
             isDelete : req.body.isDelete,
@@ -1266,15 +1269,17 @@ export default class Donatur {
         var data = {
             TransDate : req.body.TransDate,
             NoReference : req.body.NoReference,
+            'a.BUSS_CODE' : req.body.BUSS_CODE,
             CurrencyID : req.body.CurrencyID,
             Amount : req.body.Amount,
             FileName : req.body.FileName,
-            ProgDonatur : req.body.ProgDonatur,
             MethodPayment : req.body.MethodPayment,
             TransactionIDSLP : req.body.TransactionIDSLP,
             BankFrom : req.body.BankFrom,
             BankTo : req.body.BankTo,
             Catatan : req.body.Catatan,
+            'a.KodeNik' : req.body.KodeNik,
+            KODE_KLSX : req.body.KODE_KLSX,
             'a.isValidate' : req.body.isValidate,
             'a.isDelete' : req.body.isDelete,
             'a.UPDT_DATE' : new Date(),
@@ -1290,23 +1295,29 @@ export default class Donatur {
                     message: err.sqlMessage
                 });
             } else {
-                // update Donatur is verified
-                sql = 'UPDATE `tb11_mzjb` SET Status = "4" WHERE NO_ID = "' + req.body.DonaturID + '" And Status <> "4"';
-                db.query(sql, (err, result) => {
-                    // update tabel mutasi - TransNumber (link ke tabel Transaksi Donatur)
-                    if (NoReference2 !== null && NoReference2 !== undefined) {
-                        sql = 'UPDATE `tblMutasi` SET TransNumber = "' + req.body.transNumber + '" WHERE NoReference = "' + NoReference2 + '"';
+                // update item transaction
+                sql = "update trans_item set KodeNik ='" + req.body.KodeNik + "', KODE_KLSX = '" + req.body.KODE_KLSX + "', BUSS_CODE = '" + req.body.BUSS_CODE + "' where TransNumber = '" + req.body.transNumber + "'";
 
-                        db.query(sql, (err, result) => {
+                db.query(sql, (err, result) => {
+                    // update Donatur is verified
+                    sql = 'UPDATE `tb11_mzjb` SET Status = "4" WHERE NO_ID = "' + req.body.DonaturID + '" And Status <> "4"';
+
+                    db.query(sql, (err, result) => {
+                        // update tabel mutasi - TransNumber (link ke tabel Transaksi Donatur)
+                        if (NoReference2 !== null && NoReference2 !== undefined) {
+                            sql = 'UPDATE `tblMutasi` SET TransNumber = "' + req.body.transNumber + '" WHERE NoReference = "' + NoReference2 + '"';
+    
+                            db.query(sql, (err, result) => {
+                                res.send({
+                                    status: true
+                                });
+                            });
+                        } else {
                             res.send({
                                 status: true
                             });
-                        });
-                    } else {
-                        res.send({
-                            status: true
-                        });
-                    }
+                        }
+                    });
                 });
             }
         });
@@ -1348,7 +1359,7 @@ export default class Donatur {
 
         var id = req.params.id;
 
-        var sql = 'SELECT a.*, CONCAT(a.DonaturID, " - ", b.NAMA) As Donatur2, b.BUSS_CODE, b.NAMA, d.CODD_DESC As Program, b.ALMT_XXX1 As Alamat, e.CODD_DESC As Pekerjaan, DATE_FORMAT(a.TransDate, "%e-%b-%Y") As TglFormat, f.CHKX_CASH FROM trans_donatur a INNER JOIN tb11_mzjb b ON a.DonaturID = b.NO_ID inner join tb00_unit c on b.BUSS_CODE = c.KODE_UNIT left join tb00_basx d on a.ProgDonatur = d.CODD_VALU And d.CODD_FLNM = "PROGRAM_DONATUR" And b.BUSS_CODE = d.CODD_VARC left join tb00_basx e on b.Pekerjaan = e.CODD_VALU And e.CODD_FLNM = "PEKERJAAN" left join tb02_bank f on a.MethodPayment = f.KODE_BANK And f.KODE_FLNM = "TYPE_BYRX" And f.BUSS_CODE = b.BUSS_CODE WHERE a.id = "'+ id +'" And c.KODE_URUT like "' + req.KODE_URUT0 + '%"';
+        var sql = 'SELECT a.*, CONCAT(a.DonaturID, " - ", b.NAMA) As Donatur2, b.BUSS_CODE, b.NAMA, d.CODD_DESC As Program, b.ALMT_XXX1 As Alamat, e.CODD_DESC As Pekerjaan, DATE_FORMAT(a.TransDate, "%e-%b-%Y") As TglFormat, f.CHKX_CASH, g.TYPE_PRSON FROM trans_donatur a LEFT JOIN tb11_mzjb b ON a.DonaturID = b.NO_ID left join tb00_unit c on b.BUSS_CODE = c.KODE_UNIT left join tb00_basx d on a.ProgDonatur = d.CODD_VALU And d.CODD_FLNM = "PROGRAM_DONATUR" And b.BUSS_CODE = d.CODD_VARC left join tb00_basx e on b.Pekerjaan = e.CODD_VALU And e.CODD_FLNM = "PEKERJAAN" left join tb02_bank f on a.MethodPayment = f.KODE_BANK And f.KODE_FLNM = "TYPE_BYRX" And f.BUSS_CODE = b.BUSS_CODE left join tb01_lgxh g on b.NO_ID = g.NO_ID WHERE a.id = "'+ id +'" And c.KODE_URUT like "' + req.KODE_URUT0 + '%"';
 
         db.query(sql, function(err, rows, fields) {
             var output = [];
@@ -1680,6 +1691,111 @@ export default class Donatur {
         };
         
         db.query(sql, data, (err, result) => {
+            if (err) {
+                console.log('Error', err);
+
+                res.send({
+                    status: false,
+                    message: err.sqlMessage
+                });
+            } else {
+                res.send({
+                    status: true
+                });
+            }
+        });
+    }
+
+    getTransItems = function(req, res) {
+        // get user Access
+        var authEdit = req.AUTH_EDIT;
+        var authAppr = req.AUTH_APPR;  // auth Approve
+        
+        var id = req.params.id;   // id: TransNumber
+        
+        var sql = 'select a.*, b.CODD_DESC As Program from trans_item a left join tb00_basx b on a.ProgDonatur = b.CODD_VALU And b.CODD_FLNM = "PROGRAM_DONATUR" And a.BUSS_CODE = b.CODD_VARC inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT where a.TransNumber = "' + id + '" And c.KODE_URUT like "' + req.KODE_URUT0 + '%"';
+
+        db.query(sql, function(err, rows, fields) {
+            var output = [];
+
+            if (rows.length > 0) {
+                rows.forEach(function(row) {
+                    var obj = new Object();
+                    for(var key in row) {
+                        obj[key] = row[key];
+                    }
+
+                    obj['AUTH_EDIT'] = authEdit;
+                    obj['AUTH_APPR'] = authAppr;
+
+                    output.push(obj);
+                })
+
+                res.send(output);
+            } else {
+                res.send([]);
+            }
+        });
+    }
+
+    saveTransItem = function(req, res) {
+        // check Access PROC_CODE 
+        /* if (fncCheckProcCode(req.body.ProcCode, req.procCodes) === false) {
+            res.status(403).send({ 
+                status: false, 
+                message: 'Access Denied',
+                userAccess: false
+            });
+
+            return;
+        } */
+
+        // get user Access
+        var authAdd = req.AUTH_ADDX;
+
+        if (authAdd === '0') {
+            return res.status(403).send({ 
+                status: false, 
+                message: 'Access Denied',
+                userAccess: false
+            });
+        }
+
+        var sql = 'INSERT INTO trans_item SET ?';
+        var data = {
+            TransNumber : req.body.TransNumber,
+            BUSS_CODE : req.body.BUSS_CODE,
+            THNX_BUKU : req.body.THNX_BUKU,
+            KodeNik : req.body.KodeNik,
+            KODE_KLSX : req.body.KODE_KLSX,
+            ProgDonatur : req.body.ProgDonatur,
+            Amount_item : req.body.Amount_item,
+            note : req.body.note,
+            CRTX_DATE : new Date(),
+            CRTX_BYXX : req.userID
+        };
+        
+        db.query(sql, data, (err, result) => {
+            if (err) {
+                console.log('Error', err);
+
+                res.send({
+                    status: false,
+                    message: err.sqlMessage
+                });
+            } else {
+                res.send({
+                    status: true
+                });
+            }
+        });
+    }
+
+    deleteTransItem = function(req, res) {
+        var id = req.body.id;
+        var sql = "delete `trans_item` from `trans_item` inner join tb00_unit on trans_item.BUSS_CODE = tb00_unit.KODE_UNIT where trans_item.id = " + id + " And tb00_unit.KODE_URUT like '" + req.KODE_URUT0 + "%'";
+
+        db.query(sql, (err, result) => {
             if (err) {
                 console.log('Error', err);
 

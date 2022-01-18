@@ -430,8 +430,8 @@ export default class Karyawan {
             "CASE a.StatusAktif " +
                 "WHEN '1' THEN 'ACTIVE' " +
                 "ELSE 'NOT ACTIVE' " +
-            "END As StatusAktif2, b.KODE_UNIT " + 
-            "from tb21_empl a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where b.KODE_URUT like '" + request.KODE_URUT0 + "%' And a.StatusKry = '" + status + "'";
+            "END As StatusAktif2, b.KODE_UNIT, IFNULL(c.groupID, '') As groupID, a.KodeNik As value, CONCAT(a.KodeNik, ' - ', a.NamaKry, ' - ', SUBSTRING(a.Alamat1, 1, 20)) As label " + 
+            "FROM tb21_empl a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT left join vfirst_relawanDet c on a.KodeNik = c.RelawanID where b.KODE_URUT like '" + request.KODE_URUT0 + "%' And a.StatusKry = '" + status + "'";
         }
 
         db.query(qryCmd, function(err, rows, fields) {
@@ -457,7 +457,7 @@ export default class Karyawan {
         });
     }
 
-    idKaryawans = (request, response) => {
+    /* idKaryawans = (request, response) => {
         var status = request.params.status;
         var qryCmd = "select a.KodeNik As value, CONCAT(a.KodeNik, ' - ', a.NamaKry, ' - ', SUBSTRING(a.Alamat1, 1, 20)) As label from tb21_empl a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where b.KODE_URUT like '" + request.KODE_URUT0 + "%' And a.StatusKry = '" + status + "' order by a.KodeNik";
         
@@ -478,6 +478,80 @@ export default class Karyawan {
             } else {
                 response.send([]);
             }
+        });
+    } */
+
+    getEmployeeSelf = (request, response) => {
+        // get user Access
+        var authAdd = request.AUTH_ADDX;
+        var authEdit = request.AUTH_EDIT;
+        var authDelt = request.AUTH_DELT;
+        var authAppr = request.AUTH_APPR;  // auth Approve
+        
+        var qryCmd = "select a.*, CONCAT(IFNULL(a.CodeCountryHP, ''), a.Hp) As NoHP2, " + 
+        "CASE a.StatusAktif " +
+            "WHEN '1' THEN 'ACTIVE' " +
+            "ELSE 'NOT ACTIVE' " +
+        "END As StatusAktif2, b.KODE_UNIT, IFNULL(c.groupID, '') As groupID, a.KodeNik As value, CONCAT(a.KodeNik, ' - ', a.NamaKry, ' - ', SUBSTRING(a.Alamat1, 1, 20)) As label " + 
+        "FROM tb21_empl a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT left join vfirst_relawanDet c on a.KodeNik = c.RelawanID inner join tb01_lgxh d on a.KodeNik = d.NO_ID where b.KODE_URUT like '" + request.KODE_URUT0 + "%' And UPPER(d.USER_IDXX) = '" + request.userID.toUpperCase() + "'";
+
+        db.query(qryCmd, function(err, rows, fields) {
+            var output = [];
+
+            if (rows.length > 0) {
+                rows.forEach(function(row) {
+                    var obj = new Object();
+                    for(var key in row) {
+                        obj[key] = row[key];
+                    }
+
+                    obj['AUTH_ADDX'] = authAdd;
+                    obj['AUTH_EDIT'] = authEdit;
+                    obj['AUTH_DELT'] = authDelt;
+                    obj['AUTH_APPR'] = authAppr;
+
+                    output.push(obj);
+                })
+            }
+
+            response.send(output);
+        });
+    }
+
+    getEmployeeUp = (request, response) => {
+        // get user Access
+        var authAdd = request.AUTH_ADDX;
+        var authEdit = request.AUTH_EDIT;
+        var authDelt = request.AUTH_DELT;
+        var authAppr = request.AUTH_APPR;  // auth Approve
+        
+        var qryCmd = "select a.*, CONCAT(IFNULL(a.CodeCountryHP, ''), a.Hp) As NoHP2, " + 
+        "CASE a.StatusAktif " +
+            "WHEN '1' THEN 'ACTIVE' " +
+            "ELSE 'NOT ACTIVE' " +
+        "END As StatusAktif2, b.KODE_UNIT, IFNULL(c.groupID, '') As groupID, a.KodeNik As value, CONCAT(a.KodeNik, ' - ', a.NamaKry, ' - ', SUBSTRING(a.Alamat1, 1, 20)) As label " + 
+        "FROM tb21_empl a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT left join vfirst_relawanDet c on a.KodeNik = c.RelawanID inner join tb11_mzjb e on a.KodeNik = e.RelawanID inner join tb01_lgxh d on e.NO_ID = d.NO_ID where b.KODE_URUT like '" + request.KODE_URUT0 + "%' And UPPER(d.USER_IDXX) = '" + request.userID.toUpperCase() + "'";
+
+        db.query(qryCmd, function(err, rows, fields) {
+            var output = [];
+
+            if (rows.length > 0) {
+                rows.forEach(function(row) {
+                    var obj = new Object();
+                    for(var key in row) {
+                        obj[key] = row[key];
+                    }
+
+                    obj['AUTH_ADDX'] = authAdd;
+                    obj['AUTH_EDIT'] = authEdit;
+                    obj['AUTH_DELT'] = authDelt;
+                    obj['AUTH_APPR'] = authAppr;
+
+                    output.push(obj);
+                })
+            }
+
+            response.send(output);
         });
     }
 

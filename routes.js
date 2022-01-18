@@ -45,9 +45,11 @@ import * as C from './controller/index.js';
       app.route('/payroll/karyawan/donaturs/:id').get(C.auth.verifyToken, C.karyawan.getKaryawanDonaturs);
       app.route('/payroll/karyawan/save').post(C.auth.verifyToken, C.karyawan.saveKaryawan);
       app.route('/payroll/karyawan-prsh/save').post(C.auth.verifyToken, C.karyawan.saveKaryawanPrsh);
+      app.route('/payroll/karyawan/self').get(C.auth.verifyToken, C.karyawan.getEmployeeSelf);
+      app.route('/payroll/karyawan/up').get(C.auth.verifyToken, C.karyawan.getEmployeeUp);
       app.route('/payroll/karyawan/:id').get(C.auth.verifyToken, C.karyawan.getKaryawan);
       app.route('/payroll/karyawans/:status').get(C.auth.verifyToken, C.karyawan.getEmployees);  // status: Status Karyawan
-      app.route('/payroll/idKaryawans/:status').get(C.auth.verifyToken, C.karyawan.idKaryawans);
+      // app.route('/payroll/idKaryawans/:status').get(C.auth.verifyToken, C.karyawan.idKaryawans);
 
       // ------ Management User --------------
       app.route('/users').get(C.auth.verifyToken, C.user.userAll);
@@ -133,6 +135,9 @@ import * as C from './controller/index.js';
       app.route('/crm/donatur/:id').get(C.auth.verifyToken, C.donatur.getDonatur);
       app.route('/crm/idDonaturs/all').get(C.auth.verifyToken, C.donatur.idDonatursAll);
       app.route('/crm/idDonaturs/:status').get(C.auth.verifyToken, C.donatur.idDonaturs);
+      app.route('/crm/transaction/item/delete').post(C.auth.verifyToken, C.donatur.deleteTransItem);
+      app.route('/crm/transaction/item/save').post(C.auth.verifyToken, C.donatur.saveTransItem);
+      app.route('/crm/transaction/items/:id').get(C.auth.verifyToken, C.donatur.getTransItems);
       app.route('/crm/events').get(C.auth.verifyToken, C.event.getEvents);
       app.route('/crm/event/donatur/save').post(C.auth.verifyToken, C.event.saveEventDonatur);
       app.route('/crm/event/donatur/delete').post(C.auth.verifyToken, C.event.deleteEventDonatur);
