@@ -92,6 +92,7 @@ export default class Donatur {
 
     idDonatursAll = (request, response) => {
         var typePrson = request.TYPE_PRSON0;
+        var typeRelawan = request.TypeRelawan0;
         var qryCmd = '';
         
         if (typePrson === '1') {  // 1: Relawan
@@ -99,6 +100,10 @@ export default class Donatur {
         } else if (typePrson === '2') {  // 2: Donatur
             qryCmd = "select a.NO_ID As value, CONCAT(a.NO_ID, ' - ', a.NAMA, ' - ', SUBSTRING(a.ALMT_XXX1, 1, 20)) As label from tb11_mzjb a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT inner join tb01_lgxh c on a.NO_ID = c.NO_ID where b.KODE_URUT like '" + request.KODE_URUT0 + "%' And UPPER(c.USER_IDXX) = '" + request.userID.toUpperCase() + "' order by a.NO_ID";
         } else {
+            qryCmd = "select a.NO_ID As value, CONCAT(a.NO_ID, ' - ', a.NAMA, ' - ', SUBSTRING(a.ALMT_XXX1, 1, 20)) As label from tb11_mzjb a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where b.KODE_URUT like '" + request.KODE_URUT0 + "%' order by a.NO_ID";
+        }
+
+        if (typeRelawan <= '05') {   // 05 : Bendahara Group (keatas)
             qryCmd = "select a.NO_ID As value, CONCAT(a.NO_ID, ' - ', a.NAMA, ' - ', SUBSTRING(a.ALMT_XXX1, 1, 20)) As label from tb11_mzjb a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where b.KODE_URUT like '" + request.KODE_URUT0 + "%' order by a.NO_ID";
         }
         
