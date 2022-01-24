@@ -143,6 +143,7 @@ import * as C from './controller/index.js';
       app.route('/crm/event/donatur/delete').post(C.auth.verifyToken, C.event.deleteEventDonatur);
       app.route('/crm/event/donaturs/:id').get(C.auth.verifyToken, C.event.getEventDonaturs);
       app.route('/crm/event/save').post(C.auth.verifyToken, C.event.saveEvent);
+      app.route('/crm/event/delete').post(C.auth.verifyToken, C.event.deleteEvent);
       app.route('/crm/event/update').post(C.auth.verifyToken, C.event.updateEvent);
       app.route('/crm/event/:id').get(C.auth.verifyToken, C.event.getEvent);
       app.route('/crm/summary/transactions').get(C.auth.verifyToken, C.donatur.getSummaryTransaction); 

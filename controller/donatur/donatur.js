@@ -140,7 +140,7 @@ export default class Donatur {
 
         var sql = '';
         if (typePrson === '1') {  // 1: Relawan. 4: Officer
-            sql = 'SELECT a.*, c.TYPE_PRSON, a.RelawanID, d.groupID FROM tb11_mzjb a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT INNER JOIN tb21_empl d on a.RelawanID = d.KodeNik INNER JOIN tb01_lgxh c ON d.KodeNik = c.NO_ID left join vfirst_relawanDet d on a.RelawanID = d.RelawanID WHERE a.NO_ID = "'+ id +'" And b.KODE_URUT like "' + req.KODE_URUT0 + '%" And UPPER(c.USER_IDXX) = "' + req.userID.toUpperCase() + '"';
+            sql = 'SELECT a.*, c.TYPE_PRSON, a.RelawanID, e.groupID FROM tb11_mzjb a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT INNER JOIN tb21_empl d on a.RelawanID = d.KodeNik INNER JOIN tb01_lgxh c ON d.KodeNik = c.NO_ID left join vfirst_relawanDet e on a.RelawanID = e.RelawanID WHERE a.NO_ID = "'+ id +'" And b.KODE_URUT like "' + req.KODE_URUT0 + '%" And UPPER(c.USER_IDXX) = "' + req.userID.toUpperCase() + '"';
         } else if (typePrson === '2') {   // 2: Donatur
             sql = 'SELECT a.*, c.TYPE_PRSON, a.RelawanID, d.groupID FROM tb11_mzjb a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT inner join tb01_lgxh c on a.NO_ID = c.NO_ID left join vfirst_relawanDet d on a.RelawanID = d.RelawanID WHERE a.NO_ID = "'+ id +'" And b.KODE_URUT like "' + req.KODE_URUT0 + '%" And UPPER(c.USER_IDXX) = "' + req.userID.toUpperCase() + '"';
         } else {
@@ -1485,7 +1485,7 @@ export default class Donatur {
     }
 
     getSummaryTransaction = function(req, res) {
-        var sql = "select c.NAMA_UNIT, DATE_FORMAT(a.TransDate,'%Y-%m') As TahunBulan, CONCAT(MONTHNAME(a.TransDate),' ',YEAR(a.TransDate)) As BulanTahun, COUNT(distinct a.DonaturID) As JumlahDonatur, COUNT(a.Amount) As JumlahTransaksi, SUM(a.Amount) As JumlahDonasi, ROUND(SUM(a.Amount)/COUNT(distinct a.DonaturID),2) As SendGiving, (COUNT(distinct a.DonaturID)/MAX(GetDaysOfMonth(a.TransDate))) As AverageDonatur, (COUNT(a.Amount)/MAX(GetDaysOfMonth(a.TransDate))) As AverageTransaksi, ROUND(SUM(a.Amount)/MAX(GetDaysOfMonth(a.TransDate)), 2) As AverageDonasi FROM trans_donatur a inner join tb11_mzjb b on a.DonaturID = b.NO_ID inner join tb00_unit c on b.BUSS_CODE = c.KODE_UNIT WHERE b.BUSS_CODE = '" + req.BUSS_CODE0 +  "' group by c.NAMA_UNIT, DATE_FORMAT(a.TransDate,'%Y-%m')";
+        var sql = "select c.NAMA_UNIT, DATE_FORMAT(a.TransDate,'%Y-%m') As TahunBulan, CONCAT(MONTHNAME(a.TransDate),' ',YEAR(a.TransDate)) As BulanTahun, IFNULL(d.CODD_DESC, '') As Channel, COUNT(distinct a.DonaturID) As JumlahDonatur, COUNT(a.Amount) As JumlahTransaksi, SUM(a.Amount) As JumlahDonasi, ROUND(SUM(a.Amount)/COUNT(distinct a.DonaturID),2) As SendGiving, (COUNT(distinct a.DonaturID)/MAX(GetDaysOfMonth(a.TransDate))) As AverageDonatur, (COUNT(a.Amount)/MAX(GetDaysOfMonth(a.TransDate))) As AverageTransaksi, ROUND(SUM(a.Amount)/MAX(GetDaysOfMonth(a.TransDate)), 2) As AverageDonasi FROM trans_donatur a inner join tb11_mzjb b on a.DonaturID = b.NO_ID inner join tb00_unit c on b.BUSS_CODE = c.KODE_UNIT left join tb00_basx d on b.Channel = d.CODD_VALU And d.CODD_FLNM = 'CHANNEL_DONATUR' WHERE b.BUSS_CODE = '" + req.BUSS_CODE0 +  "' group by c.NAMA_UNIT, DATE_FORMAT(a.TransDate,'%Y-%m'), d.CODD_DESC";
 
         db.query(sql, function(err, rows, fields) {
             res.send(rows);
@@ -1494,7 +1494,7 @@ export default class Donatur {
 
     getSummaryTransactionPerWeek = function(req, res) {
         var sql = "select c.NAMA_UNIT, CONCAT(DATE_FORMAT(a.TransDate,'%Y-%m'),' ',WEEK(TransDate, 3) - " + 
-        "WEEK(a.TransDate - INTERVAL DAY(a.TransDate)-1 DAY, 3) + 1) As TahunBulan, CONCAT(MONTHNAME(a.TransDate),' ',YEAR(a.TransDate),' Week ',WEEK(a.TransDate, 3) - WEEK(a.TransDate - INTERVAL DAY(a.TransDate)-1 DAY, 3) + 1) As BulanTahun, GetDaysOfMonth(a.TransDate) As JumlahHari, COUNT(distinct a.DonaturID) As JumlahDonatur, COUNT(a.Amount) As JumlahTransaksi, SUM(a.Amount) As JumlahDonasi, ROUND(SUM(a.Amount)/COUNT(distinct a.DonaturID),2) As SendGiving FROM trans_donatur a inner join tb11_mzjb b on a.DonaturID = b.NO_ID inner join tb00_unit c on b.BUSS_CODE = c.KODE_UNIT WHERE b.BUSS_CODE = '" + req.BUSS_CODE0 +  "' group by c.NAMA_UNIT, CONCAT(DATE_FORMAT(a.TransDate,'%Y-%m'),' ',WEEK(TransDate, 3) - " + "WEEK(a.TransDate - INTERVAL DAY(a.TransDate)-1 DAY, 3) + 1)";
+        "WEEK(a.TransDate - INTERVAL DAY(a.TransDate)-1 DAY, 3) + 1) As TahunBulan, CONCAT(MONTHNAME(a.TransDate),' ',YEAR(a.TransDate),' Week ',WEEK(a.TransDate, 3) - WEEK(a.TransDate - INTERVAL DAY(a.TransDate)-1 DAY, 3) + 1) As BulanTahun, IFNULL(d.CODD_DESC, '') As Channel, GetDaysOfMonth(a.TransDate) As JumlahHari, COUNT(distinct a.DonaturID) As JumlahDonatur, COUNT(a.Amount) As JumlahTransaksi, SUM(a.Amount) As JumlahDonasi, ROUND(SUM(a.Amount)/COUNT(distinct a.DonaturID),2) As SendGiving FROM trans_donatur a inner join tb11_mzjb b on a.DonaturID = b.NO_ID inner join tb00_unit c on b.BUSS_CODE = c.KODE_UNIT left join tb00_basx d on b.Channel = d.CODD_VALU And d.CODD_FLNM = 'CHANNEL_DONATUR' WHERE b.BUSS_CODE = '" + req.BUSS_CODE0 +  "' group by c.NAMA_UNIT, CONCAT(DATE_FORMAT(a.TransDate,'%Y-%m'),' ',WEEK(TransDate, 3) - " + "WEEK(a.TransDate - INTERVAL DAY(a.TransDate)-1 DAY, 3) + 1), d.CODD_DESC";
 
         db.query(sql, function(err, rows, fields) {
             res.send(rows);

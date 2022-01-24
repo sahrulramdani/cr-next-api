@@ -181,7 +181,7 @@ export default class Event {
         var authDelt = request.AUTH_DELT;
         var authAppr = request.AUTH_APPR;  // auth Approve
         
-        var qryCmd = "select a.*, c.CODD_DESC As ProgDonatur, DATE_FORMAT(Tgl1, '%Y-%m-%d') As Tgl1Format, DATE_FORMAT(Tgl2, '%Y-%m-%d') As Tgl2Format, b.NAMA_UNIT, e.NamaKry As NamaRelawan FROM tblEvent a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT left join tb00_basx c on a.ProgramID = c.CODD_VALU And c.CODD_FLNM = 'PROGRAM_DONATUR' And b.KODE_UNIT = c.CODD_VARC inner join tb01_lgxh d on a.CRTX_BYXX = d.USER_IDXX inner join tb21_empl e on d.NO_ID = e.KodeNik where b.KODE_URUT like '" + request.KODE_URUT0 + "%'";
+        var qryCmd = "select a.*, c.CODD_DESC As ProgDonatur, DATE_FORMAT(Tgl1, '%Y-%m-%d') As Tgl1Format, DATE_FORMAT(Tgl2, '%Y-%m-%d') As Tgl2Format, b.NAMA_UNIT, e.NamaKry As NamaRelawan FROM tblEvent a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT left join tb00_basx c on a.ProgramID = c.CODD_VALU And c.CODD_FLNM = 'PROGRAM_DONATUR' And b.KODE_UNIT = c.CODD_VARC inner join tb01_lgxh d on a.CRTX_BYXX = d.USER_IDXX inner join tb21_empl e on d.NO_ID = e.KodeNik where b.KODE_URUT like '" + request.KODE_URUT0 + "%' And a.IsDelete = '0'";
         
         db.query(qryCmd, function(err, rows, fields) {
             var output = [];
@@ -279,6 +279,26 @@ export default class Event {
         };
         
         db.query(sql, data, (err, result) => {
+            if (err) {
+                console.log('Error', err);
+
+                res.send({
+                    status: false,
+                    message: err.sqlMessage
+                });
+            } else {
+                res.send({
+                    status: true
+                });
+            }
+        });
+    }
+
+    // soft delete
+    deleteEvent = function(req, res) {
+        var id = req.body.id;
+        var sql = "update `tblEvent` set IsDelete = '1' where id = " + id;
+        db.query(sql, (err, result) => {
             if (err) {
                 console.log('Error', err);
 
