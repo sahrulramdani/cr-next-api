@@ -296,8 +296,9 @@ export default class Event {
 
     // soft delete
     deleteEvent = function(req, res) {
-        var id = req.body.id;
-        var sql = "update `tblEvent` set IsDelete = '1' where id = " + id;
+        var id = req.body.selectedIds;  // EventID
+
+        var sql = "update `tblEvent` set IsDelete = '1' where EventID = '" + id + "'";
         db.query(sql, (err, result) => {
             if (err) {
                 console.log('Error', err);
