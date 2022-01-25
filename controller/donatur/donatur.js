@@ -28,7 +28,7 @@ export default class Donatur {
                         "WHEN '1' THEN 'Laki-laki' " +
                         "ELSE 'Perempuan' " +
                       "END As Jns_Kelamin, " + 
-                      "a.Email, a.NoHP, b.CODD_DESC As Channel, CONCAT(a.NAMA, ', ', IFNULL(a.TITLE, '')) As Nama2, CONCAT(IFNULL(a.CodeCountryHP, ''), a.NoHP) As NoHP2 from tb11_mzjb a INNER JOIN (select * from tb00_basx where CODD_FLNM = 'CHANNEL_DONATUR') b ON a.Channel = b.CODD_VALU INNER JOIN tb00_unit c ON a.BUSS_CODE = c.KODE_UNIT where a.Status = '" + status + "' And c.KODE_URUT like '" + request.KODE_URUT0 + "%'";
+                      "a.Email, a.NoHP, b.CODD_DESC As Channel, CONCAT(a.NAMA, ', ', IFNULL(a.TITLE, '')) As Nama2, CONCAT(IFNULL(a.CodeCountryHP, ''), a.NoHP) As NoHP2, IFNULL(d.CODD_DESC, '') As SegmenProf, a.ALMT_XXX1 FROM tb11_mzjb a INNER JOIN (select * from tb00_basx where CODD_FLNM = 'CHANNEL_DONATUR') b ON a.Channel = b.CODD_VALU INNER JOIN tb00_unit c ON a.BUSS_CODE = c.KODE_UNIT LEFT JOIN tb00_basx d ON a.SEGMX_PROF = d.CODD_VALU And d.CODD_FLNM = 'SEGMENT_PROFILING' where a.Status = '" + status + "' And c.KODE_URUT like '" + request.KODE_URUT0 + "%'";
         };
         db.query(qryCmd, function(err, rows, fields) {
             var output = [];
@@ -1512,7 +1512,7 @@ export default class Donatur {
             period = req.params.period;
         }
 
-        var sql = "select c.NAMA_UNIT, DATE_FORMAT(a.TransDate,'%Y-%m') As TahunBulan, CONCAT(MONTHNAME(a.TransDate),' ',YEAR(a.TransDate)) As BulanTahun, d.CODD_DESC As ProgramDonatur, e.CODD_DESC As SegmenProfil, COUNT(distinct a.DonaturID) As JumlahDonatur, COUNT(f.Amount_item) As JumlahTransaksi, SUM(f.Amount_item) As JumlahDonasi FROM trans_donatur a inner join tb11_mzjb b on a.DonaturID = b.NO_ID inner join tb00_unit c on b.BUSS_CODE = c.KODE_UNIT left join (select * from tb00_basx where CODD_FLNM = 'SEGMENT_PROFILING') e on b.SEGMX_PROF = e.CODD_VALU inner join trans_item f on a.TransNumber = f.TransNumber left join tb00_basx d on f.ProgDonatur = d.CODD_VALU And f.BUSS_CODE = d.CODD_VARC And d.CODD_FLNM = 'PROGRAM_DONATUR' WHERE b.BUSS_CODE = '" + req.BUSS_CODE0 +  "' And a.ProgDonatur is not null And DATE_FORMAT(a.TransDate,'%Y-%m') like '" + period + "' group by c.NAMA_UNIT, DATE_FORMAT(a.TransDate,'%Y-%m'), d.CODD_DESC";
+        var sql = "select c.NAMA_UNIT, DATE_FORMAT(a.TransDate,'%Y-%m') As TahunBulan, CONCAT(MONTHNAME(a.TransDate),' ',YEAR(a.TransDate)) As BulanTahun, d.CODD_DESC As ProgramDonatur, IFNULL(e.CODD_DESC, '') As SegmenProfil, COUNT(distinct a.DonaturID) As JumlahDonatur, COUNT(f.Amount_item) As JumlahTransaksi, SUM(f.Amount_item) As JumlahDonasi FROM trans_donatur a inner join tb11_mzjb b on a.DonaturID = b.NO_ID inner join tb00_unit c on b.BUSS_CODE = c.KODE_UNIT left join (select * from tb00_basx where CODD_FLNM = 'SEGMENT_PROFILING') e on b.SEGMX_PROF = e.CODD_VALU inner join trans_item f on a.TransNumber = f.TransNumber left join tb00_basx d on f.ProgDonatur = d.CODD_VALU And f.BUSS_CODE = d.CODD_VARC And d.CODD_FLNM = 'PROGRAM_DONATUR' WHERE b.BUSS_CODE = '" + req.BUSS_CODE0 +  "' And a.ProgDonatur is not null And DATE_FORMAT(a.TransDate,'%Y-%m') like '" + period + "' group by c.NAMA_UNIT, DATE_FORMAT(a.TransDate,'%Y-%m'), d.CODD_DESC";
 
         db.query(sql, function(err, rows, fields) {
             res.send(rows);

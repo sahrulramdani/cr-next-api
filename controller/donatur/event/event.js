@@ -221,7 +221,7 @@ export default class Event {
 
         var id = request.params.id;   // EventID
         
-        var qryCmd = "select a.*, c.CODD_DESC As ProgDonatur, DATE_FORMAT(Tgl1, '%Y%m%d') As Tgl1Format, DATE_FORMAT(Tgl2, '%Y%m%d') As Tgl2Format FROM tblEvent a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT left join (select * from tb00_basx where CODD_FLNM = 'PROGRAM_DONATUR') c on a.ProgramID = c.CODD_VALU And a.BUSS_CODE = c.CODD_VARC where b.KODE_URUT like '" + request.KODE_URUT0 + "%' And a.EventID = '" + id + "'";
+        var qryCmd = "select a.*, c.CODD_DESC As ProgDonatur, DATE_FORMAT(Tgl1, '%Y%m%d') As Tgl1Format, DATE_FORMAT(Tgl2, '%Y%m%d') As Tgl2Format FROM tblEvent a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT left join (select * from tb00_basx where CODD_FLNM = 'PROGRAM_DONATUR') c on a.ProgramID = c.CODD_VALU And a.BUSS_CODE = c.CODD_VARC where b.KODE_URUT like '" + request.KODE_URUT0 + "%' And a.EventID = '" + id + "' And a.IsDelete = '0'";
         
         db.query(qryCmd, function(err, rows, fields) {
             var output = [];
