@@ -1605,9 +1605,9 @@ export default class Donatur {
         var qryCmd = '';
 
         if (request.params.bussCode === 'all') {
-            qryCmd = "select * from grpx_relx a inner join tb01_lgxh b on a.CRTX_BYXX = b.USER_IDXX inner join tb21_empl c on b.NO_ID = c.KodeNik where UPPER(b.USER_IDXX) = '" + request.userID.toUpperCase() + "'";
+            qryCmd = "select a.* from grpx_relx a inner join tb01_lgxh b on a.CRTX_BYXX = b.USER_IDXX inner join tb21_empl c on b.NO_ID = c.KodeNik where UPPER(b.USER_IDXX) = '" + request.userID.toUpperCase() + "'";
         } else {
-            qryCmd = "select * from grpx_relx a inner join tb01_lgxh b on a.CRTX_BYXX = b.USER_IDXX inner join tb21_empl c on b.NO_ID = c.KodeNik where UPPER(b.USER_IDXX) = '" + request.userID.toUpperCase() + "' And a.BUSS_CODE = '" + request.params.bussCode + "'";
+            qryCmd = "select a.* from grpx_relx a inner join tb01_lgxh b on a.CRTX_BYXX = b.USER_IDXX inner join tb21_empl c on b.NO_ID = c.KodeNik where UPPER(b.USER_IDXX) = '" + request.userID.toUpperCase() + "' And a.BUSS_CODE = '" + request.params.bussCode + "'";
         }
         
         db.query(qryCmd, function(err, rows, fields) {
