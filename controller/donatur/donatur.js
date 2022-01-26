@@ -1603,11 +1603,16 @@ export default class Donatur {
         var authAppr = request.AUTH_APPR;  // auth Approve
         
         var qryCmd = '';
+        var typeRelawan = request.TypeRelawan0;
 
         if (request.params.bussCode === 'all') {
-            qryCmd = "select a.* from grpx_relx a inner join tb01_lgxh b on a.CRTX_BYXX = b.USER_IDXX inner join tb21_empl c on b.NO_ID = c.KodeNik where UPPER(b.USER_IDXX) = '" + request.userID.toUpperCase() + "'";
+            qryCmd = "select a.* from grpx_relx a where a.BUSS_CODE = '" + request.BUSS_CODE0 + "'";
         } else {
-            qryCmd = "select a.* from grpx_relx a inner join tb01_lgxh b on a.CRTX_BYXX = b.USER_IDXX inner join tb21_empl c on b.NO_ID = c.KodeNik where UPPER(b.USER_IDXX) = '" + request.userID.toUpperCase() + "' And a.BUSS_CODE = '" + request.params.bussCode + "'";
+            qryCmd = "select a.* from grpx_relx a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where a.BUSS_CODE = '" + request.params.bussCode + "' And b.KODE_URUT like '" + request.KODE_URUT0 + "%'";
+
+            if (typeRelawan === '06') {
+                qryCmd = "select a.* from grpx_relx a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT inner join tb01_lgxh c on b.KODE_UNIT = c.BUSS_CODE inner join vfirst_relawandet d on c.NO_ID = d.RelawanID And d.groupID = a.IDXX_GRPX  WHERE a.BUSS_CODE = '" + request.params.bussCode + "' And b.KODE_URUT like '" + request.KODE_URUT0 + "%' And UPPER(c.USER_IDXX) = '" + request.userID.toUpperCase() + "'";
+            }
         }
         
         db.query(qryCmd, function(err, rows, fields) {

@@ -423,6 +423,7 @@ export default class Karyawan {
         var authAppr = request.AUTH_APPR;  // auth Approve
 
         var status = request.params.status;  // Status karyawan
+        var typeRelawan = request.TypeRelawan0;
 
         var qryCmd = '';
         if (status === 'all') {
@@ -432,6 +433,15 @@ export default class Karyawan {
                 "ELSE 'NOT ACTIVE' " +
             "END As StatusAktif2, b.KODE_UNIT, SUBSTRING(a.Alamat1, 1, 20) As Alamat " + 
             "FROM tb21_empl a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where b.KODE_URUT like '" + request.KODE_URUT0 + "%'";
+
+            if (typeRelawan === '06') {  // 06: Relawan
+                qryCmd = "select a.*, CONCAT(IFNULL(a.CodeCountryHP, ''), a.Hp) As NoHP2, " + 
+                    "CASE a.StatusAktif " +
+                    "WHEN '1' THEN 'ACTIVE' " +
+                    "ELSE 'NOT ACTIVE' " +
+                    "END As StatusAktif2, b.KODE_UNIT, IFNULL(c.groupID, '') As groupID, a.KodeNik As value, CONCAT(a.KodeNik, ' - ', a.NamaKry, ' - ', SUBSTRING(a.Alamat1, 1, 20)) As label, d.NAMA_GRPX " + 
+                    "FROM tb21_empl a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT left join vfirst_relawanDet c on a.KodeNik = c.RelawanID left join grpx_relx d on c.groupID = d.IDXX_GRPX inner join tb01_lgxh e on a.KodeNik = e.NO_ID WHERE b.KODE_URUT like '" + request.KODE_URUT0 + "%' And UPPER(e.USER_IDXX) = '" + request.userID.toUpperCase() + "'";
+            }
         } else {
             qryCmd = "select a.*, CONCAT(IFNULL(a.CodeCountryHP, ''), a.Hp) As NoHP2, " + 
             "CASE a.StatusAktif " +
@@ -439,6 +449,15 @@ export default class Karyawan {
                 "ELSE 'NOT ACTIVE' " +
             "END As StatusAktif2, b.KODE_UNIT, IFNULL(c.groupID, '') As groupID, a.KodeNik As value, CONCAT(a.KodeNik, ' - ', a.NamaKry, ' - ', SUBSTRING(a.Alamat1, 1, 20)) As label, d.NAMA_GRPX " + 
             "FROM tb21_empl a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT left join vfirst_relawanDet c on a.KodeNik = c.RelawanID left join grpx_relx d on c.groupID = d.IDXX_GRPX where b.KODE_URUT like '" + request.KODE_URUT0 + "%' And a.StatusKry = '" + status + "'";
+
+            if (typeRelawan === '06') {  // 06: Relawan
+                qryCmd = "select a.*, CONCAT(IFNULL(a.CodeCountryHP, ''), a.Hp) As NoHP2, " + 
+                    "CASE a.StatusAktif " +
+                    "WHEN '1' THEN 'ACTIVE' " +
+                    "ELSE 'NOT ACTIVE' " +
+                    "END As StatusAktif2, b.KODE_UNIT, IFNULL(c.groupID, '') As groupID, a.KodeNik As value, CONCAT(a.KodeNik, ' - ', a.NamaKry, ' - ', SUBSTRING(a.Alamat1, 1, 20)) As label, d.NAMA_GRPX " + 
+                    "FROM tb21_empl a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT left join vfirst_relawanDet c on a.KodeNik = c.RelawanID left join grpx_relx d on c.groupID = d.IDXX_GRPX inner join tb01_lgxh e on a.KodeNik = e.NO_ID WHERE b.KODE_URUT like '" + request.KODE_URUT0 + "%' And a.StatusKry = '" + status + "' And UPPER(e.USER_IDXX) = '" + request.userID.toUpperCase() + "'";
+            }
         }
 
         db.query(qryCmd, function(err, rows, fields) {
