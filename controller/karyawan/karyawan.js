@@ -333,6 +333,14 @@ export default class Karyawan {
                             });
                         });
                     });
+                } else if (req.body.IDXX_GRPX === '') {
+                    // hapus di tabel relawan detail
+                    sql = 'delete from tblRelawanDet where RelawanID = "' + id + '"';
+                    db.query(sql, (err2, result2) => {
+                        res.send({
+                            status: true
+                        });
+                    });
                 } else {
                     res.send({
                         status: true
@@ -429,8 +437,8 @@ export default class Karyawan {
             "CASE a.StatusAktif " +
                 "WHEN '1' THEN 'ACTIVE' " +
                 "ELSE 'NOT ACTIVE' " +
-            "END As StatusAktif2, b.KODE_UNIT, IFNULL(c.groupID, '') As groupID, a.KodeNik As value, CONCAT(a.KodeNik, ' - ', a.NamaKry, ' - ', SUBSTRING(a.Alamat1, 1, 20)) As label " + 
-            "FROM tb21_empl a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT left join vfirst_relawanDet c on a.KodeNik = c.RelawanID where b.KODE_URUT like '" + request.KODE_URUT0 + "%' And a.StatusKry = '" + status + "'";
+            "END As StatusAktif2, b.KODE_UNIT, IFNULL(c.groupID, '') As groupID, a.KodeNik As value, CONCAT(a.KodeNik, ' - ', a.NamaKry, ' - ', SUBSTRING(a.Alamat1, 1, 20)) As label, d.NAMA_GRPX " + 
+            "FROM tb21_empl a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT left join vfirst_relawanDet c on a.KodeNik = c.RelawanID left join grpx_relx d on c.groupID = d.IDXX_GRPX where b.KODE_URUT like '" + request.KODE_URUT0 + "%' And a.StatusKry = '" + status + "'";
         }
 
         db.query(qryCmd, function(err, rows, fields) {
