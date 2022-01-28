@@ -117,10 +117,6 @@ function separatorNumber(angka) {
 const fncAnd = (arg1, arg2) => {
     if (arg1 === '1' && arg2 === '1') {
         return '1';
-    } else if (arg1 === '1' && arg2 === '0') {
-        return '0';
-    } else if (arg1 === '0' && arg2 === '1') {
-        return '0';
     } else {
         return '0';
     }
