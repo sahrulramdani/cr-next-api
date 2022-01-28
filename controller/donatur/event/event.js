@@ -1,5 +1,7 @@
 import  db from './../../../koneksi.js';
-import { generateAutonumber } from './../../../libraries/sisqu/Utility.js';
+import { 
+    generateAutonumber, fncAnd
+} from './../../../libraries/sisqu/Utility.js';
 import { fncCheckProcCode } from './../../../libraries/local/localUtility.js';
 
 
@@ -37,6 +39,11 @@ export default class Event {
         } else {
             eventID = req.body.EventID;
         }
+
+        var bussCode = req.body.BUSS_CODE;
+        if (bussCode === '' || bussCode === undefined) {
+            bussCode - req.BUSS_CODE0;
+        }
         
         var sql = 'INSERT INTO tblEvent SET ?';
         var data = {
@@ -46,7 +53,7 @@ export default class Event {
             Tgl1 : req.body.Tgl1,
             Tgl2 : req.body.Tgl2,
             ProgramID : req.body.ProgramID,
-            BUSS_CODE : req.BUSS_CODE0,
+            BUSS_CODE : bussCode,
             TahunBuku : req.body.TahunBuku,
             CRTX_DATE : new Date(),
             CRTX_BYXX : req.userID
@@ -221,7 +228,7 @@ export default class Event {
 
         var id = request.params.id;   // EventID
         
-        var qryCmd = "select a.*, c.CODD_DESC As ProgDonatur, DATE_FORMAT(Tgl1, '%Y%m%d') As Tgl1Format, DATE_FORMAT(Tgl2, '%Y%m%d') As Tgl2Format FROM tblEvent a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT left join (select * from tb00_basx where CODD_FLNM = 'PROGRAM_DONATUR') c on a.ProgramID = c.CODD_VALU And a.BUSS_CODE = c.CODD_VARC where b.KODE_URUT like '" + request.KODE_URUT0 + "%' And a.EventID = '" + id + "' And a.IsDelete = '0'";
+        var qryCmd = "select a.*, c.CODD_DESC As ProgDonatur, DATE_FORMAT(Tgl1, '%Y%m%d') As Tgl1Format, DATE_FORMAT(Tgl2, '%Y%m%d') As Tgl2Format, CASE a.CRTX_BYXX When '" + request.userID + "' Then '1' Else '0' END As AuthEdit FROM tblEvent a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT left join (select * from tb00_basx where CODD_FLNM = 'PROGRAM_DONATUR') c on a.ProgramID = c.CODD_VALU And a.BUSS_CODE = c.CODD_VARC where b.KODE_URUT like '" + request.KODE_URUT0 + "%' And a.EventID = '" + id + "' And a.IsDelete = '0'";
         
         db.query(qryCmd, function(err, rows, fields) {
             var output = [];
@@ -238,7 +245,7 @@ export default class Event {
                     }
 
                     obj['AUTH_ADDX'] = authAdd;
-                    obj['AUTH_EDIT'] = authEdit;
+                    obj['AUTH_EDIT'] = fncAnd(authEdit, row.AuthEdit);
                     obj['AUTH_DELT'] = authDelt;
                     obj['AUTH_APPR'] = authAppr;
 
@@ -266,6 +273,11 @@ export default class Event {
 
         var id = req.body.id;
 
+        var bussCode = req.body.BUSS_CODE;
+        if (bussCode === '' || bussCode === undefined) {
+            bussCode - req.BUSS_CODE0;
+        }
+
         var sql = 'UPDATE tblEvent a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT SET ? WHERE a.EventID = "' + id + '" And b.KODE_URUT like "' + req.KODE_URUT0 + '%"';
 
         var data = {
@@ -274,6 +286,7 @@ export default class Event {
             Tgl1 : req.body.Tgl1,
             Tgl2 : req.body.Tgl2,
             ProgramID : req.body.ProgramID,
+            BUSS_CODE : bussCode,
             'a.UPDT_DATE' : new Date(),
             'a.UPDT_BYXX' : req.userID
         };

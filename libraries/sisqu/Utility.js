@@ -113,6 +113,19 @@ function separatorNumber(angka) {
     return angka;
 }
 
+// ------------- Function Logical --------------
+const fncAnd = (arg1, arg2) => {
+    if (arg1 === '1' && arg2 === '1') {
+        return '1';
+    } else if (arg1 === '1' && arg2 === '0') {
+        return '0';
+    } else if (arg1 === '0' && arg2 === '1') {
+        return '0';
+    } else {
+        return '0';
+    }
+}
+
 // ------------- Sisqu Utilities --------------
 const generateAutonumber = (initial, sequenceUnitCode, tahun, nextSequenceFormat) => {
     var output = initial + sequenceUnitCode + tahun.toString().substring(2) + nextSequenceFormat;
@@ -123,5 +136,6 @@ const generateAutonumber = (initial, sequenceUnitCode, tahun, nextSequenceFormat
 
 export { 
     fncUnionComma, fncParseComma, ExcelDateToJSDate, 
-    generateAutonumber, weekOfMonth, separatorNumber
+    generateAutonumber, weekOfMonth, separatorNumber,
+    fncAnd
 };
