@@ -570,7 +570,6 @@ export default class Donatur {
 
         var selectedIds = [];
         selectedIds = fncParseComma(req.body.selectedIds);
-        console.log(selectedIds);
         var arrayLength = selectedIds.length;
 
         var sql = 'UPDATE tb11_mzjb SET Status = "' + status + '", TypeDonatur = "' + typeDonatur + '", UPDT_DATE = "' + tgl + '", UPDT_BYXX = "' + req.userID + '" WHERE NO_ID in ("';
@@ -584,8 +583,7 @@ export default class Donatur {
             } 
     
             sql += ')';
-    
-            console.log(sql);
+            
             db.query(sql, (err, result) => {
                 if (err) {
                     console.log('Error', err);
@@ -1723,7 +1721,7 @@ export default class Donatur {
         
         var id = req.params.id;   // id: TransNumber
         
-        var sql = 'select a.*, b.CODD_DESC As Program from trans_item a left join tb00_basx b on a.ProgDonatur = b.CODD_VALU And b.CODD_FLNM = "PROGRAM_DONATUR" And a.BUSS_CODE = b.CODD_VARC inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT where a.TransNumber = "' + id + '" And c.KODE_URUT like "' + req.KODE_URUT0 + '%"';
+        var sql = 'select a.*, b.CODD_DESC As Program FROM trans_item a left join tb00_basx b on a.ProgDonatur = b.CODD_VALU And b.CODD_FLNM = "PROGRAM_DONATUR" And a.BUSS_CODE = b.CODD_VARC inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT where a.TransNumber = "' + id + '" And c.KODE_URUT like "' + req.KODE_URUT0 + '%"';
 
         db.query(sql, function(err, rows, fields) {
             var output = [];
@@ -1799,6 +1797,88 @@ export default class Donatur {
                 });
             }
         });
+    }
+
+    saveTransItemArray = function(req, res) {
+        // check Access PROC_CODE 
+        /* if (fncCheckProcCode(req.body.ProcCode, req.procCodes) === false) {
+            res.status(403).send({ 
+                status: false, 
+                message: 'Access Denied',
+                userAccess: false
+            });
+
+            return;
+        } */
+
+        // get user Access
+        var authAdd = req.AUTH_ADDX;
+
+        if (authAdd === '0') {
+            return res.status(403).send({ 
+                status: false, 
+                message: 'Access Denied',
+                userAccess: false
+            });
+        }
+
+        var cntTransItems = req.body.cntTransItems;
+        var sql = '';
+        var tglNow = moment(new Date()).format('YYYY-MM-DD');
+
+        var progDonaturs = [];
+        progDonaturs = fncParseComma(req.body.ProgDonaturs);
+
+        var amountItems = [];
+        amountItems = fncParseComma(req.body.AmountItems);
+
+        var notes = [];
+        notes = fncParseComma(req.body.Notes);
+
+        var sqlDelete = 'delete from trans_item where TransNumber = "' + req.body.TransNumber + '"';
+
+        if (cntTransItems > 0) {
+            sql = 'INSERT INTO trans_item (TransNumber, BUSS_CODE, THNX_BUKU, KodeNik, KODE_KLSX, ProgDonatur, Amount_item, note, CRTX_DATE, CRTX_BYXX) VALUES ';
+            for(var i=0; i<cntTransItems; i++) {
+                if (i === 0) {
+                    sql += '("' + req.body.TransNumber + '","' + req.body.BUSS_CODE + '","' + req.body.THNX_BUKU + '","' + req.body.KodeNik + '","' + req.body.KODE_KLSX + '","' + progDonaturs[i] + '",' + amountItems[i] + ',"' + notes[i] + '","' + tglNow + '","' + req.userID + '")';
+                } else {
+                    sql += ',("' + req.body.TransNumber + '","' + req.body.BUSS_CODE + '","' + req.body.THNX_BUKU + '","' + req.body.KodeNik + '","' + req.body.KODE_KLSX + '","' + progDonaturs[i] + '",' + amountItems[i] + ',"' + notes[i] + '","' + tglNow + '","' + req.userID + '")';
+                }
+            }
+
+            console.log(sql);
+
+            db.query(sqlDelete, (err, result) => {
+                if (err) {
+                    console.log('Error', err);
+    
+                    res.send({
+                        status: false,
+                        message: err.sqlMessage
+                    });
+                } else {
+                    db.query(sql, (err, result) => {
+                        if (err) {
+                            console.log('Error', err);
+            
+                            res.send({
+                                status: false,
+                                message: err.sqlMessage
+                            });
+                        } else {
+                            res.send({
+                                status: true
+                            });
+                        }
+                    });
+                }
+            });
+        } else {
+            res.send({
+                status: true
+            });
+        }
     }
 
     deleteTransItem = function(req, res) {
