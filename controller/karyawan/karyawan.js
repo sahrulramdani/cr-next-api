@@ -615,5 +615,40 @@ export default class Karyawan {
             response.send(output);
         });
     }
+
+    // get Detail Relawans dari Group
+    getGroupRelawans = (request, response) => {
+        // get user Access
+        var authAdd = request.AUTH_ADDX;
+        var authEdit = request.AUTH_EDIT;
+        var authDelt = request.AUTH_DELT;
+        var authAppr = request.AUTH_APPR;  // auth Approve
+
+        var id = request.params.id;  // IDXX_GRPX
+        
+        var qryCmd = "select a.*, c.NamaKry from vfirst_relawandet a inner join grpx_relx b on a.groupID = b.IDXX_GRPX inner join tb21_empl c on a.RelawanID = c.KodeNik inner join tb00_unit d on b.BUSS_CODE = d.KODE_UNIT where d.KODE_URUT like '" + request.KODE_URUT0 + "%' And b.IDXX_GRPX = '" + id + "'";
+
+        db.query(qryCmd, function(err, rows, fields) {
+            var output = [];
+
+            if (rows.length > 0) {
+                rows.forEach(function(row) {
+                    var obj = new Object();
+                    for(var key in row) {
+                        obj[key] = row[key];
+                    }
+
+                    obj['AUTH_ADDX'] = authAdd;
+                    obj['AUTH_EDIT'] = authEdit;
+                    obj['AUTH_DELT'] = authDelt;
+                    obj['AUTH_APPR'] = authAppr;
+
+                    output.push(obj);
+                })
+            }
+
+            response.send(output);
+        });
+    }
     
 }
