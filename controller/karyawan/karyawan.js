@@ -424,6 +424,7 @@ export default class Karyawan {
 
         var status = request.params.status;  // Status karyawan
         var typeRelawan = request.TypeRelawan0;
+        var typePerson = request.TYPE_PRSON0;
 
         var qryCmd = '';
         if (status === 'all') {
@@ -458,6 +459,15 @@ export default class Karyawan {
                     "END As StatusAktif2, b.KODE_UNIT, IFNULL(c.groupID, '') As groupID, a.KodeNik As value, CONCAT(a.KodeNik, ' - ', a.NamaKry, ' - ', SUBSTRING(a.Alamat1, 1, 20)) As label, d.NAMA_GRPX " + 
                     "FROM tb21_empl a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT left join vfirst_relawanDet c on a.KodeNik = c.RelawanID left join grpx_relx d on c.groupID = d.IDXX_GRPX inner join tb01_lgxh e on a.KodeNik = e.NO_ID WHERE b.KODE_URUT like '" + request.KODE_URUT0 + "%' And a.StatusKry = '" + status + "' And UPPER(e.USER_IDXX) = '" + request.userID.toUpperCase() + "'";
             }
+        }
+
+        if (typePerson === '4') {   // 4: Offisial
+            qryCmd = "select a.*, CONCAT(IFNULL(a.CodeCountryHP, ''), a.Hp) As NoHP2, " + 
+            "CASE a.StatusAktif " +
+                "WHEN '1' THEN 'ACTIVE' " +
+                "ELSE 'NOT ACTIVE' " +
+            "END As StatusAktif2, b.KODE_UNIT, SUBSTRING(a.Alamat1, 1, 20) As Alamat " + 
+            "FROM tb21_empl a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where b.KODE_URUT like '" + request.KODE_URUT0 + "%'";
         }
 
         db.query(qryCmd, function(err, rows, fields) {
@@ -592,6 +602,41 @@ export default class Karyawan {
         var id = request.params.id;
         
         var qryCmd = "select a.* from tb11_mzjb a inner join tb21_empl b on a.RelawanID = b.KodeNik inner join tb00_unit c on b.BUSS_CODE = c.KODE_UNIT where c.KODE_URUT like '" + request.KODE_URUT0 + "%' And b.KodeNik = '" + id + "'";
+
+        db.query(qryCmd, function(err, rows, fields) {
+            var output = [];
+
+            if (rows.length > 0) {
+                rows.forEach(function(row) {
+                    var obj = new Object();
+                    for(var key in row) {
+                        obj[key] = row[key];
+                    }
+
+                    obj['AUTH_ADDX'] = authAdd;
+                    obj['AUTH_EDIT'] = authEdit;
+                    obj['AUTH_DELT'] = authDelt;
+                    obj['AUTH_APPR'] = authAppr;
+
+                    output.push(obj);
+                })
+            }
+
+            response.send(output);
+        });
+    }
+
+    // get Detail Relawans dari Group
+    getGroupRelawans = (request, response) => {
+        // get user Access
+        var authAdd = request.AUTH_ADDX;
+        var authEdit = request.AUTH_EDIT;
+        var authDelt = request.AUTH_DELT;
+        var authAppr = request.AUTH_APPR;  // auth Approve
+
+        var id = request.params.id;  // IDXX_GRPX
+        
+        var qryCmd = "select a.*, c.NamaKry from vfirst_relawandet a inner join grpx_relx b on a.groupID = b.IDXX_GRPX inner join tb21_empl c on a.RelawanID = c.KodeNik inner join tb00_unit d on b.BUSS_CODE = d.KODE_UNIT where d.KODE_URUT like '" + request.KODE_URUT0 + "%' And b.IDXX_GRPX = '" + id + "'";
 
         db.query(qryCmd, function(err, rows, fields) {
             var output = [];
