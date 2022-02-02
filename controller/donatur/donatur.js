@@ -1411,11 +1411,11 @@ export default class Donatur {
         });
     }
 
-    /* getTransactionsPerChannel = function(req, res) {
+    getTransactionsPerChannel = function(req, res) {
         var tgl1 = req.params.tgl1;
         var tgl2 = req.params.tgl2;
 
-        var sql = "select d.NAMA_UNIT, DATE_FORMAT(a.TransDate, '%Y%m') As YearMonth, MONTHNAME(a.TransDate) As Bulan, c.CODD_DESC As Channel, f.CODD_DESC As Department, SUM(a.Amount) As Total FROM trans_donatur a inner join tb11_mzjb b on a.DonaturID = b.NO_ID inner join (select * from tb00_basx where CODD_FLNM = 'CHANNEL_DONATUR') c on b.Channel = c.CODD_VALU inner join tb00_unit d on b.BUSS_CODE = d.KODE_UNIT left join tb21_empl e on a.KodeNik = e.KodeNik left join tb00_basx f on e.DepartmentID = f.CODD_VALU And f.CODD_FLNM = 'DEPARTMENT' WHERE a.isValidate = '1' And DATE_FORMAT(a.TransDate, '%Y-%m-%d') between '" + tgl1 + "' and '" + tgl2 + "' And d.KODE_UNIT = '" + req.BUSS_CODE0 + "' group by d.NAMA_UNIT, DATE_FORMAT(a.TransDate, '%Y%m') DESC, c.CODD_DESC, f.CODD_DESC";
+        var sql = "select d.NAMA_UNIT, DATE_FORMAT(a.TransDate, '%Y%m') As YearMonth, MONTHNAME(a.TransDate) As Bulan, c.CODD_DESC As Channel, f.CODD_DESC As Department, SUM(a.Amount) As Total, COUNT(DISTINCT b.NO_ID) As JumlahDonatur, COUNT(a.TransNumber) As JumlahTransaksi FROM trans_donatur a inner join tb11_mzjb b on a.DonaturID = b.NO_ID inner join (select * from tb00_basx where CODD_FLNM = 'CHANNEL_DONATUR') c on b.Channel = c.CODD_VALU inner join tb00_unit d on b.BUSS_CODE = d.KODE_UNIT left join tb21_empl e on a.KodeNik = e.KodeNik left join tb00_basx f on e.DepartmentID = f.CODD_VALU And f.CODD_FLNM = 'DEPARTMENT' WHERE a.isValidate = '1' And DATE_FORMAT(a.TransDate, '%Y-%m-%d') between '" + tgl1 + "' and '" + tgl2 + "' And d.KODE_UNIT = '" + req.BUSS_CODE0 + "' group by d.NAMA_UNIT, DATE_FORMAT(a.TransDate, '%Y%m') DESC, c.CODD_DESC, f.CODD_DESC";
     
         db.query(sql, function(err, rows, fields) {
             var output = [];
@@ -1433,7 +1433,7 @@ export default class Donatur {
     
             res.send(output);
         });
-    } */
+    }
 
     updateTransSLPDonatur = function(req, res) {
         // check Access PROC_CODE 

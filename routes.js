@@ -153,6 +153,7 @@ import * as C from './controller/index.js';
       app.route('/crm/summary/transactions-per-program/:period').get(C.auth.verifyToken, C.donatur.getSummaryTransactionPerProgram);
       app.route('/crm/summary/transactions-per-month').get(C.auth.verifyToken, C.donatur.getSummaryTransactionPerMonth);
       app.route('/crm/partner/transactions-per-month').get(C.auth.verifyToken, C.donatur.getPartnerTransactions);
+      app.route('/crm/summary/transactions-per-channel/:tgl1/:tgl2').get(C.auth.verifyToken, C.donatur.getTransactionsPerChannel);
 
       // ------ Accounting --------------
       app.route('/accounting/tahun-buku/save').post(C.auth.verifyToken, C.accounting.saveTahunBuku);
