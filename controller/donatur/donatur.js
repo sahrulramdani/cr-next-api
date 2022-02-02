@@ -1362,7 +1362,7 @@ export default class Donatur {
 
         var id = req.params.id;
 
-        var sql = 'SELECT a.*, CONCAT(a.DonaturID, " - ", b.NAMA) As Donatur2, b.BUSS_CODE, b.NAMA, d.CODD_DESC As Program, b.ALMT_XXX1 As Alamat, e.CODD_DESC As Pekerjaan, DATE_FORMAT(a.TransDate, "%e-%b-%Y") As TglFormat, f.CHKX_CASH, g.TYPE_PRSON FROM trans_donatur a LEFT JOIN tb11_mzjb b ON a.DonaturID = b.NO_ID left join tb00_unit c on b.BUSS_CODE = c.KODE_UNIT left join tb00_basx d on a.ProgDonatur = d.CODD_VALU And d.CODD_FLNM = "PROGRAM_DONATUR" And b.BUSS_CODE = d.CODD_VARC left join tb00_basx e on b.Pekerjaan = e.CODD_VALU And e.CODD_FLNM = "PEKERJAAN" left join tb02_bank f on a.MethodPayment = f.KODE_BANK And f.KODE_FLNM = "TYPE_BYRX" And f.BUSS_CODE = b.BUSS_CODE left join tb01_lgxh g on b.NO_ID = g.NO_ID WHERE a.id = "'+ id +'" And c.KODE_URUT like "' + req.KODE_URUT0 + '%"';
+        var sql = 'SELECT a.*, CONCAT(a.DonaturID, " - ", b.NAMA) As Donatur2, b.BUSS_CODE, b.NAMA, b.ALMT_XXX1 As Alamat, e.CODD_DESC As Pekerjaan, DATE_FORMAT(a.TransDate, "%e-%b-%Y") As TglFormat, f.CHKX_CASH, g.TYPE_PRSON FROM trans_donatur a LEFT JOIN tb11_mzjb b ON a.DonaturID = b.NO_ID left join tb00_unit c on b.BUSS_CODE = c.KODE_UNIT left join tb00_basx e on b.Pekerjaan = e.CODD_VALU And e.CODD_FLNM = "PEKERJAAN" left join tb02_bank f on a.MethodPayment = f.KODE_BANK And f.KODE_FLNM = "TYPE_BYRX" And f.BUSS_CODE = b.BUSS_CODE left join tb01_lgxh g on b.NO_ID = g.NO_ID WHERE a.id = "'+ id +'" And c.KODE_URUT like "' + req.KODE_URUT0 + '%"';
 
         db.query(sql, function(err, rows, fields) {
             var output = [];
@@ -1410,6 +1410,30 @@ export default class Donatur {
             res.send(output);
         });
     }
+
+    /* getTransactionsPerChannel = function(req, res) {
+        var tgl1 = req.params.tgl1;
+        var tgl2 = req.params.tgl2;
+
+        var sql = "select d.NAMA_UNIT, DATE_FORMAT(a.TransDate, '%Y%m') As YearMonth, MONTHNAME(a.TransDate) As Bulan, c.CODD_DESC As Channel, f.CODD_DESC As Department, SUM(a.Amount) As Total FROM trans_donatur a inner join tb11_mzjb b on a.DonaturID = b.NO_ID inner join (select * from tb00_basx where CODD_FLNM = 'CHANNEL_DONATUR') c on b.Channel = c.CODD_VALU inner join tb00_unit d on b.BUSS_CODE = d.KODE_UNIT left join tb21_empl e on a.KodeNik = e.KodeNik left join tb00_basx f on e.DepartmentID = f.CODD_VALU And f.CODD_FLNM = 'DEPARTMENT' WHERE a.isValidate = '1' And DATE_FORMAT(a.TransDate, '%Y-%m-%d') between '" + tgl1 + "' and '" + tgl2 + "' And d.KODE_UNIT = '" + req.BUSS_CODE0 + "' group by d.NAMA_UNIT, DATE_FORMAT(a.TransDate, '%Y%m') DESC, c.CODD_DESC, f.CODD_DESC";
+    
+        db.query(sql, function(err, rows, fields) {
+            var output = [];
+    
+            if (rows.length > 0) {
+                rows.forEach(function(row) {
+                    var obj = new Object();
+                    for(var key in row) {
+                        obj[key] = row[key]; 
+                    }
+    
+                    output.push(obj);
+                })
+            }
+    
+            res.send(output);
+        });
+    } */
 
     updateTransSLPDonatur = function(req, res) {
         // check Access PROC_CODE 
@@ -1505,12 +1529,24 @@ export default class Donatur {
     }
 
     getSummaryTransactionPerProgram = function(req, res) {
+        var typePerson = req.TYPE_PRSON0;
+        var typeRelawan = req.TypeRelawan0;
+
         var period = '%';
         if (req.params.period !== undefined && req.params.period !== 'all') {
             period = req.params.period;
         }
+        var sql = '';
 
-        var sql = "select c.NAMA_UNIT, DATE_FORMAT(a.TransDate,'%Y-%m') As TahunBulan, CONCAT(MONTHNAME(a.TransDate),' ',YEAR(a.TransDate)) As BulanTahun, d.CODD_DESC As ProgramDonatur, IFNULL(e.CODD_DESC, '') As SegmenProfil, COUNT(distinct a.DonaturID) As JumlahDonatur, COUNT(f.Amount_item) As JumlahTransaksi, SUM(f.Amount_item) As JumlahDonasi FROM trans_donatur a inner join tb11_mzjb b on a.DonaturID = b.NO_ID inner join tb00_unit c on b.BUSS_CODE = c.KODE_UNIT left join (select * from tb00_basx where CODD_FLNM = 'SEGMENT_PROFILING') e on b.SEGMX_PROF = e.CODD_VALU inner join trans_item f on a.TransNumber = f.TransNumber left join tb00_basx d on f.ProgDonatur = d.CODD_VALU And f.BUSS_CODE = d.CODD_VARC And d.CODD_FLNM = 'PROGRAM_DONATUR' WHERE b.BUSS_CODE = '" + req.BUSS_CODE0 +  "' And a.ProgDonatur is not null And DATE_FORMAT(a.TransDate,'%Y-%m') like '" + period + "' group by c.NAMA_UNIT, DATE_FORMAT(a.TransDate,'%Y-%m'), d.CODD_DESC";
+        sql = "select c.NAMA_UNIT, DATE_FORMAT(a.TransDate,'%Y-%m') As TahunBulan, CONCAT(MONTHNAME(a.TransDate),' ',YEAR(a.TransDate)) As BulanTahun, d.CODD_DESC As ProgramDonatur, IFNULL(e.CODD_DESC, '') As SegmenProfil, COUNT(distinct a.DonaturID) As JumlahDonatur, COUNT(f.Amount_item) As JumlahTransaksi, SUM(f.Amount_item) As JumlahDonasi FROM trans_donatur a inner join tb11_mzjb b on a.DonaturID = b.NO_ID inner join tb00_unit c on b.BUSS_CODE = c.KODE_UNIT left join (select * from tb00_basx where CODD_FLNM = 'SEGMENT_PROFILING') e on b.SEGMX_PROF = e.CODD_VALU inner join trans_item f on a.TransNumber = f.TransNumber left join tb00_basx d on f.ProgDonatur = d.CODD_VALU And f.BUSS_CODE = d.CODD_VARC And d.CODD_FLNM = 'PROGRAM_DONATUR' WHERE b.BUSS_CODE = '" + req.BUSS_CODE0 +  "' And f.ProgDonatur is not null And DATE_FORMAT(a.TransDate,'%Y-%m') like '" + period + "' group by c.NAMA_UNIT, DATE_FORMAT(a.TransDate,'%Y-%m'), d.CODD_DESC";
+
+        if (typePerson === '1' && typeRelawan <= '05') {  // typePerson 1: Relawan,  typeRelawan 05: Bendahara Group
+            sql = "select c.NAMA_UNIT, DATE_FORMAT(a.TransDate,'%Y-%m') As TahunBulan, CONCAT(MONTHNAME(a.TransDate),' ',YEAR(a.TransDate)) As BulanTahun, d.CODD_DESC As ProgramDonatur, IFNULL(e.CODD_DESC, '') As SegmenProfil, COUNT(distinct a.DonaturID) As JumlahDonatur, COUNT(f.Amount_item) As JumlahTransaksi, SUM(f.Amount_item) As JumlahDonasi FROM trans_donatur a inner join tb11_mzjb b on a.DonaturID = b.NO_ID inner join tb00_unit c on b.BUSS_CODE = c.KODE_UNIT left join (select * from tb00_basx where CODD_FLNM = 'SEGMENT_PROFILING') e on b.SEGMX_PROF = e.CODD_VALU inner join trans_item f on a.TransNumber = f.TransNumber left join tb00_basx d on f.ProgDonatur = d.CODD_VALU And f.BUSS_CODE = d.CODD_VARC And d.CODD_FLNM = 'PROGRAM_DONATUR' WHERE b.BUSS_CODE = '" + req.BUSS_CODE0 +  "' And f.ProgDonatur is not null And DATE_FORMAT(a.TransDate,'%Y-%m') like '" + period + "' And a.KODE_KLSX = '" + req.groupID + "' group by c.NAMA_UNIT, DATE_FORMAT(a.TransDate,'%Y-%m'), d.CODD_DESC";
+        }
+
+        if (typePerson === '1' && typeRelawan === '06') {   // typePerson 1: Relawan, typeRelawan 06: Relawan
+            sql = "select c.NAMA_UNIT, DATE_FORMAT(a.TransDate,'%Y-%m') As TahunBulan, CONCAT(MONTHNAME(a.TransDate),' ',YEAR(a.TransDate)) As BulanTahun, d.CODD_DESC As ProgramDonatur, IFNULL(e.CODD_DESC, '') As SegmenProfil, COUNT(distinct a.DonaturID) As JumlahDonatur, COUNT(f.Amount_item) As JumlahTransaksi, SUM(f.Amount_item) As JumlahDonasi FROM trans_donatur a inner join tb11_mzjb b on a.DonaturID = b.NO_ID inner join tb00_unit c on b.BUSS_CODE = c.KODE_UNIT left join (select * from tb00_basx where CODD_FLNM = 'SEGMENT_PROFILING') e on b.SEGMX_PROF = e.CODD_VALU inner join trans_item f on a.TransNumber = f.TransNumber left join tb00_basx d on f.ProgDonatur = d.CODD_VALU And f.BUSS_CODE = d.CODD_VARC And d.CODD_FLNM = 'PROGRAM_DONATUR' inner join tb01_lgxh e on b.RelawanID = e.NO_ID WHERE b.BUSS_CODE = '" + req.BUSS_CODE0 +  "' And f.ProgDonatur is not null And DATE_FORMAT(a.TransDate,'%Y-%m') like '" + period + "' And UPPER(e.USER_IDXX) = '" + req.userID.toUpperCase() + "' group by c.NAMA_UNIT, DATE_FORMAT(a.TransDate,'%Y-%m'), d.CODD_DESC";
+        }
 
         db.query(sql, function(err, rows, fields) {
             res.send(rows);
@@ -1527,7 +1563,19 @@ export default class Donatur {
     }
 
     getSummaryTransactionPerMonth = function(req, res) {
-        var sql = "select c.NAMA_UNIT, c.KODE_UNIT, SUM(a.Amount) As JumlahDonasi, SUM(Case a.isValidate When '1' Then a.Amount Else 0 End) As JumlahValidasi, SUM(Case d.CHKX_BANK When '1' Then a.Amount Else 0 End) As JumlahTransfer, SUM(Case d.CHKX_BANK When '0' Then a.Amount Else 0 End) As JumlahTunai FROM trans_donatur a inner join tb11_mzjb b on a.DonaturID = b.NO_ID inner join tb00_unit c on b.BUSS_CODE = c.KODE_UNIT left join tb02_bank d on a.MethodPayment = d.KODE_BANK And d.KODE_FLNM = 'TYPE_BYRX' And b.BUSS_CODE = d.BUSS_CODE WHERE b.BUSS_CODE = '" + req.BUSS_CODE0 + "' And MONTH(a.TransDate) = MONTH(NOW()) And YEAR(a.TransDate) = YEAR(NOW()) group by c.NAMA_UNIT";
+        var typePerson = req.TYPE_PRSON0;
+        var typeRelawan = req.TypeRelawan0;
+        var sql = '';
+
+        sql = "select c.NAMA_UNIT, c.KODE_UNIT, SUM(a.Amount) As JumlahDonasi, SUM(Case a.isValidate When '1' Then a.Amount Else 0 End) As JumlahValidasi, SUM(Case d.CHKX_BANK When '1' Then a.Amount Else 0 End) As JumlahTransfer, SUM(Case d.CHKX_BANK When '0' Then a.Amount Else 0 End) As JumlahTunai FROM trans_donatur a inner join tb11_mzjb b on a.DonaturID = b.NO_ID inner join tb00_unit c on b.BUSS_CODE = c.KODE_UNIT left join tb02_bank d on a.MethodPayment = d.KODE_BANK And d.KODE_FLNM = 'TYPE_BYRX' And b.BUSS_CODE = d.BUSS_CODE WHERE b.BUSS_CODE = '" + req.BUSS_CODE0 + "' And MONTH(a.TransDate) = MONTH(NOW()) And YEAR(a.TransDate) = YEAR(NOW()) group by c.NAMA_UNIT";
+
+        if (typePerson === '1' && typeRelawan <= '05') {  // TypePerson 1: Relawan,  TypeRelawan 05: Bendahara Group
+            sql = "select c.NAMA_UNIT, c.KODE_UNIT, SUM(a.Amount) As JumlahDonasi, SUM(Case a.isValidate When '1' Then a.Amount Else 0 End) As JumlahValidasi, SUM(Case d.CHKX_BANK When '1' Then a.Amount Else 0 End) As JumlahTransfer, SUM(Case d.CHKX_BANK When '0' Then a.Amount Else 0 End) As JumlahTunai FROM trans_donatur a inner join tb11_mzjb b on a.DonaturID = b.NO_ID inner join tb00_unit c on b.BUSS_CODE = c.KODE_UNIT left join tb02_bank d on a.MethodPayment = d.KODE_BANK And d.KODE_FLNM = 'TYPE_BYRX' And b.BUSS_CODE = d.BUSS_CODE WHERE b.BUSS_CODE = '" + req.BUSS_CODE0 + "' And MONTH(a.TransDate) = MONTH(NOW()) And YEAR(a.TransDate) = YEAR(NOW()) And a.KODE_KLSX = '" + req.groupID + "' group by c.NAMA_UNIT";
+        }
+
+        if (typePerson === '1' && typeRelawan === '06') {  // TypePerson 1: Relawan,  TypeRelawan 06: Relawan
+            sql = "select c.NAMA_UNIT, c.KODE_UNIT, SUM(a.Amount) As JumlahDonasi, SUM(Case a.isValidate When '1' Then a.Amount Else 0 End) As JumlahValidasi, SUM(Case d.CHKX_BANK When '1' Then a.Amount Else 0 End) As JumlahTransfer, SUM(Case d.CHKX_BANK When '0' Then a.Amount Else 0 End) As JumlahTunai FROM trans_donatur a inner join tb11_mzjb b on a.DonaturID = b.NO_ID inner join tb00_unit c on b.BUSS_CODE = c.KODE_UNIT left join tb02_bank d on a.MethodPayment = d.KODE_BANK And d.KODE_FLNM = 'TYPE_BYRX' And b.BUSS_CODE = d.BUSS_CODE inner join tb01_lgxh e on b.RelawanID = e.NO_ID WHERE b.BUSS_CODE = '" + req.BUSS_CODE0 + "' And MONTH(a.TransDate) = MONTH(NOW()) And YEAR(a.TransDate) = YEAR(NOW()) And UPPER(e.USER_IDXX) = '" + req.userID.toUpperCase() + "' group by c.NAMA_UNIT";
+        }
 
         db.query(sql, function(err, rows, fields) {
             res.send(rows);
@@ -1846,8 +1894,6 @@ export default class Donatur {
                     sql += ',("' + req.body.TransNumber + '","' + req.body.BUSS_CODE + '","' + req.body.THNX_BUKU + '","' + req.body.KodeNik + '","' + req.body.KODE_KLSX + '","' + progDonaturs[i] + '",' + amountItems[i] + ',"' + notes[i] + '","' + tglNow + '","' + req.userID + '")';
                 }
             }
-
-            console.log(sql);
 
             db.query(sqlDelete, (err, result) => {
                 if (err) {
