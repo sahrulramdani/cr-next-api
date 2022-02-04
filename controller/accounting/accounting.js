@@ -314,7 +314,7 @@ export default class Accounting {
         }
 
         summaryBank = (request, response) => {
-            var qryCmd = "select b.BUSS_CODE, b.CURR_MNYX, b.CHKX_BANK, SUM(IFNULL(c.TotalDebit,0)) As TotalDebit, SUM(IFNULL(c.TotalKredit,0)) As TotalKredit, SUM(a.VALU_SLDO) As TotalSaldo from tb02_bnkh a inner join tb02_bank b on a.KODE_BANK = b.KODE_BANK left join (select Bank, SUM(Case DK When 'D' Then Amount Else 0 End) As TotalDebit, SUM(Case DK When 'K' Then Amount Else 0 End) As TotalKredit from tblMutasi where MONTH(TransDate) = MONTH(NOW()) And YEAR(TransDate) = YEAR(NOW()) group by Bank) c on b.KODE_BANK = c.Bank where b.BUSS_CODE = '" + request.BUSS_CODE0 + "' group by b.BUSS_CODE, b.CURR_MNYX, b.CHKX_BANK";
+            var qryCmd = "select b.BUSS_CODE, b.CURR_MNYX, b.CHKX_BANK, SUM(IFNULL(c.TotalDebit,0)) As TotalDebit, SUM(IFNULL(c.TotalKredit,0)) As TotalKredit, SUM(a.VALU_SLDO) As TotalSaldo FROM tb02_bnkh a inner join tb02_bank b on a.KODE_BANK = b.KODE_BANK left join (select Bank, SUM(Case DK When 'D' Then Amount Else 0 End) As TotalDebit, SUM(Case DK When 'K' Then Amount Else 0 End) As TotalKredit from tblMutasi where MONTH(TransDate) = MONTH(NOW()) And YEAR(TransDate) = YEAR(NOW()) group by Bank) c on b.KODE_BANK = c.Bank inner join tb00_unit d on b.BUSS_CODE = d.KODE_UNIT where d.KODE_URUT like '" + request.KODE_URUT0 + "%' group by b.BUSS_CODE, b.CURR_MNYX, b.CHKX_BANK";
 
             db.query(qryCmd, function(err, rows, fields) {
                 response.send(rows);
@@ -322,7 +322,7 @@ export default class Accounting {
         }
 
         getSaldoBank = (request, response) => {
-            var qryCmd = "select a.*, DATE_FORMAT(a.UPDT_DATE, '%e-%b-%Y') As TglFormat, b.NAMA_BANK from tb02_bnkh a inner join tb02_bank b on a.KODE_BANK = b.KODE_BANK where b.BUSS_CODE = '" + request.BUSS_CODE0 + "' And AccountID is not null";
+            var qryCmd = "select a.*, DATE_FORMAT(a.UPDT_DATE, '%e-%b-%Y') As TglFormat, b.NAMA_BANK from tb02_bnkh a inner join tb02_bank b on a.KODE_BANK = b.KODE_BANK inner join tb00_unit c on b.BUSS_CODE = c.KODE_UNIT where c.KODE_URUT like '" + request.KODE_URUT0 + "%' And AccountID is not null";
 
             db.query(qryCmd, function(err, rows, fields) {
                 response.send(rows);
