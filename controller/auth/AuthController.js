@@ -98,7 +98,7 @@ export default class AuthController {
         }
 
         verifyToken = function(req, res, next) {
-            var path = req.url;
+            var path = req.url.split('?')[0];
             var token = req.headers['x-access-token'];
             if (!token) {
               return res.status(403).send({ 

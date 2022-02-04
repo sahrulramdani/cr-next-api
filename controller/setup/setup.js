@@ -459,7 +459,7 @@ export default class Setup {
         var authDelt = request.AUTH_DELT;
         var authAppr = request.AUTH_APPR;  // auth Approve
 
-        var qryCmd = "select * from tb02_bank where KODE_FLNM = 'KASX_BANK' And (IsDelete <> '1' Or IsDelete is Null) order by KODE_BANK";
+        var qryCmd = "select a.* from tb02_bank a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where a.KODE_FLNM = 'KASX_BANK' And (a.IsDelete <> '1' Or a.IsDelete is Null) And b.KODE_URUT like '" + request.KODE_URUT0 + "%' order by a.KODE_BANK";
         db.query(qryCmd, function(err, rows, fields) {
             var output = [];
 
@@ -479,7 +479,16 @@ export default class Setup {
                 })
             }
 
-            response.send(output);
+            const filters = request.query;
+            const filteredUsers = output.filter(item => {
+                let isValid = true;
+                for (var key in filters) {
+                  isValid = isValid && item[key] == filters[key];
+                }
+                return isValid;
+              });
+
+            response.send(filteredUsers);
         });
     }
 
@@ -490,7 +499,7 @@ export default class Setup {
         var authDelt = request.AUTH_DELT;
         var authAppr = request.AUTH_APPR;  // auth Approve
 
-        var qryCmd = "select * from tb02_bank where KODE_FLNM = 'TYPE_BYRX' And (IsDelete <> '1' Or IsDelete is Null) order by KODE_BANK";
+        var qryCmd = "select a.* from tb02_bank a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where a.KODE_FLNM = 'TYPE_BYRX' And (a.IsDelete <> '1' Or a.IsDelete is Null) And b.KODE_URUT like '" + request.KODE_URUT0 + "%' order by a.KODE_BANK";
         db.query(qryCmd, function(err, rows, fields) {
             var output = [];
 
@@ -510,7 +519,16 @@ export default class Setup {
                 })
             }
 
-            response.send(output);
+            const filters = request.query;
+            const filteredUsers = output.filter(item => {
+                let isValid = true;
+                for (var key in filters) {
+                  isValid = isValid && item[key] == filters[key];
+                }
+                return isValid;
+              });
+
+            response.send(filteredUsers);
         });
     }
 
@@ -1037,6 +1055,7 @@ export default class Setup {
             AccountID : req.body.AccountID === '' ? null : req.body.AccountID,
             CHKX_BANK : req.body.CHKX_BANK,
             CHKX_CASH : req.body.CHKX_CASH,
+            KODE_KASX_BANK : req.body.KODE_KASX_BANK === undefined ? '' : req.body.KODE_KASX_BANK,
             CRTX_DATE : new Date(),
             CRTX_BYXX : req.userID
         };
@@ -1141,7 +1160,7 @@ export default class Setup {
         var authAppr = req.AUTH_APPR;  // auth Approve
 
         var id = req.params.id;
-        var sql = 'SELECT * FROM `tb02_bank` WHERE KODE_BANK = "'+ id +'" And KODE_FLNM = "KASX_BANK"';
+        var sql = 'SELECT a.* FROM `tb02_bank` a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT WHERE a.KODE_BANK = "'+ id +'" And a.KODE_FLNM = "KASX_BANK" And b.KODE_URUT like "' + req.KODE_URUT0 + '%"';
         db.query(sql, function(err, rows, fields) {
             var output = [];
 
@@ -1173,7 +1192,7 @@ export default class Setup {
         var authAppr = req.AUTH_APPR;  // auth Approve
 
         var id = req.params.id;
-        var sql = 'SELECT * FROM `tb02_bank` WHERE KODE_BANK = "'+ id +'" And KODE_FLNM = "TYPE_BYRX"';
+        var sql = 'SELECT a.* FROM `tb02_bank` a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT WHERE a.KODE_BANK = "'+ id +'" And a.KODE_FLNM = "TYPE_BYRX" And b.KODE_URUT like "' + req.KODE_URUT0 + '%"';
         db.query(sql, function(err, rows, fields) {
             var output = [];
 
