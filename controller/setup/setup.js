@@ -990,6 +990,12 @@ export default class Setup {
             KODE_LOKX : req.body.KODE_LOKX,
             KODE_URUT : req.body.KODE_URUT,
             SequenceUnitCode : req.body.SequenceUnitCode,
+            Alamat : req.body.Alamat,
+            Email : req.body.Email,
+            Tertanda : req.body.Tertanda,
+            Website : req.body.Website,
+            SK_Menkumham : req.body.SK_Menkumham,
+            Hotline : req.body.Hotline,
             Active : req.body.Active,
             UPDT_DATE : new Date(),
             UPDT_BYXX : req.userID
