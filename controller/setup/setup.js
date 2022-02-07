@@ -234,7 +234,7 @@ export default class Setup {
         var authDelt = request.AUTH_DELT;
         var authAppr = request.AUTH_APPR;  // auth Approve
 
-        var qryCmd = "select a.* from tb00_basx a inner join tb00_unit b on a.CODD_VARC = b.KODE_UNIT And a.CODD_FLNM = 'PROGRAM_DONATUR' where b.KODE_URUT like '" + request.KODE_URUT0 + "%' order by a.CODD_VALU";
+        var qryCmd = "select a.*, c.CODD_DESC As CategoryDonasi from tb00_basx a inner join tb00_unit b on a.CODD_VARC = b.KODE_UNIT And a.CODD_FLNM = 'PROGRAM_DONATUR' left join tb00_basx c on a.CODD_VAR1 = c.CODD_VALU And c.CODD_FLNM = 'KATEGORI_DONASI' where b.KODE_URUT like '" + request.KODE_URUT0 + "%' order by a.CODD_VALU";
         db.query(qryCmd, function(err, rows, fields) {
             var output = [];
 
@@ -824,6 +824,34 @@ export default class Setup {
         }
     }
 
+    updateSetupProgDonatur = function(req, res) {
+        var type = req.body.CODD_FLNM;
+        var value = req.body.CODD_VALU;
+        
+        var sql = 'UPDATE tb00_basx SET ? WHERE CODD_VALU = "' + value + '" AND CODD_FLNM = "' + type + '" AND CODD_VARC = "' + req.body.CODD_VARC + '"';
+        var data = {
+            CODD_DESC : req.body.CODD_DESC,
+            CODD_VAR1 : req.body.CODD_VAR1,
+            UPDT_DATE : new Date(),
+            UPDT_BYXX : req.userID
+        };
+        
+        db.query(sql, data, (err, result) => {
+            if (err) {
+                console.log('Error', err);
+
+                res.send({
+                    status: false,
+                    message: err.sqlMessage
+                });
+            } else {
+                res.send({
+                    status: true
+                });
+            }
+        });
+    }
+
     saveTypeProgramDonatur = function(req, res) {
         var sql = 'INSERT INTO typeslp SET ?';
         var data = {
@@ -1109,7 +1137,7 @@ export default class Setup {
         }
         
         var id = req.body.id;
-        var sql = 'UPDATE tb02_bank SET ? WHERE KODE_BANK = "' + id + '" And KODE_FLNM = "' + req.body.KODE_FLNM + '"';
+        var sql = 'UPDATE tb02_bank SET ? WHERE KODE_BANK = "' + id + '" And KODE_FLNM = "' + req.body.KODE_FLNM + '" And BUSS_CODE = "' + req.body.BUSS_CODE + '"';
         var data = {
             NAMA_BANK : req.body.NAMA_BANK,
             NOXX_REKX : req.body.NOXX_REKX,

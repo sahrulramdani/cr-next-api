@@ -95,6 +95,7 @@ import * as C from './controller/index.js';
       app.route('/crm/setup/type-program-donatur/update').post(C.auth.verifyToken, C.setup.updateTypeProgramDonatur);
       app.route('/crm/setup/type-program-donatur/delete').post(C.auth.verifyToken, C.setup.deleteTypeProgramDonatur);
       app.route('/crm/setup/type-program-donatur/:id').get(C.auth.verifyToken, C.setup.getTypeProgramDonatur);
+      app.route('/crm/setup/prog-donatur/update').post(C.auth.verifyToken, C.setup.updateSetupProgDonatur);
       app.route('/crm/setup/prog-donaturs').get(C.auth.verifyToken, C.setup.donaturProgAll);
       app.route('/crm/setup/segmen-profils').get(C.auth.verifyToken, C.setup.segmenProfilAll);
       app.route('/crm/setup/category-donations').get(C.auth.verifyToken, C.setup.categoryDonasiAll);
