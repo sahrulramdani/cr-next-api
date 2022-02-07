@@ -996,6 +996,7 @@ export default class Setup {
             Website : req.body.Website,
             SK_Menkumham : req.body.SK_Menkumham,
             Hotline : req.body.Hotline,
+            FileName : req.body.FileName,
             Active : req.body.Active,
             UPDT_DATE : new Date(),
             UPDT_BYXX : req.userID
