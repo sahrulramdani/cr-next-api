@@ -171,7 +171,7 @@ export default class Setup {
             "WHEN 'PLATINUM' Then 'P' "  +
             "ELSE b.CODD_VARC " +
         "End As Level " +
-        "from typeslp a left join (select * from tb00_basx where CODD_FLNM = 'TYPE_DONATUR') b on a.TypeDonaturMin = b.CODD_DESC order by a.id";
+        "from typeslp a left join tb00_basx b on a.TypeDonaturMin = b.CODD_DESC And b.CODD_FLNM = 'TYPE_DONATUR' order by a.id";
         
         db.query(qryCmd, function(err, rows, fields) {
             var output = [];

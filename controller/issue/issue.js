@@ -11,7 +11,7 @@ export default class Issue {
         var authDelt = request.AUTH_DELT;
         var authAppr = request.AUTH_APPR;  // auth Approve
 
-        var qryCmd = "select a.ACCT_CODE as id, a.ACCT_NAMA, b.CODD_DESC, CASE a.STATUS WHEN '1' THEN 'VERIFIKASI' ELSE 'NON-VERIFIKASI' END As STATUS from tb50_rish a left join (select * from tb00_basx where CODD_FLNM='BUSSINESS_UNIT') b on a.CABX_CODE = b.CODD_VALU";
+        var qryCmd = "select a.ACCT_CODE as id, a.ACCT_NAMA, b.CODD_DESC, CASE a.STATUS WHEN '1' THEN 'VERIFIKASI' ELSE 'NON-VERIFIKASI' END As STATUS from tb50_rish a left join tb00_basx b on a.CABX_CODE = b.CODD_VALU And b.CODD_FLNM = 'BUSSINESS_UNIT'";
         db.query(qryCmd, function(err, rows, fields) {
             var output = [];
 
