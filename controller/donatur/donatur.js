@@ -547,7 +547,7 @@ export default class Donatur {
             AlamatDomisili : req.body.AlamatDomisili,
             NoHP : req.body.NoHP,
             CodeCountryHP : req.body.CodeCountryHP,
-            Email : req.body.Email,
+            'a.Email' : req.body.Email,
             TMPX_LHRX : req.body.TMPX_LHRX,
             TGLX_LHRX : req.body.TGLX_LHRX,
             NoKTP : req.body.NoKTP,
@@ -670,9 +670,22 @@ export default class Donatur {
                 //update File Path to /download/:id
                 sql = 'update tb52_0001 set FilePath = CONCAT(FilePath, LAST_INSERT_ID()) where id = LAST_INSERT_ID()';
                 db.query(sql, (err2, result2) => {
-                    res.send({
-                        status: true
-                    });
+                    if (req.body.FlgSaveDetSlpa === '1') {
+                        var tglNow = moment(new Date()).format('YYYY-MM-DD');
+
+                        sql = 'INSERT INTO tb52_slpb (transNumber, fileID, CRTX_DATE, CRTX_BYXX) VALUES ("' + req.body.transNumber + '", LAST_INSERT_ID(), "' + tglNow + '", "' + req.userID + '")';   
+
+                        db.query(sql, (err2, result2) => {
+                            res.send({
+                                status: true
+                            });
+                        });
+                        
+                    } else {
+                        res.send({
+                            status: true
+                        });
+                    }
                 });
             }
         });
@@ -951,14 +964,14 @@ export default class Donatur {
 
         var qryCmd = '';
         if (status === 'all') {
-            qryCmd = "select a.*, DATE_FORMAT(a.tglProses, '%d/%m/%Y') As tglProsesFormat, b.CODD_DESC As TypeProgram2, " + 
+            qryCmd = "select a.*, DATE_FORMAT(a.tglProses, '%d/%m/%Y') As tglProsesFormat, b.Description As TypeProgram2, " + 
             "Case a.status " + 
             "When '1' Then 'SEND'" + 
             "Else 'NOT SEND YET'" +
             "End As Status2 " +
-            "from tb52_slpa a left join tb00_basx b on a.typeProgram = b.CODD_VALU And b.CODD_FLNM = 'TYPE_PROGRAM_DONATUR' inner join tb00_unit c on a.unit = c.KODE_UNIT where c.KODE_URUT like '" + request.KODE_URUT0 + "%' order by a.transNumber";
+            "from tb52_slpa a left join typeslp b on a.typeProgram = b.id inner join tb00_unit c on a.unit = c.KODE_UNIT where c.KODE_URUT like '" + request.KODE_URUT0 + "%' order by a.transNumber";
         } else {
-            qryCmd = "select a.transNumber, CONCAT(IFNULL(e.CodeCountryHP, ''), e.NoHP) As NoHP2, a.Message, f.FilePath, CONCAT(f.fileID, '|', f.FileName) As FileName, e.TITLE, e.NAMA, e.NICK_NAME FROM tb52_slpa a left join tb00_basx b on a.typeProgram = b.CODD_VALU And b.CODD_FLNM = 'TYPE_PROGRAM_DONATUR' inner join tb00_unit c on a.unit = c.KODE_UNIT inner join tb52_slpc d on a.transNumber = d.transNumber inner join tb11_mzjb e on d.donaturID = e.NO_ID left join vslpattach f on a.transNumber = f.transNumber where c.KODE_URUT like '" + request.KODE_URUT0 + "%' And d.status = '" + status + "' And a.Message is not null order by a.transNumber";
+            qryCmd = "select a.transNumber, CONCAT(IFNULL(e.CodeCountryHP, ''), e.NoHP) As NoHP2, a.Message, f.FilePath, CONCAT(f.fileID, '|', f.FileName) As FileName, e.TITLE, e.NAMA, e.NICK_NAME FROM tb52_slpa a left join typeslp b on a.typeProgram = b.id inner join tb00_unit c on a.unit = c.KODE_UNIT inner join tb52_slpc d on a.transNumber = d.transNumber inner join tb11_mzjb e on d.donaturID = e.NO_ID left join vslpattach f on a.transNumber = f.transNumber where c.KODE_URUT like '" + request.KODE_URUT0 + "%' And d.status = '" + status + "' And a.Message is not null order by a.transNumber";
         }
 
         db.query(qryCmd, function(err, rows, fields) {
@@ -1019,7 +1032,7 @@ export default class Donatur {
 
         var transNumber = req.params.id;
 
-        var sql = 'SELECT a.*, c.CODD_VARC As Level FROM tb52_slpa a LEFT JOIN tb00_basx b ON a.typeProgram = b.CODD_VALU And b.CODD_FLNM = "TYPE_PROGRAM_DONATUR" LEFT JOIN tb00_basx c ON b.CODD_VARC = c.CODD_DESC And c.CODD_FLNM = "TYPE_DONATUR" WHERE a.transNumber = "'+ transNumber +'"';
+        var sql = 'SELECT a.*, c.CODD_VARC As Level FROM tb52_slpa a LEFT JOIN typeslp b ON a.typeProgram = b.id LEFT JOIN tb00_basx c ON b.TypeDonaturMin = c.CODD_DESC And c.CODD_FLNM = "TYPE_DONATUR" WHERE a.transNumber = "'+ transNumber +'"';
         db.query(sql, function(err, rows, fields) {
             var output = [];
 
@@ -1093,7 +1106,7 @@ export default class Donatur {
         var authDelt = request.AUTH_DELT;
         var authAppr = request.AUTH_APPR;  // auth Approve
 
-        var qryCmd = "select a.*, b.Description As TypeProgram2 from tb52_0001 a inner join typeslp b on a.typeProgram = b.id order by a.id desc";
+        var qryCmd = "select a.*, b.Description As TypeProgram2 from tb52_0001 a inner join typeslp b on a.typeProgram = b.id where a.TypeProgram <> '14' order by a.id desc";
 
         db.query(qryCmd, function(err, rows, fields) {
             var output = [];

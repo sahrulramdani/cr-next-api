@@ -142,7 +142,6 @@ export default class User {
                 'a.UPDT_DATE' : new Date(),
                 'a.UPDT_BYXX' : req.userID
             };
-             
         } else {
             hashedPassword = bcrypt.hashSync(req.body.Password, 8);
             data = {
