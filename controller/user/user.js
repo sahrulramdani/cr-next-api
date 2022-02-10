@@ -339,6 +339,7 @@ export default class User {
             AUTH_EDIT : req.body.AUTH_EDIT,
             AUTH_DELT : req.body.AUTH_DELT,
             AUTH_APPR : req.body.AUTH_APPR,
+            AUTH_PRNT : req.body.AUTH_PRNT,
             CRTX_DATE : new Date(),
             CRTX_BYXX : req.userID
         };
@@ -423,6 +424,7 @@ export default class User {
             AUTH_EDIT : req.body.AUTH_EDIT,
             AUTH_DELT : req.body.AUTH_DELT,
             AUTH_APPR : req.body.AUTH_APPR,
+            AUTH_PRNT : req.body.AUTH_PRNT,
             CRTX_DATE : new Date(),
             CRTX_BYXX : req.userID
         };
@@ -508,7 +510,7 @@ export default class User {
             return;
         }
 
-        var sql = 'INSERT INTO `role_menu` (ROLE_IDXX, PROC_CODE, PATH, BUSS_CODE, MDUL_CODE, TYPE_MDUL, RIGH_AUTH, AUTH_ADDX, AUTH_EDIT, AUTH_DELT) SELECT "' + req.body.ROLE_IDXX + '" As ROLE_IDXX, PROC_CODE, PATH, BUSS_CODE, MDUL_CODE, TYPE_MDUL, "1" As RIGH_AUTH, "1" As AUTH_ADDX, "1" As AUTH_EDIT, "1" As AUTH_DELT from `tb01_proc` where BUSS_CODE = "' + req.body.BUSS_CODE + '"';
+        var sql = 'INSERT INTO `role_menu` (ROLE_IDXX, PROC_CODE, PATH, BUSS_CODE, MDUL_CODE, TYPE_MDUL, RIGH_AUTH, AUTH_ADDX, AUTH_EDIT, AUTH_DELT, AUTH_APPR, AUTH_PRNT) SELECT "' + req.body.ROLE_IDXX + '" As ROLE_IDXX, PROC_CODE, PATH, BUSS_CODE, MDUL_CODE, TYPE_MDUL, "1" As RIGH_AUTH, "1" As AUTH_ADDX, "1" As AUTH_EDIT, "1" As AUTH_DELT, "1" As AUTH_APPR, "1" As AUTH_PRNT from `tb01_proc` where BUSS_CODE = "' + req.body.BUSS_CODE + '"';
         
         db.query(sql, (err, result) => {
             if (err) {
@@ -530,7 +532,7 @@ export default class User {
     saveAllDetPrivilege = function(req, res) {
         var tgl = moment(new Date()).format('YYYY-MM-DD');
 
-        var sql = 'INSERT INTO `tb01_usrd` (USER_IDXX, PROC_CODE, PATH, BUSS_CODE, MDUL_CODE, TYPE_MDUL, RIGH_AUTH, AUTH_ADDX, AUTH_EDIT, AUTH_DELT, AUTH_APPR, CRTX_DATE, CRTX_BYXX) SELECT "' + req.body.USER_IDXX + '" As USER_IDXX, PROC_CODE, PATH, BUSS_CODE, MDUL_CODE, TYPE_MDUL, RIGH_AUTH, AUTH_ADDX, AUTH_EDIT, AUTH_DELT, AUTH_APPR, "' + tgl + '","' + req.userID + '" from `role_menu` where BUSS_CODE = "' + req.body.BUSS_CODE + '" AND ROLE_IDXX = ' + req.body.ROLE_IDXX;
+        var sql = 'INSERT INTO `tb01_usrd` (USER_IDXX, PROC_CODE, PATH, BUSS_CODE, MDUL_CODE, TYPE_MDUL, RIGH_AUTH, AUTH_ADDX, AUTH_EDIT, AUTH_DELT, AUTH_APPR, AUTH_PRNT, CRTX_DATE, CRTX_BYXX) SELECT "' + req.body.USER_IDXX + '" As USER_IDXX, PROC_CODE, PATH, BUSS_CODE, MDUL_CODE, TYPE_MDUL, RIGH_AUTH, AUTH_ADDX, AUTH_EDIT, AUTH_DELT, AUTH_APPR, AUTH_PRNT, "' + tgl + '","' + req.userID + '" from `role_menu` where BUSS_CODE = "' + req.body.BUSS_CODE + '" AND ROLE_IDXX = ' + req.body.ROLE_IDXX;
         
         db.query(sql, (err, result) => {
             if (err) {
@@ -557,6 +559,7 @@ export default class User {
         });
     }
 
+    // update role privilege
     updateDetPrivilege = function(req, res) {
         // check Access PROC_CODE 
         if (fncCheckProcCode(req.body.ProcCode, req.procCodes) === false) {
@@ -577,6 +580,7 @@ export default class User {
             AUTH_EDIT : req.body.AUTH_EDIT,
             AUTH_DELT : req.body.AUTH_DELT,
             AUTH_APPR : req.body.AUTH_APPR,
+            AUTH_PRNT : req.body.AUTH_PRNT,
             UPDT_DATE : new Date(),
             UPDT_BYXX : req.userID
         };
@@ -635,6 +639,7 @@ export default class User {
             AUTH_EDIT : req.body.AUTH_EDIT,
             AUTH_DELT : req.body.AUTH_DELT,
             AUTH_APPR : req.body.AUTH_APPR,
+            AUTH_PRNT : req.body.AUTH_PRNT,
             UPDT_DATE : new Date(),
             UPDT_BYXX : req.userID
         };

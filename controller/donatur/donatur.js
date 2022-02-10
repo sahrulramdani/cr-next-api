@@ -242,6 +242,7 @@ export default class Donatur {
         var authEdit = req.AUTH_EDIT;
         var authDelt = req.AUTH_DELT;
         var authAppr = req.AUTH_APPR;  // auth Approve
+        var authPrnt = req.AUTH_PRNT;
 
         var level = req.params.level;
         var sql = '';
@@ -266,6 +267,7 @@ export default class Donatur {
                     obj['AUTH_EDIT'] = authEdit;
                     obj['AUTH_DELT'] = authDelt;
                     obj['AUTH_APPR'] = authAppr;
+                    obj['AUTH_PRNT'] = authPrnt;
 
                     output.push(obj);
                 })
@@ -969,7 +971,7 @@ export default class Donatur {
             "When '1' Then 'SEND'" + 
             "Else 'NOT SEND YET'" +
             "End As Status2 " +
-            "from tb52_slpa a left join typeslp b on a.typeProgram = b.id inner join tb00_unit c on a.unit = c.KODE_UNIT where c.KODE_URUT like '" + request.KODE_URUT0 + "%' order by a.transNumber";
+            "from tb52_slpa a left join typeslp b on a.typeProgram = b.id inner join tb00_unit c on a.unit = c.KODE_UNIT where c.KODE_URUT like '" + request.KODE_URUT0 + "%' order by a.tglProses DESC";
         } else {
             qryCmd = "select a.transNumber, CONCAT(IFNULL(e.CodeCountryHP, ''), e.NoHP) As NoHP2, a.Message, f.FilePath, CONCAT(f.fileID, '|', f.FileName) As FileName, e.TITLE, e.NAMA, e.NICK_NAME FROM tb52_slpa a left join typeslp b on a.typeProgram = b.id inner join tb00_unit c on a.unit = c.KODE_UNIT inner join tb52_slpc d on a.transNumber = d.transNumber inner join tb11_mzjb e on d.donaturID = e.NO_ID left join vslpattach f on a.transNumber = f.transNumber where c.KODE_URUT like '" + request.KODE_URUT0 + "%' And d.status = '" + status + "' And a.Message is not null order by a.transNumber";
         }
@@ -1251,6 +1253,7 @@ export default class Donatur {
         var authEdit = req.AUTH_EDIT;
         var authDelt = req.AUTH_DELT;
         var authAppr = req.AUTH_APPR;  // auth Approve
+        var authPrnt = req.AUTH_PRNT;
 
         var isValid = req.params.isValid;
         var bussCode = '%';
@@ -1286,6 +1289,7 @@ export default class Donatur {
                     obj['AUTH_EDIT'] = authEdit;
                     obj['AUTH_DELT'] = authDelt;
                     obj['AUTH_APPR'] = authAppr;
+                    obj['AUTH_PRNT'] = authPrnt;
 
                     output.push(obj);
                 })
@@ -1402,6 +1406,7 @@ export default class Donatur {
         var authEdit = req.AUTH_EDIT;
         var authDelt = req.AUTH_DELT;
         var authAppr = req.AUTH_APPR;  // auth Approve
+        var authPrnt = req.AUTH_PRNT;
 
         var id = req.params.id;
 
@@ -1421,6 +1426,7 @@ export default class Donatur {
                     obj['AUTH_EDIT'] = authEdit;
                     obj['AUTH_DELT'] = authDelt;
                     obj['AUTH_APPR'] = authAppr;
+                    obj['AUTH_PRNT'] = authPrnt;
                     obj['TYPE_PRSON'] = req.TYPE_PRSON0;
 
                     output.push(obj);
@@ -1456,6 +1462,8 @@ export default class Donatur {
     }
 
     getTransactionsPerChannel = function(req, res) {
+        var authPrnt = req.AUTH_PRNT;
+
         var tgl1 = req.params.tgl1;
         var tgl2 = req.params.tgl2;
 
@@ -1470,6 +1478,8 @@ export default class Donatur {
                     for(var key in row) {
                         obj[key] = row[key]; 
                     }
+
+                    obj['AUTH_PRNT'] = authPrnt;
     
                     output.push(obj);
                 })
@@ -1520,6 +1530,7 @@ export default class Donatur {
         var authEdit = req.AUTH_EDIT;
         var authDelt = req.AUTH_DELT;
         var authAppr = req.AUTH_APPR;  // auth Approve
+        var authPrnt = req.AUTH_PRNT;
 
         var isValid = req.params.isValid;
         var sql = '';
@@ -1546,6 +1557,7 @@ export default class Donatur {
                     obj['AUTH_EDIT'] = authEdit;
                     obj['AUTH_DELT'] = authDelt;
                     obj['AUTH_APPR'] = authAppr;
+                    obj['AUTH_PRNT'] = authPrnt;
 
                     output.push(obj);
                 })
@@ -1556,23 +1568,59 @@ export default class Donatur {
     }
 
     getSummaryTransaction = function(req, res) {
+        var authPrnt = req.AUTH_PRNT;
+
         var sql = "select c.NAMA_UNIT, DATE_FORMAT(a.TransDate,'%Y-%m') As TahunBulan, CONCAT(MONTHNAME(a.TransDate),' ',YEAR(a.TransDate)) As BulanTahun, IFNULL(d.CODD_DESC, '') As Channel, COUNT(distinct a.DonaturID) As JumlahDonatur, COUNT(a.Amount) As JumlahTransaksi, SUM(a.Amount) As JumlahDonasi, ROUND(SUM(a.Amount)/COUNT(distinct a.DonaturID),2) As SendGiving, (COUNT(distinct a.DonaturID)/MAX(GetDaysOfMonth(a.TransDate))) As AverageDonatur, (COUNT(a.Amount)/MAX(GetDaysOfMonth(a.TransDate))) As AverageTransaksi, ROUND(SUM(a.Amount)/MAX(GetDaysOfMonth(a.TransDate)), 2) As AverageDonasi FROM trans_donatur a inner join tb11_mzjb b on a.DonaturID = b.NO_ID inner join tb00_unit c on b.BUSS_CODE = c.KODE_UNIT left join tb00_basx d on b.Channel = d.CODD_VALU And d.CODD_FLNM = 'CHANNEL_DONATUR' WHERE b.BUSS_CODE = '" + req.BUSS_CODE0 +  "' group by c.NAMA_UNIT, DATE_FORMAT(a.TransDate,'%Y-%m'), d.CODD_DESC";
 
         db.query(sql, function(err, rows, fields) {
-            res.send(rows);
+            var output = [];
+    
+            if (rows.length > 0) {
+                rows.forEach(function(row) {
+                    var obj = new Object();
+                    for(var key in row) {
+                        obj[key] = row[key]; 
+                    }
+
+                    obj['AUTH_PRNT'] = authPrnt;
+    
+                    output.push(obj);
+                })
+            }
+    
+            res.send(output);
         });
     }
 
     getSummaryTransactionPerWeek = function(req, res) {
+        var authPrnt = req.AUTH_PRNT;
+
         var sql = "select c.NAMA_UNIT, CONCAT(DATE_FORMAT(a.TransDate,'%Y-%m'),' ',WEEK(TransDate, 3) - " + 
         "WEEK(a.TransDate - INTERVAL DAY(a.TransDate)-1 DAY, 3) + 1) As TahunBulan, CONCAT(MONTHNAME(a.TransDate),' ',YEAR(a.TransDate),' Week ',WEEK(a.TransDate, 3) - WEEK(a.TransDate - INTERVAL DAY(a.TransDate)-1 DAY, 3) + 1) As BulanTahun, IFNULL(d.CODD_DESC, '') As Channel, GetDaysOfMonth(a.TransDate) As JumlahHari, COUNT(distinct a.DonaturID) As JumlahDonatur, COUNT(a.Amount) As JumlahTransaksi, SUM(a.Amount) As JumlahDonasi, ROUND(SUM(a.Amount)/COUNT(distinct a.DonaturID),2) As SendGiving FROM trans_donatur a inner join tb11_mzjb b on a.DonaturID = b.NO_ID inner join tb00_unit c on b.BUSS_CODE = c.KODE_UNIT left join tb00_basx d on b.Channel = d.CODD_VALU And d.CODD_FLNM = 'CHANNEL_DONATUR' WHERE b.BUSS_CODE = '" + req.BUSS_CODE0 +  "' group by c.NAMA_UNIT, CONCAT(DATE_FORMAT(a.TransDate,'%Y-%m'),' ',WEEK(TransDate, 3) - " + "WEEK(a.TransDate - INTERVAL DAY(a.TransDate)-1 DAY, 3) + 1), d.CODD_DESC";
 
         db.query(sql, function(err, rows, fields) {
-            res.send(rows);
+            var output = [];
+    
+            if (rows.length > 0) {
+                rows.forEach(function(row) {
+                    var obj = new Object();
+                    for(var key in row) {
+                        obj[key] = row[key]; 
+                    }
+
+                    obj['AUTH_PRNT'] = authPrnt;
+    
+                    output.push(obj);
+                })
+            }
+    
+            res.send(output);
         });
     }
 
     getSummaryTransactionPerProgram = function(req, res) {
+        var authPrnt = req.AUTH_PRNT;
+
         var typePerson = req.TYPE_PRSON0;
         var typeRelawan = req.TypeRelawan0;
 
@@ -1593,7 +1641,22 @@ export default class Donatur {
         }
 
         db.query(sql, function(err, rows, fields) {
-            res.send(rows);
+            var output = [];
+    
+            if (rows.length > 0) {
+                rows.forEach(function(row) {
+                    var obj = new Object();
+                    for(var key in row) {
+                        obj[key] = row[key]; 
+                    }
+
+                    obj['AUTH_PRNT'] = authPrnt;
+    
+                    output.push(obj);
+                })
+            }
+    
+            res.send(output);
         });
     }
 

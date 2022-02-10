@@ -154,7 +154,7 @@ export default class AuthController {
                             req.AUTH_EDIT = userAccess.AUTH_EDIT;
                             req.AUTH_DELT = userAccess.AUTH_DELT;
                             req.AUTH_APPR = userAccess.AUTH_APPR;
-                            req.AUTH_PRNT = userAccess.AUTH_PRNT;
+                            req.AUTH_PRNT = userAccess.AUTH_PRNT;   // access utk print atau export file
 
                             req.BUSS_CODE0 = userAccess.BUSS_CODE;
                             req.KODE_URUT0 = userAccess.KODE_URUT;
