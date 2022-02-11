@@ -1322,7 +1322,7 @@ export default class Donatur {
             'a.BUSS_CODE' : req.body.BUSS_CODE,
             CurrencyID : req.body.CurrencyID,
             Amount : req.body.Amount,
-            FileName : req.body.FileName,
+            'a.FileName' : req.body.FileName,
             MethodPayment : req.body.MethodPayment,
             TransactionIDSLP : req.body.TransactionIDSLP,
             BankFrom : req.body.BankFrom,

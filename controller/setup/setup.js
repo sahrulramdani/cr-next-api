@@ -1146,6 +1146,7 @@ export default class Setup {
             AccountID : req.body.AccountID === '' ? null : req.body.AccountID,
             CHKX_BANK : req.body.CHKX_BANK,
             CHKX_CASH : req.body.CHKX_CASH,
+            KODE_KASX_BANK : req.body.KODE_KASX_BANK,
             IsDelete : req.body.IsDelete,
             UPDT_DATE : new Date(),
             UPDT_BYXX : req.userID
@@ -1195,7 +1196,7 @@ export default class Setup {
         var authAppr = req.AUTH_APPR;  // auth Approve
 
         var id = req.params.id;
-        var sql = 'SELECT a.* FROM `tb02_bank` a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT WHERE a.KODE_BANK = "'+ id +'" And a.KODE_FLNM = "KASX_BANK" And b.KODE_URUT like "' + req.KODE_URUT0 + '%"';
+        var sql = 'SELECT a.* FROM `tb02_bank` a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT WHERE a.id = "'+ id +'" And a.KODE_FLNM = "KASX_BANK" And b.KODE_URUT like "' + req.KODE_URUT0 + '%"';
         db.query(sql, function(err, rows, fields) {
             var output = [];
 
@@ -1227,7 +1228,7 @@ export default class Setup {
         var authAppr = req.AUTH_APPR;  // auth Approve
 
         var id = req.params.id;
-        var sql = 'SELECT a.* FROM `tb02_bank` a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT WHERE a.KODE_BANK = "'+ id +'" And a.KODE_FLNM = "TYPE_BYRX" And b.KODE_URUT like "' + req.KODE_URUT0 + '%"';
+        var sql = 'SELECT a.* FROM `tb02_bank` a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT WHERE a.id = ' + id + ' And a.KODE_FLNM = "TYPE_BYRX" And b.KODE_URUT like "' + req.KODE_URUT0 + '%"';
         db.query(sql, function(err, rows, fields) {
             var output = [];
 
