@@ -12,6 +12,7 @@ import * as C from './controller/index.js';
       app.route('/setup/wilayah-kerjas').get(C.auth.verifyToken, C.setup.wilayahKerjaAll);
       app.route('/setup/bank-umums').get(C.auth.verifyToken, C.setup.bankUmumAll);
       app.route('/setup/departments').get(C.auth.verifyToken, C.setup.departmentAll);
+      app.route('/setup/unit/banks/:bussCode').get(C.auth.verifyToken, C.setup.getDetUnitBanks);
       app.route('/setup/unit/save').post(C.auth.verifyToken, C.setup.saveUnit);
       app.route('/setup/unit/update').post(C.auth.verifyToken, C.setup.updateUnit);
       app.route('/setup/unit/delete').post(C.auth.verifyToken, C.setup.deleteUnit);

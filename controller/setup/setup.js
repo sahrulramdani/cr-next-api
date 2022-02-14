@@ -427,7 +427,40 @@ export default class Setup {
         var authAppr = req.AUTH_APPR;  // auth Approve
 
         var id = req.params.id;
-        var sql = 'SELECT * FROM `tb00_unit` WHERE KODE_UNIT = "'+ id +'" ';
+        var sql = 'SELECT * FROM `tb00_unit` WHERE KODE_UNIT = "' + id + '"';
+
+        db.query(sql, function(err, rows, fields) {
+            var output = [];
+
+            if (rows.length > 0) {
+                rows.forEach(function(row) {
+                    var obj = new Object();
+                    for(var key in row) {
+                        obj[key] = row[key];
+                    }
+
+                    obj['AUTH_ADDX'] = authAdd;
+                    obj['AUTH_EDIT'] = authEdit;
+                    obj['AUTH_DELT'] = authDelt;
+                    obj['AUTH_APPR'] = authAppr;
+
+                    output.push(obj);
+                })
+            }
+
+            res.send(output);
+        });
+    }
+
+    getDetUnitBanks = function(req, res) {
+        // get user Access
+        var authAdd = req.AUTH_ADDX;
+        var authEdit = req.AUTH_EDIT;
+        var authDelt = req.AUTH_DELT;
+        var authAppr = req.AUTH_APPR;  // auth Approve
+
+        var bussCode = req.params.bussCode;
+        var sql = 'SELECT * FROM `tb00_basx` WHERE CODD_FLNM = "BANK_UNIT" And CODD_VARC = "' + bussCode + '" And CODD_VAR1 = "1" order by CODD_VALU';
 
         db.query(sql, function(err, rows, fields) {
             var output = [];
