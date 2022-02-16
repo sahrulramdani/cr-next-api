@@ -104,7 +104,14 @@ export default class Setup {
         var authDelt = request.AUTH_DELT;
         var authAppr = request.AUTH_APPR;  // auth Approve
 
-        var qryCmd = "select * from tb00_basx where CODD_FLNM = 'TYPE_RELAWAN' order by CODD_VALU";
+        var qryCmd;
+
+        if (request.TYPE_PRSON0 === '4') { // 4: Officer
+            qryCmd = "select * from tb00_basx where CODD_FLNM = 'TYPE_RELAWAN' order by CODD_VALU";
+        } else {
+            qryCmd = "select * from tb00_basx where CODD_FLNM = 'TYPE_RELAWAN' And CODD_VALU >= '" + request.TypeRelawan0 + "' order by CODD_VALU";
+        }
+
         db.query(qryCmd, function(err, rows, fields) {
             var output = [];
 
