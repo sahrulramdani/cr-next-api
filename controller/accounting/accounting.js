@@ -91,12 +91,13 @@ export default class Accounting {
             var authEdit = request.AUTH_EDIT;
             var authDelt = request.AUTH_DELT;
             var authAppr = request.AUTH_APPR;  // auth Approve
+            const filters = request.query;
 
             var bankID = request.params.bankID;
             var limit = request.params.limit;
             var offset = request.params.offset;
 
-            var qryCmd = "select a.*, DATE_FORMAT(a.TransDate, '%d/%m/%Y %H:%i') As TransDateFormat, DATE_FORMAT(a.ValutaDate, '%d/%m/%Y %H:%i') As ValutaDateFormat from tblMutasi a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where a.Bank = '" + bankID + "' And b.KODE_URUT like '" + request.KODE_URUT0 + "%' order by a.TransDate desc LIMIT " + limit + " OFFSET " + offset;
+            var qryCmd = "select a.*, DATE_FORMAT(a.TransDate, '%d/%m/%Y %H:%i') As TransDateFormat, DATE_FORMAT(a.ValutaDate, '%d/%m/%Y %H:%i') As ValutaDateFormat from tblMutasi a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where a.Bank = '" + bankID + "' And b.KODE_URUT like '" + request.KODE_URUT0 + "%' And a.NoReference like '%" + filters.NoReference + "%' And  a.Keterangan like '%" + filters.Keterangan + "%' order by a.TransDate desc LIMIT " + limit + " OFFSET " + offset;
 
             db.query(qryCmd, function(err, rows, fields) {
                 var output = [];
@@ -331,8 +332,9 @@ export default class Accounting {
 
         getCountMutasi = (request, response) => {
             var bankID = request.params.bankID;
+            const filters = request.query;
 
-            var qryCmd = "select COUNT(*) As TotalData from tblMutasi a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where a.Bank = '" + bankID + "' And b.KODE_URUT like '" + request.KODE_URUT0 + "%'";
+            var qryCmd = "select COUNT(*) As TotalData from tblMutasi a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where a.Bank = '" + bankID + "' And b.KODE_URUT like '" + request.KODE_URUT0 + "%' And a.NoReference like '%" + filters.NoReference + "%' And a.Keterangan like '%" + filters.Keterangan + "%'";
 
             db.query(qryCmd, function(err, rows, fields) {
                 response.send(rows);
