@@ -235,7 +235,7 @@ export default class Karyawan {
         var authAppr = req.AUTH_APPR;  // auth Approve
 
         var nik = req.params.id;
-        var sql = 'SELECT a.*, b.NAMA_UNIT, c.IDXX_GRPX FROM tb21_empl a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT LEFT JOIN tblRelawanDet c ON a.KodeNik = c.RelawanID WHERE a.KodeNik = "'+ nik +'" And b.KODE_URUT like "' + req.KODE_URUT0 + '%" ';
+        var sql = 'SELECT a.*, b.NAMA_UNIT, c.IDXX_GRPX, d.CODD_DESC As TypeRelawanLbl FROM tb21_empl a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT LEFT JOIN tblRelawanDet c ON a.KodeNik = c.RelawanID left join tb00_basx d on a.TypeRelawan = d.CODD_VALU And d.CODD_FLNM = "TYPE_RELAWAN" WHERE a.KodeNik = "'+ nik +'" And b.KODE_URUT like "' + req.KODE_URUT0 + '%" ';
         
         db.query(sql, function(err, rows, fields) {
             var output = [];
@@ -289,7 +289,7 @@ export default class Karyawan {
             AlamatDomisili : req.body.AlamatDomisili,
             Hp : req.body.Hp,
             CodeCountryHP : req.body.CodeCountryHP,
-            email : req.body.email,
+            'a.email' : req.body.email,
             TempatLahir : req.body.TempatLahir,
             TglLahir : req.body.TglLahir,
             NoKTP : req.body.NoKTP,
