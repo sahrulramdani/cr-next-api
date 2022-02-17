@@ -499,7 +499,7 @@ export default class Setup {
         var authDelt = request.AUTH_DELT;
         var authAppr = request.AUTH_APPR;  // auth Approve
 
-        var qryCmd = "select a.* from tb02_bank a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where a.KODE_FLNM = 'KASX_BANK' And (a.IsDelete <> '1' Or a.IsDelete is Null) And b.KODE_URUT like '" + request.KODE_URUT0 + "%' order by a.KODE_BANK";
+        var qryCmd = "select a.* from tb02_bank a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where a.KODE_FLNM = 'KASX_BANK' And b.KODE_URUT like '" + request.KODE_URUT0 + "%' order by a.KODE_BANK";
         db.query(qryCmd, function(err, rows, fields) {
             var output = [];
 
@@ -539,7 +539,7 @@ export default class Setup {
         var authDelt = request.AUTH_DELT;
         var authAppr = request.AUTH_APPR;  // auth Approve
 
-        var qryCmd = "select a.* from tb02_bank a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where a.KODE_FLNM = 'TYPE_BYRX' And (a.IsDelete <> '1' Or a.IsDelete is Null) And b.KODE_URUT like '" + request.KODE_URUT0 + "%' order by a.KODE_BANK";
+        var qryCmd = "select a.* from tb02_bank a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where a.KODE_FLNM = 'TYPE_BYRX' And b.KODE_URUT like '" + request.KODE_URUT0 + "%' order by a.KODE_BANK";
         db.query(qryCmd, function(err, rows, fields) {
             var output = [];
 
@@ -1210,7 +1210,7 @@ export default class Setup {
 
     deleteBank = function(req, res) {
         var id = req.body.id;
-        var sql = "update `tb02_bank` set IsDelete = '1' where KODE_BANK = '" + id + "' And KODE_FLNM = '" + req.body.KODE_FLNM + "'";
+        var sql = "delete from `tb02_bank` where id = " + id;
         
         db.query(sql, (err, result) => {
             if (err) {
