@@ -1017,7 +1017,7 @@ export default class Setup {
             KETX_UNIT : req.body.NAMA_UNIT,
             KODE_LOKX : req.body.KODE_LOKX,
             SequenceUnitCode : req.body.SequenceUnitCode,
-            KODE_URUT : req.body.KODE_URUT,
+            // KODE_URUT : req.body.KODE_URUT,
             Active : req.body.Active,
             CRTX_DATE : new Date(),
             CRTX_BYXX : req.userID
@@ -1056,7 +1056,7 @@ export default class Setup {
             NAMA_UNIT : req.body.NAMA_UNIT,
             KETX_UNIT : req.body.NAMA_UNIT,
             KODE_LOKX : req.body.KODE_LOKX,
-            KODE_URUT : req.body.KODE_URUT,
+            // KODE_URUT : req.body.KODE_URUT,
             SequenceUnitCode : req.body.SequenceUnitCode,
             Alamat : req.body.Alamat,
             Email : req.body.Email,

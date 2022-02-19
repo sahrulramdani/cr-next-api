@@ -89,7 +89,7 @@ export default class Karyawan {
                                 // insert to tabel relawan detail
                                 var tglNow = moment(new Date()).format('YYYY-MM-DD');
 
-                                sql = 'insert into tblRelawanDet (RelawanID, IDXX_GRPX, CRTXX_BYXX, CRTXX_DATE) values ("' + kodeNik + '", "' + req.body.IDXX_GRPX + '", "' + req.userID + '", "' + tglNow + '")';
+                                sql = 'insert into tblRelawanDet (RelawanID, IDXX_GRPX, CRTX_BYXX, CRTX_DATE) values ("' + kodeNik + '", "' + req.body.IDXX_GRPX + '", "' + req.userID + '", "' + tglNow + '")';
 
                                 db.query(sql, (err2, result2) => {
                                     res.send({
