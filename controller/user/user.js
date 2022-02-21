@@ -10,8 +10,18 @@ export default class User {
         var authAdd = request.AUTH_ADDX;
         var authEdit = request.AUTH_EDIT;
         var authDelt = request.AUTH_DELT;
+        var typePerson = request.TYPE_PRSON0;
+        var typeRelawan = request.TypeRelawan0;
 
-        var qryCmd = "select a.USER_IDXX, a.BUSS_CODE, a.KETX_USER, CASE a.Active WHEN '1' THEN 'ACTIVE' ELSE 'NON-ACTIVE' END As Active, CASE a.IsValid WHEN '1' THEN 'VALID' ELSE 'NON-VALID' END As IsValid, b.Nama, c.RoleName from tb01_lgxh a LEFT JOIN (select a.Nik, a.Nama from (select KodeNik As Nik, NamaKry As Nama from tb21_empl UNION select No_ID, NAMA from tb11_mzjb) a group by a.Nik) b ON a.NO_ID = b.Nik LEFT JOIN role c ON a.TemplateRoleID = c.id LEFT JOIN tb00_unit d ON a.BUSS_CODE = d.KODE_UNIT WHERE d.KODE_URUT like '" + request.KODE_URUT0 + "%' OR a.BUSS_CODE = '00' And a.Active = '1' order by a.USER_IDXX";
+        var qryCmd = "select a.USER_IDXX, a.BUSS_CODE, a.KETX_USER, CASE a.Active WHEN '1' THEN 'ACTIVE' ELSE 'NON-ACTIVE' END As Active, CASE a.IsValid WHEN '1' THEN 'VALID' ELSE 'NON-VALID' END As IsValid, b.Nama, c.RoleName from tb01_lgxh a LEFT JOIN (select a.Nik, a.Nama from (select KodeNik As Nik, NamaKry As Nama from tb21_empl UNION select No_ID, NAMA from tb11_mzjb) a group by a.Nik) b ON a.NO_ID = b.Nik LEFT JOIN role c ON a.TemplateRoleID = c.id LEFT JOIN tb00_unit d ON a.BUSS_CODE = d.KODE_UNIT WHERE (d.KODE_URUT like '" + request.KODE_URUT0 + "%' OR a.BUSS_CODE = '00') And a.Active = '1' order by a.USER_IDXX";
+
+        if (typePerson === '1' && typeRelawan <= '04') {  // 1: Relawan, 04: Korra
+            qryCmd = "select a.USER_IDXX, a.BUSS_CODE, a.KETX_USER, CASE a.Active WHEN '1' THEN 'ACTIVE' ELSE 'NON-ACTIVE' END As Active, CASE a.IsValid WHEN '1' THEN 'VALID' ELSE 'NON-VALID' END As IsValid, b.Nama, c.RoleName from tb01_lgxh a LEFT JOIN (select a.Nik, a.Nama from (select KodeNik As Nik, NamaKry As Nama from tb21_empl UNION select No_ID, NAMA from tb11_mzjb) a group by a.Nik) b ON a.NO_ID = b.Nik LEFT JOIN role c ON a.TemplateRoleID = c.id LEFT JOIN tb00_unit d ON a.BUSS_CODE = d.KODE_UNIT left join vfirst_relawandet e on b.Nik = e.RelawanID left join grpx_relx f on e.groupID = f.IDXX_GRPX WHERE (d.KODE_URUT like '" + request.KODE_URUT0 + "%' OR a.BUSS_CODE = '00') And a.Active = '1' And f.KodeKelurahan like '" + request.KODE_AREA0 + "%' order by a.USER_IDXX";
+        }
+
+        if (typePerson === '1' && typeRelawan === '05') {  // 1: Relawan, 05: Bendahara group
+            qryCmd = "select a.USER_IDXX, a.BUSS_CODE, a.KETX_USER, CASE a.Active WHEN '1' THEN 'ACTIVE' ELSE 'NON-ACTIVE' END As Active, CASE a.IsValid WHEN '1' THEN 'VALID' ELSE 'NON-VALID' END As IsValid, b.Nama, c.RoleName from tb01_lgxh a LEFT JOIN (select a.Nik, a.Nama from (select KodeNik As Nik, NamaKry As Nama from tb21_empl UNION select No_ID, NAMA from tb11_mzjb) a group by a.Nik) b ON a.NO_ID = b.Nik LEFT JOIN role c ON a.TemplateRoleID = c.id LEFT JOIN tb00_unit d ON a.BUSS_CODE = d.KODE_UNIT left join vfirst_relawandet e on b.Nik = e.RelawanID left join grpx_relx f on e.groupID = f.IDXX_GRPX WHERE (d.KODE_URUT like '" + request.KODE_URUT0 + "%' OR a.BUSS_CODE = '00') And a.Active = '1' And f.IDXX_GRPX = '" + request.groupID + "' order by a.USER_IDXX";
+        }
 
         db.query(qryCmd, function(err, rows, fields) {
             var output = [];
@@ -744,6 +754,7 @@ export default class User {
                 PASS_IDXX : hashedPassword,
                 KETX_USER : req.body.KETX_USER,
                 BUSS_CODE : req.body.BUSS_CODE,
+                TYPE_PRSON: req.body.TYPE_PRSON,
                 Active : req.body.Active,
                 IsValid : req.body.IsValid,
                 Email : req.body.Email,
