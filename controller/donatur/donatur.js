@@ -1284,6 +1284,10 @@ export default class Donatur {
                 if (typeRelawan === '05') {   // 05: Bendahara group
                     sql = 'SELECT a.*, b.NAMA, CONCAT(b.NO_ID, " - ", b.NAMA) As Donatur2, DATE_FORMAT(TransDate, "%Y%m%d") As TransDateFormat, d.CODD_DESC As Channel, e.TahunDonasi, b.TITLE, CONCAT(IFNULL(b.CodeCountryHP, ""), b.NoHP) As NoHP2, f.CODD_DESC As ProgDonatur, g.Department, h.NAMA_BANK As Bank, i.CODD_DESC As SegmenProfil, c.NAMA_UNIT, CASE b.Stat_aktf When "1" Then "AKTIF" Else "NON-AKTIF" END As Active, j.Amount_item As Amount FROM trans_donatur a inner join tb11_mzjb b on a.donaturID = b.NO_ID inner join tb00_unit c on b.BUSS_CODE = c.KODE_UNIT left join tb00_basx d on b.Channel = d.CODD_VALU And d.CODD_FLNM = "CHANNEL_DONATUR" left join vfirst_transaction e on a.DonaturID = e.DonaturID left join vdepartment g on a.CRTX_BYXX = g.USER_IDXX left join tb02_bank h on a.BankTo = h.KODE_BANK And h.KODE_FLNM = "KASX_BANK" left join tb00_basx i on b.SEGMX_PROF = i.CODD_VALU And i.CODD_FLNM = "SEGMENT_PROFILING" inner join trans_item j on a.TransNumber = j.TransNumber left join tb00_basx f on j.ProgDonatur = f.CODD_VALU And j.BUSS_CODE = f.CODD_VARC And f.CODD_FLNM = "PROGRAM_DONATUR" left join tb00_unit k on a.BUSS_CODE = k.KODE_UNIT left join vfirst_relawandet l on b.RelawanID = l.RelawanID left join grpx_relx m on l.groupID = m.IDXX_GRPX WHERE a.isValidate in ("' + isValid + ') And (a.isDelete <> "1" OR a.isDelete IS NULL) And c.KODE_URUT like "' + req.KODE_URUT0 + '%" And k.KODE_URUT like "%' + req.KODE_URUT0 + '%" And m.IDXX_GRPX = "' + req.groupID + '" order by c.KODE_URUT, a.TransDate Desc, a.TransNumber';
                 }
+
+                if (typeRelawan === '06') {   // 05: Relawan
+                    sql = 'SELECT a.*, b.NAMA, CONCAT(b.NO_ID, " - ", b.NAMA) As Donatur2, DATE_FORMAT(TransDate, "%Y%m%d") As TransDateFormat, d.CODD_DESC As Channel, e.TahunDonasi, b.TITLE, CONCAT(IFNULL(b.CodeCountryHP, ""), b.NoHP) As NoHP2, f.CODD_DESC As ProgDonatur, g.Department, h.NAMA_BANK As Bank, i.CODD_DESC As SegmenProfil, c.NAMA_UNIT, CASE b.Stat_aktf When "1" Then "AKTIF" Else "NON-AKTIF" END As Active, j.Amount_item As Amount FROM trans_donatur a inner join tb11_mzjb b on a.donaturID = b.NO_ID inner join tb00_unit c on b.BUSS_CODE = c.KODE_UNIT left join tb00_basx d on b.Channel = d.CODD_VALU And d.CODD_FLNM = "CHANNEL_DONATUR" left join vfirst_transaction e on a.DonaturID = e.DonaturID left join vdepartment g on a.CRTX_BYXX = g.USER_IDXX left join tb02_bank h on a.BankTo = h.KODE_BANK And h.KODE_FLNM = "KASX_BANK" left join tb00_basx i on b.SEGMX_PROF = i.CODD_VALU And i.CODD_FLNM = "SEGMENT_PROFILING" inner join trans_item j on a.TransNumber = j.TransNumber left join tb00_basx f on j.ProgDonatur = f.CODD_VALU And j.BUSS_CODE = f.CODD_VARC And f.CODD_FLNM = "PROGRAM_DONATUR" left join tb00_unit k on a.BUSS_CODE = k.KODE_UNIT left join tb01_lgxh l on b.RelawanID = l.NO_ID WHERE a.isValidate in ("' + isValid + ') And (a.isDelete <> "1" OR a.isDelete IS NULL) And c.KODE_URUT like "' + req.KODE_URUT0 + '%" And k.KODE_URUT like "%' + req.KODE_URUT0 + '%" And UPPER(l.USER_IDXX) = "' + req.userID.toUpperCase() + '" order by c.KODE_URUT, a.TransDate Desc, a.TransNumber';
+                }
             }
         }
 
@@ -1785,7 +1789,7 @@ export default class Donatur {
                 qryCmd = "select a.* from grpx_relx a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where b.KODE_UNIT = '" + request.BUSS_CODE0 + "' And a.KodeKelurahan like '" + request.KODE_AREA0 + "%'";
             }
 
-            if (typeRelawan === '05') {  // 05: Bendahara Group
+            if (typeRelawan >= '05') {  // 05: Bendahara Group
                 qryCmd = "select a.* from grpx_relx a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where b.KODE_UNIT = '" + request.BUSS_CODE0 + "' And a.IDXX_GRPX = '" + request.groupID + "'";
             }
         } else {
