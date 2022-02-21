@@ -148,7 +148,7 @@ export default class User {
                 IsValid : req.body.IsValid,
                 TYPE_PRSON : typePrson,
                 NamaFile : req.body.NamaFile,
-                TemplateRoleID : req.body.TemplateRoleID,
+                TemplateRoleID : req.body.TemplateRoleID === '' ? null : req.body.TemplateRoleID,
                 'a.UPDT_DATE' : new Date(),
                 'a.UPDT_BYXX' : req.userID
             };
