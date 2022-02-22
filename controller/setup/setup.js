@@ -467,7 +467,7 @@ export default class Setup {
         var authAppr = req.AUTH_APPR;  // auth Approve
 
         var bussCode = req.params.bussCode;
-        var sql = 'SELECT * FROM `tb00_basx` WHERE CODD_FLNM = "BANK_UNIT" And CODD_VARC = "' + bussCode + '" And CODD_VAR1 = "1" order by CODD_VALU';
+        var sql = 'SELECT * FROM `tb02_bank` WHERE KODE_FLNM = "KASX_BANK" And BUSS_CODE = "' + bussCode + '" And CHKX_BANK = "1" And IsShow = "1" order by KODE_BANK';
 
         db.query(sql, function(err, rows, fields) {
             var output = [];
