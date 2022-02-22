@@ -139,7 +139,7 @@ export default class User {
 
         var hashedPassword;
         var data;
-        if (req.body.password === undefined) {
+        if (req.body.Password === undefined) {
             data = {
                 BUSS_CODE : bussCode,
                 KETX_USER : req.body.KETX_USER,
@@ -158,7 +158,7 @@ export default class User {
                 BUSS_CODE : bussCode,
                 KETX_USER : req.body.KETX_USER,
                 NO_ID : req.body.NO_ID,
-                Active : req.body.Active,
+                'a.Active' : req.body.Active,
                 IsValid : req.body.IsValid,
                 TYPE_PRSON : typePrson,
                 NamaFile : req.body.NamaFile,
@@ -520,9 +520,11 @@ export default class User {
             return;
         }
 
-        var sql = 'INSERT INTO `role_menu` (ROLE_IDXX, PROC_CODE, PATH, BUSS_CODE, MDUL_CODE, TYPE_MDUL, RIGH_AUTH, AUTH_ADDX, AUTH_EDIT, AUTH_DELT, AUTH_APPR, AUTH_PRNT) SELECT "' + req.body.ROLE_IDXX + '" As ROLE_IDXX, PROC_CODE, PATH, BUSS_CODE, MDUL_CODE, TYPE_MDUL, "1" As RIGH_AUTH, "1" As AUTH_ADDX, "1" As AUTH_EDIT, "1" As AUTH_DELT, "1" As AUTH_APPR, "1" As AUTH_PRNT from `tb01_proc` where BUSS_CODE = "' + req.body.BUSS_CODE + '"';
+        var sql = 'INSERT INTO `role_menu` (ROLE_IDXX, PROC_CODE, PATH, BUSS_CODE, MDUL_CODE, TYPE_MDUL, RIGH_AUTH, AUTH_ADDX, AUTH_EDIT, AUTH_DELT, AUTH_APPR, AUTH_PRNT) SELECT "' + req.body.ROLE_IDXX + '" As ROLE_IDXX, PROC_CODE, PATH, BUSS_CODE, MDUL_CODE, TYPE_MDUL, "1" As RIGH_AUTH, "1" As AUTH_ADDX, "1" As AUTH_EDIT, "1" As AUTH_DELT, "1" As AUTH_APPR, "1" As AUTH_PRNT from `tb01_proc` where BUSS_CODE = "' + req.body.BUSS_CODE + '" And PROC_CODE <> "AL01"';
+
+        var sqlDelete = 'delete from role_menu where ROLE_IDXX = ' + req.body.ROLE_IDXX;
         
-        db.query(sql, (err, result) => {
+        db.query(sqlDelete, (err, result) => {
             if (err) {
                 console.log('Error', err);
 
@@ -531,8 +533,19 @@ export default class User {
                     message: err.sqlMessage
                 });
             } else {
-                res.send({
-                    status: true
+                db.query(sql, (err, result) => {
+                    if (err) {
+                        console.log('Error', err);
+        
+                        res.send({
+                            status: false,
+                            message: err.sqlMessage
+                        });
+                    } else {
+                        res.send({
+                            status: true
+                        });
+                    }
                 });
             }
         });
@@ -542,9 +555,11 @@ export default class User {
     saveAllDetPrivilege = function(req, res) {
         var tgl = moment(new Date()).format('YYYY-MM-DD');
 
-        var sql = 'INSERT INTO `tb01_usrd` (USER_IDXX, PROC_CODE, PATH, BUSS_CODE, MDUL_CODE, TYPE_MDUL, RIGH_AUTH, AUTH_ADDX, AUTH_EDIT, AUTH_DELT, AUTH_APPR, AUTH_PRNT, CRTX_DATE, CRTX_BYXX) SELECT "' + req.body.USER_IDXX + '" As USER_IDXX, PROC_CODE, PATH, BUSS_CODE, MDUL_CODE, TYPE_MDUL, RIGH_AUTH, AUTH_ADDX, AUTH_EDIT, AUTH_DELT, AUTH_APPR, AUTH_PRNT, "' + tgl + '","' + req.userID + '" from `role_menu` where BUSS_CODE = "' + req.body.BUSS_CODE + '" AND ROLE_IDXX = ' + req.body.ROLE_IDXX;
+        var sql = 'INSERT INTO `tb01_usrd` (USER_IDXX, PROC_CODE, PATH, BUSS_CODE, MDUL_CODE, TYPE_MDUL, RIGH_AUTH, AUTH_ADDX, AUTH_EDIT, AUTH_DELT, AUTH_APPR, AUTH_PRNT, CRTX_DATE, CRTX_BYXX) SELECT "' + req.body.USER_IDXX + '" As USER_IDXX, PROC_CODE, PATH, BUSS_CODE, MDUL_CODE, TYPE_MDUL, RIGH_AUTH, AUTH_ADDX, AUTH_EDIT, AUTH_DELT, AUTH_APPR, AUTH_PRNT, "' + tgl + '","' + req.userID + '" from `role_menu` where BUSS_CODE = "' + req.body.BUSS_CODE + '" AND PROC_CODE <> "AL01" ROLE_IDXX = ' + req.body.ROLE_IDXX;
+
+        var sqlDelete = 'delete from tb01_usrd where USER_IDXX = "' + req.body.USER_IDXX + '"';
         
-        db.query(sql, (err, result) => {
+        db.query(sqlDelete, (err, result) => {
             if (err) {
                 console.log('Error', err);
 
@@ -553,8 +568,19 @@ export default class User {
                     message: err.sqlMessage
                 });
             } else {
-                res.send({
-                    status: true
+                db.query(sql, (err, result) => {
+                    if (err) {
+                        console.log('Error', err);
+        
+                        res.send({
+                            status: false,
+                            message: err.sqlMessage
+                        });
+                    } else {
+                        res.send({
+                            status: true
+                        });
+                    }
                 });
             }
         });
@@ -746,7 +772,7 @@ export default class User {
                 return;
             }
 
-            var hashedPassword = bcrypt.hashSync(req.body.password, 8);
+            var hashedPassword = bcrypt.hashSync(req.body.Password, 8);
 
             var sql = 'INSERT INTO tb01_lgxh SET ?';
             var data = {
