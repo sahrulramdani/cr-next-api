@@ -1125,12 +1125,14 @@ export default class Setup {
             NOXX_REKX : req.body.NOXX_REKX,
             CURR_MNYX : req.body.CURR_MNYX,
             KODE_FLNM : req.body.KODE_FLNM,
-            BUSS_CODE : req.BUSS_CODE0,
+            BUSS_CODE : req.body.BUSS_CODE,
             NOXX_VAXX : req.body.NOXX_VAXX,
             AccountID : req.body.AccountID === '' ? null : req.body.AccountID,
             CHKX_BANK : req.body.CHKX_BANK,
             CHKX_CASH : req.body.CHKX_CASH,
             KODE_KASX_BANK : req.body.KODE_KASX_BANK === undefined ? '' : req.body.KODE_KASX_BANK,
+            KUIX_MASK : req.body.KUIX_MASK,
+            IsShow : req.body.IsShow,
             CRTX_DATE : new Date(),
             CRTX_BYXX : req.userID
         };
@@ -1176,17 +1178,20 @@ export default class Setup {
             return;
         }
         
-        var id = req.body.id;
-        var sql = 'UPDATE tb02_bank SET ? WHERE KODE_BANK = "' + id + '" And KODE_FLNM = "' + req.body.KODE_FLNM + '" And BUSS_CODE = "' + req.body.BUSS_CODE + '"';
+        var id = req.body.id;  // field tb02_bank.id
+        var sql = 'UPDATE tb02_bank SET ? WHERE id = ' + id;
         var data = {
             NAMA_BANK : req.body.NAMA_BANK,
             NOXX_REKX : req.body.NOXX_REKX,
             CURR_MNYX : req.body.CURR_MNYX,
+            BUSS_CODE : req.body.BUSS_CODE,
             NOXX_VAXX : req.body.NOXX_VAXX,
             AccountID : req.body.AccountID === '' ? null : req.body.AccountID,
             CHKX_BANK : req.body.CHKX_BANK,
             CHKX_CASH : req.body.CHKX_CASH,
             KODE_KASX_BANK : req.body.KODE_KASX_BANK,
+            KUIX_MASK : req.body.KUIX_MASK,
+            IsShow : req.body.IsShow,
             IsDelete : req.body.IsDelete,
             UPDT_DATE : new Date(),
             UPDT_BYXX : req.userID
