@@ -26,6 +26,7 @@ import * as C from './controller/index.js';
       app.route('/setup/method-payments').get(C.auth.verifyToken, C.setup.methodPaymentAll);
       app.route('/setup/method-payment/:id').get(C.auth.verifyToken, C.setup.getPaymentMethod);
       app.route('/setup/locations').get(C.auth.verifyToken, C.setup.locationAll);
+      app.route('/setup/code-areas').get(C.auth.verifyToken, C.setup.codeAreaAll);
       app.route('/setup/bussiness-units').get(C.auth.verifyToken, C.setup.bussinessUnitAll);
       app.route('/setup/kelompok-kerjas').get(C.auth.verifyToken, C.setup.kelompokKerjaAll);
       app.route('/setup/status-maritals').get(C.auth.verifyToken, C.setup.statusMaritalAll);

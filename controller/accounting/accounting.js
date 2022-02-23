@@ -98,7 +98,7 @@ export default class Accounting {
             var offset = request.params.offset;
 
             var qryCmd = "select a.*, DATE_FORMAT(a.TransDate, '%d/%m/%Y %H:%i') As TransDateFormat, DATE_FORMAT(a.ValutaDate, '%d/%m/%Y %H:%i') As ValutaDateFormat from tblMutasi a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where a.Bank = '" + bankID + "' And b.KODE_URUT like '" + request.KODE_URUT0 + "%' And a.NoReference like '%" + filters.NoReference + "%' And  a.Keterangan like '%" + filters.Keterangan + "%' order by a.TransDate desc LIMIT " + limit + " OFFSET " + offset;
-
+            
             db.query(qryCmd, function(err, rows, fields) {
                 var output = [];
 
