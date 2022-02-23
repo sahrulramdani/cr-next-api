@@ -662,7 +662,16 @@ export default class User {
                 })
             }
 
-            response.send(output);
+            const filters = request.query;
+            const filteredUsers = output.filter(item => {
+                let isValid = true;
+                for (var key in filters) {
+                  isValid = isValid && item[key] == filters[key];
+                }
+                return isValid;
+              });
+
+            response.send(filteredUsers);
         });
     }
 
@@ -806,8 +815,6 @@ export default class User {
     }
 
     getProcessPrivilege = function(req, res) {
-        /* var sql = 'select a.*, c.TYPE_PRSON, d.KODE_URUT from tb01_lgxh c left join tb01_usrd a on c.USER_IDXX = a.USER_IDXX inner join tb00_proc b on a.PROC_CODE = b.PROC_CODE And b.PATH = "' + req.body.path + '" inner join tb00_unit d on c.BUSS_CODE = d.KODE_UNIT where UPPER(c.USER_IDXX) = "' + req.userID.toUpperCase() + '"'; */
-
         var sql = 'select a.*, c.TYPE_PRSON, d.KODE_URUT from tb01_lgxh c left join (select a.* from tb01_usrd a inner join tb00_proc b on a.PROC_CODE = b.PROC_CODE And b.PATH = "' + req.body.path + '") a on c.USER_IDXX = a.USER_IDXX inner join tb00_unit d on c.BUSS_CODE = d.KODE_UNIT where UPPER(c.USER_IDXX) = "' + req.userID.toUpperCase() + '"';
 
         db.query(sql, function(err, rows, fields) {

@@ -1781,29 +1781,30 @@ export default class Donatur {
         
         var qryCmd = '';
         var typeRelawan = request.TypeRelawan0;
+        var typePerson = request.TYPE_PRSON0;
 
         if (request.params.bussCode === 'all') {
-            qryCmd = "select a.* from grpx_relx a where a.BUSS_CODE = '" + request.BUSS_CODE0 + "'";
+            qryCmd = "select a.* from grpx_relx a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where b.KODE_URUT like '" + request.KODE_URUT0 + "%'";
 
-            if (typeRelawan <= '04') { // 04: Korra
+            if (typePerson === '1' && typeRelawan <= '04') { // 1: Relawan,  04: Korra
                 qryCmd = "select a.* from grpx_relx a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where b.KODE_UNIT = '" + request.BUSS_CODE0 + "' And a.KodeKelurahan like '" + request.KODE_AREA0 + "%'";
             }
 
-            if (typeRelawan >= '05') {  // 05: Bendahara Group
+            if (typePerson === '1' && typeRelawan >= '05') {  // 05: Bendahara Group
                 qryCmd = "select a.* from grpx_relx a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where b.KODE_UNIT = '" + request.BUSS_CODE0 + "' And a.IDXX_GRPX = '" + request.groupID + "'";
             }
         } else {
             qryCmd = "select a.* from grpx_relx a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where a.BUSS_CODE = '" + request.params.bussCode + "' And b.KODE_URUT like '" + request.KODE_URUT0 + "%'";
 
-            if (typeRelawan === '06') {  // 06: Relawan
+            if (typePerson === '1' && typeRelawan === '06') {  // 06: Relawan
                 qryCmd = "select a.* from grpx_relx a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT inner join tb01_lgxh c on b.KODE_UNIT = c.BUSS_CODE inner join vfirst_relawandet d on c.NO_ID = d.RelawanID And d.groupID = a.IDXX_GRPX  WHERE a.BUSS_CODE = '" + request.params.bussCode + "' And b.KODE_URUT like '" + request.KODE_URUT0 + "%' And UPPER(c.USER_IDXX) = '" + request.userID.toUpperCase() + "'";
             }
 
-            if (typeRelawan <= '04') {
+            if (typePerson === '1' && typeRelawan <= '04') {
                 qryCmd = "select a.* from grpx_relx a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where a.BUSS_CODE = '" + request.params.bussCode + "' And b.KODE_URUT like '" + request.KODE_URUT0 + "%' And a.KodeKelurahan like '" + request.KODE_AREA0 + "%'";
             }
 
-            if (typeRelawan === '05') {  // 05: Bendahara Group
+            if (typePerson === '1' && typeRelawan === '05') {  // 05: Bendahara Group
                 qryCmd = "select a.* from grpx_relx a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where a.BUSS_CODE = '" + request.params.bussCode + "' And b.KODE_URUT like '" + request.KODE_URUT0 + "%' And a.IDXX_GRPX = '" + request.groupID + "'";
             }
         }
