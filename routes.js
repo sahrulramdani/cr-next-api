@@ -137,6 +137,7 @@ import * as C from './controller/index.js';
       app.route('/crm/donatur/save').post(C.auth.verifyToken, C.donatur.saveDonatur);
       app.route('/crm/donatur/update').post(C.auth.verifyToken, C.donatur.updateDonatur);
       app.route('/crm/donatur/:id').get(C.auth.verifyToken, C.donatur.getDonatur);
+      app.route('/crm/donatur').get(C.auth.verifyToken, C.donatur.getDonatur);
       app.route('/crm/idDonaturs/all').get(C.auth.verifyToken, C.donatur.idDonatursAll);
       app.route('/crm/idDonaturs/:status').get(C.auth.verifyToken, C.donatur.idDonaturs);
       app.route('/crm/transaction/item/delete').post(C.auth.verifyToken, C.donatur.deleteTransItem);

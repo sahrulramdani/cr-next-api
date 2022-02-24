@@ -16,7 +16,7 @@ export default class User {
         var qryCmd = "select a.USER_IDXX, a.BUSS_CODE, a.KETX_USER, CASE a.Active WHEN '1' THEN 'ACTIVE' ELSE 'NON-ACTIVE' END As Active, CASE a.IsValid WHEN '1' THEN 'VALID' ELSE 'NON-VALID' END As IsValid, b.Nama, c.RoleName from tb01_lgxh a LEFT JOIN (select a.Nik, a.Nama from (select KodeNik As Nik, NamaKry As Nama from tb21_empl UNION select No_ID, NAMA from tb11_mzjb) a group by a.Nik) b ON a.NO_ID = b.Nik LEFT JOIN role c ON a.TemplateRoleID = c.id LEFT JOIN tb00_unit d ON a.BUSS_CODE = d.KODE_UNIT WHERE (d.KODE_URUT like '" + request.KODE_URUT0 + "%' OR a.BUSS_CODE = '00') And a.Active = '1' order by a.USER_IDXX";
 
         if (typePerson === '1' && typeRelawan <= '04') {  // 1: Relawan, 04: Korra
-            qryCmd = "select a.USER_IDXX, a.BUSS_CODE, a.KETX_USER, CASE a.Active WHEN '1' THEN 'ACTIVE' ELSE 'NON-ACTIVE' END As Active, CASE a.IsValid WHEN '1' THEN 'VALID' ELSE 'NON-VALID' END As IsValid, b.Nama, c.RoleName from tb01_lgxh a LEFT JOIN (select a.Nik, a.Nama from (select KodeNik As Nik, NamaKry As Nama from tb21_empl UNION select No_ID, NAMA from tb11_mzjb) a group by a.Nik) b ON a.NO_ID = b.Nik LEFT JOIN role c ON a.TemplateRoleID = c.id LEFT JOIN tb00_unit d ON a.BUSS_CODE = d.KODE_UNIT left join vfirst_relawandet e on b.Nik = e.RelawanID left join grpx_relx f on e.groupID = f.IDXX_GRPX WHERE (d.KODE_URUT like '" + request.KODE_URUT0 + "%' OR a.BUSS_CODE = '00') And a.Active = '1' And f.KodeKelurahan like '" + request.KODE_AREA0 + "%' order by a.USER_IDXX";
+            qryCmd = "select a.USER_IDXX, a.BUSS_CODE, a.KETX_USER, CASE a.Active WHEN '1' THEN 'ACTIVE' ELSE 'NON-ACTIVE' END As Active, CASE a.IsValid WHEN '1' THEN 'VALID' ELSE 'NON-VALID' END As IsValid, b.Nama, c.RoleName from tb01_lgxh a LEFT JOIN (select a.Nik, a.Nama from (select KodeNik As Nik, NamaKry As Nama from tb21_empl UNION select No_ID, NAMA from tb11_mzjb) a group by a.Nik) b ON a.NO_ID = b.Nik LEFT JOIN role c ON a.TemplateRoleID = c.id LEFT JOIN tb00_unit d ON a.BUSS_CODE = d.KODE_UNIT left join vfirst_relawandet e on b.Nik = e.RelawanID left join grpx_relx f on e.groupID = f.IDXX_GRPX WHERE (d.KODE_URUT like '" + request.KODE_URUT0 + "%' OR a.BUSS_CODE = '00') AND a.Active = '1' AND (f.KodeKelurahan like '" + request.KODE_AREA0 + "%' OR e.groupID is null)  order by a.USER_IDXX";
         }
 
         if (typePerson === '1' && typeRelawan === '05') {  // 1: Relawan, 05: Bendahara group
@@ -99,7 +99,8 @@ export default class User {
         // get user Access
         var authEdit = req.AUTH_EDIT;
         
-        var sql = 'SELECT a.*, b.NAMA_UNIT, b.KODE_URUT FROM `tb01_lgxh` a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT WHERE UPPER(a.USER_IDXX) = "'+ req.userID.toUpperCase() +'" ';
+        var sql = 'SELECT a.*, b.NAMA_UNIT, b.KODE_URUT, c.groupID FROM `tb01_lgxh` a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT LEFT JOIN vfirst_relawandet c ON a.NO_ID = c.RelawanID WHERE UPPER(a.USER_IDXX) = "'+ req.userID.toUpperCase() +'" ';
+
         db.query(sql, function(err, rows, fields) {
             var output = [];
 
@@ -187,9 +188,22 @@ export default class User {
                 }
 
                 db.query(sql, (err, result) => {
-                    res.send({
-                        status: true
-                    });
+                    if (req.body.IDXX_GRPX !== '' && req.body.NO_ID !== '') {
+                        // tambahkan group ke relawan
+                        var tglNow = moment(new Date()).format('YYYY-MM-DD');
+                        sql = 'insert into tblRelawanDet (RelawanID, IDXX_GRPX, CRTX_BYXX, CRTX_DATE) values ("' + req.body.NO_ID + '", "' + req.body.IDXX_GRPX + '", "' + req.userID + '", "' + tglNow + '")';
+                        
+                        db.query(sql, (err2, result2) => {
+                            res.send({
+                                status: true
+                            });
+                        });
+
+                    } else {
+                        res.send({
+                            status: true
+                        });
+                    }
                 });
             }
         });
@@ -555,7 +569,7 @@ export default class User {
     saveAllDetPrivilege = function(req, res) {
         var tgl = moment(new Date()).format('YYYY-MM-DD');
 
-        var sql = 'INSERT INTO `tb01_usrd` (USER_IDXX, PROC_CODE, PATH, BUSS_CODE, MDUL_CODE, TYPE_MDUL, RIGH_AUTH, AUTH_ADDX, AUTH_EDIT, AUTH_DELT, AUTH_APPR, AUTH_PRNT, CRTX_DATE, CRTX_BYXX) SELECT "' + req.body.USER_IDXX + '" As USER_IDXX, PROC_CODE, PATH, BUSS_CODE, MDUL_CODE, TYPE_MDUL, RIGH_AUTH, AUTH_ADDX, AUTH_EDIT, AUTH_DELT, AUTH_APPR, AUTH_PRNT, "' + tgl + '","' + req.userID + '" from `role_menu` where BUSS_CODE = "' + req.body.BUSS_CODE + '" AND PROC_CODE <> "AL01" ROLE_IDXX = ' + req.body.ROLE_IDXX;
+        var sql = 'INSERT INTO `tb01_usrd` (USER_IDXX, PROC_CODE, PATH, BUSS_CODE, MDUL_CODE, TYPE_MDUL, RIGH_AUTH, AUTH_ADDX, AUTH_EDIT, AUTH_DELT, AUTH_APPR, AUTH_PRNT, CRTX_DATE, CRTX_BYXX) SELECT "' + req.body.USER_IDXX + '" As USER_IDXX, PROC_CODE, PATH, BUSS_CODE, MDUL_CODE, TYPE_MDUL, RIGH_AUTH, AUTH_ADDX, AUTH_EDIT, AUTH_DELT, AUTH_APPR, AUTH_PRNT, "' + tgl + '","' + req.userID + '" from `role_menu` where BUSS_CODE = "' + req.body.BUSS_CODE + '" AND PROC_CODE <> "AL01" And ROLE_IDXX = ' + req.body.ROLE_IDXX;
 
         var sqlDelete = 'delete from tb01_usrd where USER_IDXX = "' + req.body.USER_IDXX + '"';
         

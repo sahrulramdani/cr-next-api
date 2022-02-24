@@ -94,7 +94,7 @@ export default class Menu {
 
         var qryCmd = '';
         if (bussCode === '00') {
-            qryCmd = "select a.*, a.PROC_NAME from tb00_proc a where a.MDUL_CODE = '" + module + "' order by a.NoUrut";
+            qryCmd = "select a.*, a.PROC_NAME from tb00_proc a where a.MDUL_CODE = '" + module + "' And a.Enabled = '1' order by a.NoUrut";
         } else {
             qryCmd = "select a.*, b.PROC_NAME from tb01_proc a inner join tb00_proc b on a.PROC_CODE = b.PROC_CODE where a.BUSS_CODE = '" + bussCode + "' And a.MDUL_CODE = '" + module + "' order by b.NoUrut";
         }
