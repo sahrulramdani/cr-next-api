@@ -1108,8 +1108,8 @@ export default class Donatur {
         var authDelt = request.AUTH_DELT;
         var authAppr = request.AUTH_APPR;  // auth Approve
 
-        var qryCmd = "select a.*, b.Description As TypeProgram2 from tb52_0001 a inner join typeslp b on a.typeProgram = b.id where a.TypeProgram <> '14' order by a.id desc";
-
+        var qryCmd = "select a.*, b.Description As TypeProgram2 from tb52_0001 a inner join typeslp b on a.typeProgram = b.id inner join tb00_unit c on a.Unit = c.KODE_UNIT where a.TypeProgram <> '14' And c.KODE_URUT like '" + request.KODE_URUT0 + "%' order by a.id desc";
+        
         db.query(qryCmd, function(err, rows, fields) {
             var output = [];
 
