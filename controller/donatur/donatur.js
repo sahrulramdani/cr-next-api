@@ -1787,7 +1787,7 @@ export default class Donatur {
             qryCmd = "select a.* from grpx_relx a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where b.KODE_URUT like '" + request.KODE_URUT0 + "%'";
 
             if (typePerson === '1' && typeRelawan <= '04') { // 1: Relawan,  04: Korra
-                qryCmd = "select a.* from grpx_relx a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where b.KODE_UNIT = '" + request.BUSS_CODE0 + "' And a.KodeKelurahan like '" + request.KODE_AREA0 + "%'";
+                qryCmd = "select a.* from grpx_relx a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where b.KODE_URUT like '" + request.KODE_URUT0 + "%' And a.KodeKelurahan like '" + request.KODE_AREA0 + "%'";
             }
 
             if (typePerson === '1' && typeRelawan >= '05') {  // 05: Bendahara Group
