@@ -369,8 +369,19 @@ export default class Menu {
                     message: err.sqlMessage
                 });
             } else {
-                res.send({
-                    status: true
+                sql = 'select LAST_INSERT_ID() As ID';
+
+                db.query(sql, (err, result2) => {
+                    if (err) {
+                        console.log('Error', err);
+        
+                        res.send({
+                            status: false,
+                            message: err.sqlMessage
+                        });
+                    } else {
+                        res.send(result2);
+                    }
                 });
             }
         });
@@ -380,6 +391,8 @@ export default class Menu {
         var mdulCode = req.body.MDUL_CODE;
 
         var sql = '';
+        var sqlDelete = '';
+
         if (mdulCode === 'ALL') {
             sql = 'INSERT INTO tb01_modm (MDUL_CODE, MDUL_NAMA, TYPE_MDUL, BUSS_CODE, NoUrut) select MDUL_CODE, MDUL_NAMA, TYPE_MDUL, "' + req.body.BUSS_CODE + '", NoUrut FROM tb00_modm where MDUL_CODE <> "ALL"';
             
@@ -392,8 +405,51 @@ export default class Menu {
                         message: err.sqlMessage
                     });
                 } else {
+                    sqlDelete = 'delete from tb01_proc where BUSS_CODE = "' + req.body.BUSS_CODE + '"';
+
                     sql = 'INSERT INTO tb01_proc (PROC_CODE, BUSS_CODE, PATH, MDUL_CODE, TYPE_MDUL, PROC_NAME, Enabled, CRTX_DATE, CRTX_BYXX) select PROC_CODE, "' + req.body.BUSS_CODE + '", PATH, MDUL_CODE, TYPE_MDUL, PROC_NAME, Enabled, "' + moment(new Date()).format('YYYY-MM-DD') + '", "' + req.userID + '" from tb00_proc';
 
+                    db.query(sqlDelete, (err, result) => {
+                        if (err) {
+                            console.log('Error', err);
+        
+                            res.send({
+                                status: false,
+                                message: err.sqlMessage
+                            });
+                        } else {
+                            db.query(sql, (err, result) => {
+                                if (err) {
+                                    console.log('Error', err);
+                
+                                    res.send({
+                                        status: false,
+                                        message: err.sqlMessage
+                                    });
+                                } else {
+                                    res.send({
+                                        status: true
+                                    });
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        } else {
+            sqlDelete = 'delete from tb01_proc where BUSS_CODE = "' + req.body.BUSS_CODE + '" And MDUL_CODE = "' + mdulCode + '"';
+
+            sql = 'INSERT INTO tb01_proc (PROC_CODE, BUSS_CODE, PATH, MDUL_CODE, TYPE_MDUL, PROC_NAME, Enabled, CRTX_DATE, CRTX_BYXX) select PROC_CODE, "' + req.body.BUSS_CODE + '", PATH, MDUL_CODE, TYPE_MDUL, PROC_NAME, Enabled, "' + moment(new Date()).format('YYYY-MM-DD') + '", "' + req.userID + '" from tb00_proc where MDUL_CODE = "' + mdulCode + '"';
+            
+            db.query(sqlDelete, (err, result) => {
+                if (err) {
+                    console.log('Error', err);
+
+                    res.send({
+                        status: false,
+                        message: err.sqlMessage
+                    });
+                } else {
                     db.query(sql, (err, result) => {
                         if (err) {
                             console.log('Error', err);
@@ -407,23 +463,6 @@ export default class Menu {
                                 status: true
                             });
                         }
-                    });
-                }
-            });
-        } else {
-            sql = 'INSERT INTO tb01_proc (PROC_CODE, BUSS_CODE, PATH, MDUL_CODE, TYPE_MDUL, PROC_NAME, Enabled, CRTX_DATE, CRTX_BYXX) select PROC_CODE, "' + req.body.BUSS_CODE + '", PATH, MDUL_CODE, TYPE_MDUL, PROC_NAME, Enabled, "' + moment(new Date()).format('YYYY-MM-DD') + '", "' + req.userID + '" from tb00_proc where MDUL_CODE = "' + mdulCode + '"';
-            
-            db.query(sql, (err, result) => {
-                if (err) {
-                    console.log('Error', err);
-
-                    res.send({
-                        status: false,
-                        message: err.sqlMessage
-                    });
-                } else {
-                    res.send({
-                        status: true
                     });
                 }
             });
