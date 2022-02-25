@@ -256,7 +256,7 @@ export default class Accounting {
             var authAppr = req.AUTH_APPR;  // auth Approve
     
             var id = req.params.id;
-            var sql = 'SELECT * FROM `tblMutasi` WHERE id = '+ id;
+            var sql = 'SELECT a.* FROM `tblMutasi` a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT WHERE a.id = ' + id + ' And b.KODE_URUT like "' + req.KODE_URUT0 + '%"';
             
             db.query(sql, function(err, rows, fields) {
                 var output = [];
