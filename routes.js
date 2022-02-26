@@ -104,6 +104,7 @@ import * as C from './controller/index.js';
       app.route('/crm/setup/groups/:bussCode').get(C.auth.verifyToken, C.donatur.getGroups);
       app.route('/crm/setup/group/save').post(C.auth.verifyToken, C.donatur.saveGroup);
       app.route('/crm/setup/group/update').post(C.auth.verifyToken, C.donatur.updateGroup);
+      app.route('/crm/setup/group/donaturs/:id').get(C.auth.verifyToken, C.donatur.getGroupDonaturs);
       app.route('/crm/setup/group/:id').get(C.auth.verifyToken, C.donatur.getGroup);
       app.route('/crm/slp/save').post(C.auth.verifyToken, C.donatur.saveTransSLP);
       app.route('/crm/slp/delete').post(C.auth.verifyToken, C.donatur.deleteTransSLP);
