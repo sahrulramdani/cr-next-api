@@ -630,7 +630,16 @@ export default class Setup {
                 })
             }
 
-            response.send(output);
+            const filters = request.query;
+            const filteredUsers = output.filter(item => {
+                let isValid = true;
+                for (var key in filters) {
+                  isValid = isValid && item[key] == filters[key];
+                }
+                return isValid;
+              });
+
+            response.send(filteredUsers);
         });
     }
 

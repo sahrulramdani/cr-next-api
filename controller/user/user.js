@@ -98,8 +98,11 @@ export default class User {
     getProfile = function(req, res) {
         // get user Access
         var authEdit = req.AUTH_EDIT;
+        var kodeArea = req.KODE_AREA0;
+        var groupID = req.groupID;
+        var typeRelawan = req.TypeRelawan0;
         
-        var sql = 'SELECT a.*, b.NAMA_UNIT, b.KODE_URUT, c.groupID FROM `tb01_lgxh` a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT LEFT JOIN vfirst_relawandet c ON a.NO_ID = c.RelawanID WHERE UPPER(a.USER_IDXX) = "'+ req.userID.toUpperCase() +'" ';
+        var sql = 'SELECT a.*, b.NAMA_UNIT, b.KODE_URUT FROM `tb01_lgxh` a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT WHERE UPPER(a.USER_IDXX) = "'+ req.userID.toUpperCase() +'" ';
 
         db.query(sql, function(err, rows, fields) {
             var output = [];
@@ -112,11 +115,14 @@ export default class User {
                     }
 
                     obj['AUTH_EDIT'] = authEdit;
+                    obj['KODE_AREA'] = kodeArea;
+                    obj['groupID'] = groupID;
+                    obj['TypeRelawan'] = typeRelawan;
 
                     output.push(obj);
                 })
             }
-
+            
             res.send(output);
         });
     }
