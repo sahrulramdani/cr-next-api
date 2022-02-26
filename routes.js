@@ -44,8 +44,8 @@ import * as C from './controller/index.js';
       // ----- Payroll --------------
       app.route('/payroll/setup/type-relawans').get(C.auth.verifyToken, C.setup.typeRelawanAll);
       app.route('/payroll/karyawan/update').post(C.auth.verifyToken, C.karyawan.updateKaryawan);
-      app.route('/payroll/karyawan/donaturs/:id').get(C.auth.verifyToken, C.karyawan.getKaryawanDonaturs);
       app.route('/payroll/karyawan/save').post(C.auth.verifyToken, C.karyawan.saveKaryawan);
+      app.route('/payroll/karyawan/donaturs/:id').get(C.auth.verifyToken, C.karyawan.getKaryawanDonaturs);
       app.route('/payroll/karyawan-prsh/save').post(C.auth.verifyToken, C.karyawan.saveKaryawanPrsh);
       app.route('/payroll/karyawan/self').get(C.auth.verifyToken, C.karyawan.getEmployeeSelf);
       app.route('/payroll/karyawan/up').get(C.auth.verifyToken, C.karyawan.getEmployeeUp);

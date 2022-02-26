@@ -1888,6 +1888,7 @@ export default class Donatur {
 
         var data = {
             NAMA_GRPX: req.body.NAMA_GRPX,
+            BUSS_CODE: req.body.BUSS_CODE,
             KodeKecamatan: req.body.KodeKecamatan, 
             KodeKelurahan : req.body.KodeKelurahan,
             'a.UPDT_DATE' : new Date(),
@@ -2105,7 +2106,7 @@ export default class Donatur {
 
         var id = request.params.id;  // IDXX_GRPX
         
-        var qryCmd = "select e.*, b.NAMA_GRPX from tb11_mzjb e inner join vfirst_relawandet a on e.RelawanID = a.RelawanID inner join grpx_relx b on a.groupID = b.IDXX_GRPX inner join tb21_empl c on a.RelawanID = c.KodeNik inner join tb00_unit d on c.BUSS_CODE = d.KODE_UNIT where d.KODE_URUT like '" + request.KODE_URUT0 + "%' And b.IDXX_GRPX = '" + id + "'";
+        var qryCmd = "select e.*, b.NAMA_GRPX from tb11_mzjb e inner join tblRelawanDet a on e.RelawanID = a.RelawanID inner join grpx_relx b on a.IDXX_GRPX = b.IDXX_GRPX inner join tb21_empl c on a.RelawanID = c.KodeNik inner join tb00_unit d on c.BUSS_CODE = d.KODE_UNIT where d.KODE_URUT like '" + request.KODE_URUT0 + "%' And b.IDXX_GRPX = '" + id + "'";
 
         db.query(qryCmd, function(err, rows, fields) {
             var output = [];

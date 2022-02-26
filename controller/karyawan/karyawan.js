@@ -84,12 +84,12 @@ export default class Karyawan {
                     } else {
                         if (req.body.IDXX_GRPX !== '' && req.body.IDXX_GRPX !== null && req.body.IDXX_GRPX !== undefined) {
                             // hapus di tabel relawan detail
-                            sql = 'delete from tblRelawanDet where RelawanID = "' + kodeNik + '"';
+                            sql = 'delete from tblRelawanDet where RelawanID = "' + kodeNik + '" And prime = "1"';
                             db.query(sql, (err2, result2) => {
                                 // insert to tabel relawan detail
                                 var tglNow = moment(new Date()).format('YYYY-MM-DD');
 
-                                sql = 'insert into tblRelawanDet (RelawanID, IDXX_GRPX, CRTX_BYXX, CRTX_DATE) values ("' + kodeNik + '", "' + req.body.IDXX_GRPX + '", "' + req.userID + '", "' + tglNow + '")';
+                                sql = 'insert into tblRelawanDet (RelawanID, IDXX_GRPX, CRTX_BYXX, CRTX_DATE, prime) values ("' + kodeNik + '", "' + req.body.IDXX_GRPX + '", "' + req.userID + '", "' + tglNow + '", "1")';
 
                                 db.query(sql, (err2, result2) => {
                                     res.send({
@@ -320,12 +320,12 @@ export default class Karyawan {
             } else {
                 if (req.body.IDXX_GRPX !== '' && req.body.IDXX_GRPX !== null && req.body.IDXX_GRPX !== undefined) {
                     // hapus di tabel relawan detail
-                    sql = 'delete from tblRelawanDet where RelawanID = "' + id + '"';
+                    sql = 'delete from tblRelawanDet where RelawanID = "' + id + '" And prime = "1"';
                     db.query(sql, (err2, result2) => {
                         // insert to tabel relawan detail
                         var tglNow = moment(new Date()).format('YYYY-MM-DD');
 
-                        sql = 'insert into tblRelawanDet (RelawanID, IDXX_GRPX, CRTX_BYXX, CRTX_DATE) values ("' + id + '", "' + req.body.IDXX_GRPX + '", "' + req.userID + '", "' + tglNow + '")';
+                        sql = 'insert into tblRelawanDet (RelawanID, IDXX_GRPX, CRTX_BYXX, CRTX_DATE, prime) values ("' + id + '", "' + req.body.IDXX_GRPX + '", "' + req.userID + '", "' + tglNow + '", "1")';
                         
                         db.query(sql, (err2, result2) => {
                             res.send({
@@ -681,7 +681,7 @@ export default class Karyawan {
 
         var id = request.params.id;  // IDXX_GRPX
         
-        var qryCmd = "select a.*, c.NamaKry from vfirst_relawandet a inner join grpx_relx b on a.groupID = b.IDXX_GRPX inner join tb21_empl c on a.RelawanID = c.KodeNik inner join tb00_unit d on b.BUSS_CODE = d.KODE_UNIT where d.KODE_URUT like '" + request.KODE_URUT0 + "%' And b.IDXX_GRPX = '" + id + "'";
+        var qryCmd = "select a.*, c.NamaKry from tblRelawanDet a inner join grpx_relx b on a.IDXX_GRPX = b.IDXX_GRPX inner join tb21_empl c on a.RelawanID = c.KodeNik inner join tb00_unit d on b.BUSS_CODE = d.KODE_UNIT where d.KODE_URUT like '" + request.KODE_URUT0 + "%' And b.IDXX_GRPX = '" + id + "'";
 
         db.query(qryCmd, function(err, rows, fields) {
             var output = [];

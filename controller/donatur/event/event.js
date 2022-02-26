@@ -54,6 +54,7 @@ export default class Event {
             Tgl2 : req.body.Tgl2,
             ProgramID : req.body.ProgramID,
             BUSS_CODE : bussCode,
+            IDXX_GRPX : req.body.IDXX_GRPX,
             TahunBuku : req.body.TahunBuku,
             CRTX_DATE : new Date(),
             CRTX_BYXX : req.userID
@@ -188,7 +189,7 @@ export default class Event {
         var authDelt = request.AUTH_DELT;
         var authAppr = request.AUTH_APPR;  // auth Approve
         
-        var qryCmd = "select a.*, c.CODD_DESC As ProgDonatur, DATE_FORMAT(Tgl1, '%Y-%m-%d') As Tgl1Format, DATE_FORMAT(Tgl2, '%Y-%m-%d') As Tgl2Format, b.NAMA_UNIT, e.NamaKry As NamaRelawan, g.NAMA_GRPX FROM tblEvent a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT left join tb00_basx c on a.ProgramID = c.CODD_VALU And c.CODD_FLNM = 'PROGRAM_DONATUR' And b.KODE_UNIT = c.CODD_VARC inner join tb01_lgxh d on a.CRTX_BYXX = d.USER_IDXX inner join tb21_empl e on d.NO_ID = e.KodeNik left join vfirst_relawanDet f on e.KodeNik = f.RelawanID left join grpx_relx g on f.groupID = g.IDXX_GRPX WHERE b.KODE_URUT like '" + request.KODE_URUT0 + "%' And a.IsDelete = '0'";
+        var qryCmd = "select a.*, c.CODD_DESC As ProgDonatur, DATE_FORMAT(Tgl1, '%Y-%m-%d') As Tgl1Format, DATE_FORMAT(Tgl2, '%Y-%m-%d') As Tgl2Format, b.NAMA_UNIT, e.NamaKry As NamaRelawan, g.NAMA_GRPX FROM tblEvent a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT left join tb00_basx c on a.ProgramID = c.CODD_VALU And c.CODD_FLNM = 'PROGRAM_DONATUR' And b.KODE_UNIT = c.CODD_VARC inner join tb01_lgxh d on a.CRTX_BYXX = d.USER_IDXX inner join tb21_empl e on d.NO_ID = e.KodeNik left join vfirst_relawanDet f on e.KodeNik = f.RelawanID left join grpx_relx g on a.IDXX_GRPX = g.IDXX_GRPX WHERE b.KODE_URUT like '" + request.KODE_URUT0 + "%' And a.IsDelete = '0'";
         
         db.query(qryCmd, function(err, rows, fields) {
             var output = [];
@@ -287,6 +288,7 @@ export default class Event {
             Tgl2 : req.body.Tgl2,
             ProgramID : req.body.ProgramID,
             BUSS_CODE : bussCode,
+            IDXX_GRPX : req.body.IDXX_GRPX,
             'a.UPDT_DATE' : new Date(),
             'a.UPDT_BYXX' : req.userID
         };
