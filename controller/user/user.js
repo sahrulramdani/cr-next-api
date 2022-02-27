@@ -197,7 +197,7 @@ export default class User {
                     if (req.body.IDXX_GRPX !== '' && req.body.NO_ID !== '') {
                         // tambahkan group ke relawan
                         var tglNow = moment(new Date()).format('YYYY-MM-DD');
-                        sql = 'insert into tblRelawanDet (RelawanID, IDXX_GRPX, CRTX_BYXX, CRTX_DATE) values ("' + req.body.NO_ID + '", "' + req.body.IDXX_GRPX + '", "' + req.userID + '", "' + tglNow + '")';
+                        sql = 'insert into tblRelawanDet (RelawanID, IDXX_GRPX, CRTX_BYXX, CRTX_DATE, prime) values ("' + req.body.NO_ID + '", "' + req.body.IDXX_GRPX + '", "' + req.userID + '", "' + tglNow + '", "1")';
                         
                         db.query(sql, (err2, result2) => {
                             res.send({
