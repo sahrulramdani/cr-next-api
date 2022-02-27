@@ -672,7 +672,7 @@ export default class Donatur {
             Nama : req.body.Nama,
             TypeProgram : req.body.TypeProgram,
             TahunBuku : req.body.TahunBuku,
-            Unit : req.BUSS_CODE0,
+            Unit : req.body.Unit,
             CRTX_DATE : new Date(),
             CRTX_BYXX : req.userID
         };
@@ -720,7 +720,8 @@ export default class Donatur {
         var typeProgram = request.params.typeProgram;
         var tahunBuku = request.params.tahunBuku;
 
-        var qryCmd = "select * from tb52_0001 where TypeProgram = '" + typeProgram + "' And TahunBuku = '" + tahunBuku + "'";
+        var qryCmd = "select * from tb52_0001 where TypeProgram = '" + typeProgram + "' And TahunBuku = '" + tahunBuku + "' And Unit = '" + request.BUSS_CODE0 + "'";
+
         db.query(qryCmd, function(err, rows, fields) {
             var output = [];
 
