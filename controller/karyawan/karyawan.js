@@ -432,7 +432,7 @@ export default class Karyawan {
             "CASE a.StatusAktif " +
                 "WHEN '1' THEN 'ACTIVE' " +
                 "ELSE 'NOT ACTIVE' " +
-            "END As StatusAktif2, b.KODE_UNIT, SUBSTRING(a.Alamat1, 1, 20) As Alamat, Case a.StatusKry When '1' Then 'OFFISIAL' When '5' Then 'RELAWAN' End As StatusKaryawan " + 
+            "END As StatusAktif2, b.KODE_UNIT, SUBSTRING(a.Alamat1, 1, 20) As Alamat, Case a.StatusKry When '1' Then 'OFFISIAL' When '5' Then 'RELAWAN' End As StatusKaryawan, a.KodeNik As value, CONCAT(a.KodeNik, ' - ', a.NamaKry, ' - ', SUBSTRING(a.Alamat1, 1, 20)) As label " + 
             "FROM tb21_empl a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where b.KODE_URUT like '" + request.KODE_URUT0 + "%'";
 
             if (typePerson === '1' && typeRelawan === '06') {  // typePerson 1: Relawan, typeRelawan 06: Relawan
@@ -449,7 +449,7 @@ export default class Karyawan {
                 "CASE a.StatusAktif " +
                     "WHEN '1' THEN 'ACTIVE' " +
                     "ELSE 'NOT ACTIVE' " +
-                "END As StatusAktif2, b.KODE_UNIT, SUBSTRING(a.Alamat1, 1, 20) As Alamat, Case a.StatusKry When '1' Then 'OFFISIAL' When '5' Then 'RELAWAN' End As StatusKaryawan " + 
+                "END As StatusAktif2, b.KODE_UNIT, SUBSTRING(a.Alamat1, 1, 20) As Alamat, Case a.StatusKry When '1' Then 'OFFISIAL' When '5' Then 'RELAWAN' End As StatusKaryawan, a.KodeNik As value, CONCAT(a.KodeNik, ' - ', a.NamaKry, ' - ', SUBSTRING(a.Alamat1, 1, 20)) As label " + 
                 "FROM tb21_empl a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT left join vfirst_relawandet c on a.KodeNik = c.RelawanID where b.KODE_URUT like '" + request.KODE_URUT0 + "%' And c.groupID = '" + request.groupID + "' And a.StatusKry = '5'";
             }
 
@@ -458,7 +458,7 @@ export default class Karyawan {
                 "CASE a.StatusAktif " +
                     "WHEN '1' THEN 'ACTIVE' " +
                     "ELSE 'NOT ACTIVE' " +
-                "END As StatusAktif2, b.KODE_UNIT, SUBSTRING(a.Alamat1, 1, 20) As Alamat, Case a.StatusKry When '1' Then 'OFFISIAL' When '5' Then 'RELAWAN' End As StatusKaryawan " + 
+                "END As StatusAktif2, b.KODE_UNIT, SUBSTRING(a.Alamat1, 1, 20) As Alamat, Case a.StatusKry When '1' Then 'OFFISIAL' When '5' Then 'RELAWAN' End As StatusKaryawan, a.KodeNik As value, CONCAT(a.KodeNik, ' - ', a.NamaKry, ' - ', SUBSTRING(a.Alamat1, 1, 20)) As label " + 
                 "FROM tb21_empl a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT left join vfirst_relawandet c on a.KodeNik = c.RelawanID left join grpx_relx d on c.groupID = d.IDXX_GRPX where b.KODE_URUT like '" + request.KODE_URUT0 + "%' And d.KodeKelurahan like '" + request.KODE_AREA0 + "%' And a.StatusKry = '5'";
             }
 
