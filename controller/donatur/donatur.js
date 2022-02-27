@@ -470,8 +470,21 @@ export default class Donatur {
                     message: err.sqlMessage
                 });
             } else {
-                res.send({
-                    status: true
+                sql = 'update tb11_mzjb a inner join vfirst_relawandet b on a.RelawanID = b.RelawanID inner join grpx_relx c on b.groupID = c.IDXX_GRPX left join tb00_unit d on c.BUSS_CODE = d.KODE_UNIT set a.IDXX_GRPX = b.groupID, a.BUSS_CODE = c.BUSS_CODE where NO_ID = "' + noID + '" And d.KODE_URUT like "' + req.KODE_URUT0 + '%"';
+
+                db.query(sql, data, (err, result) => {
+                    if (err) {
+                        console.log('Error', err);
+        
+                        res.send({
+                            status: false,
+                            message: err.sqlMessage
+                        });
+                    } else {
+                        res.send({
+                            status: true
+                        });
+                    }
                 });
             }
         });
@@ -583,7 +596,11 @@ export default class Donatur {
                     message: err.sqlMessage
                 });
             } else {
-                sql = 'update tb11_mzjb a inner join tb21_empl b on a.RelawanID = b.KodeNik inner join tb00_unit c on b.BUSS_CODE = c.KODE_UNIT set a.BUSS_CODE = b.BUSS_CODE where a.NO_ID = "' + id + '" And c.KODE_URUT like "' + req.KODE_URUT0 + '%"';
+                if (req.body.IsChangeGroup === '1') {   // 1: True
+                    sql = 'update tb11_mzjb a left join vfirst_relawandet d on a.RelawanID = d.RelawanID left join grpx_relx e on d.groupID = e.IDXX_GRPX left join tb00_unit c on e.BUSS_CODE = c.KODE_UNIT set a.BUSS_CODE = e.BUSS_CODE, a.IDXX_GRPX = d.groupID where a.NO_ID = "' + id + '" And c.KODE_URUT like "' + req.KODE_URUT0 + '%"';
+                } else {
+                    sql = 'update tb11_mzjb a inner join tb21_empl b on a.RelawanID = b.KodeNik inner join tb00_unit c on b.BUSS_CODE = c.KODE_UNIT set a.BUSS_CODE = b.BUSS_CODE where a.NO_ID = "' + id + '" And c.KODE_URUT like "' + req.KODE_URUT0 + '%"';
+                }
 
                 db.query(sql, (err, result) => {
                     res.send({
@@ -2106,7 +2123,7 @@ export default class Donatur {
 
         var id = request.params.id;  // IDXX_GRPX
         
-        var qryCmd = "select e.*, b.NAMA_GRPX from tb11_mzjb e inner join tblRelawanDet a on e.RelawanID = a.RelawanID inner join grpx_relx b on a.IDXX_GRPX = b.IDXX_GRPX inner join tb21_empl c on a.RelawanID = c.KodeNik inner join tb00_unit d on c.BUSS_CODE = d.KODE_UNIT where d.KODE_URUT like '" + request.KODE_URUT0 + "%' And b.IDXX_GRPX = '" + id + "'";
+        var qryCmd = "select e.*, b.NAMA_GRPX from tb11_mzjb e inner join grpx_relx b on e.IDXX_GRPX = b.IDXX_GRPX inner join tb00_unit d on b.BUSS_CODE = d.KODE_UNIT where d.KODE_URUT like '" + request.KODE_URUT0 + "%' And e.IDXX_GRPX = '" + id + "'";
 
         db.query(qryCmd, function(err, rows, fields) {
             var output = [];
