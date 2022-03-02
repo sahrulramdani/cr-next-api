@@ -100,6 +100,7 @@ export default class User {
         var authEdit = req.AUTH_EDIT;
         var kodeArea = req.KODE_AREA0;
         var groupID = req.groupID;
+        var typePerson = req.TYPE_PRSON0;
         var typeRelawan = req.TypeRelawan0;
         
         var sql = 'SELECT a.*, b.NAMA_UNIT, b.KODE_URUT FROM `tb01_lgxh` a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT WHERE UPPER(a.USER_IDXX) = "'+ req.userID.toUpperCase() +'" ';
@@ -117,6 +118,7 @@ export default class User {
                     obj['AUTH_EDIT'] = authEdit;
                     obj['KODE_AREA'] = kodeArea;
                     obj['groupID'] = groupID;
+                    obj['TypePerson'] = typePerson;
                     obj['TypeRelawan'] = typeRelawan;
 
                     output.push(obj);
@@ -810,6 +812,7 @@ export default class User {
                 KETX_USER : req.body.KETX_USER,
                 BUSS_CODE : req.body.BUSS_CODE,
                 TYPE_PRSON: req.body.TYPE_PRSON,
+                NO_ID : req.body.NO_ID,
                 Active : req.body.Active,
                 IsValid : req.body.IsValid,
                 Email : req.body.Email,

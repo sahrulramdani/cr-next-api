@@ -634,7 +634,7 @@ export default class Setup {
             const filteredUsers = output.filter(item => {
                 let isValid = true;
                 for (var key in filters) {
-                  isValid = isValid && item[key] == filters[key];
+                  isValid = isValid && item[key].includes(filters[key]);
                 }
                 return isValid;
               });
