@@ -167,7 +167,7 @@ export default class Accounting {
             var value = request.params.value;
             var qryCmd = '';
 
-            if (field !== undefined) {
+            if (field !== undefined && field !== '') {
                 if (field === 'NoReference') {
                     qryCmd = "select a.* from tblMutasi a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where DATE_FORMAT(a.TransDate, '%Y-%m-%d') = '" + tgl + "' And a.NoReference = '" + value + "' And a.TransNumber is Null And b.KODE_URUT like '" + request.KODE_URUT0 + "%'";
                 } else if (field === 'Description') {

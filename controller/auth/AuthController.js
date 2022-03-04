@@ -78,6 +78,10 @@ export default class AuthController {
                             tokenExpiresIn = 1261440000;       // 40 tahun, utk Operator WA
                         } 
 
+                        if (req.body.NotRequiredEntity === '1' && req.body.checkRememberMe === '1') {
+                            tokenExpiresIn = 1261440000;       // 40 tahun
+                        }
+
                         var token = jwt.sign({ id: user.USER_IDXX }, config.secret, {
                             expiresIn: tokenExpiresIn   
                         });
@@ -139,7 +143,7 @@ export default class AuthController {
                 }
 
                 // get User Access
-                var sql = 'SELECT a.*, c.IsValid, d.KODE_URUT, d.SequenceUnitCode, c.TYPE_PRSON, d.NAMA_UNIT, e.TypeRelawan, f.groupID, Case e.TypeRelawan When "04" Then g.KodeKelurahan When "03" Then g.KodeKecamatan When "02" Then SUBSTRING(g.KodeKecamatan,1,4) When "01" Then SUBSTRING(g.KodeKecamatan,1,2) Else "XXX X" End As KodeArea FROM `tb01_usrd` a INNER JOIN `tb01_apix` b on a.PROC_CODE = b.PROC_CODE INNER JOIN `tb01_lgxh` c ON a.USER_IDXX = c.USER_IDXX And a.BUSS_CODE = c.BUSS_CODE INNER JOIN tb00_unit d ON a.BUSS_CODE = d.KODE_UNIT LEFT JOIN tb21_empl e ON c.NO_ID = e.KodeNik LEFT JOIN vfirst_relawandet f on e.KodeNik = f.RelawanID LEFT JOIN grpx_relx g ON f.groupID = g.IDXX_GRPX WHERE UPPER(a.USER_IDXX) = "' + decoded.id.toUpperCase() + '" And ("' + path + '" = b.PATH) And a.RIGH_AUTH = "1" And c.Active = "1" And c.IsValid = "1" ORDER BY b.PATH';  
+                var sql = 'SELECT a.*, c.IsValid, d.KODE_URUT, d.SequenceUnitCode, c.TYPE_PRSON, d.NAMA_UNIT, e.TypeRelawan, f.groupID, Case e.TypeRelawan When "04" Then g.KodeKelurahan When "03" Then g.KodeKecamatan When "02" Then h.KOTA_IDXX When "01" Then h.PROV_IDXX Else "XXX X" End As KodeArea FROM `tb01_usrd` a INNER JOIN `tb01_apix` b on a.PROC_CODE = b.PROC_CODE INNER JOIN `tb01_lgxh` c ON a.USER_IDXX = c.USER_IDXX And a.BUSS_CODE = c.BUSS_CODE INNER JOIN tb00_unit d ON a.BUSS_CODE = d.KODE_UNIT LEFT JOIN tb21_empl e ON c.NO_ID = e.KodeNik LEFT JOIN vfirst_relawandet f on e.KodeNik = f.RelawanID LEFT JOIN grpx_relx g ON f.groupID = g.IDXX_GRPX LEFT JOIN tb20_area h on g.KodeKelurahan = h.AREA_IDXX WHERE UPPER(a.USER_IDXX) = "' + decoded.id.toUpperCase() + '" And ("' + path + '" = b.PATH) And a.RIGH_AUTH = "1" And c.Active = "1" And c.IsValid = "1" ORDER BY b.PATH';  
                 
                 var procCodes = [];
                 db.query(sql, (err, rows) => {
@@ -211,7 +215,7 @@ export default class AuthController {
                             const pathPermit = ['/profile', '/', '/menu/menus', '/uploadFile2', '/user/update', '/profile/karyawan', '/profile/karyawan/update', '/profile/karyawan/save', '/profile/karyawan-prsh/save', '/setup/pekerjaans', '/setup/pendidikans', '/setup/status-maritals', '/setup/gol-darahs', '/utility/sequence', '/utility/sequence/save', '/utility/sequence/update', '/profile/user/update', '/setup/departments', '/user/privileges', '/profile/donatur/save', '/profile/donatur', '/profile/donatur/update', '/process/privilege'];
 
                             if (pathPermit.includes(path)) {
-                                sql = 'select b.KODE_UNIT, b.SequenceUnitCode, b.KODE_URUT, c.groupID, e.TypeRelawan, Case e.TypeRelawan When "04" Then d.KodeKelurahan When "03" Then d.KodeKecamatan When "02" Then SUBSTRING(d.KodeKecamatan,1,4) When "01" Then SUBSTRING(d.KodeKecamatan,1,2) Else "XXX X" End As KodeArea, a.TYPE_PRSON from tb01_lgxh a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT left join vfirst_relawandet c on a.NO_ID = c.RelawanID left join grpx_relx d ON c.groupID = d.IDXX_GRPX left join tb21_empl e on a.NO_ID = e.KodeNik where UPPER(a.USER_IDXX) = "' + decoded.id.toUpperCase() +  '" And a.Active = "1" And a.IsValid = "1"';
+                                sql = 'select b.KODE_UNIT, b.SequenceUnitCode, b.KODE_URUT, c.groupID, e.TypeRelawan, Case e.TypeRelawan When "04" Then d.KodeKelurahan When "03" Then d.KodeKecamatan When "02" Then f.KOTA_IDXX When "01" Then f.PROV_IDXX Else "XXX X" End As KodeArea, a.TYPE_PRSON from tb01_lgxh a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT left join vfirst_relawandet c on a.NO_ID = c.RelawanID left join grpx_relx d ON c.groupID = d.IDXX_GRPX left join tb21_empl e on a.NO_ID = e.KodeNik left join tb20_area f on d.KodeKelurahan = f.AREA_IDXX where UPPER(a.USER_IDXX) = "' + decoded.id.toUpperCase() +  '" And a.Active = "1" And a.IsValid = "1"';
 
                                 db.query(sql, (err, rows) => {
                                     if (rows.length > 0) {
