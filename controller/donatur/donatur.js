@@ -99,14 +99,14 @@ export default class Donatur {
         var qryCmd = '';
         
         if (typePrson === '1') {  // 1: Relawan
-            qryCmd = "select a.NO_ID As value, CONCAT(a.NO_ID, ' - ', a.NAMA, ' - ', SUBSTRING(a.ALMT_XXX1, 1, 20)) As label from tb11_mzjb a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT inner join tb01_lgxh c on a.RelawanID = c.NO_ID where b.KODE_URUT like '" + request.KODE_URUT0 + "%' And UPPER(c.USER_IDXX) = '" + request.userID.toUpperCase() + "' order by a.NO_ID";
+            qryCmd = "select a.NO_ID As value, CONCAT(a.NO_ID, ' - ', a.NAMA, ' - ', SUBSTRING(a.ALMT_XXX1, 1, 20)) As label from tb11_mzjb a inner join tb01_lgxh c on a.RelawanID = c.NO_ID left join tb21_empl e on a.RelawanID = e.KodeNik left join tb00_unit b on e.BUSS_CODE = b.KODE_UNIT where b.KODE_URUT like '" + request.KODE_URUT0 + "%' And UPPER(c.USER_IDXX) = '" + request.userID.toUpperCase() + "' order by a.NO_ID";
 
             if (typeRelawan === '05') {   // 05 : Bendahara Group
-                qryCmd = "select a.NO_ID As value, CONCAT(a.NO_ID, ' - ', a.NAMA, ' - ', SUBSTRING(a.ALMT_XXX1, 1, 20)) As label from tb11_mzjb a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT left join vfirst_relawandet c on a.RelawanID = c.RelawanID where b.KODE_URUT like '" + request.KODE_URUT0 + "%' And c.groupID = '" + request.groupID + "' order by a.NO_ID";
+                qryCmd = "select a.NO_ID As value, CONCAT(a.NO_ID, ' - ', a.NAMA, ' - ', SUBSTRING(a.ALMT_XXX1, 1, 20)) As label from tb11_mzjb a left join vfirst_relawandet c on a.RelawanID = c.RelawanID left join tb21_empl e on a.RelawanID = e.KodeNik left join tb00_unit b on e.BUSS_CODE = b.KODE_UNIT where b.KODE_URUT like '" + request.KODE_URUT0 + "%' And c.groupID = '" + request.groupID + "' order by a.NO_ID";
             }
 
             if (typeRelawan <= '04') {  // 04 : Korra 
-                qryCmd = "select a.NO_ID As value, CONCAT(a.NO_ID, ' - ', a.NAMA, ' - ', SUBSTRING(a.ALMT_XXX1, 1, 20)) As label from tb11_mzjb a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT left join vfirst_relawandet c on a.RelawanID = c.RelawanID left join grpx_relx d on c.groupID = d.IDXX_GRPX where b.KODE_URUT like '" + request.KODE_URUT0 + "%' And d.KodeKelurahan like '" + request.KODE_AREA0 + "%' order by a.NO_ID";
+                qryCmd = "select a.NO_ID As value, CONCAT(a.NO_ID, ' - ', a.NAMA, ' - ', SUBSTRING(a.ALMT_XXX1, 1, 20)) As label from tb11_mzjb a left join vfirst_relawandet c on a.RelawanID = c.RelawanID left join grpx_relx d on c.groupID = d.IDXX_GRPX left join tb21_empl e on a.RelawanID = e.KodeNik left join tb00_unit b on e.BUSS_CODE = b.KODE_UNIT where b.KODE_URUT like '" + request.KODE_URUT0 + "%' And d.KodeKelurahan like '" + request.KODE_AREA0 + "%' order by a.NO_ID";
             }
         } else if (typePrson === '2') {  // 2: Donatur
             qryCmd = "select a.NO_ID As value, CONCAT(a.NO_ID, ' - ', a.NAMA, ' - ', SUBSTRING(a.ALMT_XXX1, 1, 20)) As label from tb11_mzjb a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT inner join tb01_lgxh c on a.NO_ID = c.NO_ID where b.KODE_URUT like '" + request.KODE_URUT0 + "%' And UPPER(c.USER_IDXX) = '" + request.userID.toUpperCase() + "' order by a.NO_ID";
@@ -1914,7 +1914,7 @@ export default class Donatur {
             qryCmd = "select a.*, c.KECX_DESC, c.AREA_DESC from grpx_relx a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT inner join tb20_area c on a.KodeKelurahan = c.AREA_IDXX where b.KODE_URUT like '" + request.KODE_URUT0 + "%'";
 
             if (typePerson === '1' && typeRelawan <= '04') { // 1: Relawan,  04: Korra
-                qryCmd = "select a.*, c.KECX_DESC, c.AREA_DESC from grpx_relx a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT inner join tb20_area c on a.KodeKelurahan = c.AREA_IDXX where b.KODE_URUT like '" + request.KODE_URUT0 + "%' And a.KodeKelurahan like '" + request.KODE_AREA0 + "%'";
+                qryCmd = "select a.*, c.KECX_DESC, c.AREA_DESC from grpx_relx a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT inner join tb20_area c on a.KodeKelurahan = c.AREA_IDXX where b.KODE_URUT like '" + request.KODE_URUT0 + "%'";
             }
 
             if (typePerson === '1' && typeRelawan >= '05') {  // 05: Bendahara Group
@@ -1958,7 +1958,16 @@ export default class Donatur {
                     output.push(obj);
                 })
 
-                response.send(output);
+                const filters = request.query;
+                const filteredUsers = output.filter(item => {
+                    let isValid = true;
+                    for (var key in filters) {
+                    isValid = isValid && item[key] == filters[key];
+                    }
+                    return isValid;
+                });
+
+                response.send(filteredUsers);
             } else {
                 response.send([]);
             }
