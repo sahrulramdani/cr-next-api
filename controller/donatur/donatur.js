@@ -1730,11 +1730,11 @@ export default class Donatur {
         }
 
         if (typePerson === '1' && typeRelawan <= '04') {  // 04: Korra
-            sql = "select DATE_FORMAT(a.TransDate,'%Y-%m') As TahunBulan, CONCAT(MONTHNAME(a.TransDate),' ',YEAR(a.TransDate)) As BulanTahun, Case '" + typeRelawan + "' When '03' Then i.AREA_DESC When '04' Then h.NAMA_GRPX When '02' Then i.KECX_DESC When '01' Then i.KOTA_DESC Else 'XXXX' End As NAMA_GRPX, COUNT(distinct a.DonaturID) As JumlahDonatur, COUNT(a.Amount) As JumlahTransaksi, SUM(a.Amount) As JumlahDonasi FROM trans_donatur a left join tb11_mzjb b on a.DonaturID = b.NO_ID inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT left join tb00_basx e on b.SEGMX_PROF = e.CODD_VALU And e.CODD_FLNM = 'SEGMENT_PROFILING' left join vfirst_relawandet g on a.KodeNik = g.RelawanID left join grpx_relx h on g.groupID = h.IDXX_GRPX left join tb20_area i on h.KodeKelurahan = i.AREA_IDXX WHERE c.KODE_URUT like '" + req.KODE_URUT0 +  "%' And DATE_FORMAT(a.TransDate,'%Y-%m') like '" + period + "' And h.KodeKelurahan like '" + req.KODE_AREA0 + "%' And (a.isDelete <> '1' OR a.isDelete IS NULL) group by DATE_FORMAT(a.TransDate,'%Y-%m'), h.IDXX_GRPX";
+            sql = "select DATE_FORMAT(a.TransDate,'%Y-%m') As TahunBulan, CONCAT(MONTHNAME(a.TransDate),' ',YEAR(a.TransDate)) As BulanTahun, Case '" + typeRelawan + "' When '03' Then CONCAT('Kelurahan ', i.AREA_DESC) When '04' Then CONCAT('Group ', h.NAMA_GRPX) When '02' Then CONCAT('Kecamatan ', i.KECX_DESC) When '01' Then i.KOTA_DESC Else 'XXXX' End As NAMA_GRPX, COUNT(distinct a.DonaturID) As JumlahDonatur, COUNT(a.Amount) As JumlahTransaksi, SUM(a.Amount) As JumlahDonasi FROM trans_donatur a left join tb11_mzjb b on a.DonaturID = b.NO_ID inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT left join tb00_basx e on b.SEGMX_PROF = e.CODD_VALU And e.CODD_FLNM = 'SEGMENT_PROFILING' left join vfirst_relawandet g on a.KodeNik = g.RelawanID left join grpx_relx h on g.groupID = h.IDXX_GRPX left join tb20_area i on h.KodeKelurahan = i.AREA_IDXX WHERE c.KODE_URUT like '" + req.KODE_URUT0 +  "%' And DATE_FORMAT(a.TransDate,'%Y-%m') like '" + period + "' And h.KodeKelurahan like '" + req.KODE_AREA0 + "%' And (a.isDelete <> '1' OR a.isDelete IS NULL) group by DATE_FORMAT(a.TransDate,'%Y-%m'), h.IDXX_GRPX";
         }
 
         if (typePerson === '4') {  // 4: Official setingkat Relawan Korda ('3275')
-            sql = "select DATE_FORMAT(a.TransDate,'%Y-%m') As TahunBulan, CONCAT(MONTHNAME(a.TransDate),' ',YEAR(a.TransDate)) As BulanTahun, Case When h.IDXX_GRPX Is Null Then 'OFISIAL' Else i.KECX_DESC End As NAMA_GRPX, COUNT(distinct a.DonaturID) As JumlahDonatur, COUNT(a.Amount) As JumlahTransaksi, SUM(a.Amount) As JumlahDonasi FROM trans_donatur a left join tb11_mzjb b on a.DonaturID = b.NO_ID inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT left join tb00_basx e on b.SEGMX_PROF = e.CODD_VALU And e.CODD_FLNM = 'SEGMENT_PROFILING' left join vfirst_relawandet g on a.KodeNik = g.RelawanID left join grpx_relx h on g.groupID = h.IDXX_GRPX left join tb20_area i on h.KodeKelurahan = i.AREA_IDXX WHERE c.KODE_URUT like '" + req.KODE_URUT0 +  "%' And DATE_FORMAT(a.TransDate,'%Y-%m') like '" + period + "' And (h.KodeKelurahan like '3275%' OR h.IDXX_GRPX is null) And (a.isDelete <> '1' OR a.isDelete IS NULL) group by DATE_FORMAT(a.TransDate,'%Y-%m'), i.KECX_DESC";
+            sql = "select DATE_FORMAT(a.TransDate,'%Y-%m') As TahunBulan, CONCAT(MONTHNAME(a.TransDate),' ',YEAR(a.TransDate)) As BulanTahun, Case When h.IDXX_GRPX Is Null Then 'OFISIAL' Else CONCAT('Kecamatan ', i.KECX_DESC) End As NAMA_GRPX, COUNT(distinct a.DonaturID) As JumlahDonatur, COUNT(a.Amount) As JumlahTransaksi, SUM(a.Amount) As JumlahDonasi FROM trans_donatur a left join tb11_mzjb b on a.DonaturID = b.NO_ID inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT left join tb00_basx e on b.SEGMX_PROF = e.CODD_VALU And e.CODD_FLNM = 'SEGMENT_PROFILING' left join vfirst_relawandet g on a.KodeNik = g.RelawanID left join grpx_relx h on g.groupID = h.IDXX_GRPX left join tb20_area i on h.KodeKelurahan = i.AREA_IDXX WHERE c.KODE_URUT like '" + req.KODE_URUT0 +  "%' And DATE_FORMAT(a.TransDate,'%Y-%m') like '" + period + "' And (h.KodeKelurahan like '3275%' OR h.IDXX_GRPX is null) And (a.isDelete <> '1' OR a.isDelete IS NULL) group by DATE_FORMAT(a.TransDate,'%Y-%m'), i.KECX_DESC";
         }
         
         db.query(sql, function(err, rows, fields) {
@@ -1911,14 +1911,14 @@ export default class Donatur {
         var typePerson = request.TYPE_PRSON0;
 
         if (request.params.bussCode === 'all') {
-            qryCmd = "select a.* from grpx_relx a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where b.KODE_URUT like '" + request.KODE_URUT0 + "%'";
+            qryCmd = "select a.*, c.KECX_DESC, c.AREA_DESC from grpx_relx a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT inner join tb20_area c on a.KodeKelurahan = c.AREA_IDXX where b.KODE_URUT like '" + request.KODE_URUT0 + "%'";
 
             if (typePerson === '1' && typeRelawan <= '04') { // 1: Relawan,  04: Korra
-                qryCmd = "select a.* from grpx_relx a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where b.KODE_URUT like '" + request.KODE_URUT0 + "%' And a.KodeKelurahan like '" + request.KODE_AREA0 + "%'";
+                qryCmd = "select a.*, c.KECX_DESC, c.AREA_DESC from grpx_relx a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT inner join tb20_area c on a.KodeKelurahan = c.AREA_IDXX where b.KODE_URUT like '" + request.KODE_URUT0 + "%' And a.KodeKelurahan like '" + request.KODE_AREA0 + "%'";
             }
 
             if (typePerson === '1' && typeRelawan >= '05') {  // 05: Bendahara Group
-                qryCmd = "select a.* from grpx_relx a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where b.KODE_UNIT = '" + request.BUSS_CODE0 + "' And a.IDXX_GRPX = '" + request.groupID + "'";
+                qryCmd = "select a.*, c.KECX_DESC, c.AREA_DESC from grpx_relx a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT inner join tb20_area c on a.KodeKelurahan = c.AREA_IDXX where b.KODE_UNIT = '" + request.BUSS_CODE0 + "' And a.IDXX_GRPX = '" + request.groupID + "'";
             }
         } else {
             qryCmd = "select a.* from grpx_relx a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where a.BUSS_CODE = '" + request.params.bussCode + "' And b.KODE_URUT like '" + request.KODE_URUT0 + "%'";
@@ -1972,7 +1972,7 @@ export default class Donatur {
 
         var id = req.params.id;   // IDXX_GRPX
 
-        var sql = 'select a.* from `grpx_relx` a inner join tb00_unit b on a.BUSS_CODe = b.KODE_UNIT where IDXX_GRPX = "' + id + '" And b.KODE_URUT like "' + req.KODE_URUT0 + '%"';
+        var sql = 'select a.*, c.KOTA_IDXX from `grpx_relx` a inner join tb00_unit b on a.BUSS_CODe = b.KODE_UNIT inner join tb20_area c on a.KodeKelurahan = c.AREA_IDXX where IDXX_GRPX = "' + id + '" And b.KODE_URUT like "' + req.KODE_URUT0 + '%"';
 
         db.query(sql, function(err, rows, fields) {
             var output = [];

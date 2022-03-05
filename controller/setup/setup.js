@@ -73,7 +73,8 @@ export default class Setup {
         var authDelt = request.AUTH_DELT;
         var authAppr = request.AUTH_APPR;  // auth Approve
 
-        var qryCmd = "select * from tb20_area";
+        var qryCmd = "select * from tb20_area where STAT_ACTV = '1'";
+        
         db.query(qryCmd, function(err, rows, fields) {
             var output = [];
 
