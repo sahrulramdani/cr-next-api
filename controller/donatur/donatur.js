@@ -463,7 +463,7 @@ export default class Donatur {
             CodeCountryHPPIC : req.body.CodeCountryHPPIC,
             EmailPIC: req.body.EmailPIC,
             TITLE : req.body.TITLE,
-            CRTX_DATE : new Date(),
+            CRTX_DATE : moment(new Date()).format('YYYY-MM-DD HH:mm:ss'),
             CRTX_BYXX : req.userID
         };
         
@@ -523,7 +523,7 @@ export default class Donatur {
             NoHPPIC: req.body.NoHPPIC, 
             CodeCountryHPPIC : req.body.CodeCountryHPPIC,
             EmailPIC: req.body.EmailPIC,
-            'a.UPDT_DATE' : new Date(),
+            'a.UPDT_DATE' : moment(new Date()).format('YYYY-MM-DD HH:mm:ss'),
             'a.UPDT_BYXX' : req.userID
         };
         
@@ -589,7 +589,7 @@ export default class Donatur {
             NoHPPIC: req.body.NoHPPIC, 
             CodeCountryHPPIC : req.body.CodeCountryHPPIC,
             EmailPIC: req.body.EmailPIC,
-            'a.UPDT_DATE' : new Date(),
+            'a.UPDT_DATE' : moment(new Date()).format('YYYY-MM-DD HH:mm:ss'),
             'a.UPDT_BYXX' : req.userID
         };
         
@@ -620,7 +620,7 @@ export default class Donatur {
     verify = function(req, res) {
         var status = req.body.Status;
         var typeDonatur = req.body.TypeDonatur;
-        var tgl = moment(new Date()).format('YYYY-MM-DD');
+        var tgl = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
 
         var selectedIds = [];
         selectedIds = fncParseComma(req.body.selectedIds);
@@ -679,7 +679,7 @@ export default class Donatur {
             TypeProgram : req.body.TypeProgram,
             TahunBuku : req.body.TahunBuku,
             Unit : req.body.Unit,
-            CRTX_DATE : new Date(),
+            CRTX_DATE : moment(new Date()).format('YYYY-MM-DD HH:mm:ss'),
             CRTX_BYXX : req.userID
         };
         
@@ -696,7 +696,7 @@ export default class Donatur {
                 sql = 'update tb52_0001 set FilePath = CONCAT(FilePath, LAST_INSERT_ID()) where id = LAST_INSERT_ID()';
                 db.query(sql, (err2, result2) => {
                     if (req.body.FlgSaveDetSlpa === '1') {
-                        var tglNow = moment(new Date()).format('YYYY-MM-DD');
+                        var tglNow = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
 
                         sql = 'INSERT INTO tb52_slpb (transNumber, fileID, CRTX_DATE, CRTX_BYXX) VALUES ("' + req.body.transNumber + '", LAST_INSERT_ID(), "' + tglNow + '", "' + req.userID + '")';   
 
@@ -783,7 +783,7 @@ export default class Donatur {
             tahunBuku : req.body.tahunBuku,
             Message : req.body.Message,
             unit : req.BUSS_CODE0,
-            CRTX_DATE : new Date(),
+            CRTX_DATE : moment(new Date()).format('YYYY-MM-DD HH:mm:ss'),
             CRTX_BYXX : req.userID
         };
         
@@ -810,7 +810,7 @@ export default class Donatur {
         var data = {
             transNumber : req.body.transNumber,
             fileID : req.body.fileID,
-            CRTX_DATE : new Date(),
+            CRTX_DATE : moment(new Date()).format('YYYY-MM-DD HH:mm:ss'),
             CRTX_BYXX : req.userID
         };
         
@@ -903,7 +903,7 @@ export default class Donatur {
         var data = {
             transNumber : req.body.transNumber,
             donaturID : req.body.donaturID,
-            CRTX_DATE : new Date(),
+            CRTX_DATE : moment(new Date()).format('YYYY-MM-DD HH:mm:ss'),
             CRTX_BYXX : req.userID
         };
         
@@ -1105,7 +1105,7 @@ export default class Donatur {
             tahunBuku : req.body.tahunBuku,
             Message : req.body.Message,
             unit : req.BUSS_CODE0,
-            UPDT_DATE : new Date(),
+            UPDT_DATE : moment(new Date()).format('YYYY-MM-DD HH:mm:ss'),
             UPDT_BYXX : req.userID
         };
         
@@ -1230,7 +1230,7 @@ export default class Donatur {
             TahunBuku : req.body.TahunBuku,
             isValidate : req.body.isValidate,
             isDelete : req.body.isDelete,
-            CRTX_DATE : new Date(),
+            CRTX_DATE : moment(new Date()).format('YYYY-MM-DD HH:mm:ss'),
             CRTX_BYXX : req.userID
         };
         
@@ -1352,8 +1352,9 @@ export default class Donatur {
         }
 
         var id = req.body.id;
-        var NoReference2 = req.body.NoReference2;
+        // var NoReference2 = req.body.NoReference2;
 
+        var tgl = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
         var sql = 'UPDATE trans_donatur a INNER JOIN tb00_unit c ON a.BUSS_CODE = c.KODE_UNIT SET ? WHERE a.id = ' + id + ' And c.KODE_URUT like "' + req.KODE_URUT0 + '%"';
            
         var data = {
@@ -1372,7 +1373,7 @@ export default class Donatur {
             KODE_KLSX : req.body.KODE_KLSX,
             'a.isValidate' : req.body.isValidate,
             'a.isDelete' : req.body.isDelete,
-            'a.UPDT_DATE' : new Date(),
+            'a.UPDT_DATE' : tgl,
             'a.UPDT_BYXX' : req.userID
         };
         
@@ -1386,16 +1387,16 @@ export default class Donatur {
                 });
             } else {
                 // update item transaction
-                sql = "update trans_item set KodeNik ='" + req.body.KodeNik + "', KODE_KLSX = '" + req.body.KODE_KLSX + "', BUSS_CODE = '" + req.body.BUSS_CODE + "' where TransNumber = '" + req.body.transNumber + "'";
+                sql = "update trans_item set KodeNik ='" + req.body.KodeNik + "', KODE_KLSX = '" + req.body.KODE_KLSX + "', BUSS_CODE = '" + req.body.BUSS_CODE + "', UPDT_BYXX = '" + req.userID + "', UPDT_DATE = '" + tgl + "' where TransNumber = '" + req.body.transNumber + "'";
 
                 db.query(sql, (err, result) => {
                     // update Donatur is verified
-                    sql = 'UPDATE `tb11_mzjb` SET Status = "4" WHERE NO_ID = "' + req.body.DonaturID + '" And Status <> "4"';
+                    sql = 'UPDATE `tb11_mzjb` SET Status = "4", UPDT_BYXX = "' + req.userID + '", UPDT_DATE = "' + tgl + '" WHERE NO_ID = "' + req.body.DonaturID + '" And Status <> "4"';
 
                     db.query(sql, (err, result) => {
                         // update tabel mutasi - TransNumber (link ke tabel Transaksi Donatur)
                         if (req.body.isValidate === '1') {
-                            sql = 'UPDATE `tblMutasi` SET TransNumber = "' + req.body.transNumber + '" WHERE id = ' + req.body.idMutasi;
+                            sql = 'UPDATE `tblMutasi` SET TransNumber = "' + req.body.transNumber + '", UPDT_BYXX = "' + req.userID + '", UPDT_DATE = "' + tgl + '" WHERE id = ' + req.body.idMutasi;
     
                             db.query(sql, (err, result) => {
                                 res.send({
@@ -1419,7 +1420,7 @@ export default class Donatur {
         var sql = 'UPDATE trans_donatur SET ? WHERE id = ' + id;   
         var data = {
             isDelete : req.body.isDelete,
-            UPDT_DATE : new Date(),
+            UPDT_DATE : moment(new Date()).format('YYYY-MM-DD HH:mm:ss'),
             UPDT_BYXX : req.userID
         };
         
@@ -1544,8 +1545,9 @@ export default class Donatur {
         var transNumber = req.body.transNumber;
         var noHP = req.body.NoHP;
         var status = req.body.status;
+        var tgl = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
 
-        var sql = 'UPDATE tb52_slpc a INNER JOIN tb52_slpa b ON a.transNumber = b.transNumber INNER JOIN tb00_unit c ON b.unit = c.KODE_UNIT INNER JOIN tb11_mzjb d ON a.donaturID = d.NO_ID SET a.status = "' + status + '" WHERE a.transNumber = "' + transNumber + '" And CONCAT(IFNULL(d.CodeCountryHP, ""), d.NoHP) = "' + noHP + '" And c.KODE_URUT like "' + req.KODE_URUT0 + '%"';
+        var sql = 'UPDATE tb52_slpc a INNER JOIN tb52_slpa b ON a.transNumber = b.transNumber INNER JOIN tb00_unit c ON b.unit = c.KODE_UNIT INNER JOIN tb11_mzjb d ON a.donaturID = d.NO_ID SET a.status = "' + status + '", a.UPDT_BYXX = "' + req.userID + '", UPDT_DATE = "' + tgl + '" WHERE a.transNumber = "' + transNumber + '" And CONCAT(IFNULL(d.CodeCountryHP, ""), d.NoHP) = "' + noHP + '" And c.KODE_URUT like "' + req.KODE_URUT0 + '%"';
         
         db.query(sql, (err, result) => {
             if (err) {
@@ -1880,7 +1882,7 @@ export default class Donatur {
             KodeKecamatan: req.body.KodeKecamatan,
             KodeKelurahan: req.body.KodeKelurahan,
             BUSS_CODE: req.BUSS_CODE0,
-            CRTX_DATE : new Date(),
+            CRTX_DATE : moment(new Date()).format('YYYY-MM-DD HH:mm:ss'),
             CRTX_BYXX : req.userID
         };
         
@@ -2029,7 +2031,7 @@ export default class Donatur {
             BUSS_CODE: req.body.BUSS_CODE,
             KodeKecamatan: req.body.KodeKecamatan, 
             KodeKelurahan : req.body.KodeKelurahan,
-            'a.UPDT_DATE' : new Date(),
+            'a.UPDT_DATE' : moment(new Date()).format('YYYY-MM-DD HH:mm:ss'),
             'a.UPDT_BYXX' : req.userID
         };
         
@@ -2114,7 +2116,7 @@ export default class Donatur {
             ProgDonatur : req.body.ProgDonatur,
             Amount_item : req.body.Amount_item,
             note : req.body.note,
-            CRTX_DATE : new Date(),
+            CRTX_DATE : moment(new Date()).format('YYYY-MM-DD HH:mm:ss'),
             CRTX_BYXX : req.userID
         };
         
@@ -2159,7 +2161,7 @@ export default class Donatur {
 
         var cntTransItems = req.body.cntTransItems;
         var sql = '';
-        var tglNow = moment(new Date()).format('YYYY-MM-DD');
+        var tglNow = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
 
         var progDonaturs = [];
         progDonaturs = fncParseComma(req.body.ProgDonaturs);

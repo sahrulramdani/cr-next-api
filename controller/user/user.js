@@ -48,7 +48,7 @@ export default class User {
     // tidak didelete melainkan hanya set Active menjadi 0
     deleteUser = (request, response) => {
         var id = request.body.id;
-        var tgl = moment(new Date()).format('YYYY-MM-DD');
+        var tgl = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
 
         var qryCmd = "update tb01_lgxh set Active='0', UPDT_DATE='" + tgl + "', UPDT_BYXX='" + request.userID + "' where USER_IDXX = '" + id + "'";
         
@@ -187,19 +187,19 @@ export default class User {
                     message: err.sqlMessage
                 });
             } else {
+                var tgl = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
 
                 // update data karyawan atau donatur
                 if (typePrson === '1' || typePrson === '4') {     // 1: Karyawan
-                    sql = 'update tb21_empl a inner join tb01_lgxh b on a.KodeNik = b.NO_ID set a.BUSS_CODE = "' + bussCode + '" where UPPER(b.USER_IDXX) = "' + ids.toUpperCase() + '"';
+                    sql = 'update tb21_empl a inner join tb01_lgxh b on a.KodeNik = b.NO_ID set a.BUSS_CODE = "' + bussCode + '", UPDT_BYXX = "' + req.userID + '", UPDT_DATE = "' + tgl + '" where UPPER(b.USER_IDXX) = "' + ids.toUpperCase() + '"';
                 } else if (typePrson === '2') {  // 2: Donatur
-                    sql = 'update tb11_mzjb a inner join tb01_lgxh b on a.NO_ID = b.NO_ID set a.BUSS_CODE = "' + bussCode + '" where UPPER(b.USER_IDXX) = "' + ids.toUpperCase() + '"';
+                    sql = 'update tb11_mzjb a inner join tb01_lgxh b on a.NO_ID = b.NO_ID set a.BUSS_CODE = "' + bussCode + '", UPDT_BYXX = "' + req.userID + '", UPDT_DATE = "' + tgl + '" where UPPER(b.USER_IDXX) = "' + ids.toUpperCase() + '"';
                 }
 
                 db.query(sql, (err, result) => {
                     if (req.body.IDXX_GRPX !== '' && req.body.NO_ID !== '') {
                         // tambahkan group ke relawan
-                        var tglNow = moment(new Date()).format('YYYY-MM-DD');
-                        sql = 'insert into tblRelawanDet (RelawanID, IDXX_GRPX, CRTX_BYXX, CRTX_DATE, prime) values ("' + req.body.NO_ID + '", "' + req.body.IDXX_GRPX + '", "' + req.userID + '", "' + tglNow + '", "1")';
+                        sql = 'insert into tblRelawanDet (RelawanID, IDXX_GRPX, CRTX_BYXX, CRTX_DATE, prime) values ("' + req.body.NO_ID + '", "' + req.body.IDXX_GRPX + '", "' + req.userID + '", "' + tgl + '", "1")';
                         
                         db.query(sql, (err2, result2) => {
                             res.send({
@@ -542,7 +542,9 @@ export default class User {
             return;
         }
 
-        var sql = 'INSERT INTO `role_menu` (ROLE_IDXX, PROC_CODE, PATH, BUSS_CODE, MDUL_CODE, TYPE_MDUL, RIGH_AUTH, AUTH_ADDX, AUTH_EDIT, AUTH_DELT, AUTH_APPR, AUTH_PRNT) SELECT "' + req.body.ROLE_IDXX + '" As ROLE_IDXX, PROC_CODE, PATH, BUSS_CODE, MDUL_CODE, TYPE_MDUL, "1" As RIGH_AUTH, "1" As AUTH_ADDX, "1" As AUTH_EDIT, "1" As AUTH_DELT, "1" As AUTH_APPR, "1" As AUTH_PRNT from `tb01_proc` where BUSS_CODE = "' + req.body.BUSS_CODE + '" And PROC_CODE <> "AL01"';
+        var tgl = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
+
+        var sql = 'INSERT INTO `role_menu` (ROLE_IDXX, PROC_CODE, PATH, BUSS_CODE, MDUL_CODE, TYPE_MDUL, RIGH_AUTH, AUTH_ADDX, AUTH_EDIT, AUTH_DELT, AUTH_APPR, AUTH_PRNT, CRTX_BYXX, CRTX_DATE) SELECT "' + req.body.ROLE_IDXX + '" As ROLE_IDXX, PROC_CODE, PATH, BUSS_CODE, MDUL_CODE, TYPE_MDUL, "1" As RIGH_AUTH, "1" As AUTH_ADDX, "1" As AUTH_EDIT, "1" As AUTH_DELT, "1" As AUTH_APPR, "1" As AUTH_PRNT, "' + req.userID + '", "' + tgl + '" from `tb01_proc` where BUSS_CODE = "' + req.body.BUSS_CODE + '" And PROC_CODE <> "AL01"';
 
         var sqlDelete = 'delete from role_menu where ROLE_IDXX = ' + req.body.ROLE_IDXX;
         
@@ -575,7 +577,7 @@ export default class User {
 
     // Save User All Detail Privilege
     saveAllDetPrivilege = function(req, res) {
-        var tgl = moment(new Date()).format('YYYY-MM-DD');
+        var tgl = momemoment(new Date()).format('YYYY-MM-DD HH:mm:ss');
 
         var sql = 'INSERT INTO `tb01_usrd` (USER_IDXX, PROC_CODE, PATH, BUSS_CODE, MDUL_CODE, TYPE_MDUL, RIGH_AUTH, AUTH_ADDX, AUTH_EDIT, AUTH_DELT, AUTH_APPR, AUTH_PRNT, CRTX_DATE, CRTX_BYXX) SELECT "' + req.body.USER_IDXX + '" As USER_IDXX, PROC_CODE, PATH, BUSS_CODE, MDUL_CODE, TYPE_MDUL, RIGH_AUTH, AUTH_ADDX, AUTH_EDIT, AUTH_DELT, AUTH_APPR, AUTH_PRNT, "' + tgl + '","' + req.userID + '" from `role_menu` where BUSS_CODE = "' + req.body.BUSS_CODE + '" AND PROC_CODE <> "AL01" And ROLE_IDXX = ' + req.body.ROLE_IDXX;
 

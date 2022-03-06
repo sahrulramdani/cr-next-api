@@ -210,7 +210,7 @@ export default class Menu {
     }
 
     saveDetProcess2 = function(req, res) {
-        var tgl = moment(new Date()).format('YYYY-MM-DD');
+        var tgl = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
 
         var sql = 'INSERT INTO tb01_proc (PROC_CODE, BUSS_CODE, PATH, MDUL_CODE, TYPE_MDUL, PROC_NAME, CRTX_DATE, CRTX_BYXX, Enabled) select PROC_CODE, "' + req.body.BUSS_CODE + '","' + req.body.PATH + '", MDUL_CODE, TYPE_MDUL, PROC_NAME, "' + tgl + '","' + req.userID + '","1" from `tb00_proc` where proc_code = "' + req.body.PROC_CODE + '"';
         
@@ -357,8 +357,10 @@ export default class Menu {
 
             return;
         }
+
+        var tgl = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
         
-        var sql = 'INSERT INTO tb01_modm (MDUL_CODE, MDUL_NAMA, TYPE_MDUL, BUSS_CODE, NoUrut) select MDUL_CODE, MDUL_NAMA, TYPE_MDUL, "' + req.body.BUSS_CODE + '", NoUrut from tb00_modm where MDUL_CODE = "' + req.body.MDUL_CODE + '"';
+        var sql = 'INSERT INTO tb01_modm (MDUL_CODE, MDUL_NAMA, TYPE_MDUL, BUSS_CODE, NoUrut, CRTX_BYXX, CRTX_DATE) select MDUL_CODE, MDUL_NAMA, TYPE_MDUL, "' + req.body.BUSS_CODE + '", NoUrut, "' + req.userID + '", "' + tgl + '" from tb00_modm where MDUL_CODE = "' + req.body.MDUL_CODE + '"';
         
         db.query(sql, (err, result) => {
             if (err) {
@@ -390,11 +392,12 @@ export default class Menu {
     saveDetProcessAll = function(req, res) {
         var mdulCode = req.body.MDUL_CODE;
 
+        var tgl = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
         var sql = '';
         var sqlDelete = '';
 
         if (mdulCode === 'ALL') {
-            sql = 'INSERT INTO tb01_modm (MDUL_CODE, MDUL_NAMA, TYPE_MDUL, BUSS_CODE, NoUrut) select MDUL_CODE, MDUL_NAMA, TYPE_MDUL, "' + req.body.BUSS_CODE + '", NoUrut FROM tb00_modm where MDUL_CODE <> "ALL"';
+            sql = 'INSERT INTO tb01_modm (MDUL_CODE, MDUL_NAMA, TYPE_MDUL, BUSS_CODE, NoUrut, CRTX_BYXX, CRTX_DATE) select MDUL_CODE, MDUL_NAMA, TYPE_MDUL, "' + req.body.BUSS_CODE + '", NoUrut, "' + req.userID + '", "' + tgl + '" FROM tb00_modm where MDUL_CODE <> "ALL"';
             
             db.query(sql, (err, result) => {
                 if (err) {
@@ -407,7 +410,7 @@ export default class Menu {
                 } else {
                     sqlDelete = 'delete from tb01_proc where BUSS_CODE = "' + req.body.BUSS_CODE + '"';
 
-                    sql = 'INSERT INTO tb01_proc (PROC_CODE, BUSS_CODE, PATH, MDUL_CODE, TYPE_MDUL, PROC_NAME, Enabled, CRTX_DATE, CRTX_BYXX) select PROC_CODE, "' + req.body.BUSS_CODE + '", PATH, MDUL_CODE, TYPE_MDUL, PROC_NAME, Enabled, "' + moment(new Date()).format('YYYY-MM-DD') + '", "' + req.userID + '" from tb00_proc';
+                    sql = 'INSERT INTO tb01_proc (PROC_CODE, BUSS_CODE, PATH, MDUL_CODE, TYPE_MDUL, PROC_NAME, Enabled, CRTX_DATE, CRTX_BYXX) select PROC_CODE, "' + req.body.BUSS_CODE + '", PATH, MDUL_CODE, TYPE_MDUL, PROC_NAME, Enabled, "' + tgl + '", "' + req.userID + '" from tb00_proc';
 
                     db.query(sqlDelete, (err, result) => {
                         if (err) {
@@ -439,7 +442,7 @@ export default class Menu {
         } else {
             sqlDelete = 'delete from tb01_proc where BUSS_CODE = "' + req.body.BUSS_CODE + '" And MDUL_CODE = "' + mdulCode + '"';
 
-            sql = 'INSERT INTO tb01_proc (PROC_CODE, BUSS_CODE, PATH, MDUL_CODE, TYPE_MDUL, PROC_NAME, Enabled, CRTX_DATE, CRTX_BYXX) select PROC_CODE, "' + req.body.BUSS_CODE + '", PATH, MDUL_CODE, TYPE_MDUL, PROC_NAME, Enabled, "' + moment(new Date()).format('YYYY-MM-DD') + '", "' + req.userID + '" from tb00_proc where MDUL_CODE = "' + mdulCode + '"';
+            sql = 'INSERT INTO tb01_proc (PROC_CODE, BUSS_CODE, PATH, MDUL_CODE, TYPE_MDUL, PROC_NAME, Enabled, CRTX_DATE, CRTX_BYXX) select PROC_CODE, "' + req.body.BUSS_CODE + '", PATH, MDUL_CODE, TYPE_MDUL, PROC_NAME, Enabled, "' + tgl + '", "' + req.userID + '" from tb00_proc where MDUL_CODE = "' + mdulCode + '"';
             
             db.query(sqlDelete, (err, result) => {
                 if (err) {

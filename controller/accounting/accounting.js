@@ -213,7 +213,7 @@ export default class Accounting {
             
             var rows = req.body.rows;
             var bank = req.body.bank;
-            var tgl = moment(new Date()).format('YYYY-MM-DD');
+            var tgl = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
             var bussCode = req.BUSS_CODE0;
 
             var sql = 'INSERT INTO tblMutasi (TransDate, ValutaDate, NoReference, Keterangan, DK, Amount, Saldo, Bank, CRTX_DATE, CRTX_BYXX, BUSS_CODE) VALUES (';

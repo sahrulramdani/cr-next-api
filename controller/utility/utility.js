@@ -26,7 +26,7 @@ export default class Utility {
             bussCode = '';
         } 
 
-        var sql = 'INSERT INTO tblsequence (Initial, BUSS_CODE, Tahun, SequenceUnitCode, NOXX_URUT, TGLX_PROC) select "' + req.body.Initial + '", CASE "' + bussCode + '" When "" Then a.BUSS_CODE Else "' + bussCode + '" END,' + req.body.Tahun + ', b.SequenceUnitCode,"' + req.body.NOXX_URUT + '","' + moment(new Date()).format('YYYY-MM-DD') +  '" from tb01_lgxh a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where UPPER(a.USER_IDXX) = "' + req.userID.toUpperCase() + '"';
+        var sql = 'INSERT INTO tblsequence (Initial, BUSS_CODE, Tahun, SequenceUnitCode, NOXX_URUT, TGLX_PROC) select "' + req.body.Initial + '", CASE "' + bussCode + '" When "" Then a.BUSS_CODE Else "' + bussCode + '" END,' + req.body.Tahun + ', b.SequenceUnitCode,"' + req.body.NOXX_URUT + '","' + moment(new Date()).format('YYYY-MM-DD HH:mm:ss') +  '" from tb01_lgxh a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where UPPER(a.USER_IDXX) = "' + req.userID.toUpperCase() + '"';
         
         db.query(sql, (err, result) => {
             if (err) {
@@ -62,7 +62,9 @@ export default class Utility {
             bussCode = req.body.BUSS_CODE;
         }
 
-        var sql = "update tblsequence set NOXX_URUT = '" + req.body.NOXX_URUT + "' where Initial = '" + req.body.Initial + "' And BUSS_CODE = '" + bussCode + "' And Tahun = '" + req.body.Tahun + "'";
+        var tgl = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
+
+        var sql = "update tblsequence set NOXX_URUT = '" + req.body.NOXX_URUT + "', TGLX_PROC = '" + tgl + "' where Initial = '" + req.body.Initial + "' And BUSS_CODE = '" + bussCode + "' And Tahun = '" + req.body.Tahun + "'";
 
         db.query(sql, (err, result) => {
             if (err) {
