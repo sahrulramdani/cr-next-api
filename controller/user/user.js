@@ -577,7 +577,7 @@ export default class User {
 
     // Save User All Detail Privilege
     saveAllDetPrivilege = function(req, res) {
-        var tgl = momemoment(new Date()).format('YYYY-MM-DD HH:mm:ss');
+        var tgl = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
 
         var sql = 'INSERT INTO `tb01_usrd` (USER_IDXX, PROC_CODE, PATH, BUSS_CODE, MDUL_CODE, TYPE_MDUL, RIGH_AUTH, AUTH_ADDX, AUTH_EDIT, AUTH_DELT, AUTH_APPR, AUTH_PRNT, CRTX_DATE, CRTX_BYXX) SELECT "' + req.body.USER_IDXX + '" As USER_IDXX, PROC_CODE, PATH, BUSS_CODE, MDUL_CODE, TYPE_MDUL, RIGH_AUTH, AUTH_ADDX, AUTH_EDIT, AUTH_DELT, AUTH_APPR, AUTH_PRNT, "' + tgl + '","' + req.userID + '" from `role_menu` where BUSS_CODE = "' + req.body.BUSS_CODE + '" AND PROC_CODE <> "AL01" And ROLE_IDXX = ' + req.body.ROLE_IDXX;
 
