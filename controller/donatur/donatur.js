@@ -1003,7 +1003,7 @@ export default class Donatur {
         db.query(qryCmd, function(err, rows, fields) {
             if (err) {
                 throw err;
-                return;
+                // return;
             }
 
             var output = [];
@@ -1282,6 +1282,10 @@ export default class Donatur {
         var typeRelawan = req.TypeRelawan0;
 
         var isValid = req.params.isValid;
+        var isValid2 = '0';
+        var isValid3 = '0';
+        var isValidTransfer = '0';
+
         var bussCode = '%';
         var sql = '';
 
@@ -1298,20 +1302,48 @@ export default class Donatur {
         if (isValid === 'all') {
             sql = 'SELECT a.*, b.NAMA, CONCAT(b.NO_ID, " - ", b.NAMA) As Donatur2, d.CODD_DESC As Channel, DATE_FORMAT(a.TransDate, "%Y-%b-%e") As TglFormat FROM trans_donatur a inner join tb11_mzjb b on a.donaturID = b.NO_ID inner join tb00_unit c on b.BUSS_CODE = c.KODE_UNIT inner join tb00_basx d on b.Channel = d.CODD_VALU And d.CODD_FLNM = "CHANNEL_DONATUR" WHERE (a.isDelete <> "1" Or a.isDelete Is Null) And c.KODE_URUT like "' + req.KODE_URUT0 + '%" And c.KODE_UNIT like "' + bussCode + '" And (a.isDelete <> "1" OR a.isDelete IS NULL) order by a.TransDate Desc';
         } else {
-            sql = 'SELECT a.*, b.NAMA, CONCAT(b.NO_ID, " - ", b.NAMA) As Donatur2, DATE_FORMAT(a.TransDate, "%Y%m%d") As TransDateFormat, DATE_FORMAT(a.TransDate, "%d/%m/%Y %H:%i:%s") As TglFormat, d.CODD_DESC As Channel, e.TahunDonasi, b.TITLE, CONCAT(IFNULL(b.CodeCountryHP, ""), b.NoHP) As NoHP2, g.Department, h.NAMA_BANK As Bank, i.CODD_DESC As SegmenProfil, c.NAMA_UNIT, CASE b.Stat_aktf When "1" Then "AKTIF" Else "NON-AKTIF" END As Active, a.Amount, Case j.CHKX_CASH When "1" Then "TUNAI" Else "TRANSFER" End As ChkTunai FROM trans_donatur a left join tb11_mzjb b on a.donaturID = b.NO_ID inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT left join tb00_basx d on b.Channel = d.CODD_VALU And d.CODD_FLNM = "CHANNEL_DONATUR" left join vfirst_transaction e on a.DonaturID = e.DonaturID And e.DonaturID is not null left join vdepartment g on a.CRTX_BYXX = g.USER_IDXX left join tb02_bank h on a.BankTo = h.KODE_BANK And h.KODE_FLNM = "KASX_BANK" left join tb00_basx i on b.SEGMX_PROF = i.CODD_VALU And i.CODD_FLNM = "SEGMENT_PROFILING" left join tb02_bank j on a.MethodPayment = j.KODE_BANK And a.BUSS_CODE = j.BUSS_CODE And j.KODE_FLNM = "TYPE_BYRX" WHERE a.isValidate in ("' + isValid + ') And (a.isDelete <> "1" OR a.isDelete IS NULL) And c.KODE_URUT like "%' + req.KODE_URUT0 + '%" order by c.KODE_URUT, a.TransDate Desc, a.TransNumber';
-
             if (typePerson === '1') {  // 1: Relawan
                 if (typeRelawan <= '04') {   // 04: Korra
-                    sql = 'SELECT a.*, b.NAMA, CONCAT(b.NO_ID, " - ", b.NAMA) As Donatur2, DATE_FORMAT(a.TransDate, "%Y%m%d") As TransDateFormat, DATE_FORMAT(a.TransDate, "%d/%m/%Y %H:%i:%s") As TglFormat, d.CODD_DESC As Channel, e.TahunDonasi, b.TITLE, CONCAT(IFNULL(b.CodeCountryHP, ""), b.NoHP) As NoHP2, g.Department, h.NAMA_BANK As Bank, i.CODD_DESC As SegmenProfil, c.NAMA_UNIT, CASE b.Stat_aktf When "1" Then "AKTIF" Else "NON-AKTIF" END As Active, a.Amount, Case n.CHKX_CASH When "1" Then "TUNAI" Else "TRANSFER" End As ChkTunai FROM trans_donatur a left join tb11_mzjb b on a.donaturID = b.NO_ID inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT left join tb00_basx d on b.Channel = d.CODD_VALU And d.CODD_FLNM = "CHANNEL_DONATUR" left join vfirst_transaction e on a.DonaturID = e.DonaturID left join vdepartment g on a.CRTX_BYXX = g.USER_IDXX left join tb02_bank h on a.BankTo = h.KODE_BANK And h.KODE_FLNM = "KASX_BANK" left join tb00_basx i on b.SEGMX_PROF = i.CODD_VALU And i.CODD_FLNM = "SEGMENT_PROFILING" left join vfirst_relawandet l on a.KodeNik = l.RelawanID left join grpx_relx m on l.groupID = m.IDXX_GRPX left join tb02_bank n on a.MethodPayment = n.KODE_BANK And a.BUSS_CODE = n.BUSS_CODE And n.KODE_FLNM = "TYPE_BYRX" WHERE a.isValidate in ("' + isValid + ') And (a.isDelete <> "1" OR a.isDelete IS NULL) And c.KODE_URUT like "' + req.KODE_URUT0 + '%" And m.KodeKelurahan like "' + req.KODE_AREA0 + '%" order by c.KODE_URUT, a.TransDate Desc, a.TransNumber';
+                    if (isValid === '0",null') {
+                        isValid = '1"';
+                        isValid2 = '0';
+                        isValidTransfer = '0';
+                    } else {
+                        isValid2 = '1';
+                        isValidTransfer = '1';
+                    }
+
+                    sql = 'SELECT a.*, b.NAMA, CONCAT(b.NO_ID, " - ", b.NAMA) As Donatur2, DATE_FORMAT(a.TransDate, "%Y%m%d %H:%i:%s") As TransDateFormat, DATE_FORMAT(a.TransDate, "%d/%m/%Y %H:%i:%s") As TglFormat, d.CODD_DESC As Channel, e.TahunDonasi, b.TITLE, CONCAT(IFNULL(b.CodeCountryHP, ""), b.NoHP) As NoHP2, g.Department, h.NAMA_BANK As Bank, i.CODD_DESC As SegmenProfil, c.NAMA_UNIT, CASE b.Stat_aktf When "1" Then "AKTIF" Else "NON-AKTIF" END As Active, a.Amount, Case n.CHKX_CASH When "1" Then "TUNAI" Else "TRANSFER" End As ChkTunai FROM trans_donatur a left join tb11_mzjb b on a.donaturID = b.NO_ID inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT left join tb00_basx d on b.Channel = d.CODD_VALU And d.CODD_FLNM = "CHANNEL_DONATUR" left join vfirst_transaction e on a.DonaturID = e.DonaturID left join vdepartment g on a.CRTX_BYXX = g.USER_IDXX left join tb02_bank h on a.BankTo = h.KODE_BANK And h.KODE_FLNM = "KASX_BANK" left join tb00_basx i on b.SEGMX_PROF = i.CODD_VALU And i.CODD_FLNM = "SEGMENT_PROFILING" left join vfirst_relawandet l on a.KodeNik = l.RelawanID left join grpx_relx m on l.groupID = m.IDXX_GRPX left join tb02_bank n on a.MethodPayment = n.KODE_BANK And a.BUSS_CODE = n.BUSS_CODE And n.KODE_FLNM = "TYPE_BYRX" WHERE ((n.CHKX_CASH = "1" And a.isValidate in ("' + isValid + ') And a.isValidate2 = "' + isValid2 + '") Or (n.CHKX_CASH = "0" And a.isValidate = "' + isValidTransfer + '")) And (a.isDelete <> "1" OR a.isDelete IS NULL) And c.KODE_URUT like "' + req.KODE_URUT0 + '%" And m.KodeKelurahan like "' + req.KODE_AREA0 + '%" order by c.KODE_URUT, a.TransDate Desc, a.TransNumber';
                 }
 
                 if (typeRelawan === '05') {   // 05: Bendahara group
-                    sql = 'SELECT a.*, b.NAMA, CONCAT(b.NO_ID, " - ", b.NAMA) As Donatur2, DATE_FORMAT(a.TransDate, "%Y%m%d") As TransDateFormat, DATE_FORMAT(a.TransDate, "%d/%m/%Y %H:%i:%s") As TglFormat, d.CODD_DESC As Channel, e.TahunDonasi, b.TITLE, CONCAT(IFNULL(b.CodeCountryHP, ""), b.NoHP) As NoHP2, g.Department, h.NAMA_BANK As Bank, i.CODD_DESC As SegmenProfil, c.NAMA_UNIT, CASE b.Stat_aktf When "1" Then "AKTIF" Else "NON-AKTIF" END As Active, a.Amount, Case n.CHKX_CASH When "1" Then "TUNAI" Else "TRANSFER" End As ChkTunai FROM trans_donatur a left join tb11_mzjb b on a.donaturID = b.NO_ID inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT left join tb00_basx d on b.Channel = d.CODD_VALU And d.CODD_FLNM = "CHANNEL_DONATUR" left join vfirst_transaction e on a.DonaturID = e.DonaturID left join vdepartment g on a.CRTX_BYXX = g.USER_IDXX left join tb02_bank h on a.BankTo = h.KODE_BANK And h.KODE_FLNM = "KASX_BANK" left join tb00_basx i on b.SEGMX_PROF = i.CODD_VALU And i.CODD_FLNM = "SEGMENT_PROFILING" left join vfirst_relawandet l on a.KodeNik = l.RelawanID left join grpx_relx m on l.groupID = m.IDXX_GRPX left join tb02_bank n on a.MethodPayment = n.KODE_BANK And a.BUSS_CODE = n.BUSS_CODE And n.KODE_FLNM = "TYPE_BYRX" WHERE a.isValidate in ("' + isValid + ') And (a.isDelete <> "1" OR a.isDelete IS NULL) And c.KODE_URUT like "' + req.KODE_URUT0 + '%" And m.IDXX_GRPX = "' + req.groupID + '" order by c.KODE_URUT, a.TransDate Desc, a.TransNumber';
+                    sql = 'SELECT a.*, b.NAMA, CONCAT(b.NO_ID, " - ", b.NAMA) As Donatur2, DATE_FORMAT(a.TransDate, "%Y%m%d %H:%i:%s") As TransDateFormat, DATE_FORMAT(a.TransDate, "%d/%m/%Y %H:%i:%s") As TglFormat, d.CODD_DESC As Channel, e.TahunDonasi, b.TITLE, CONCAT(IFNULL(b.CodeCountryHP, ""), b.NoHP) As NoHP2, g.Department, h.NAMA_BANK As Bank, i.CODD_DESC As SegmenProfil, c.NAMA_UNIT, CASE b.Stat_aktf When "1" Then "AKTIF" Else "NON-AKTIF" END As Active, a.Amount, Case n.CHKX_CASH When "1" Then "TUNAI" Else "TRANSFER" End As ChkTunai FROM trans_donatur a left join tb11_mzjb b on a.donaturID = b.NO_ID inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT left join tb00_basx d on b.Channel = d.CODD_VALU And d.CODD_FLNM = "CHANNEL_DONATUR" left join vfirst_transaction e on a.DonaturID = e.DonaturID left join vdepartment g on a.CRTX_BYXX = g.USER_IDXX left join tb02_bank h on a.BankTo = h.KODE_BANK And h.KODE_FLNM = "KASX_BANK" left join tb00_basx i on b.SEGMX_PROF = i.CODD_VALU And i.CODD_FLNM = "SEGMENT_PROFILING" left join vfirst_relawandet l on a.KodeNik = l.RelawanID left join grpx_relx m on l.groupID = m.IDXX_GRPX left join tb02_bank n on a.MethodPayment = n.KODE_BANK And a.BUSS_CODE = n.BUSS_CODE And n.KODE_FLNM = "TYPE_BYRX" WHERE ((n.CHKX_CASH = "1" And a.isValidate in ("' + isValid + ')) Or (n.CHKX_CASH = "0" And a.isValidate in ("' + isValid + '))) And (a.isDelete <> "1" OR a.isDelete IS NULL) And c.KODE_URUT like "' + req.KODE_URUT0 + '%" And m.IDXX_GRPX = "' + req.groupID + '" order by c.KODE_URUT, a.TransDate Desc, a.TransNumber';
                 }
 
                 if (typeRelawan === '06') {   // 05: Relawan
-                    sql = 'SELECT a.*, b.NAMA, CONCAT(b.NO_ID, " - ", b.NAMA) As Donatur2, DATE_FORMAT(a.TransDate, "%Y%m%d") As TransDateFormat, DATE_FORMAT(a.TransDate, "%d/%m/%Y %H:%i:%s") As TglFormat, d.CODD_DESC As Channel, e.TahunDonasi, b.TITLE, CONCAT(IFNULL(b.CodeCountryHP, ""), b.NoHP) As NoHP2, g.Department, h.NAMA_BANK As Bank, i.CODD_DESC As SegmenProfil, c.NAMA_UNIT, CASE b.Stat_aktf When "1" Then "AKTIF" Else "NON-AKTIF" END As Active, a.Amount, Case n.CHKX_CASH When "1" Then "TUNAI" Else "TRANSFER" End As ChkTunai FROM trans_donatur a left join tb11_mzjb b on a.donaturID = b.NO_ID inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT left join tb00_basx d on b.Channel = d.CODD_VALU And d.CODD_FLNM = "CHANNEL_DONATUR" left join vfirst_transaction e on a.DonaturID = e.DonaturID left join vdepartment g on a.CRTX_BYXX = g.USER_IDXX left join tb02_bank h on a.BankTo = h.KODE_BANK And h.KODE_FLNM = "KASX_BANK" left join tb00_basx i on b.SEGMX_PROF = i.CODD_VALU And i.CODD_FLNM = "SEGMENT_PROFILING" inner join left join tb01_lgxh l on b.RelawanID = l.NO_ID left join tb02_bank n on a.MethodPayment = n.KODE_BANK And a.BUSS_CODE = n.BUSS_CODE And n.KODE_FLNM = "TYPE_BYRX" WHERE a.isValidate in ("' + isValid + ') And (a.isDelete <> "1" OR a.isDelete IS NULL) And c.KODE_URUT like "' + req.KODE_URUT0 + '%" And UPPER(l.USER_IDXX) = "' + req.userID.toUpperCase() + '" order by c.KODE_URUT, a.TransDate Desc, a.TransNumber';
+                    if (isValid === '0",null') {
+                        isValid2 = '0';
+                        isValid3 = '0';
+                    } else {
+                        isValid2 = '1';
+                        isValid3 = '1';
+                    }
+
+                    sql = 'SELECT a.*, b.NAMA, CONCAT(b.NO_ID, " - ", b.NAMA) As Donatur2, DATE_FORMAT(a.TransDate, "%Y%m%d %H:%i:%s") As TransDateFormat, DATE_FORMAT(a.TransDate, "%d/%m/%Y %H:%i:%s") As TglFormat, d.CODD_DESC As Channel, e.TahunDonasi, b.TITLE, CONCAT(IFNULL(b.CodeCountryHP, ""), b.NoHP) As NoHP2, g.Department, h.NAMA_BANK As Bank, i.CODD_DESC As SegmenProfil, c.NAMA_UNIT, CASE b.Stat_aktf When "1" Then "AKTIF" Else "NON-AKTIF" END As Active, a.Amount, Case n.CHKX_CASH When "1" Then "TUNAI" Else "TRANSFER" End As ChkTunai FROM trans_donatur a left join tb11_mzjb b on a.donaturID = b.NO_ID inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT left join tb00_basx d on b.Channel = d.CODD_VALU And d.CODD_FLNM = "CHANNEL_DONATUR" left join vfirst_transaction e on a.DonaturID = e.DonaturID left join vdepartment g on a.CRTX_BYXX = g.USER_IDXX left join tb02_bank h on a.BankTo = h.KODE_BANK And h.KODE_FLNM = "KASX_BANK" left join tb00_basx i on b.SEGMX_PROF = i.CODD_VALU And i.CODD_FLNM = "SEGMENT_PROFILING" left join tb01_lgxh l on b.RelawanID = l.NO_ID left join tb02_bank n on a.MethodPayment = n.KODE_BANK And a.BUSS_CODE = n.BUSS_CODE And n.KODE_FLNM = "TYPE_BYRX" WHERE ((n.CHKX_CASH = "1" And a.isValidate in ("' + isValid + ') And a.isValidate2 = "' + isValid2 + '" And a.isValidate3 = "' + isValid3 + '") Or (n.CHKX_CASH = "0" And a.isValidate in ("' + isValid + '))) And (a.isDelete <> "1" OR a.isDelete IS NULL) And c.KODE_URUT like "' + req.KODE_URUT0 + '%" And UPPER(l.USER_IDXX) = "' + req.userID.toUpperCase() + '" order by c.KODE_URUT, a.TransDate Desc, a.TransNumber';
                 }
+            } else {
+                if (isValid === '0",null') {
+                    isValid = '1"';
+                    isValid2 = '1';
+                    isValid3 = '0';
+                    isValidTransfer = '0';
+                } else {
+                    isValid2 = '1';
+                    isValid3 = '1';
+                    isValidTransfer = '1';
+                }
+    
+                sql = 'SELECT a.*, b.NAMA, CONCAT(b.NO_ID, " - ", b.NAMA) As Donatur2, DATE_FORMAT(a.TransDate, "%Y%m%d %H:%i:%s") As TransDateFormat, DATE_FORMAT(a.TransDate, "%d/%m/%Y %H:%i:%s") As TglFormat, d.CODD_DESC As Channel, e.TahunDonasi, b.TITLE, CONCAT(IFNULL(b.CodeCountryHP, ""), b.NoHP) As NoHP2, g.Department, h.NAMA_BANK As Bank, i.CODD_DESC As SegmenProfil, c.NAMA_UNIT, CASE b.Stat_aktf When "1" Then "AKTIF" Else "NON-AKTIF" END As Active, a.Amount, Case j.CHKX_CASH When "1" Then "TUNAI" Else "TRANSFER" End As ChkTunai FROM trans_donatur a left join tb11_mzjb b on a.donaturID = b.NO_ID inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT left join tb00_basx d on b.Channel = d.CODD_VALU And d.CODD_FLNM = "CHANNEL_DONATUR" left join vfirst_transaction e on a.DonaturID = e.DonaturID And e.DonaturID is not null left join vdepartment g on a.CRTX_BYXX = g.USER_IDXX left join tb02_bank h on a.BankTo = h.KODE_BANK And h.KODE_FLNM = "KASX_BANK" left join tb00_basx i on b.SEGMX_PROF = i.CODD_VALU And i.CODD_FLNM = "SEGMENT_PROFILING" left join tb02_bank j on a.MethodPayment = j.KODE_BANK And a.BUSS_CODE = j.BUSS_CODE And j.KODE_FLNM = "TYPE_BYRX" WHERE ((j.CHKX_CASH = "1" And a.isValidate in ("' + isValid + ') And a.isValidate2 = "' + isValid2 + '" And a.isValidate3 = "' + isValid3 + '") Or (j.CHKX_CASH = "0" And a.isValidate = "' + isValidTransfer + '")) And (a.isDelete <> "1" OR a.isDelete IS NULL) And c.KODE_URUT like "%' + req.KODE_URUT0 + '%" order by c.KODE_URUT, a.TransDate Desc, a.TransNumber';
             }
         }
 
@@ -1357,25 +1389,52 @@ export default class Donatur {
         var tgl = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
         var sql = 'UPDATE trans_donatur a INNER JOIN tb00_unit c ON a.BUSS_CODE = c.KODE_UNIT SET ? WHERE a.id = ' + id + ' And c.KODE_URUT like "' + req.KODE_URUT0 + '%"';
            
-        var data = {
-            TransDate : req.body.TransDate,
-            NoReference : req.body.NoReference,
-            'a.BUSS_CODE' : req.body.BUSS_CODE,
-            CurrencyID : req.body.CurrencyID,
-            Amount : req.body.Amount,
-            'a.FileName' : req.body.FileName,
-            MethodPayment : req.body.MethodPayment,
-            TransactionIDSLP : req.body.TransactionIDSLP,
-            BankFrom : req.body.BankFrom,
-            BankTo : req.body.BankTo,
-            Catatan : req.body.Catatan,
-            'a.KodeNik' : req.body.KodeNik,
-            KODE_KLSX : req.body.KODE_KLSX,
-            'a.isValidate' : req.body.isValidate,
-            'a.isDelete' : req.body.isDelete,
-            'a.UPDT_DATE' : tgl,
-            'a.UPDT_BYXX' : req.userID
-        };
+        var data = new Object();
+
+        if (req.body.TransactionIDSLP === '') {
+            data = {
+                TransDate : req.body.TransDate,
+                NoReference : req.body.NoReference,
+                'a.BUSS_CODE' : req.body.BUSS_CODE,
+                CurrencyID : req.body.CurrencyID,
+                Amount : req.body.Amount,
+                'a.FileName' : req.body.FileName,
+                MethodPayment : req.body.MethodPayment,
+                BankFrom : req.body.BankFrom,
+                BankTo : req.body.BankTo,
+                Catatan : req.body.Catatan,
+                'a.KodeNik' : req.body.KodeNik,
+                KODE_KLSX : req.body.KODE_KLSX,
+                'a.isValidate' : req.body.isValidate,
+                isValidate2 : req.body.isValidate2,
+                isValidate3 : req.body.isValidate3,
+                'a.isDelete' : req.body.isDelete,
+                'a.UPDT_DATE' : tgl,
+                'a.UPDT_BYXX' : req.userID
+            };
+        } else {
+            data = {
+                TransDate : req.body.TransDate,
+                NoReference : req.body.NoReference,
+                'a.BUSS_CODE' : req.body.BUSS_CODE,
+                CurrencyID : req.body.CurrencyID,
+                Amount : req.body.Amount,
+                'a.FileName' : req.body.FileName,
+                MethodPayment : req.body.MethodPayment,
+                TransactionIDSLP : req.body.TransactionIDSLP,
+                BankFrom : req.body.BankFrom,
+                BankTo : req.body.BankTo,
+                Catatan : req.body.Catatan,
+                'a.KodeNik' : req.body.KodeNik,
+                KODE_KLSX : req.body.KODE_KLSX,
+                'a.isValidate' : req.body.isValidate,
+                isValidate2 : req.body.isValidate2,
+                isValidate3 : req.body.isValidate3,
+                'a.isDelete' : req.body.isDelete,
+                'a.UPDT_DATE' : tgl,
+                'a.UPDT_BYXX' : req.userID
+            };
+        }
         
         db.query(sql, data, (err, result) => {
             if (err) {
@@ -1451,7 +1510,7 @@ export default class Donatur {
 
         var id = req.params.id;
 
-        var sql = 'SELECT a.*, CONCAT(a.DonaturID, " - ", b.NAMA) As Donatur2, b.NAMA, b.ALMT_XXX1 As Alamat, e.CODD_DESC As Pekerjaan, DATE_FORMAT(a.TransDate, "%e-%b-%Y") As TglFormat, IFNULL(f.CHKX_CASH, "") As CHKX_CASH, c.Tertanda, c.Website, c.NAMA_UNIT, c.Alamat As AlamatUnit, c.Email, c.SK_Menkumham, c.Hotline, c.FileName FROM trans_donatur a LEFT JOIN tb11_mzjb b ON a.DonaturID = b.NO_ID left join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT left join tb00_basx e on b.Pekerjaan = e.CODD_VALU And e.CODD_FLNM = "PEKERJAAN" left join tb02_bank f on a.MethodPayment = f.KODE_BANK And f.KODE_FLNM = "TYPE_BYRX" And f.BUSS_CODE = a.BUSS_CODE WHERE a.id = "'+ id +'" And c.KODE_URUT like "' + req.KODE_URUT0 + '%"';
+        var sql = 'SELECT a.*, CONCAT(a.DonaturID, " - ", b.NAMA) As Donatur2, b.NAMA, b.ALMT_XXX1 As Alamat, e.CODD_DESC As Pekerjaan, DATE_FORMAT(a.TransDate, "%e-%b-%Y") As TglFormat, IFNULL(f.CHKX_CASH, "") As CHKX_CASH, c.Tertanda, c.Website, c.NAMA_UNIT, c.Alamat As AlamatUnit, c.Email, c.SK_Menkumham, c.Hotline, c.FileName, h.groupID As KODE_KLSX FROM trans_donatur a LEFT JOIN tb11_mzjb b ON a.DonaturID = b.NO_ID left join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT left join tb00_basx e on b.Pekerjaan = e.CODD_VALU And e.CODD_FLNM = "PEKERJAAN" left join tb02_bank f on a.MethodPayment = f.KODE_BANK And f.KODE_FLNM = "TYPE_BYRX" And f.BUSS_CODE = a.BUSS_CODE left join vfirst_relawandet h on a.KodeNik = h.RelawanID WHERE a.id = "'+ id +'" And c.KODE_URUT like "' + req.KODE_URUT0 + '%"';
 
         db.query(sql, function(err, rows, fields) {
             var output = [];
@@ -1469,6 +1528,7 @@ export default class Donatur {
                     obj['AUTH_APPR'] = authAppr;
                     obj['AUTH_PRNT'] = authPrnt;
                     obj['TYPE_PRSON'] = req.TYPE_PRSON0;
+                    obj['TypeRelawan'] = req.TypeRelawan0;
 
                     output.push(obj);
                 })
@@ -1547,7 +1607,7 @@ export default class Donatur {
         var status = req.body.status;
         var tgl = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
 
-        var sql = 'UPDATE tb52_slpc a INNER JOIN tb52_slpa b ON a.transNumber = b.transNumber INNER JOIN tb00_unit c ON b.unit = c.KODE_UNIT INNER JOIN tb11_mzjb d ON a.donaturID = d.NO_ID SET a.status = "' + status + '", a.UPDT_BYXX = "' + req.userID + '", UPDT_DATE = "' + tgl + '" WHERE a.transNumber = "' + transNumber + '" And CONCAT(IFNULL(d.CodeCountryHP, ""), d.NoHP) = "' + noHP + '" And c.KODE_URUT like "' + req.KODE_URUT0 + '%"';
+        var sql = 'UPDATE tb52_slpc a INNER JOIN tb52_slpa b ON a.transNumber = b.transNumber INNER JOIN tb00_unit c ON b.unit = c.KODE_UNIT INNER JOIN tb11_mzjb d ON a.donaturID = d.NO_ID SET a.status = "' + status + '", a.UPDT_BYXX = "' + req.userID + '", a.UPDT_DATE = "' + tgl + '" WHERE a.transNumber = "' + transNumber + '" And CONCAT(IFNULL(d.CodeCountryHP, ""), d.NoHP) = "' + noHP + '" And c.KODE_URUT like "' + req.KODE_URUT0 + '%"';
         
         db.query(sql, (err, result) => {
             if (err) {
@@ -1732,7 +1792,7 @@ export default class Donatur {
         }
 
         if (typePerson === '1' && typeRelawan <= '04') {  // 04: Korra
-            sql = "select DATE_FORMAT(a.TransDate,'%Y-%m') As TahunBulan, CONCAT(MONTHNAME(a.TransDate),' ',YEAR(a.TransDate)) As BulanTahun, Case '" + typeRelawan + "' When '03' Then CONCAT('Kelurahan ', i.AREA_DESC) When '04' Then CONCAT('Group ', h.NAMA_GRPX) When '02' Then CONCAT('Kecamatan ', i.KECX_DESC) When '01' Then i.KOTA_DESC Else 'XXXX' End As NAMA_GRPX, COUNT(distinct a.DonaturID) As JumlahDonatur, COUNT(a.Amount) As JumlahTransaksi, SUM(a.Amount) As JumlahDonasi FROM trans_donatur a left join tb11_mzjb b on a.DonaturID = b.NO_ID inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT left join tb00_basx e on b.SEGMX_PROF = e.CODD_VALU And e.CODD_FLNM = 'SEGMENT_PROFILING' left join vfirst_relawandet g on a.KodeNik = g.RelawanID left join grpx_relx h on g.groupID = h.IDXX_GRPX left join tb20_area i on h.KodeKelurahan = i.AREA_IDXX WHERE c.KODE_URUT like '" + req.KODE_URUT0 +  "%' And DATE_FORMAT(a.TransDate,'%Y-%m') like '" + period + "' And h.KodeKelurahan like '" + req.KODE_AREA0 + "%' And (a.isDelete <> '1' OR a.isDelete IS NULL) group by DATE_FORMAT(a.TransDate,'%Y-%m'), h.IDXX_GRPX";
+            sql = "select DATE_FORMAT(a.TransDate,'%Y-%m') As TahunBulan, CONCAT(MONTHNAME(a.TransDate),' ',YEAR(a.TransDate)) As BulanTahun, Case '" + typeRelawan + "' When '03' Then CONCAT('Kelurahan ', i.AREA_DESC) When '04' Then CONCAT('Group ', h.NAMA_GRPX) When '02' Then CONCAT('Kecamatan ', i.KECX_DESC) When '01' Then i.KOTA_DESC Else 'XXXX' End As NAMA_GRPX, COUNT(distinct a.DonaturID) As JumlahDonatur, COUNT(a.Amount) As JumlahTransaksi, SUM(a.Amount) As JumlahDonasi FROM trans_donatur a left join tb11_mzjb b on a.DonaturID = b.NO_ID inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT left join tb00_basx e on b.SEGMX_PROF = e.CODD_VALU And e.CODD_FLNM = 'SEGMENT_PROFILING' left join vfirst_relawandet g on a.KodeNik = g.RelawanID left join grpx_relx h on g.groupID = h.IDXX_GRPX left join tb20_area i on h.KodeKelurahan = i.AREA_IDXX WHERE c.KODE_URUT like '" + req.KODE_URUT0 +  "%' And DATE_FORMAT(a.TransDate,'%Y-%m') like '" + period + "' And h.KodeKelurahan like '" + req.KODE_AREA0 + "%' And (a.isDelete <> '1' OR a.isDelete IS NULL) group by DATE_FORMAT(a.TransDate,'%Y-%m'), Case '" + typeRelawan + "' When '03' Then CONCAT('Kelurahan ', i.AREA_DESC) When '04' Then CONCAT('Group ', h.NAMA_GRPX) When '02' Then CONCAT('Kecamatan ', i.KECX_DESC) When '01' Then i.KOTA_DESC Else 'XXXX' End";
         }
 
         if (typePerson === '4') {  // 4: Official setingkat Relawan Korda ('3275')
@@ -1778,7 +1838,7 @@ export default class Donatur {
         }
 
         if (typePerson === '1' && typeRelawan === '06') {   // typePerson 1: Relawan, typeRelawan 06: Relawan
-            sql = "select DATE_FORMAT(a.TransDate,'%Y-%m') As TahunBulan, CONCAT(MONTHNAME(a.TransDate),' ',YEAR(a.TransDate)) As BulanTahun, c.NAMA_UNIT, COUNT(distinct a.DonaturID) As JumlahDonatur, COUNT(a.Amount) As JumlahTransaksi, SUM(a.Amount) As JumlahDonasi FROM trans_donatur a left join tb11_mzjb b on a.DonaturID = b.NO_ID inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT left join tb00_basx e on b.SEGMX_PROF = e.CODD_VALU And e.CODD_FLNM = 'SEGMENT_PROFILING' inner join tb01_lgxh g on a.KodeNik = g.NO_ID left join vfirst_relawandet h on a.KodeNik = h.RelawanID left join grpx_relx i on g.groupID = i.IDXX_GRPX WHERE c.KODE_URUT like '" + req.KODE_URUT0 +  "%' And DATE_FORMAT(a.TransDate,'%Y-%m') like '" + period + "' And UPPER(g.USER_IDXX) = '" + req.userID.toUpperCase() + "' And (a.isDelete <> '1' OR a.isDelete IS NULL) group by DATE_FORMAT(a.TransDate,'%Y-%m'), c.NAMA_UNIT";
+            sql = "select DATE_FORMAT(a.TransDate,'%Y-%m') As TahunBulan, CONCAT(MONTHNAME(a.TransDate),' ',YEAR(a.TransDate)) As BulanTahun, c.NAMA_UNIT, COUNT(distinct a.DonaturID) As JumlahDonatur, COUNT(a.Amount) As JumlahTransaksi, SUM(a.Amount) As JumlahDonasi FROM trans_donatur a left join tb11_mzjb b on a.DonaturID = b.NO_ID inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT left join tb00_basx e on b.SEGMX_PROF = e.CODD_VALU And e.CODD_FLNM = 'SEGMENT_PROFILING' inner join tb01_lgxh g on a.KodeNik = g.NO_ID left join vfirst_relawandet h on a.KodeNik = h.RelawanID left join grpx_relx i on h.groupID = i.IDXX_GRPX WHERE c.KODE_URUT like '" + req.KODE_URUT0 +  "%' And DATE_FORMAT(a.TransDate,'%Y-%m') like '" + period + "' And UPPER(g.USER_IDXX) = '" + req.userID.toUpperCase() + "' And (a.isDelete <> '1' OR a.isDelete IS NULL) group by DATE_FORMAT(a.TransDate,'%Y-%m'), c.NAMA_UNIT";
         }
 
         if (typePerson === '1' && typeRelawan <= '04') {  // 04: Korra
@@ -1823,19 +1883,19 @@ export default class Donatur {
         var typeRelawan = req.TypeRelawan0;
         var sql = '';
 
-        sql = "select SUM(a.Amount) As JumlahDonasi, SUM(Case a.isValidate When '1' Then a.Amount Else 0 End) As JumlahValidasi, SUM(Case d.CHKX_BANK When '1' Then a.Amount Else 0 End) As JumlahTransfer, SUM(Case d.CHKX_BANK When '0' Then a.Amount Else 0 End) As JumlahTunai FROM trans_donatur a left join tb11_mzjb b on a.DonaturID = b.NO_ID inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT left join tb02_bank d on a.MethodPayment = d.KODE_BANK And d.KODE_FLNM = 'TYPE_BYRX' And a.BUSS_CODE = d.BUSS_CODE WHERE c.KODE_URUT like '" + req.KODE_URUT0 + "%' And MONTH(a.TransDate) = MONTH(NOW()) And YEAR(a.TransDate) = YEAR(NOW()) And (a.isDelete <> '1' OR a.isDelete IS NULL)";
+        sql = "select SUM(a.Amount) As JumlahDonasi, SUM(Case a.isValidate When '1' Then a.Amount Else 0 End) As JumlahValidasi, SUM(Case d.CHKX_BANK When '1' Then a.Amount Else 0 End) As JumlahTransfer, SUM(Case d.CHKX_CASH When '1' Then a.Amount Else 0 End) As JumlahTunai FROM trans_donatur a left join tb11_mzjb b on a.DonaturID = b.NO_ID inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT left join tb02_bank d on a.MethodPayment = d.KODE_BANK And d.KODE_FLNM = 'TYPE_BYRX' And a.BUSS_CODE = d.BUSS_CODE WHERE c.KODE_URUT like '" + req.KODE_URUT0 + "%' And MONTH(a.TransDate) = MONTH(NOW()) And YEAR(a.TransDate) = YEAR(NOW()) And (a.isDelete <> '1' OR a.isDelete IS NULL)";
 
         if (typePerson === '1') {
             if (typeRelawan === '05') {  // TypePerson 1: Relawan,  TypeRelawan 05: Bendahara Group
-                sql = "select SUM(a.Amount) As JumlahDonasi, SUM(Case a.isValidate When '1' Then a.Amount Else 0 End) As JumlahValidasi, SUM(Case d.CHKX_BANK When '1' Then a.Amount Else 0 End) As JumlahTransfer, SUM(Case d.CHKX_BANK When '0' Then a.Amount Else 0 End) As JumlahTunai FROM trans_donatur a left join tb11_mzjb b on a.DonaturID = b.NO_ID inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT left join tb02_bank d on a.MethodPayment = d.KODE_BANK And d.KODE_FLNM = 'TYPE_BYRX' And a.BUSS_CODE = d.BUSS_CODE WHERE c.KODE_URUT like '" + req.KODE_URUT0 + "%' And MONTH(a.TransDate) = MONTH(NOW()) And YEAR(a.TransDate) = YEAR(NOW()) And a.KODE_KLSX = '" + req.groupID + "' And (a.isDelete <> '1' OR a.isDelete IS NULL)";
+                sql = "select SUM(a.Amount) As JumlahDonasi, SUM(Case a.isValidate When '1' Then a.Amount Else 0 End) As JumlahValidasi, SUM(Case d.CHKX_BANK When '1' Then a.Amount Else 0 End) As JumlahTransfer, SUM(Case d.CHKX_CASH When '1' Then a.Amount Else 0 End) As JumlahTunai FROM trans_donatur a left join tb11_mzjb b on a.DonaturID = b.NO_ID inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT left join tb02_bank d on a.MethodPayment = d.KODE_BANK And d.KODE_FLNM = 'TYPE_BYRX' And a.BUSS_CODE = d.BUSS_CODE left join vfirst_relawandet e on a.KodeNik = e.RelawanID WHERE c.KODE_URUT like '" + req.KODE_URUT0 + "%' And MONTH(a.TransDate) = MONTH(NOW()) And YEAR(a.TransDate) = YEAR(NOW()) And e.groupID = '" + req.groupID + "' And (a.isDelete <> '1' OR a.isDelete IS NULL)";
             }
 
             if (typeRelawan === '06') {  // TypePerson 1: Relawan,  TypeRelawan 06: Relawan
-                sql = "select SUM(a.Amount) As JumlahDonasi, SUM(Case a.isValidate When '1' Then a.Amount Else 0 End) As JumlahValidasi, SUM(Case d.CHKX_BANK When '1' Then a.Amount Else 0 End) As JumlahTransfer, SUM(Case d.CHKX_BANK When '0' Then a.Amount Else 0 End) As JumlahTunai FROM trans_donatur a left join tb11_mzjb b on a.DonaturID = b.NO_ID inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT left join tb02_bank d on a.MethodPayment = d.KODE_BANK And d.KODE_FLNM = 'TYPE_BYRX' And a.BUSS_CODE = d.BUSS_CODE inner join tb01_lgxh e on a.KodeNik = e.NO_ID WHERE c.KODE_URUT like '" + req.KODE_URUT0 + "%' And MONTH(a.TransDate) = MONTH(NOW()) And YEAR(a.TransDate) = YEAR(NOW()) And UPPER(e.USER_IDXX) = '" + req.userID.toUpperCase() + "' And (a.isDelete <> '1' OR a.isDelete IS NULL)";
+                sql = "select SUM(a.Amount) As JumlahDonasi, SUM(Case a.isValidate When '1' Then a.Amount Else 0 End) As JumlahValidasi, SUM(Case d.CHKX_BANK When '1' Then a.Amount Else 0 End) As JumlahTransfer, SUM(Case d.CHKX_CASH When '1' Then a.Amount Else 0 End) As JumlahTunai FROM trans_donatur a left join tb11_mzjb b on a.DonaturID = b.NO_ID inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT left join tb02_bank d on a.MethodPayment = d.KODE_BANK And d.KODE_FLNM = 'TYPE_BYRX' And a.BUSS_CODE = d.BUSS_CODE inner join tb01_lgxh e on a.KodeNik = e.NO_ID WHERE c.KODE_URUT like '" + req.KODE_URUT0 + "%' And MONTH(a.TransDate) = MONTH(NOW()) And YEAR(a.TransDate) = YEAR(NOW()) And UPPER(e.USER_IDXX) = '" + req.userID.toUpperCase() + "' And (a.isDelete <> '1' OR a.isDelete IS NULL)";
             }
 
             if (typeRelawan <= '04') {  // 04: Korra
-                sql = "select SUM(a.Amount) As JumlahDonasi, SUM(Case a.isValidate When '1' Then a.Amount Else 0 End) As JumlahValidasi, SUM(Case d.CHKX_BANK When '1' Then a.Amount Else 0 End) As JumlahTransfer, SUM(Case d.CHKX_BANK When '0' Then a.Amount Else 0 End) As JumlahTunai FROM trans_donatur a left join tb11_mzjb b on a.DonaturID = b.NO_ID inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT left join tb02_bank d on a.MethodPayment = d.KODE_BANK And d.KODE_FLNM = 'TYPE_BYRX' And a.BUSS_CODE = d.BUSS_CODE left join vfirst_relawandet e on a.KodeNik = e.RelawanID left join grpx_relx f on e.groupID = f.IDXX_GRPX WHERE c.KODE_URUT like '" + req.KODE_URUT0 + "%' And MONTH(a.TransDate) = MONTH(NOW()) And YEAR(a.TransDate) = YEAR(NOW()) And f.KodeKelurahan like '" + req.KODE_AREA0 + "%' And (a.isDelete <> '1' OR a.isDelete IS NULL)";
+                sql = "select SUM(a.Amount) As JumlahDonasi, SUM(Case a.isValidate When '1' Then a.Amount Else 0 End) As JumlahValidasi, SUM(Case d.CHKX_BANK When '1' Then a.Amount Else 0 End) As JumlahTransfer, SUM(Case d.CHKX_CASH When '1' Then a.Amount Else 0 End) As JumlahTunai FROM trans_donatur a left join tb11_mzjb b on a.DonaturID = b.NO_ID inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT left join tb02_bank d on a.MethodPayment = d.KODE_BANK And d.KODE_FLNM = 'TYPE_BYRX' And a.BUSS_CODE = d.BUSS_CODE left join vfirst_relawandet e on a.KodeNik = e.RelawanID left join grpx_relx f on e.groupID = f.IDXX_GRPX WHERE c.KODE_URUT like '" + req.KODE_URUT0 + "%' And MONTH(a.TransDate) = MONTH(NOW()) And YEAR(a.TransDate) = YEAR(NOW()) And f.KodeKelurahan like '" + req.KODE_AREA0 + "%' And (a.isDelete <> '1' OR a.isDelete IS NULL)";
             }
         }
         
@@ -2294,7 +2354,7 @@ export default class Donatur {
         selectedIds = fncParseComma(req.body.selectedIds);
         var arrayLength = selectedIds.length;
 
-        var sql = 'UPDATE trans_donatur a inner join tb02_bank b on a.MethodPayment = b.KODE_BANK And a.BUSS_CODE = b.BUSS_CODE inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT SET a.isValidate = "1", a.UPDT_DATE = "' + tgl + '", a.UPDT_BYXX = "' + req.userID + '" WHERE c.KODE_URUT like "' + req.KODE_URUT0 + '%" And b.CHKX_CASH = "1" And a.id in ("';
+        var sql = 'UPDATE trans_donatur a inner join tb02_bank b on a.MethodPayment = b.KODE_BANK And a.BUSS_CODE = b.BUSS_CODE inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT SET a.isValidate = "1", a.isValidate2 = Case a.isValidate When "1" Then "1" Else "0" End, isValidate3 = Case a.isValidate2 When "1" Then "1" Else "0" End, a.UPDT_DATE = "' + tgl + '", a.UPDT_BYXX = "' + req.userID + '" WHERE c.KODE_URUT like "' + req.KODE_URUT0 + '%" And (a.isValidate = "0" Or (a.isValidate = "1" And a.isValidate2 = "0") Or (a.isValidate2 = "1" And a.isValidate3 = "0")) And b.CHKX_CASH = "1" And a.id in ("';
         
         var sqlListId = '';
         if (arrayLength > 0) {
@@ -2309,8 +2369,6 @@ export default class Donatur {
             sqlListId += ')';
 
             sql += sqlListId;
-
-            console.log("1" + sql);
             
             db.query(sql, (err, result) => {
                 if (err) {
@@ -2322,9 +2380,7 @@ export default class Donatur {
                     });
                 } else {
                     // retrieve transaction based id to create transaction SLP
-                    sql = 'select a.*, d.CODD_VARC As Simbol, c.NAMA_UNIT, c.Tertanda, c.Website from trans_donatur a inner join tb02_bank b on a.MethodPayment = b.KODE_BANK And a.BUSS_CODE = b.BUSS_CODE inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT left join tb00_basx d on a.CurrencyID = d.CODD_VALU And d.CODD_FLNM = "CURR_MNYX" where a.isValidate = "1" And b.CHKX_CASH = "1" And c.KODE_URUT like "' + req.KODE_URUT0 + '%" And a.id in ("' + sqlListId;
-
-                    console.log("2" + sql);
+                    sql = 'select a.*, d.CODD_VARC As Simbol, c.NAMA_UNIT, c.Tertanda, c.Website from trans_donatur a inner join tb02_bank b on a.MethodPayment = b.KODE_BANK And a.BUSS_CODE = b.BUSS_CODE inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT left join tb00_basx d on a.CurrencyID = d.CODD_VALU And d.CODD_FLNM = "CURR_MNYX" where a.isValidate = "1" And a.isValidate2 = "0" And b.CHKX_CASH = "1" And c.KODE_URUT like "' + req.KODE_URUT0 + '%" And a.id in ("' + sqlListId;
                     
                     db.query(sql, function(err, rows, fields) {
                         sql = 'INSERT INTO tb52_slpa (transNumber, tglProses, typeProgram, status, tahunBuku, Message, unit, CRTX_DATE, CRTX_BYXX) VALUES ';
@@ -2397,7 +2453,7 @@ export default class Donatur {
         selectedIds = fncParseComma(req.body.selectedIds);
         var arrayLength = selectedIds.length;
 
-        var sql = 'select a.*, c.NAMA_UNIT from trans_donatur a inner join tb02_bank b on a.MethodPayment = b.KODE_BANK And a.BUSS_CODE = b.BUSS_CODE inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT where a.isValidate = "0" And c.KODE_URUT like "' + req.KODE_URUT0 + '%" And b.CHKX_CASH = "1" And a.id in ("';
+        var sql = 'select a.*, c.NAMA_UNIT from trans_donatur a inner join tb02_bank b on a.MethodPayment = b.KODE_BANK And a.BUSS_CODE = b.BUSS_CODE inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT where (a.isValidate = "0" Or (a.isValidate = "1" And a.isValidate2 = "0") Or (a.isValidate2 = "1" And a.isValidate3 = "0")) And c.KODE_URUT like "' + req.KODE_URUT0 + '%" And b.CHKX_CASH = "1" And a.id in ("';
 
         if (arrayLength > 0) {
             for(var i=0; i<arrayLength; i++) {
