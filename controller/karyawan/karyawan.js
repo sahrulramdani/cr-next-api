@@ -295,6 +295,7 @@ export default class Karyawan {
             NoKTP : req.body.NoKTP,
             StatusAktif : '1',
             StatusKawin : req.body.StatusKawin,
+            StatusKry : req.body.StatusKry,
             TglMasuk : req.body.TglMasuk,
             GolDarah : req.body.GolDarah,
             Title : req.body.Title,
@@ -459,8 +460,8 @@ export default class Karyawan {
                     "CASE a.StatusAktif " +
                         "WHEN '1' THEN 'ACTIVE' " +
                         "ELSE 'NOT ACTIVE' " +
-                    "END As StatusAktif2, b.KODE_UNIT, SUBSTRING(a.Alamat1, 1, 20) As Alamat, Case a.StatusKry When '1' Then 'OFFISIAL' When '5' Then 'RELAWAN' End As StatusKaryawan, a.KodeNik As value, CONCAT(a.NamaKry, ' - ', a.KodeNik, ' - ', SUBSTRING(a.Alamat1, 1, 20)) As label, e.CODD_DESC As TypeRelawan " + 
-                    "FROM tb21_empl a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT left join vfirst_relawandet c on a.KodeNik = c.RelawanID left join grpx_relx d on c.groupID = d.IDXX_GRPX left join tb00_basx e on a.TypeRelawan = e.CODD_VALU And e.CODD_FLNM = 'TYPE_RELAWAN' where b.KODE_UNIT = '" + request.BUSS_CODE0 + "' And d.KodeKelurahan like '" + request.KODE_AREA0 + "%' And a.StatusKry = '5' order by a.NamaKry";
+                    "END As StatusAktif2, b.KODE_UNIT, SUBSTRING(a.Alamat1, 1, 20) As Alamat, Case a.StatusKry When '1' Then 'OFFISIAL' When '5' Then 'RELAWAN' End As StatusKaryawan, a.KodeNik As value, CONCAT(a.NamaKry, ' - ', a.KodeNik, ' - ', SUBSTRING(a.Alamat1, 1, 20)) As label, e.CODD_DESC As TypeRelawan, d.KODE_URUT As KodeUrutGroup " + 
+                    "FROM tb21_empl a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT left join vfirst_relawandet c on a.KodeNik = c.RelawanID left join grpx_relx d on c.groupID = d.IDXX_GRPX left join tb00_basx e on a.TypeRelawan = e.CODD_VALU And e.CODD_FLNM = 'TYPE_RELAWAN' where (b.KODE_UNIT = '" + request.BUSS_CODE0 + "' Or (d.KODE_URUT Is Not Null And d.KODE_URUT like '" + request.KODE_URUT_GROUP0 + "%')) And d.KodeKelurahan like '" + request.KODE_AREA0 + "%' And a.StatusKry = '5' order by d.KODE_URUT, a.NamaKry";
                 }
             }
 
@@ -470,7 +471,7 @@ export default class Karyawan {
                     "WHEN '1' THEN 'ACTIVE' " +
                     "ELSE 'NOT ACTIVE' " +
                 "END As StatusAktif2, b.KODE_UNIT, SUBSTRING(a.Alamat1, 1, 20) As Alamat, a.KodeNik As value, CONCAT(a.NamaKry, ' - ', a.KodeNik, ' - ', SUBSTRING(a.Alamat1, 1, 20)) As label, IFNULL(c.groupID, '') As groupID, Case a.StatusKry When '1' Then 'OFFISIAL' When '5' Then 'RELAWAN' End As StatusKaryawan, d.CODD_DESC As TypeRelawan " + 
-                "FROM tb21_empl a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT left join vfirst_relawanDet c on a.KodeNik = c.RelawanID left join tb00_basx d on a.TypeRelawan = d.CODD_VALU And d.CODD_FLNM = 'TYPE_RELAWAN' where b.KODE_UNIT = '" + request.BUSS_CODE0 + "' order by a.NamaKry";
+                "FROM tb21_empl a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT left join vfirst_relawanDet c on a.KodeNik = c.RelawanID left join grpx_relx e on c.groupId = e.IDXX_GRPX left join tb00_basx d on a.TypeRelawan = d.CODD_VALU And d.CODD_FLNM = 'TYPE_RELAWAN' where (b.KODE_UNIT = '" + request.BUSS_CODE0 + "' Or (e.KODE_URUT Is Not Null And e.KODE_URUT like '" + request.KODE_URUT_GROUP0 + "%')) order by a.NamaKry";
             }
         } else {
             qryCmd = "select a.*, CONCAT(IFNULL(a.CodeCountryHP, ''), a.Hp) As NoHP2, " + 
