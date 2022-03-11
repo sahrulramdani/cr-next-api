@@ -2395,6 +2395,7 @@ export default class Donatur {
 
                             var nextSequence = parseInt(transNumber.substring(transNumber.length-6,transNumber.length));
                             var nextSequenceFormat;
+                            var bussCode = '';
 
                             rows.forEach((item, index) => {
                                 var message = req.body.message;
@@ -2417,6 +2418,8 @@ export default class Donatur {
 
                                     sql += ',("' + transNumber + '", "' + tgl + '", "' + req.body.typeProgram + '", "0", "' + req.body.  tahunBuku + '", "' + message + '", "' + item.BUSS_CODE + '", "' + tgl + '", "' + req.userID + '")';
                                 }
+
+                                bussCode = item.BUSS_CODE;
                             });
 
                             db.query(sql, (err, result) => {
@@ -2428,8 +2431,21 @@ export default class Donatur {
                                         message: err.sqlMessage
                                     });
                                 } else {
-                                    res.send({
-                                        status: true
+                                    sql = "update tblsequence set NOXX_URUT = '" + nextSequenceFormat + "', TGLX_PROC = '" + tgl + "' where Initial = '" + req.body.Initial + "' And BUSS_CODE = '" + bussCode + "' And Tahun = '" + req.body.Tahun + "'";
+
+                                    db.query(sql, (err, result) => {
+                                        if (err) {
+                                            console.log('Error', err);
+                        
+                                            res.send({
+                                                status: false,
+                                                message: err.sqlMessage
+                                            });
+                                        } else {
+                                            res.send({
+                                                status: true
+                                            });
+                                        }
                                     });
                                 }
                             });
