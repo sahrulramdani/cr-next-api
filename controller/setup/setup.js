@@ -304,7 +304,7 @@ export default class Setup {
         var authDelt = request.AUTH_DELT;
         var authAppr = request.AUTH_APPR;  // auth Approve
 
-        var qryCmd = "select * from tb00_basx where CODD_FLNM = 'BANK' order by CODD_DESC";
+        var qryCmd = "select * from tb00_basx where CODD_FLNM = 'BANK' order by CODD_VALU";
         db.query(qryCmd, function(err, rows, fields) {
             var output = [];
 
@@ -403,7 +403,7 @@ export default class Setup {
         var authDelt = request.AUTH_DELT;
         var authAppr = request.AUTH_APPR;  // auth Approve
 
-        var qryCmd = "select *, CASE Active WHEN '1' THEN 'ACTIVE' ELSE 'NON-ACTIVE' END As Active2 from tb00_unit where KODE_URUT like '" + request.KODE_URUT0 + "%'";
+        var qryCmd = "select *, CASE Active WHEN '1' THEN 'ACTIVE' ELSE 'NON-ACTIVE' END As Active2 from tb00_unit where KODE_URUT like '" + request.KODE_URUT0 + "%' order by KODE_URUT";
         db.query(qryCmd, function(err, rows, fields) {
             var output = [];
 
