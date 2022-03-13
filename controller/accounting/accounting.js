@@ -169,14 +169,14 @@ export default class Accounting {
 
             if (field !== undefined && field !== '') {
                 if (field === 'NoReference') {
-                    qryCmd = "select a.*, DATE_FORMAT(a.TransDate, '%d/%m/%Y %H:%i:%s') As TglFormat from tblMutasi a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where DATE_FORMAT(a.TransDate, '%Y-%m-%d') = '" + tgl + "' And a.NoReference = '" + value + "' And a.TransNumber is Null And b.KODE_URUT like '" + request.KODE_URUT0 + "%'";
+                    qryCmd = "select a.*, DATE_FORMAT(a.TransDate, '%d/%m/%Y %H:%i:%s') As TglFormat, c.CODD_DESC As NamaBank from tblMutasi a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT left join tb00_basx c on a.KODE_STDX_BANK = c.CODD_VARC And CODD_FLNM = 'BANK' where DATE_FORMAT(a.TransDate, '%Y-%m-%d') = '" + tgl + "' And a.NoReference = '" + value + "' And a.TransNumber is Null And b.KODE_URUT like '" + request.KODE_URUT0 + "%'";
                 } else if (field === 'Description') {
-                    qryCmd = "select a.*, DATE_FORMAT(a.TransDate, '%d/%m/%Y %H:%i:%s') As TglFormat from tblMutasi a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where DATE_FORMAT(a.TransDate, '%Y-%m-%d') = '" + tgl + "' And a.Keterangan like '%" + value + "%' And a.TransNumber is Null And b.KODE_URUT like '" + request.KODE_URUT0 + "%'";
+                    qryCmd = "select a.*, DATE_FORMAT(a.TransDate, '%d/%m/%Y %H:%i:%s') As TglFormat, c.CODD-DESC As NamaBank from tblMutasi a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT left join tb00_basx c on a.KODE_STDX_BANK = c.CODD_VARC And CODD_FLNM = 'BANK' where DATE_FORMAT(a.TransDate, '%Y-%m-%d') = '" + tgl + "' And a.Keterangan like '%" + value + "%' And a.TransNumber is Null And b.KODE_URUT like '" + request.KODE_URUT0 + "%'";
                 } else if (field === 'Amount') {
-                    qryCmd = "select a.*, DATE_FORMAT(a.TransDate, '%d/%m/%Y %H:%i:%s') As TglFormat from tblMutasi a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where DATE_FORMAT(a.TransDate, '%Y-%m-%d') = '" + tgl + "' And a.Amount = " + value + " And a.TransNumber is Null And b.KODE_URUT like '" + request.KODE_URUT0 + "%'";
+                    qryCmd = "select a.*, DATE_FORMAT(a.TransDate, '%d/%m/%Y %H:%i:%s') As TglFormat, c.CODD_DESC As NamaBank from tblMutasi a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT left join tb00_basx c on a.KODE_STDX_BANK = c.CODD_VARC And CODD_FLNM = 'BANK' where DATE_FORMAT(a.TransDate, '%Y-%m-%d') = '" + tgl + "' And a.Amount = " + value + " And a.TransNumber is Null And b.KODE_URUT like '" + request.KODE_URUT0 + "%'";
                 } 
             } else {
-                qryCmd = "select a.*, DATE_FORMAT(a.TransDate, '%d/%m/%Y %H:%i:%s') As TglFormat from tblMutasi a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where DATE_FORMAT(a.TransDate, '%Y-%m-%d') = '" + tgl + "' And a.TransNumber is Null And b.KODE_URUT like '" + request.KODE_URUT0 + "%'";
+                qryCmd = "select a.*, DATE_FORMAT(a.TransDate, '%d/%m/%Y %H:%i:%s') As TglFormat, c.CODD_DESC As NamaBank from tblMutasi a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT left join tb00_basx c on a.KODE_STDX_BANK = c.CODD_VARC And CODD_FLNM = 'BANK' where DATE_FORMAT(a.TransDate, '%Y-%m-%d') = '" + tgl + "' And a.TransNumber is Null And b.KODE_URUT like '" + request.KODE_URUT0 + "%'";
             }
 
             db.query(qryCmd, function(err, rows, fields) {
