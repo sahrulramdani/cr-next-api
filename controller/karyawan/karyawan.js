@@ -233,6 +233,9 @@ export default class Karyawan {
         // get user Access
         var authEdit = req.AUTH_EDIT;
         var authAppr = req.AUTH_APPR;  // auth Approve
+        var typePerson = req.TYPE_PRSON0;
+        var typeRelawan0 = req.TypeRelawan0;
+        var groupID0 = req.groupID;
 
         var nik = req.params.id;
         var sql = 'SELECT a.*, b.NAMA_UNIT, c.groupID As IDXX_GRPX, d.CODD_DESC As TypeRelawanLbl, f.* FROM tb21_empl a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT LEFT JOIN vfirst_relawandet c ON a.KodeNik = c.RelawanID left join tb00_basx d on a.TypeRelawan = d.CODD_VALU And d.CODD_FLNM = "TYPE_RELAWAN" left join grpx_relx e on c.groupID = e.IDXX_GRPX left join tb20_area f on e.KodeKelurahan = f.AREA_IDXX WHERE a.KodeNik = "'+ nik +'" And b.KODE_URUT like "' + req.KODE_URUT0 + '%" ';
@@ -249,6 +252,9 @@ export default class Karyawan {
 
                     obj['AUTH_EDIT'] = authEdit;
                     obj['AUTH_APPR'] = authAppr;
+                    obj['TypePerson'] = typePerson;
+                    obj['TypeRelawan0'] = typeRelawan0;
+                    obj['groupID0'] = groupID0;
 
                     output.push(obj);
                 })

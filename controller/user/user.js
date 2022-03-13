@@ -103,7 +103,7 @@ export default class User {
         var typePerson = req.TYPE_PRSON0;
         var typeRelawan = req.TypeRelawan0;
         
-        var sql = 'SELECT a.*, b.NAMA_UNIT, b.KODE_URUT, c.RelawanID As RelawanDonatur FROM `tb01_lgxh` a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT left join tb11_mzjb c on a.NO_ID = c.NO_ID WHERE UPPER(a.USER_IDXX) = "'+ req.userID.toUpperCase() + '"';
+        var sql = 'SELECT a.*, b.NAMA_UNIT, b.KODE_URUT, c.RelawanID As RelawanDonatur, b.DashboardView FROM `tb01_lgxh` a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT left join tb11_mzjb c on a.NO_ID = c.NO_ID WHERE UPPER(a.USER_IDXX) = "'+ req.userID.toUpperCase() + '"';
 
         db.query(sql, function(err, rows, fields) {
             var output = [];
@@ -840,10 +840,27 @@ export default class User {
     }
 
     getProcessPrivilege = function(req, res) {
+        var typeRelawan = req.TypeRelawan0;
+
         var sql = 'select a.*, c.TYPE_PRSON, d.KODE_URUT from tb01_lgxh c left join (select a.* from tb01_usrd a inner join tb00_proc b on a.PROC_CODE = b.PROC_CODE And b.PATH = "' + req.body.path + '") a on c.USER_IDXX = a.USER_IDXX And c.BUSS_CODE = a.BUSS_CODE inner join tb00_unit d on c.BUSS_CODE = d.KODE_UNIT where UPPER(c.USER_IDXX) = "' + req.userID.toUpperCase() + '"';
 
         db.query(sql, function(err, rows, fields) {
-            res.send(rows);
+            var output = [];
+
+            if (rows.length > 0) {
+                rows.forEach(function(row) {
+                    var obj = new Object();
+                    for(var key in row) {
+                        obj[key] = row[key];
+                    }
+                    
+                    obj['TypeRelawan'] = typeRelawan;
+
+                    output.push(obj);
+                })
+            }
+
+            res.send(output);
         });
     }
 }
