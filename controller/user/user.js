@@ -103,7 +103,7 @@ export default class User {
         var typePerson = req.TYPE_PRSON0;
         var typeRelawan = req.TypeRelawan0;
         
-        var sql = 'SELECT a.*, b.NAMA_UNIT, b.KODE_URUT, c.RelawanID As RelawanDonatur, b.DashboardView FROM `tb01_lgxh` a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT left join tb11_mzjb c on a.NO_ID = c.NO_ID WHERE UPPER(a.USER_IDXX) = "'+ req.userID.toUpperCase() + '"';
+        var sql = 'SELECT a.*, b.NAMA_UNIT, b.KODE_URUT, c.RelawanID As RelawanDonatur, b.DashboardView, f.* FROM `tb01_lgxh` a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT left join tb11_mzjb c on a.NO_ID = c.NO_ID left join vfirst_relawandet d on a.NO_ID = d.RelawanID left join grpx_relx e on d.groupID = e.IDXX_GRPX left join tb20_area f on e.KodeKelurahan = f.AREA_IDXX WHERE UPPER(a.USER_IDXX) = "'+ req.userID.toUpperCase() + '"';
 
         db.query(sql, function(err, rows, fields) {
             var output = [];
