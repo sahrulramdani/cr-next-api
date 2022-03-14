@@ -100,7 +100,6 @@ export default class User {
         var authEdit = req.AUTH_EDIT;
         var kodeArea = req.KODE_AREA0;
         var groupID = req.groupID;
-        var typePerson = req.TYPE_PRSON0;
         var typeRelawan = req.TypeRelawan0;
         
         var sql = 'SELECT a.*, b.NAMA_UNIT, b.KODE_URUT, c.RelawanID As RelawanDonatur, b.DashboardView, f.* FROM `tb01_lgxh` a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT left join tb11_mzjb c on a.NO_ID = c.NO_ID left join vfirst_relawandet d on a.NO_ID = d.RelawanID left join grpx_relx e on d.groupID = e.IDXX_GRPX left join tb20_area f on e.KodeKelurahan = f.AREA_IDXX WHERE UPPER(a.USER_IDXX) = "'+ req.userID.toUpperCase() + '"';
@@ -118,7 +117,7 @@ export default class User {
                     obj['AUTH_EDIT'] = authEdit;
                     obj['KODE_AREA'] = kodeArea;
                     obj['groupID'] = groupID;
-                    obj['TypePerson'] = typePerson;
+                    // obj['TypePerson'] = row['TYPE_PRSON0'];
                     obj['TypeRelawan'] = typeRelawan;
 
                     output.push(obj);
