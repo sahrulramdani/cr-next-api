@@ -169,14 +169,14 @@ export default class Accounting {
 
             if (field !== undefined && field !== '') {
                 if (field === 'NoReference') {
-                    qryCmd = "select a.*, DATE_FORMAT(a.TransDate, '%d/%m/%Y %H:%i:%s') As TglFormat, c.CODD_DESC As NamaBank from tblMutasi a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT left join tb00_basx c on a.KODE_STDX_BANK = c.CODD_VARC And CODD_FLNM = 'BANK' where DATE_FORMAT(a.TransDate, '%Y-%m-%d') = '" + tgl + "' And a.NoReference = '" + value + "' And a.TransNumber is Null And b.KODE_URUT like '" + request.KODE_URUT0 + "%'";
+                    qryCmd = "select a.*, DATE_FORMAT(a.TransDate, '%d/%m/%Y %H:%i:%s') As TglFormat, c.CODD_DESC As NamaBank from tblMutasi a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT left join tb00_basx c on a.KODE_STDX_BANK = c.CODD_VARC And c.CODD_FLNM = 'BANK' where DATE_FORMAT(a.TransDate, '%Y-%m-%d') = '" + tgl + "' And a.NoReference = '" + value + "' And a.TransNumber is Null And b.KODE_URUT like '" + request.KODE_URUT0 + "%'";
                 } else if (field === 'Description') {
-                    qryCmd = "select a.*, DATE_FORMAT(a.TransDate, '%d/%m/%Y %H:%i:%s') As TglFormat, c.CODD-DESC As NamaBank from tblMutasi a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT left join tb00_basx c on a.KODE_STDX_BANK = c.CODD_VARC And CODD_FLNM = 'BANK' where DATE_FORMAT(a.TransDate, '%Y-%m-%d') = '" + tgl + "' And a.Keterangan like '%" + value + "%' And a.TransNumber is Null And b.KODE_URUT like '" + request.KODE_URUT0 + "%'";
+                    qryCmd = "select a.*, DATE_FORMAT(a.TransDate, '%d/%m/%Y %H:%i:%s') As TglFormat, c.CODD-DESC As NamaBank from tblMutasi a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT left join tb00_basx c on a.KODE_STDX_BANK = c.CODD_VARC And c.CODD_FLNM = 'BANK' where DATE_FORMAT(a.TransDate, '%Y-%m-%d') = '" + tgl + "' And a.Keterangan like '%" + value + "%' And a.TransNumber is Null And b.KODE_URUT like '" + request.KODE_URUT0 + "%'";
                 } else if (field === 'Amount') {
-                    qryCmd = "select a.*, DATE_FORMAT(a.TransDate, '%d/%m/%Y %H:%i:%s') As TglFormat, c.CODD_DESC As NamaBank from tblMutasi a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT left join tb00_basx c on a.KODE_STDX_BANK = c.CODD_VARC And CODD_FLNM = 'BANK' where DATE_FORMAT(a.TransDate, '%Y-%m-%d') = '" + tgl + "' And a.Amount = " + value + " And a.TransNumber is Null And b.KODE_URUT like '" + request.KODE_URUT0 + "%'";
+                    qryCmd = "select a.*, DATE_FORMAT(a.TransDate, '%d/%m/%Y %H:%i:%s') As TglFormat, c.CODD_DESC As NamaBank from tblMutasi a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT left join tb00_basx c on a.KODE_STDX_BANK = c.CODD_VARC And c.CODD_FLNM = 'BANK' where DATE_FORMAT(a.TransDate, '%Y-%m-%d') = '" + tgl + "' And a.Amount = " + value + " And a.TransNumber is Null And b.KODE_URUT like '" + request.KODE_URUT0 + "%'";
                 } 
             } else {
-                qryCmd = "select a.*, DATE_FORMAT(a.TransDate, '%d/%m/%Y %H:%i:%s') As TglFormat, c.CODD_DESC As NamaBank from tblMutasi a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT left join tb00_basx c on a.KODE_STDX_BANK = c.CODD_VARC And CODD_FLNM = 'BANK' where DATE_FORMAT(a.TransDate, '%Y-%m-%d') = '" + tgl + "' And a.TransNumber is Null And b.KODE_URUT like '" + request.KODE_URUT0 + "%'";
+                qryCmd = "select a.*, DATE_FORMAT(a.TransDate, '%d/%m/%Y %H:%i:%s') As TglFormat, c.CODD_DESC As NamaBank from tblMutasi a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT left join tb00_basx c on a.KODE_STDX_BANK = c.CODD_VARC And c.CODD_FLNM = 'BANK' where DATE_FORMAT(a.TransDate, '%Y-%m-%d') = '" + tgl + "' And a.TransNumber is Null And b.KODE_URUT like '" + request.KODE_URUT0 + "%'";
             }
 
             db.query(qryCmd, function(err, rows, fields) {
@@ -307,15 +307,45 @@ export default class Accounting {
         }
 
         getActiveTahunBuku = function(req, res) {
-            var sql = 'SELECT * FROM `tb00_thna` WHERE STAT_AKTF = "1"';
+            var tgl = moment(new Date()).format('YYYYMMDD');
+            var sql = 'SELECT * FROM `tb00_thna` WHERE "' + tgl + '" Between DATE_FORMAT(TGLX_STRT, "%Y%m%d") And DATE_FORMAT(TGLX_ENDX, "%Y%m%d") And CABX_CODE = "' + req.BUSS_CODE0 + '"';
             
             db.query(sql, function(err, rows, fields) {
                 res.send(rows);
             });
         }
 
+        getActiveTahunDonasi = function(req, res) {
+            var tgl = moment(new Date()).format('YYYY-MM-DD');
+            var sql = 'SELECT a.*, b.DashboardView FROM `tb00_thna` a left join tb00_unit b on a.CABX_CODE = b.KODE_UNIT WHERE "' + tgl + '" Between DATE_FORMAT(a.TGLX_STRT2, "%Y%m%d") And DATE_FORMAT(a.TGLX_ENDX2, "%Y%m%d") And a.CABX_CODE = "' + req.BUSS_CODE0 + '"';
+            
+            db.query(sql, function(err, rows, fields) {
+                var output = [];
+
+                if (rows.length > 0) {
+                    rows.forEach(function(row) {
+                        var obj = new Object();
+                        for(var key in row) {
+                            obj[key] = row[key];
+                        }
+
+                        obj['TypePerson'] = req.TYPE_PRSON0;
+                        obj['TypeRelawan'] = req.TypeRelawan0;
+                        obj['KODE_AREA'] = req.KODE_AREA0;
+
+                        output.push(obj);
+                    })
+                }
+
+                res.send(output);
+            });
+        }
+
         summaryBank = (request, response) => {
-            var qryCmd = "select b.BUSS_CODE, b.CURR_MNYX, b.CHKX_BANK, SUM(IFNULL(c.TotalDebit,0)) As TotalDebit, SUM(IFNULL(c.TotalKredit,0)) As TotalKredit, SUM(a.VALU_SLDO) As TotalSaldo FROM tb02_bnkh a inner join tb02_bank b on a.KODE_BANK = b.KODE_BANK left join (select Bank, SUM(Case DK When 'D' Then Amount Else 0 End) As TotalDebit, SUM(Case DK When 'K' Then Amount Else 0 End) As TotalKredit from tblMutasi where MONTH(TransDate) = MONTH(NOW()) And YEAR(TransDate) = YEAR(NOW()) group by Bank) c on b.KODE_BANK = c.Bank inner join tb00_unit d on b.BUSS_CODE = d.KODE_UNIT where d.KODE_URUT like '" + request.KODE_URUT0 + "%' group by b.BUSS_CODE, b.CURR_MNYX, b.CHKX_BANK";
+            var tgl1 = request.params.tgl1;
+            var tgl2 = request.params.tgl2;
+
+            var qryCmd = "select b.BUSS_CODE, b.CURR_MNYX, b.CHKX_BANK, SUM(IFNULL(c.TotalDebit,0)) As TotalDebit, SUM(IFNULL(c.TotalKredit,0)) As TotalKredit, SUM(a.VALU_SLDO) As TotalSaldo FROM tb02_bnkh a inner join tb02_bank b on a.KODE_BANK = b.KODE_BANK left join (select Bank, SUM(Case DK When 'D' Then Amount Else 0 End) As TotalDebit, SUM(Case DK When 'K' Then Amount Else 0 End) As TotalKredit from tblMutasi where DATE_FORMAT(TransDate, '%Y%m%d') Between '" + tgl1 + "' And '" + tgl2 +  "' group by Bank) c on b.KODE_BANK = c.Bank inner join tb00_unit d on b.BUSS_CODE = d.KODE_UNIT where d.KODE_URUT like '" + request.KODE_URUT0 + "%' group by b.BUSS_CODE, b.CURR_MNYX, b.CHKX_BANK";
 
             db.query(qryCmd, function(err, rows, fields) {
                 response.send(rows);

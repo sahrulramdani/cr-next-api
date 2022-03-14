@@ -157,16 +157,18 @@ import * as C from './controller/index.js';
       app.route('/crm/event/:id').get(C.auth.verifyToken, C.event.getEvent);
       app.route('/crm/summary/transactions').get(C.auth.verifyToken, C.donatur.getSummaryTransaction); 
       app.route('/crm/summary/transactions-per-week').get(C.auth.verifyToken, C.donatur.getSummaryTransactionPerWeek);
-      app.route('/crm/summary/transactions-per-program/:period').get(C.auth.verifyToken, C.donatur.getSummaryTransactionPerProgram);
-      app.route('/crm/summary/transactions-per-month').get(C.auth.verifyToken, C.donatur.getSummaryTransactionPerMonth);
-      app.route('/crm/partner/transactions-per-month').get(C.auth.verifyToken, C.donatur.getPartnerTransactions);
+      app.route('/crm/summary/transactions-per-program/:tgl1/:tgl2').get(C.auth.verifyToken, C.donatur.getSummaryTransactionPerProgram);
+      app.route('/crm/summary/transactions-per-program2/:tgl1/:tgl2').get(C.auth.verifyToken, C.donatur.getSummaryTransactionPerProgram2);
+      app.route('/crm/summary/transactions-per-month/:tgl1/:tgl2').get(C.auth.verifyToken, C.donatur.getSummaryTransactionPerMonth);
+      app.route('/crm/partner/transactions-per-month/:tgl1/:tgl2').get(C.auth.verifyToken, C.donatur.getPartnerTransactions);
       app.route('/crm/summary/transactions-per-channel/:tgl1/:tgl2').get(C.auth.verifyToken, C.donatur.getTransactionsPerChannel);
-      app.route('/crm/summary/transactions-per-group/:period').get(C.auth.verifyToken, C.donatur.getSummaryTransactionPerGroup);
-      app.route('/crm/summary/transactions-per-unit/:period').get(C.auth.verifyToken, C.donatur.getSummaryTransactionPerUnit);
+      app.route('/crm/summary/transactions-per-group/:tgl1/:tgl2').get(C.auth.verifyToken, C.donatur.getSummaryTransactionPerGroup);
+      app.route('/crm/summary/transactions-per-unit/:tgl1/:tgl2').get(C.auth.verifyToken, C.donatur.getSummaryTransactionPerUnit);
 
       // ------ Accounting --------------
       app.route('/accounting/tahun-buku/save').post(C.auth.verifyToken, C.accounting.saveTahunBuku);
       app.route('/accounting/tahun-buku/active').get(C.auth.verifyToken, C.accounting.getActiveTahunBuku);
+      app.route('/accounting/tahun-donasi/active').get(C.auth.verifyToken, C.accounting.getActiveTahunDonasi);
       app.route('/accounting/tahun-bukus').get(C.auth.verifyToken, C.accounting.tahunBukuAll);
       app.route('/accounting/mutasi/save').post(C.auth.verifyToken, C.accounting.saveMutasi);
       app.route('/accounting/mutasi/update').post(C.auth.verifyToken, C.accounting.updateMutasi);
@@ -177,7 +179,7 @@ import * as C from './controller/index.js';
       app.route('/accounting/mutasi/:id').get(C.auth.verifyToken, C.accounting.getMutasi);
       app.route('/accounting/mutasi/total/:bankID').get(C.auth.verifyToken, C.accounting.getCountMutasi);
       app.route('/accounting/saldo-bank').get(C.auth.verifyToken, C.accounting.getSaldoBank);
-      app.route('/accounting/summary/bank').get(C.auth.verifyToken, C.accounting.summaryBank);
+      app.route('/accounting/summary/bank/:tgl1/:tgl2').get(C.auth.verifyToken, C.accounting.summaryBank);
 
       // ------ Menu Management --------------
       app.route('/menu/modules/all').get(C.auth.verifyToken, C.menu.module0All);
