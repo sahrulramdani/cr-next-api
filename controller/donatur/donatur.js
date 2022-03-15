@@ -2063,15 +2063,15 @@ export default class Donatur {
         var typePerson = request.TYPE_PRSON0;
 
         if (request.params.bussCode === 'all') {
-            qryCmd = "select a.*, c.KECX_DESC, c.AREA_DESC from grpx_relx a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT inner join tb20_area c on a.KodeKelurahan = c.AREA_IDXX where b.KODE_URUT like '" + request.KODE_URUT0 + "%' order by a.KODE_URUT";
+            qryCmd = "select a.*, c.* from grpx_relx a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT inner join tb20_area c on a.KodeKelurahan = c.AREA_IDXX where b.KODE_URUT like '" + request.KODE_URUT0 + "%' order by a.KODE_URUT";
 
             if (typePerson === '1') {  // 1: Relawan,  
                 if (typeRelawan <= '04') { // 04: Korra
-                    qryCmd = "select a.*, c.KECX_DESC, c.AREA_DESC from grpx_relx a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT inner join tb20_area c on a.KodeKelurahan = c.AREA_IDXX where b.KODE_URUT like '" + request.KODE_URUT0 + "%' order by a.KODE_URUT";
+                    qryCmd = "select a.*, c.* from grpx_relx a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT inner join tb20_area c on a.KodeKelurahan = c.AREA_IDXX where b.KODE_URUT like '" + request.KODE_URUT0 + "%' order by a.KODE_URUT";
                 }
 
                 if (typeRelawan >= '05') {  // 05: Bendahara Group
-                    qryCmd = "select a.*, c.KECX_DESC, c.AREA_DESC from grpx_relx a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT inner join tb20_area c on a.KodeKelurahan = c.AREA_IDXX where b.KODE_UNIT = '" + request.BUSS_CODE0 + "'";
+                    qryCmd = "select a.*, c.* from grpx_relx a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT inner join tb20_area c on a.KodeKelurahan = c.AREA_IDXX where b.KODE_UNIT = '" + request.BUSS_CODE0 + "'";
                 }
             }
         } else {
