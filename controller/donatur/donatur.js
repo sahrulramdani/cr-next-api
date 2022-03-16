@@ -2327,12 +2327,17 @@ export default class Donatur {
         var sqlDelete = 'delete from trans_item where TransNumber = "' + req.body.TransNumber + '"';
 
         if (cntTransItems > 0) {
+            var kelas = req.body.KODE_KLSX;
+            if (kelas === null) {
+                kelas = '';
+            }
+
             sql = 'INSERT INTO trans_item (TransNumber, BUSS_CODE, THNX_BUKU, KodeNik, KODE_KLSX, ProgDonatur, Amount_item, note, CRTX_DATE, CRTX_BYXX) VALUES ';
             for(var i=0; i<cntTransItems; i++) {
                 if (i === 0) {
-                    sql += '("' + req.body.TransNumber + '","' + req.body.BUSS_CODE + '","' + req.body.THNX_BUKU + '","' + req.body.KodeNik + '","' + req.body.KODE_KLSX + '","' + progDonaturs[i] + '",' + amountItems[i] + ',"' + notes[i] + '","' + tglNow + '","' + req.userID + '")';
+                    sql += '("' + req.body.TransNumber + '","' + req.body.BUSS_CODE + '","' + req.body.THNX_BUKU + '","' + req.body.KodeNik + '","' + kelas + '","' + progDonaturs[i] + '",' + amountItems[i] + ',"' + notes[i] + '","' + tglNow + '","' + req.userID + '")';
                 } else {
-                    sql += ',("' + req.body.TransNumber + '","' + req.body.BUSS_CODE + '","' + req.body.THNX_BUKU + '","' + req.body.KodeNik + '","' + req.body.KODE_KLSX + '","' + progDonaturs[i] + '",' + amountItems[i] + ',"' + notes[i] + '","' + tglNow + '","' + req.userID + '")';
+                    sql += ',("' + req.body.TransNumber + '","' + req.body.BUSS_CODE + '","' + req.body.THNX_BUKU + '","' + req.body.KodeNik + '","' + kelas + '","' + progDonaturs[i] + '",' + amountItems[i] + ',"' + notes[i] + '","' + tglNow + '","' + req.userID + '")';
                 }
             }
 

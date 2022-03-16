@@ -337,9 +337,9 @@ export default class Setup {
 
         var qryCmd;
         if (request.KODE_URUT0 === null || request.KODE_URUT0 === undefined) {
-            qryCmd = "select a.* from tb00_basx a inner join tb01_lgxh b on a.CODD_VARC = b.BUSS_CODE where a.CODD_FLNM = 'DEPARTMENT' And UPPER(b.USER_IDXX) = '" + request.userID.toUpperCase() + "' order by a.CODD_DESC";
+            qryCmd = "select a.* from tb00_basx a inner join tb01_lgxh b on a.CODD_VARC = b.BUSS_CODE where a.CODD_FLNM = 'DEPARTMENT' And UPPER(b.USER_IDXX) = '" + request.userID.toUpperCase() + "' order by a.CODD_VALU";
         } else {
-            qryCmd = "select a.* from tb00_basx a inner join tb00_unit b on a.CODD_VARC = b.KODE_UNIT where a.CODD_FLNM = 'DEPARTMENT' And b.KODE_URUT like '" + request.KODE_URUT0 + "%'  order by a.CODD_DESC";
+            qryCmd = "select a.* from tb00_basx a inner join tb00_unit b on a.CODD_VARC = b.KODE_UNIT where a.CODD_FLNM = 'DEPARTMENT' And b.KODE_URUT like '" + request.KODE_URUT0 + "%'  order by a.CODD_VALU";
         }
         
         db.query(qryCmd, function(err, rows, fields) {
@@ -424,6 +424,14 @@ export default class Setup {
             }
 
             response.send(output);
+        });
+    }
+
+    unitShowLogin = (request, response) => {
+        var qryCmd = "select KODE_UNIT from tb00_unit where ShowInLogin = '1' order by KODE_URUT";
+
+        db.query(qryCmd, function(err, rows, fields) {
+            response.send(rows);
         });
     }
 

@@ -18,6 +18,7 @@ import * as C from './controller/index.js';
       app.route('/setup/unit/delete').post(C.auth.verifyToken, C.setup.deleteUnit);
       app.route('/setup/unit/:id').get(C.auth.verifyToken, C.setup.getUnit);
       app.route('/setup/units').get(C.auth.verifyToken, C.setup.unitAll);
+      app.route('/setup/units/showLogin').get(C.setup.unitShowLogin);
       app.route('/setup/banks').get(C.auth.verifyToken, C.setup.bankAll);
       app.route('/setup/bank/save').post(C.auth.verifyToken, C.setup.saveBank);
       app.route('/setup/bank/update').post(C.auth.verifyToken, C.setup.updateBank);
