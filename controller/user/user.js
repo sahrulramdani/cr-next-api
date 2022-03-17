@@ -117,7 +117,7 @@ export default class User {
                     obj['AUTH_EDIT'] = authEdit;
                     obj['KODE_AREA'] = kodeArea;
                     obj['groupID'] = groupID;
-                    // obj['TypePerson'] = row['TYPE_PRSON0'];
+                    // obj['TYPE_PRSON'] = rows['TYPE_PRSON'];
                     obj['TypeRelawan'] = typeRelawan;
 
                     output.push(obj);
