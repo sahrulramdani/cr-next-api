@@ -1894,6 +1894,56 @@ export default class Donatur {
         });
     }
 
+    getDetTransactionsPerGroup = (request, response) => {
+        var authPrnt = request.AUTH_PRNT;
+
+        var tgl1 = request.params.tgl1;
+        var tgl2 = request.params.tgl2;
+        var typePerson = request.TYPE_PRSON0;
+        var typeRelawan = request.TypeRelawan0;
+        var kodeArea = request.KODE_AREA0;
+
+        var sql = '';
+
+        if (typePerson === '1') {    // 1: Relawan
+            switch(typeRelawan) {
+                case '01' : case '02' : case '03' : case '04' :   // 04: Korra
+                    sql = 'select e.KOTA_DESC, e.KECX_DESC, e.KECX_IDXX, e.AREA_DESC, d.NAMA_GRPX, b.NamaKry, a.Amount, g.CODD_VARC As CurrencySimbol FROM trans_donatur a inner join tb21_empl b on a.KodeNik = b.KodeNik inner join vfirst_relawandet c on b.KodeNik = c.RelawanID inner join grpx_relx d on c.groupID = d.IDXX_GRPX inner join tb20_area e on d.KodeKelurahan = e.AREA_IDXX inner join tb00_unit f on a.BUSS_CODE = f.KODE_UNIT left join tb00_basx g on a.CurrencyID = g.CODD_VALU And g.CODD_FLNM = "CURR_MNYX" left join tb00_unit h on a.BUSS_CODE = h.KODE_UNIT where h.KODE_URUT like "' + request.KODE_URUT0 + '%" And DATE_FORMAT(a.TransDate, "%Y%m%d") Between "' + tgl1 + '" And "' + tgl2 + '" And d.KodeKelurahan like "' + kodeArea + '%" And (a.isDelete <> "1" OR a.isDelete IS NULL)  order by e.KOTA_DESC, e.KECX_DESC, e.AREA_DESC, d.NAMA_GRPX, b.NamaKry';
+
+                    break;
+                case '05' :    // 05: Bendahara
+                    sql = 'select e.KOTA_DESC, e.KECX_DESC, e.KECX_IDXX, e.AREA_DESC, d.NAMA_GRPX, b.NamaKry, a.Amount, g.CODD_VARC As CurrencySimbol from trans_donatur a inner join tb21_empl b on a.KodeNik = b.KodeNik inner join vfirst_relawandet c on b.KodeNik = c.RelawanID inner join grpx_relx d on c.groupID = d.IDXX_GRPX inner join tb20_area e on d.KodeKelurahan = e.AREA_IDXX inner join tb00_unit f on a.BUSS_CODE = f.KODE_UNIT left join tb00_basx g on a.CurrencyID = g.CODD_VALU And g.CODD_FLNM = "CURR_MNYX" left join tb00_unit h on a.BUSS_CODE = h.KODE_UNIT where h.KODE_URUT like "' + request.KODE_URUT0 + '%" And DATE_FORMAT(a.TransDate, "%Y%m%d") Between "' + tgl1 + '" And "' + tgl2 + '" And d.IDXX_GRPX = "' + request.groupID + '" And (a.isDelete <> "1" OR a.isDelete IS NULL) order by e.KOTA_DESC, e.KECX_DESC, e.AREA_DESC, d.NAMA_GRPX, b.NamaKry';
+
+                    break;
+                case '06' :
+                    sql = 'select e.KOTA_DESC, e.KECX_DESC, e.KECX_IDXX, e.AREA_DESC, d.NAMA_GRPX, b.NamaKry, a.Amount, h.CODD_VARC As CurrencySimbol from trans_donatur a inner join tb21_empl b on a.KodeNik = b.KodeNik inner join vfirst_relawandet c on b.KodeNik = c.RelawanID inner join grpx_relx d on c.groupID = d.IDXX_GRPX inner join tb20_area e on d.KodeKelurahan = e.AREA_IDXX inner join tb00_unit f on a.BUSS_CODE = f.KODE_UNIT inner join tb01_lgxh g on a.KodeNik = g.NO_ID left join tb00_basx h on a.CurrencyID = h.CODD_VALU And h.CODD_FLNM = "CURR_MNYX" left join tb00_unit i on a.BUSS_CODE = i.KODE_UNIT where i.KODE_URUT like "' + request.KODE_URUT0 + '%" And DATE_FORMAT(a.TransDate, "%Y%m%d") Between "' + tgl1 + '" And "' + tgl2 + '" And UPPER(g.USER_IDXX) = "' + request.userID.toUpperCase() + '" And (a.isDelete <> "1" OR a.isDelete IS NULL) order by e.KOTA_DESC, e.KECX_DESC, e.AREA_DESC, d.NAMA_GRPX, b.NamaKry';
+            }
+        } 
+
+        if (typePerson === '4') {   // 4: Official setingkat Relawan Korwil ('32')
+            sql = 'select e.KOTA_DESC, e.KECX_DESC, e.KECX_IDXX, e.AREA_DESC, d.NAMA_GRPX, b.NamaKry, a.Amount, g.CODD_VARC As CurrencySimbol from trans_donatur a inner join tb21_empl b on a.KodeNik = b.KodeNik inner join vfirst_relawandet c on b.KodeNik = c.RelawanID inner join grpx_relx d on c.groupID = d.IDXX_GRPX inner join tb20_area e on d.KodeKelurahan = e.AREA_IDXX inner join tb00_unit f on a.BUSS_CODE = f.KODE_UNIT left join tb00_basx g on a.CurrencyID = g.CODD_VALU And g.CODD_FLNM = "CURR_MNYX" left join tb00_unit h on a.BUSS_CODE = h.KODE_UNIT where h.KODE_URUT like "' + request.KODE_URUT0 + '%" And DATE_FORMAT(a.TransDate, "%Y%m%d") Between "' + tgl1 + '" And "' + tgl2 + '" And d.KodeKelurahan like "32%" And (a.isDelete <> "1" OR a.isDelete IS NULL) order by e.KOTA_DESC, e.KECX_DESC, e.AREA_DESC, d.NAMA_GRPX, b.NamaKry';
+        }
+
+        db.query(sql, function(err, rows, fields) {
+            var output = [];
+    
+            if (rows.length > 0) {
+                rows.forEach(function(row) {
+                    var obj = new Object();
+                    for(var key in row) {
+                        obj[key] = row[key]; 
+                    }
+
+                    obj['AUTH_PRNT'] = authPrnt;
+    
+                    output.push(obj);
+                })
+            }
+    
+            response.send(output);
+        });
+    }
+
     // get Summary per Unit
     getSummaryTransactionPerUnit = function(req, res) {
         var authPrnt = req.AUTH_PRNT;

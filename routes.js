@@ -165,6 +165,7 @@ import * as C from './controller/index.js';
       app.route('/crm/summary/transactions-per-channel/:tgl1/:tgl2').get(C.auth.verifyToken, C.donatur.getTransactionsPerChannel);
       app.route('/crm/summary/transactions-per-group/:tgl1/:tgl2').get(C.auth.verifyToken, C.donatur.getSummaryTransactionPerGroup);
       app.route('/crm/summary/transactions-per-unit/:tgl1/:tgl2').get(C.auth.verifyToken, C.donatur.getSummaryTransactionPerUnit);
+      app.route('/crm/transactions-per-group/:tgl1/:tgl2').get(C.auth.verifyToken, C.donatur.getDetTransactionsPerGroup);
 
       // ------ Accounting --------------
       app.route('/accounting/tahun-buku/save').post(C.auth.verifyToken, C.accounting.saveTahunBuku);

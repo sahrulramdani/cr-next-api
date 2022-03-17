@@ -428,7 +428,7 @@ export default class Setup {
     }
 
     unitShowLogin = (request, response) => {
-        var qryCmd = "select KODE_UNIT from tb00_unit where ShowInLogin = '1' order by KODE_URUT";
+        var qryCmd = "select KODE_UNIT, NAMA_UNIT from tb00_unit where ShowInLogin = '1' order by NAMA_UNIT";
 
         db.query(qryCmd, function(err, rows, fields) {
             response.send(rows);

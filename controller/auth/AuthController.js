@@ -144,7 +144,7 @@ export default class AuthController {
 
                 // get User Access
                 var sql = 'SELECT a.*, c.IsValid, d.KODE_URUT, d.SequenceUnitCode, c.TYPE_PRSON, d.NAMA_UNIT, e.TypeRelawan, f.groupID, Case e.TypeRelawan When "04" Then g.KodeKelurahan When "03" Then g.KodeKecamatan When "02" Then h.KOTA_IDXX When "01" Then h.PROV_IDXX Else "XXX X" End As KodeArea, g.KODE_URUT As KodeUrutGroup FROM `tb01_usrd` a INNER JOIN `tb01_apix` b on a.PROC_CODE = b.PROC_CODE INNER JOIN `tb01_lgxh` c ON a.USER_IDXX = c.USER_IDXX And a.BUSS_CODE = c.BUSS_CODE INNER JOIN tb00_unit d ON a.BUSS_CODE = d.KODE_UNIT LEFT JOIN tb21_empl e ON c.NO_ID = e.KodeNik LEFT JOIN vfirst_relawandet f on e.KodeNik = f.RelawanID LEFT JOIN grpx_relx g ON f.groupID = g.IDXX_GRPX LEFT JOIN tb20_area h on g.KodeKelurahan = h.AREA_IDXX WHERE UPPER(a.USER_IDXX) = "' + decoded.id.toUpperCase() + '" And ("' + path + '" = b.PATH) And a.RIGH_AUTH = "1" And c.Active = "1" And c.IsValid = "1" ORDER BY b.PATH';  
-                
+
                 var procCodes = [];
                 db.query(sql, (err, rows) => {
                     if (err) {
