@@ -271,7 +271,7 @@ export default class Menu {
     }
 
     getMenus = function(req, res) {
-        var sql = 'SELECT b.*, b.id AS USERACCESS_ID, d.ICON, d.HasChildren, d.PARENT, d.NoUrut, d.PROC_CODE, d.PROC_NAME, d.PATH FROM tb00_proc d LEFT JOIN  (select tb01_proc.*, b.id, b.RIGH_AUTH, b.AUTH_ADDX, b.AUTH_EDIT, b.AUTH_DELT from tb01_proc inner join (select * from `tb01_usrd` where UPPER(USER_IDXX) = "' + req.userID.toUpperCase() + '") b on tb01_proc.BUSS_CODE = b.BUSS_CODE And tb01_proc.PROC_CODE = b.PROC_CODE) b ON d.PROC_CODE = b.PROC_CODE LEFT JOIN (select * from `tb01_lgxh` where UPPER(USER_IDXX) = "' + req.userID.toUpperCase() + '") c ON b.BUSS_CODE = c.BUSS_CODE WHERE d.NoUrut IS NOT NULL ORDER BY d.NoUrut';
+        var sql = 'SELECT b.*, b.id AS USERACCESS_ID, d.ICON, d.HasChildren, d.PARENT, d.NoUrut, d.PROC_CODE, d.PROC_NAME, d.PATH FROM tb00_proc d LEFT JOIN  (select tb01_proc.*, b.id, b.RIGH_AUTH, b.AUTH_ADDX, b.AUTH_EDIT, b.AUTH_DELT from tb01_proc inner join (select * from `tb01_usrd` where UPPER(USER_IDXX) = "' + req.userID.toUpperCase() + '" And BUSS_CODE = "' + req.BUSS_CODE0 + '") b on tb01_proc.BUSS_CODE = b.BUSS_CODE And tb01_proc.PROC_CODE = b.PROC_CODE) b ON d.PROC_CODE = b.PROC_CODE LEFT JOIN (select * from `tb01_lgxh` where UPPER(USER_IDXX) = "' + req.userID.toUpperCase() + '") c ON b.BUSS_CODE = c.BUSS_CODE WHERE d.NoUrut IS NOT NULL ORDER BY d.NoUrut';
 
         db.query(sql, function(err, rows, fields) {
             if (err) {
