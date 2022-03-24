@@ -625,6 +625,69 @@ export default class Donatur {
         });
     }
 
+    updateDonatur2 = function(req, res) {
+        var id = req.body.NextSequenceFormat;   // Substring(No_ID , 7)
+
+        var sql = 'UPDATE tb11_mzjb a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT SET ? WHERE SUBSTRING(a.NO_ID, 7) = "' + id + '" And b.KODE_URUT like "' + req.KODE_URUT0 + '%"';
+
+        var data = {
+            NPWP : req.body.NPWP,
+            NAMA : req.body.NAMA, 
+            NICK_NAME : req.body.NICK_NAME,
+            JNKX_KLMN : req.body.JNKX_KLMN,
+            ALMT_XXX1 : req.body.ALMT_XXX1,
+            AlamatDomisili : req.body.AlamatDomisili,
+            NoHP : req.body.NoHP,
+            CodeCountryHP : req.body.CodeCountryHP,
+            'a.Email' : req.body.Email,
+            TMPX_LHRX : req.body.TMPX_LHRX,
+            TGLX_LHRX : req.body.TGLX_LHRX,
+            NoKTP : req.body.NoKTP,
+            Stat_aktf : req.body.Stat_aktf,
+            StatusKawin : req.body.StatusKawin,
+            Pendidikan : req.body.Pendidikan,
+            Pekerjaan : req.body.Pekerjaan,
+            TglX_MASK : req.body.TglX_MASK,
+            Status : req.body.Status,
+            TypeBadan : req.body.TypeBadan,
+            TypeDonatur : req.body.TypeDonatur,
+            FlgPlatinum : req.body.FlgPlatinum,
+            Channel : req.body.Channel,
+            SEGMX_PROF : req.body.SEGMX_PROF,
+            RelawanID : req.body.RelawanID,
+            TITLE : req.body.TITLE,
+            PIC: req.body.PIC,
+            NoHPPIC: req.body.NoHPPIC, 
+            CodeCountryHPPIC : req.body.CodeCountryHPPIC,
+            EmailPIC: req.body.EmailPIC,
+            'a.UPDT_DATE' : moment(new Date()).format('YYYY-MM-DD HH:mm:ss'),
+            'a.UPDT_BYXX' : req.userID
+        };
+        
+        db.query(sql, data, (err, result) => {
+            if (err) {
+                console.log('Error', err);
+
+                res.send({
+                    status: false,
+                    message: err.sqlMessage
+                });
+            } else {
+                if (req.body.IsChangeGroup === '1') {   // 1: True
+                    sql = 'update tb11_mzjb a left join vfirst_relawandet d on a.RelawanID = d.RelawanID left join grpx_relx e on d.groupID = e.IDXX_GRPX left join tb00_unit c on e.BUSS_CODE = c.KODE_UNIT set a.BUSS_CODE = e.BUSS_CODE, a.IDXX_GRPX = d.groupID where SUBSTRING(a.NO_ID, 7) = "' + id + '" And c.KODE_URUT like "' + req.KODE_URUT0 + '%"';
+                } else {
+                    sql = 'update tb11_mzjb a inner join tb21_empl b on a.RelawanID = b.KodeNik inner join tb00_unit c on b.BUSS_CODE = c.KODE_UNIT set a.BUSS_CODE = b.BUSS_CODE where SUBSTRING(a.NO_ID, 7) = "' + id + '" And c.KODE_URUT like "' + req.KODE_URUT0 + '%"';
+                }
+
+                db.query(sql, (err, result) => {
+                    res.send({
+                        status: true
+                    });
+                });
+            }
+        });
+    }
+
     verify = function(req, res) {
         var status = req.body.Status;
         var typeDonatur = req.body.TypeDonatur;
@@ -1260,6 +1323,77 @@ export default class Donatur {
         });
     } 
 
+    // Save Detail Transaction Donatur dari WA Chatbot
+    saveDetTransaction2 = function(req, res) {
+        // get Donatur ID
+        var sql = 'select NO_ID from tb11_mzjb where SUBSTRING(NO_ID, 7) = "' + req.body.NextSequenceFormat2 + '"';
+        console.log(sql);
+        db.query(sql, (err, rows, fields) => {
+            console.log(rows);
+            var donaturID;
+            if (rows.length > 0) {
+                donaturID = rows[0].NO_ID;
+            } else {
+                donaturID = '';
+            }
+
+            sql = 'INSERT INTO trans_donatur SET ?';   
+
+            var transNumber;
+            if (req.body.TransNumber === null || req.body.TransNumber === undefined) {
+                transNumber = generateAutonumber(req.body.Initial, req.SequenceUnitCode0, req.body.Tahun, 
+                    req.body.NextSequenceFormat);
+            } else {
+                transNumber = req.body.TransNumber;
+            }
+
+            var namaFile = '';
+            if (req.body.extension !== undefined) {
+                namaFile = 'transaction_' + transNumber + '.' + req.body.extension;
+            }
+
+            var data = {
+                TransNumber : transNumber,
+                TransDate : req.body.TransDate,
+                BUSS_CODE : req.body.BUSS_CODE,
+                NoReference : req.body.NoReference,
+                DonaturID : donaturID,
+                CurrencyID : req.body.CurrencyID,
+                Amount : req.body.Amount,
+                FileName : namaFile,
+                ProgDonatur : req.body.ProgDonatur,
+                MethodPayment : req.body.MethodPayment,
+                BankFrom : req.body.BankFrom,
+                BankTo : req.body.BankTo,
+                Catatan : req.body.Catatan,
+                KodeNik : req.body.KodeNik,
+                KODE_KLSX : req.body.KODE_KLSX,
+                TahunBuku : req.body.TahunBuku,
+                NoInvoice : req.body.NoInvoice,
+                isValidate : req.body.isValidate,
+                isDelete : req.body.isDelete,
+                CRTX_DATE : moment(new Date()).format('YYYY-MM-DD HH:mm:ss'),
+                CRTX_BYXX : req.userID
+            };
+            
+            db.query(sql, data, (err, result) => {
+                if (err) {
+                    console.log('Error', err);
+
+                    res.send({
+                        status: false,
+                        message: err.sqlMessage
+                    });
+                } else {
+                    res.send({
+                        transNumber: transNumber,
+                        status: true
+                    });
+                }
+            });
+        });
+    } 
+
     deleteDetTransaction = function(req, res) {
         var id = req.body.id;
         var sql = "delete from `trans_donatur` where id = " + id;
@@ -1487,24 +1621,13 @@ export default class Donatur {
     }
 
     updateDonaturTrans2 = function(req, res) {
-        // check Access PROC_CODE 
-        if (fncCheckProcCode(req.body.ProcCode, req.procCodes) === false) {
-            res.status(403).send({ 
-                status: false, 
-                message: 'Access Denied',
-                userAccess: false
-            });
-
-            return;
-        }
-
-        var id = req.body.transNumber;  
-        // var NoReference2 = req.body.NoReference2;
+        var id = req.body.Tahun.substring(2) + req.body.NextSequenceFormat;  // SUBSTRING(TransNumber, 6)
 
         var tgl = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
-        var sql = 'UPDATE trans_donatur a INNER JOIN tb00_unit c ON a.BUSS_CODE = c.KODE_UNIT SET ? WHERE a.TransNumber = "' + id + '" And c.KODE_URUT like "' + req.KODE_URUT0 + '%"';
 
-        var transNumber2 = req.body.transNumber.split('TRD').join('NBD');
+        var sql = 'UPDATE trans_donatur a INNER JOIN tb00_unit c ON a.BUSS_CODE = c.KODE_UNIT SET ? WHERE SUBSTRING(a.TransNumber, 6) = "' + id + '" And c.KODE_URUT like "' + req.KODE_URUT0 + '%"';
+
+        var transNumber2 = "NBD" + req.SequenceUnitCode0 + id;   // TransNumber slp (tabel tb52_slpa)
            
         var data = new Object();
 
@@ -1541,7 +1664,7 @@ export default class Donatur {
                 });
             } else {
                 // update item transaction
-                sql = "update trans_item set KodeNik ='" + req.body.KodeNik + "', KODE_KLSX = '" + req.body.KODE_KLSX + "', BUSS_CODE = '" + req.body.BUSS_CODE + "', UPDT_BYXX = '" + req.userID + "', UPDT_DATE = '" + tgl + "' where TransNumber = '" + req.body.transNumber + "'";
+                sql = "update trans_item set KodeNik ='" + req.body.KodeNik + "', KODE_KLSX = '" + req.body.KODE_KLSX + "', BUSS_CODE = '" + req.body.BUSS_CODE + "', UPDT_BYXX = '" + req.userID + "', UPDT_DATE = '" + tgl + "' where SUBSTRING(TransNumber, 6) = '" + id + "'";
 
                 db.query(sql, (err, result) => {
                     // update Donatur is verified
@@ -1727,7 +1850,9 @@ export default class Donatur {
         var status = req.body.status;
         var tgl = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
 
-        var sql = 'UPDATE tb52_slpc a INNER JOIN tb52_slpa b ON a.transNumber = b.transNumber INNER JOIN tb00_unit c ON b.unit = c.KODE_UNIT INNER JOIN tb11_mzjb d ON a.donaturID = d.NO_ID SET a.status = "' + status + '", a.UPDT_BYXX = "' + req.userID + '", a.UPDT_DATE = "' + tgl + '" WHERE a.transNumber = "' + transNumber + '" And CONCAT(IFNULL(d.CodeCountryHP, ""), d.NoHP) = "' + noHP + '" And c.KODE_URUT like "' + req.KODE_URUT0 + '%"';
+        var sql = 'UPDATE tb52_slpc a INNER JOIN tb52_slpa b ON a.transNumber = b.transNumber INNER JOIN tb00_unit c ON b.unit = c.KODE_UNIT INNER JOIN tb11_mzjb d ON a.donaturID = d.NO_ID SET a.status = "' + status + '", a.UPDT_BYXX = "' + req.userID + '", a.UPDT_DATE = "' + tgl + '" WHERE a.transNumber = "' + transNumber + '" And CONCAT(IFNULL(d.CodeCountryHP, ""), IFNULL(d.NoHP, "")) = "' + noHP + '" And c.KODE_URUT like "' + req.KODE_URUT0 + '%"';
+
+        console.log(sql);
         
         db.query(sql, (err, result) => {
             if (err) {
@@ -2532,6 +2657,83 @@ export default class Donatur {
         }
     }
 
+    saveTransItemArray2 = function(req, res) {
+        // get user Access
+        var authAdd = req.AUTH_ADDX;
+
+        if (authAdd === '0') {
+            return res.status(403).send({ 
+                status: false, 
+                message: 'Access Denied',
+                userAccess: false
+            });
+        }
+
+        var cntTransItems = 1;
+        var sql = '';
+        var tglNow = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
+
+        var progDonaturs = [];
+        progDonaturs = fncParseComma(req.body.ProgDonaturs);
+
+        var amountItems = [];
+        amountItems = fncParseComma(req.body.AmountItems);
+
+        var notes = [];
+        notes = fncParseComma(req.body.Notes);
+
+        var id = req.body.Tahun.substring(2) + req.body.NextSequenceFormat;  // SUBSTRING(TransNumber, 6)
+        var transNumber = 'TRD' + req.SequenceUnitCode0 + id;
+
+        var sqlDelete = 'delete from trans_item where SUBSTRING(TransNumber, 6) = "' + id + '"';
+
+        if (cntTransItems > 0) {
+            var kelas = req.body.KODE_KLSX;
+            if (kelas === null) {
+                kelas = '';
+            }
+
+            sql = 'INSERT INTO trans_item (TransNumber, BUSS_CODE, THNX_BUKU, KodeNik, KODE_KLSX, ProgDonatur, Amount_item, note, CRTX_DATE, CRTX_BYXX) VALUES ';
+            for(var i=0; i<cntTransItems; i++) {
+                if (i === 0) {
+                    sql += '("' + transNumber + '","' + req.body.BUSS_CODE + '","' + req.body.THNX_BUKU + '","' + req.body.KodeNik + '","' + kelas + '","' + progDonaturs[i] + '",' + amountItems[i] + ',"' + notes[i] + '","' + tglNow + '","' + req.userID + '")';
+                } else {
+                    sql += ',("' + transNumber + '","' + req.body.BUSS_CODE + '","' + req.body.THNX_BUKU + '","' + req.body.KodeNik + '","' + kelas + '","' + progDonaturs[i] + '",' + amountItems[i] + ',"' + notes[i] + '","' + tglNow + '","' + req.userID + '")';
+                }
+            }
+
+            db.query(sqlDelete, (err, result) => {
+                if (err) {
+                    console.log('Error', err);
+    
+                    res.send({
+                        status: false,
+                        message: err.sqlMessage
+                    });
+                } else {
+                    db.query(sql, (err, result) => {
+                        if (err) {
+                            console.log('Error', err);
+            
+                            res.send({
+                                status: false,
+                                message: err.sqlMessage
+                            });
+                        } else {
+                            res.send({
+                                status: true
+                            });
+                        }
+                    });
+                }
+            });
+        } else {
+            res.send({
+                status: true
+            });
+        }
+    }
+
     deleteTransItem = function(req, res) {
         var id = req.body.id;
         var sql = "delete `trans_item` from `trans_item` inner join tb00_unit on trans_item.BUSS_CODE = tb00_unit.KODE_UNIT where trans_item.id = " + id + " And tb00_unit.KODE_URUT like '" + req.KODE_URUT0 + "%'";
@@ -2628,6 +2830,56 @@ export default class Donatur {
             var idTransaksi = request.body.idTransaksi;
 
             sql = 'insert into tblMutasi (TransDate, Keterangan, DK, Amount, Bank, BUSS_CODE, KODE_TRNX, IDXX_GRPX, CRTX_BYXX, CRTX_DATE) select "' + request.body.tanggalTransaksi + '", "BSI Virtual Account No. VA = ' + noVA + '", "K", ' + request.body.totalNominal + ', b.KODE_BANK, b.BUSS_CODE, "' + idTransaksi + '", a.IDXX_GRPX, "SYSTEM", "' + tglNow + '" from grpx_relx a inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT inner join (select a.*, b.KODE_URUT from tb02_bank a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT) b on b.KODE_URUT like CONCAT(c.KODE_URUT, "%") And b.KODE_FLNM = "KASX_BANK" And b.NAMA_BANK = "BSI Virtual Account" And b.kodeBiller = "' + request.body.kodeBiller + '" left join tblMutasi d on b.BUSS_CODE = d.BUSS_CODE And d.KODE_TRNX = "' + idTransaksi + '" where a.NOXX_VAXX = "' + noVA + '" And d.id Is Null';
+
+            db.query(sql, (err, result) => {
+                if (err) {
+                    console.log('Error', err);
+
+                    response.send({
+                        status: false,
+                        msg: err.sqlMessage
+                    });
+                } else {
+                    response.send({
+                        status: true,
+                        msg: 'Sukses'
+                    });
+                }
+            });
+        } else {
+            response.send({
+                status: true,
+                msg: 'Sukses'
+            });
+        }
+    }
+
+    // payment notification from WA Chatbot
+    paymentWATransaction = (request, response) => {
+        var dataStaging = {
+            NoPembayaran: request.body.NoPembayaran,
+            TglBayar : request.body.TglBayar,
+            NoInvoice : request.body.NoInvoice,
+            Nominal : request.body.Nominal,
+            status : request.body.status,     // status validasi
+            Message : request.body.Message,
+            channel : request.body.channel,
+            CRTX_BYXX : 'SYSTEM',
+            CRTX_DATE : new Date()
+        };
+
+        // save data to table staging
+        var sql = 'insert into paymx_waxx_stgx set ?';
+        db.query(sql, dataStaging, (err, result) => {
+            if (err) {
+                console.log('Error', err);
+            } 
+        });
+        
+        if (request.body.status === 'Sukses') {
+            // validasi data transaksi (tabel trans_donatur)
+            var tgl = moment(new Date()).format("YYYY-MM-DD HH:mm:ss");
+            sql = 'update trans_donatur set isValidate = "1", UPDT_BYXX = "SYSTEM", UPDT_DATE = "' + tgl + '" where NoInvoice = "' + req.body.NoInvoice + '"';
 
             db.query(sql, (err, result) => {
                 if (err) {
