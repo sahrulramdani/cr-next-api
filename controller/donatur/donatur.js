@@ -1,5 +1,6 @@
 import  db from './../../koneksi.js';
 import { fncParseComma, generateAutonumber } from './../../libraries/sisqu/Utility.js';
+import GenerateNumber from './../../libraries/sisqu/GenerateNumber.js';
 import moment from 'moment';
 import { fncCheckProcCode } from './../../libraries/local/localUtility.js';
 
@@ -1327,9 +1328,8 @@ export default class Donatur {
     saveDetTransaction2 = function(req, res) {
         // get Donatur ID
         var sql = 'select NO_ID from tb11_mzjb where SUBSTRING(NO_ID, 7) = "' + req.body.NextSequenceFormat2 + '"';
-        console.log(sql);
+
         db.query(sql, (err, rows, fields) => {
-            console.log(rows);
             var donaturID;
             if (rows.length > 0) {
                 donaturID = rows[0].NO_ID;
@@ -2837,19 +2837,19 @@ export default class Donatur {
 
                     response.send({
                         status: false,
-                        msg: err.sqlMessage
+                        message: err.sqlMessage
                     });
                 } else {
                     response.send({
                         status: true,
-                        msg: 'Sukses'
+                        message: 'Sukses'
                     });
                 }
             });
         } else {
             response.send({
                 status: true,
-                msg: 'Sukses'
+                message: 'Sukses'
             });
         }
     }
@@ -2876,10 +2876,10 @@ export default class Donatur {
             } 
         });
         
-        if (request.body.status === 'Sukses') {
+        if (request.body.status === '1') {
             // validasi data transaksi (tabel trans_donatur)
             var tgl = moment(new Date()).format("YYYY-MM-DD HH:mm:ss");
-            sql = 'update trans_donatur set isValidate = "1", UPDT_BYXX = "SYSTEM", UPDT_DATE = "' + tgl + '" where NoInvoice = "' + req.body.NoInvoice + '"';
+            sql = 'update trans_donatur set isValidate = "1", UPDT_BYXX = "SYSTEM", UPDT_DATE = "' + tgl + '" where NoInvoice = "' + request.body.NoInvoice + '"';
 
             db.query(sql, (err, result) => {
                 if (err) {
@@ -2887,19 +2887,75 @@ export default class Donatur {
 
                     response.send({
                         status: false,
-                        msg: err.sqlMessage
+                        message: err.sqlMessage
                     });
                 } else {
-                    response.send({
-                        status: true,
-                        msg: 'Sukses'
-                    });
+                    const fncNext = (initial, tahun, transNumber, nextSequenceFormat) => {
+                        var bussCode = request.BUSS_CODE0;
+
+                        // retrieve type slp
+                        sql = 'select a.*, b.Message, c.NAMA_UNIT, c.Tertanda, c.Website from trans_donatur a inner join typeslp b on a.BUSS_CODE = b.BUSS_CODE inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT where b.id = "01" And a.NoInvoice = "' + request.body.NoInvoice + '" And a.BUSS_CODE = "' + bussCode + '"';
+
+                        db.query(sql, function(err, rows, fields) {
+                            if (rows.length > 0) {
+                                // insert to SLP (tabel tb52_slpa)
+                                sql = 'INSERT INTO tb52_slpa (transNumber, tglProses, typeProgram, status, tahunBuku, Message, unit, CRTX_DATE, CRTX_BYXX) VALUES ';
+
+                                if (transNumber === null || transNumber === undefined) {
+                                    transNumber = generateAutonumber(initial, request.SequenceUnitCode0, tahun, 
+                                    nextSequenceFormat);
+                                } 
+
+                                var nextSequence = parseInt(transNumber.substring(transNumber.length-6,transNumber.length));
+                                var nextSequenceFormat2;
+                                
+                                var message = rows[0].Message;
+                                message = message.split('[Amount]').join(rows[0].Amount);
+                                message = message.split('[TransDate]').join(moment(rows[0].TransDate).format('DD-MMM-YYYY'));
+                                message = message.split('[Currency]').join(rows[0].CurrencyID);
+                                message = message.split('[NamaUnit]').join(rows[0].NAMA_UNIT);
+                                message = message.split('[Tertanda]').join(rows[0].Tertanda);
+                                message = message.split('[Website]').join(rows[0].Website);
+                                message = message.split('"').join("'");
+
+                                sql += '("' + transNumber + '", "' + tgl + '", "01", "0", "' + rows[0].TahunBuku + '", "' + message + '", "' + bussCode + '", "' + tgl + '", "' + request.userID + '")';
+
+                                // nextSequence = nextSequence + 1;
+                                nextSequenceFormat2 = nextSequence.toString().padStart(6, '0');
+
+                                db.query(sql, (err, result) => {
+                                    if (err) {
+                                        console.log('Error', err);
+                    
+                                        response.send({
+                                            status: false,
+                                            message: err.sqlMessage
+                                        });
+                                    } else {
+                                        response.send({
+                                            status: true
+                                        });
+                                    }
+                                });
+                            } else {
+                                response.send({
+                                    status: true
+                                });
+                            }
+                        });
+                    };
+
+                    var tahun = new Date().getFullYear();
+                    var generateAutonumber =  new GenerateNumber('NBD', tahun, fncNext);
+                    generateAutonumber.setBussCode(request.BUSS_CODE0);
+                    generateAutonumber.setUserID(request.userID);
+                    generateAutonumber.process();
                 }
             });
         } else {
             response.send({
                 status: true,
-                msg: 'Sukses'
+                message: 'Sukses'
             });
         }
     }
@@ -2940,6 +2996,7 @@ export default class Donatur {
                     sql = 'select a.*, d.CODD_VARC As Simbol, c.NAMA_UNIT, c.Tertanda, c.Website from trans_donatur a inner join tb02_bank b on a.MethodPayment = b.KODE_BANK And a.BUSS_CODE = b.BUSS_CODE inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT left join tb00_basx d on a.CurrencyID = d.CODD_VALU And d.CODD_FLNM = "CURR_MNYX" where a.isValidate = "1" And a.isValidate2 = "0" And b.CHKX_CASH = "1" And c.KODE_URUT like "' + req.KODE_URUT0 + '%" And a.id in ("' + sqlListId;
                     
                     db.query(sql, function(err, rows, fields) {
+                        // insert to SLP (tabel tb52_slpa)
                         sql = 'INSERT INTO tb52_slpa (transNumber, tglProses, typeProgram, status, tahunBuku, Message, unit, CRTX_DATE, CRTX_BYXX) VALUES ';
                         if (rows.length > 0) {
                             var transNumber;
