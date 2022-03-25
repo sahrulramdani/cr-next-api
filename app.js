@@ -85,10 +85,8 @@ app.get('/download/:id', auth.verifyToken, function(req, res) {
 
 app.use((error, req, res, next) => {
     res.status(error.status || 500).send({
-      error: {
-        status: error.status || 500,
+        status: false,
         message: error.message || 'Internal Server Error',
-      },
     });
   });
 

@@ -74,7 +74,7 @@ export default class AuthController {
                     } else {
                         var tokenExpiresIn = ca.config.TokenExpired;
                         
-                        if (user.USER_IDXX === '00006' || user.USER_IDXX === 'automate') {
+                        if (user.USER_IDXX === '00006') {
                             tokenExpiresIn = 1261440000;       // 40 tahun, utk Operator WA
                         } 
 

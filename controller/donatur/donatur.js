@@ -1069,7 +1069,7 @@ export default class Donatur {
             "End As Status2 " +
             "from tb52_slpa a left join typeslp b on a.typeProgram = b.id inner join tb00_unit c on a.unit = c.KODE_UNIT where c.KODE_URUT like '" + request.KODE_URUT0 + "%' order by a.tglProses DESC";
         } else {
-            qryCmd = "select a.transNumber, CONCAT(IFNULL(e.CodeCountryHP, ''), e.NoHP) As NoHP2, a.Message, f.FilePath, CONCAT(f.fileID, '|', f.FileName) As FileName, e.TITLE, e.NAMA, e.NICK_NAME, a.tglProses, g.id FROM tb52_slpa a left join typeslp b on a.typeProgram = b.id inner join tb00_unit c on a.unit = c.KODE_UNIT inner join tb52_slpc d on a.transNumber = d.transNumber inner join tb11_mzjb e on d.donaturID = e.NO_ID left join vslpattach f on a.transNumber = f.transNumber left join trans_donatur g on a.transNumber = g.TransactionIDSLP where c.KODE_URUT like '" + request.KODE_URUT0 + "%' And d.status = '" + status + "' And a.Message is not null order by a.transNumber";
+            qryCmd = "select a.transNumber, CONCAT(IFNULL(e.CodeCountryHP, ''), INULL(e.NoHP, '')) As NoHP2, a.Message, f.FilePath, CONCAT(f.fileID, '|', f.FileName) As FileName, e.TITLE, e.NAMA, e.NICK_NAME, a.tglProses, g.id FROM tb52_slpa a left join typeslp b on a.typeProgram = b.id inner join tb00_unit c on a.unit = c.KODE_UNIT inner join tb52_slpc d on a.transNumber = d.transNumber inner join tb11_mzjb e on d.donaturID = e.NO_ID left join vslpattach f on a.transNumber = f.transNumber left join trans_donatur g on a.transNumber = g.TransactionIDSLP where c.KODE_URUT like '" + request.KODE_URUT0 + "%' And d.status = '" + status + "' And a.Message is not null And e.NoHP is not null order by a.transNumber";
         }
 
         db.query(qryCmd, function(err, rows, fields) {
@@ -2905,9 +2905,6 @@ export default class Donatur {
                                     transNumber = generateAutonumber(initial, request.SequenceUnitCode0, tahun, 
                                     nextSequenceFormat);
                                 } 
-
-                                var nextSequence = parseInt(transNumber.substring(transNumber.length-6,transNumber.length));
-                                var nextSequenceFormat2;
                                 
                                 var message = rows[0].Message;
                                 message = message.split('[Amount]').join(rows[0].Amount);
@@ -2919,9 +2916,6 @@ export default class Donatur {
                                 message = message.split('"').join("'");
 
                                 sql += '("' + transNumber + '", "' + tgl + '", "01", "0", "' + rows[0].TahunBuku + '", "' + message + '", "' + bussCode + '", "' + tgl + '", "' + request.userID + '")';
-
-                                // nextSequence = nextSequence + 1;
-                                nextSequenceFormat2 = nextSequence.toString().padStart(6, '0');
 
                                 db.query(sql, (err, result) => {
                                     if (err) {
