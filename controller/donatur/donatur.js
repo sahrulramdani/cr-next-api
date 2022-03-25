@@ -100,26 +100,26 @@ export default class Donatur {
         var qryCmd = '';
         
         if (typePrson === '1') {  // 1: Relawan
-            qryCmd = "select a.NO_ID As value, CONCAT(a.NAMA, ' - ', a.NO_ID, ' - ', SUBSTRING(a.ALMT_XXX1, 1, 20)) As label from tb11_mzjb a inner join tb01_lgxh c on a.RelawanID = c.NO_ID left join tb21_empl e on a.RelawanID = e.KodeNik left join tb00_unit b on e.BUSS_CODE = b.KODE_UNIT where b.KODE_URUT like '" + request.KODE_URUT0 + "%' And UPPER(c.USER_IDXX) = '" + request.userID.toUpperCase() + "' order by a.NAMA";
+            qryCmd = "select a.NO_ID As value, CONCAT(a.NAMA, ' - ', a.NO_ID) As label from tb11_mzjb a inner join tb01_lgxh c on a.RelawanID = c.NO_ID left join tb21_empl e on a.RelawanID = e.KodeNik left join tb00_unit b on e.BUSS_CODE = b.KODE_UNIT where b.KODE_URUT like '" + request.KODE_URUT0 + "%' And UPPER(c.USER_IDXX) = '" + request.userID.toUpperCase() + "' order by a.NAMA";
 
             switch(typeRelawan) {
                 case '01' : case '02' : case '03' : case '04' : // 04: Korra keatas
-                    qryCmd = "select a.NO_ID As value, CONCAT(a.NAMA, ' - ', a.NO_ID, ' - ', SUBSTRING(a.ALMT_XXX1, 1, 20)) As label from tb11_mzjb a left join vfirst_relawandet c on a.RelawanID = c.RelawanID left join grpx_relx d on c.groupID = d.IDXX_GRPX left join tb21_empl e on a.RelawanID = e.KodeNik left join tb00_unit b on e.BUSS_CODE = b.KODE_UNIT where b.KODE_URUT like '" + request.KODE_URUT0 + "%' And d.KodeKelurahan like '" + request.KODE_AREA0 + "%' order by a.NAMA";
+                    qryCmd = "select a.NO_ID As value, CONCAT(a.NAMA, ' - ', a.NO_ID) As label from tb11_mzjb a left join vfirst_relawandet c on a.RelawanID = c.RelawanID left join grpx_relx d on c.groupID = d.IDXX_GRPX left join tb21_empl e on a.RelawanID = e.KodeNik left join tb00_unit b on e.BUSS_CODE = b.KODE_UNIT where b.KODE_URUT like '" + request.KODE_URUT0 + "%' And d.KodeKelurahan like '" + request.KODE_AREA0 + "%' order by a.NAMA";
 
                     break;
                 case '05' : // bendahara
-                    qryCmd = "select a.NO_ID As value, CONCAT(a.NAMA, ' - ', a.NO_ID, ' - ', SUBSTRING(a.ALMT_XXX1, 1, 20)) As label from tb11_mzjb a left join vfirst_relawandet c on a.RelawanID = c.RelawanID left join tb21_empl e on a.RelawanID = e.KodeNik left join tb00_unit b on e.BUSS_CODE = b.KODE_UNIT where b.KODE_URUT like '" + request.KODE_URUT0 + "%' And c.groupID = '" + request.groupID + "' order by a.NAMA";
+                    qryCmd = "select a.NO_ID As value, CONCAT(a.NAMA, ' - ', a.NO_ID) As label from tb11_mzjb a left join vfirst_relawandet c on a.RelawanID = c.RelawanID left join tb21_empl e on a.RelawanID = e.KodeNik left join tb00_unit b on e.BUSS_CODE = b.KODE_UNIT where b.KODE_URUT like '" + request.KODE_URUT0 + "%' And c.groupID = '" + request.groupID + "' order by a.NAMA";
 
                     break;
                 case '06' :
-                    qryCmd = "select a.NO_ID As value, CONCAT(a.NAMA, ' - ', a.NO_ID, ' - ', SUBSTRING(a.ALMT_XXX1, 1, 20)) As label from tb11_mzjb a inner join tb01_lgxh c on a.RelawanID = c.NO_ID left join tb21_empl e on a.RelawanID = e.KodeNik left join tb00_unit b on e.BUSS_CODE = b.KODE_UNIT where b.KODE_URUT like '" + request.KODE_URUT0 + "%' And UPPER(c.USER_IDXX) = '" + request.userID.toUpperCase() + "' order by a.NAMA";
+                    qryCmd = "select a.NO_ID As value, CONCAT(a.NAMA, ' - ', a.NO_ID) As label from tb11_mzjb a inner join tb01_lgxh c on a.RelawanID = c.NO_ID left join tb21_empl e on a.RelawanID = e.KodeNik left join tb00_unit b on e.BUSS_CODE = b.KODE_UNIT where b.KODE_URUT like '" + request.KODE_URUT0 + "%' And UPPER(c.USER_IDXX) = '" + request.userID.toUpperCase() + "' order by a.NAMA";
 
                     break;
             }
         } else if (typePrson === '2') {  // 2: Donatur
-            qryCmd = "select a.NO_ID As value, CONCAT(a.NAMA, ' - ', a.NO_ID, ' - ', SUBSTRING(a.ALMT_XXX1, 1, 20)) As label from tb11_mzjb a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT inner join tb01_lgxh c on a.NO_ID = c.NO_ID where b.KODE_URUT like '" + request.KODE_URUT0 + "%' And UPPER(c.USER_IDXX) = '" + request.userID.toUpperCase() + "' order by a.NAMA";
+            qryCmd = "select a.NO_ID As value, CONCAT(a.NAMA, ' - ', a.NO_ID) As label from tb11_mzjb a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT inner join tb01_lgxh c on a.NO_ID = c.NO_ID where b.KODE_URUT like '" + request.KODE_URUT0 + "%' And UPPER(c.USER_IDXX) = '" + request.userID.toUpperCase() + "' order by a.NAMA";
         } else {
-            qryCmd = "select a.NO_ID As value, CONCAT(a.NAMA, ' - ', a.NO_ID, ' - ', SUBSTRING(a.ALMT_XXX1, 1, 20)) As label from tb11_mzjb a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where b.KODE_URUT like '" + request.KODE_URUT0 + "%' order by a.NAMA";
+            qryCmd = "select a.NO_ID As value, CONCAT(a.NAMA, ' - ', a.NO_ID) As label from tb11_mzjb a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where b.KODE_URUT like '" + request.KODE_URUT0 + "%' order by a.NAMA";
         }
         
         db.query(qryCmd, function(err, rows, fields) {
