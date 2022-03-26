@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 import config from './config.js';
 import  db from './../../koneksi.js';
 import * as ca  from './../../config.js';  // config application
+import moment from 'moment';
 
 
 export default class AuthController {
@@ -84,6 +85,13 @@ export default class AuthController {
 
                         var token = jwt.sign({ id: user.USER_IDXX }, config.secret, {
                             expiresIn: tokenExpiresIn   
+                        });
+
+                        // write Start Login
+                        var tgl = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
+                        sql = 'update tb01_lgxh set LOGN_STRT = "' + tgl + '" where USER_IDXX = "' + user.USER_IDXX + '"';
+
+                        db.query(sql, (err, rows) => {
                         });
 
                         res.send({
