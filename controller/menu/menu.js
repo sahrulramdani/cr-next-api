@@ -91,12 +91,17 @@ export default class Menu {
 
         var module = request.params.module;
         var bussCode = request.params.bussCode;
+        var typeMdul = request.params.typeMdul;
+
+        if (typeMdul === undefined || typeMdul === 'undefined') {
+            typeMdul = '2';    // 2: React JS Application
+        }
 
         var qryCmd = '';
         if (bussCode === '00') {
-            qryCmd = "select a.*, a.PROC_NAME from tb00_proc a where a.MDUL_CODE = '" + module + "' And a.Enabled = '1' order by a.NoUrut";
+            qryCmd = "select a.*, a.PROC_NAME from tb00_proc a where a.MDUL_CODE = '" + module + "' And a.Enabled = '1' And a.TYPE_MDUL = '" + typeMdul + "' order by a.NoUrut";
         } else {
-            qryCmd = "select a.*, b.PROC_NAME from tb01_proc a inner join tb00_proc b on a.PROC_CODE = b.PROC_CODE where a.BUSS_CODE = '" + bussCode + "' And a.MDUL_CODE = '" + module + "' order by b.NoUrut";
+            qryCmd = "select a.*, b.PROC_NAME from tb01_proc a inner join tb00_proc b on a.PROC_CODE = b.PROC_CODE where a.BUSS_CODE = '" + bussCode + "' And a.MDUL_CODE = '" + module + "' And a.TYPE_MDUL = '" + typeMdul + "' order by b.NoUrut";
         }
         
         db.query(qryCmd, function(err, rows, fields) {
@@ -271,7 +276,7 @@ export default class Menu {
     }
 
     getMenus = function(req, res) {
-        var sql = 'SELECT b.*, b.id AS USERACCESS_ID, d.ICON, d.HasChildren, d.PARENT, d.NoUrut, d.PROC_CODE, d.PROC_NAME, d.PATH FROM tb00_proc d LEFT JOIN  (select tb01_proc.*, b.id, b.RIGH_AUTH, b.AUTH_ADDX, b.AUTH_EDIT, b.AUTH_DELT from tb01_proc inner join (select * from `tb01_usrd` where UPPER(USER_IDXX) = "' + req.userID.toUpperCase() + '" And BUSS_CODE = "' + req.BUSS_CODE0 + '") b on tb01_proc.BUSS_CODE = b.BUSS_CODE And tb01_proc.PROC_CODE = b.PROC_CODE) b ON d.PROC_CODE = b.PROC_CODE LEFT JOIN (select * from `tb01_lgxh` where UPPER(USER_IDXX) = "' + req.userID.toUpperCase() + '") c ON b.BUSS_CODE = c.BUSS_CODE WHERE d.NoUrut IS NOT NULL ORDER BY d.NoUrut';
+        var sql = 'SELECT b.*, b.id AS USERACCESS_ID, d.ICON, d.HasChildren, d.PARENT, d.NoUrut, d.PROC_CODE, d.PROC_NAME, d.PATH FROM tb00_proc d LEFT JOIN  (select tb01_proc.*, b.id, b.RIGH_AUTH, b.AUTH_ADDX, b.AUTH_EDIT, b.AUTH_DELT from tb01_proc inner join (select * from `tb01_usrd` where UPPER(USER_IDXX) = "' + req.userID.toUpperCase() + '" And BUSS_CODE = "' + req.BUSS_CODE0 + '") b on tb01_proc.BUSS_CODE = b.BUSS_CODE And tb01_proc.PROC_CODE = b.PROC_CODE) b ON d.PROC_CODE = b.PROC_CODE LEFT JOIN (select * from `tb01_lgxh` where UPPER(USER_IDXX) = "' + req.userID.toUpperCase() + '") c ON b.BUSS_CODE = c.BUSS_CODE WHERE d.NoUrut IS NOT NULL And d.TYPE_MDUL = "2" ORDER BY d.NoUrut';
 
         db.query(sql, function(err, rows, fields) {
             if (err) {

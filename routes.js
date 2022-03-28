@@ -199,7 +199,7 @@ import * as C from './controller/index.js';
       app.route('/menu/module/process/save').post(C.auth.verifyToken, C.menu.saveDetProcess);
       app.route('/menu/module/process/delete').post(C.auth.verifyToken, C.menu.deleteDetProcess);
       app.route('/menu/module/:id').get(C.auth.verifyToken, C.menu.getModule);
-      app.route('/menu/processes/:bussCode/:module').get(C.auth.verifyToken, C.menu.processAll);
+      app.route('/menu/processes/:bussCode/:module/:typeMdul?').get(C.auth.verifyToken, C.menu.processAll);
       app.route('/menu/menus').get(C.auth.verifyToken, C.menu.getMenus);
       app.route('/menu/menus2/:userID').get(C.auth.verifyToken, C.menu.getMenus2);
 
