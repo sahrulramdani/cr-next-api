@@ -99,9 +99,9 @@ export default class Menu {
 
         var qryCmd = '';
         if (bussCode === '00') {
-            qryCmd = "select a.*, a.PROC_NAME from tb00_proc a where a.MDUL_CODE = '" + module + "' And a.Enabled = '1' And a.TYPE_MDUL = '" + typeMdul + "' order by a.NoUrut";
+            qryCmd = "select a.*, a.PROC_NAME from tb00_proc a where a.MDUL_CODE = '" + module + "' And a.Enabled = '1' And a.TYPE_MDUL = '" + typeMdul + "' order by a.NoUrut, a.PROC_CODE";
         } else {
-            qryCmd = "select a.*, b.PROC_NAME from tb01_proc a inner join tb00_proc b on a.PROC_CODE = b.PROC_CODE where a.BUSS_CODE = '" + bussCode + "' And a.MDUL_CODE = '" + module + "' And a.TYPE_MDUL = '" + typeMdul + "' order by b.NoUrut";
+            qryCmd = "select a.*, b.PROC_NAME from tb01_proc a inner join tb00_proc b on a.PROC_CODE = b.PROC_CODE where a.BUSS_CODE = '" + bussCode + "' And a.MDUL_CODE = '" + module + "' And a.TYPE_MDUL = '" + typeMdul + "' order by b.NoUrut, a.PROC_CODE";
         }
         
         db.query(qryCmd, function(err, rows, fields) {
@@ -365,7 +365,7 @@ export default class Menu {
 
         var tgl = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
         
-        var sql = 'INSERT INTO tb01_modm (MDUL_CODE, MDUL_NAMA, TYPE_MDUL, BUSS_CODE, NoUrut, CRTX_BYXX, CRTX_DATE) select MDUL_CODE, MDUL_NAMA, TYPE_MDUL, "' + req.body.BUSS_CODE + '", NoUrut, "' + req.userID + '", "' + tgl + '" from tb00_modm where MDUL_CODE = "' + req.body.MDUL_CODE + '"';
+        var sql = 'INSERT INTO tb01_modm (MDUL_CODE, MDUL_NAMA, TYPE_MDUL, BUSS_CODE, NoUrut, CRTX_BYXX, CRTX_DATE) select MDUL_CODE, MDUL_NAMA, "' + req.body.TYPE_MDUL + '", "' + req.body.BUSS_CODE + '", NoUrut, "' + req.userID + '", "' + tgl + '" from tb00_modm where MDUL_CODE = "' + req.body.MDUL_CODE + '"';
         
         db.query(sql, (err, result) => {
             if (err) {
