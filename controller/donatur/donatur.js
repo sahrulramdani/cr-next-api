@@ -2664,16 +2664,17 @@ export default class Donatur {
             qryCmd = "select a.* from grpx_relx a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where b.KODE_URUT like '" + request.KODE_URUT0 + "%' order by a.KODE_URUT";
 
             if (typePerson === '1') { // 1: Relawan
-                if (typeRelawan === '06') {  // 06: Relawan
-                    qryCmd = "select a.* from grpx_relx a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT inner join tb01_lgxh c on b.KODE_UNIT = c.BUSS_CODE inner join vfirst_relawandet d on c.NO_ID = d.RelawanID And d.groupID = a.IDXX_GRPX  WHERE a.BUSS_CODE = '" + request.params.bussCode + "' And b.KODE_URUT like '" + request.KODE_URUT0 + "%' And UPPER(c.USER_IDXX) = '" + request.userID.toUpperCase() + "'";
-                }
+                switch(typeRelawan) {
+                    case '01' : case '02' : case '03' : case '04' :    // 04: Korra
+                        qryCmd = "select a.*, c.* from grpx_relx a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT left join tb20_area c on a.KodeKelurahan = c.AREA_IDXX where a.BUSS_CODE = '" + request.params.bussCode + "' And b.KODE_URUT like '" + request.KODE_URUT0 + "%' And a.KodeKelurahan like '" + request.KODE_AREA0 + "%' And a.KODE_URUT like '" + request.KODE_URUT_GROUP0 + "%' order by a.KODE_URUT";
 
-                if (typeRelawan <= '04') {
-                    qryCmd = "select a.*, c.* from grpx_relx a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT left join tb20_area c on a.KodeKelurahan = c.AREA_IDXX where a.BUSS_CODE = '" + request.params.bussCode + "' And b.KODE_URUT like '" + request.KODE_URUT0 + "%' And a.KodeKelurahan like '" + request.KODE_AREA0 + "%' And a.KODE_URUT like '" + request.KODE_URUT_GROUP0 + "%' order by a.KODE_URUT";
-                }
+                        break;
+                    case '05' :   // 05: Bendahara
+                        qryCmd = "select a.* from grpx_relx a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where a.BUSS_CODE = '" + request.params.bussCode + "' And b.KODE_URUT like '" + request.KODE_URUT0 + "%' And a.IDXX_GRPX = '" + request.groupID + "'";
 
-                if (typeRelawan === '05') {  // 05: Bendahara Group
-                    qryCmd = "select a.* from grpx_relx a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where a.BUSS_CODE = '" + request.params.bussCode + "' And b.KODE_URUT like '" + request.KODE_URUT0 + "%' And a.IDXX_GRPX = '" + request.groupID + "'";
+                        break;
+                    case '06' : // 06: Relawan
+                        qryCmd = "select a.* from grpx_relx a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT inner join tb01_lgxh c on b.KODE_UNIT = c.BUSS_CODE inner join vfirst_relawandet d on c.NO_ID = d.RelawanID And d.groupID = a.IDXX_GRPX  WHERE a.BUSS_CODE = '" + request.params.bussCode + "' And b.KODE_URUT like '" + request.KODE_URUT0 + "%' And UPPER(c.USER_IDXX) = '" + request.userID.toUpperCase() + "'";
                 }
             }
         }

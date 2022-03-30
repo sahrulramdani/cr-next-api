@@ -237,13 +237,45 @@ export default class Event {
         });
     }
 
+    // get Events yang dihadiri Donatur
     getEventsDonatur = (request, response) => {
+        // get user Access
+        var authEdit = request.AUTH_EDIT;
+        var authDelt = request.AUTH_DELT;
+        
         var donaturID = request.params.donaturID;
 
         var sql = 'select f.NAMA, b.*, DATE_FORMAT(b.Tgl1, "%Y-%m-%d") As Tgl1Format, DATE_FORMAT(b.Tgl2, "%Y-%m-%d") As Tgl2Format, c.NAMA_UNIT, d.NAMA_GRPX, e.CODD_DESC As ProgDonatur FROM tblEvent_donatur a inner join tblEvent b on a.EventID = b.EventID inner join tb00_unit c on b.BUSS_CODE = c.KODE_UNIT left join grpx_relx d on b.IDXX_GRPX = d.IDXX_GRPX left join tb00_basx e on b.ProgramID = e.CODD_VALU And b.BUSS_CODE = e.CODD_VARC And e.CODD_FLNM = "PROGRAM_DONATUR" left join tb11_mzjb f on a.DonaturID = f.NO_ID where a.DonaturID = "' + donaturID + '" And c.KODE_URUT like "' + request.KODE_URUT0 + '%"';
 
         db.query(sql, function(err, rows, fields) {
             response.send(rows);
+
+            if (rows.length > 0) {
+                rows.forEach(function(row) {
+                    var obj = new Object();
+                    for(var key in row) {
+                        obj[key] = row[key];
+                    }
+                    
+                    obj['AUTH_EDIT'] = authEdit;
+                    obj['AUTH_DELT'] = authDelt;
+
+                    output.push(obj);
+                })
+
+                const filters = request.query;
+                const filteredUsers = output.filter(item => {
+                    let isValid = true;
+                    for (var key in filters) {
+                        isValid = isValid && item[key] == filters[key];
+                    }
+                    return isValid;
+                });
+
+                response.send(filteredUsers);
+            } else {
+                response.send([]);
+            }
         });
     }
 
