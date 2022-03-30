@@ -2653,11 +2653,11 @@ export default class Donatur {
 
             if (typePerson === '1') {  // 1: Relawan,  
                 if (typeRelawan <= '04') { // 04: Korra
-                    qryCmd = "select a.*, c.* from grpx_relx a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT inner join tb20_area c on a.KodeKelurahan = c.AREA_IDXX where b.KODE_URUT like '" + request.KODE_URUT0 + "%' order by a.KODE_URUT";
+                    qryCmd = "select a.*, c.* from grpx_relx a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT inner join tb20_area c on a.KodeKelurahan = c.AREA_IDXX where b.KODE_URUT like '" + request.KODE_URUT0 + "%' And a.KodeKelurahan like '" + request.KODE_AREA0 + "%' order by a.KODE_URUT";
                 }
 
                 if (typeRelawan >= '05') {  // 05: Bendahara Group
-                    qryCmd = "select a.*, c.* from grpx_relx a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT inner join tb20_area c on a.KodeKelurahan = c.AREA_IDXX where b.KODE_UNIT = '" + request.BUSS_CODE0 + "'";
+                    qryCmd = "select a.*, c.* from grpx_relx a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT inner join tb20_area c on a.KodeKelurahan = c.AREA_IDXX where b.KODE_UNIT = '" + request.BUSS_CODE0 + "' And a.IDXX_GRPX = '" + request.groupID + "'";
                 }
             }
         } else {
@@ -2669,7 +2669,7 @@ export default class Donatur {
                 }
 
                 if (typeRelawan <= '04') {
-                    qryCmd = "select a.*, c.* from grpx_relx a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT left join tb20_area c on a.KodeKelurahan = c.AREA_IDXX where a.BUSS_CODE = '" + request.params.bussCode + "' And b.KODE_URUT like '" + request.KODE_URUT0 + "%' And a.KodeKelurahan like '" + request.KODE_AREA0 + "%'";
+                    qryCmd = "select a.*, c.* from grpx_relx a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT left join tb20_area c on a.KodeKelurahan = c.AREA_IDXX where a.BUSS_CODE = '" + request.params.bussCode + "' And b.KODE_URUT like '" + request.KODE_URUT0 + "%' And a.KodeKelurahan like '" + request.KODE_AREA0 + "%' And a.KODE_URUT like '" + request.KODE_URUT_GROUP0 + "%' order by a.KODE_URUT";
                 }
 
                 if (typeRelawan === '05') {  // 05: Bendahara Group
