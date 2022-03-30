@@ -164,19 +164,19 @@ export default class Donatur {
 
         var sql = '';
         if (typePrson === '1') {  // 1: Relawan
-            sql = 'SELECT a.*, c.TYPE_PRSON, e.groupID FROM tb11_mzjb a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT INNER JOIN tb21_empl d on a.RelawanID = d.KodeNik LEFT JOIN tb01_lgxh c ON d.KodeNik = c.NO_ID left join vfirst_relawanDet e on a.RelawanID = e.RelawanID WHERE a.NO_ID = "'+ id +'" And b.KODE_URUT like "' + req.KODE_URUT0 + '%" And UPPER(c.USER_IDXX) = "' + req.userID.toUpperCase() + '"';
+            sql = 'SELECT a.*, c.TYPE_PRSON, e.groupID, sod.TotalEvent FROM tb11_mzjb a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT INNER JOIN tb21_empl d on a.RelawanID = d.KodeNik LEFT JOIN tb01_lgxh c ON d.KodeNik = c.NO_ID left join vfirst_relawanDet e on a.RelawanID = e.RelawanID left join (select DonaturID, count(EventID) As TotalEvent from tblevent_donatur group by DonaturID) sod on a.NO_ID = sod.DonaturID WHERE a.NO_ID = "'+ id +'" And b.KODE_URUT like "' + req.KODE_URUT0 + '%" And UPPER(c.USER_IDXX) = "' + req.userID.toUpperCase() + '"';
 
             if (typeRelawan === '05') {  // 05: Bendahara Group
-                sql = 'SELECT a.*, c.TYPE_PRSON, e.groupID FROM tb11_mzjb a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT INNER JOIN tb21_empl d on a.RelawanID = d.KodeNik LEFT JOIN tb01_lgxh c ON d.KodeNik = c.NO_ID left join vfirst_relawanDet e on a.RelawanID = e.RelawanID WHERE a.NO_ID = "'+ id +'" And b.KODE_URUT like "' + req.KODE_URUT0 + '%" And e.groupID = "' + req.groupID + '"';
+                sql = 'SELECT a.*, c.TYPE_PRSON, e.groupID, sod.TotalEvent FROM tb11_mzjb a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT INNER JOIN tb21_empl d on a.RelawanID = d.KodeNik LEFT JOIN tb01_lgxh c ON d.KodeNik = c.NO_ID left join vfirst_relawanDet e on a.RelawanID = e.RelawanID left join (select DonaturID, count(EventID) As TotalEvent from tblevent_donatur group by DonaturID) sod on a.NO_ID = sod.DonaturID WHERE a.NO_ID = "'+ id +'" And b.KODE_URUT like "' + req.KODE_URUT0 + '%" And e.groupID = "' + req.groupID + '"';
             }
 
             if (typeRelawan <= '04') {   // 04: Korra
-                sql = 'SELECT a.*, c.TYPE_PRSON, e.groupID FROM tb11_mzjb a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT INNER JOIN tb21_empl d on a.RelawanID = d.KodeNik LEFT JOIN tb01_lgxh c ON d.KodeNik = c.NO_ID left join vfirst_relawanDet e on a.RelawanID = e.RelawanID left join grpx_relx f on e.groupID = f.IDXX_GRPX WHERE a.NO_ID = "'+ id +'" And b.KODE_URUT like "' + req.KODE_URUT0 + '%" And f.KodeKelurahan like "' + req.KODE_AREA0 + '%"';
+                sql = 'SELECT a.*, c.TYPE_PRSON, e.groupID, sod.TotalEvent FROM tb11_mzjb a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT INNER JOIN tb21_empl d on a.RelawanID = d.KodeNik LEFT JOIN tb01_lgxh c ON d.KodeNik = c.NO_ID left join vfirst_relawanDet e on a.RelawanID = e.RelawanID left join grpx_relx f on e.groupID = f.IDXX_GRPX left join (select DonaturID, count(EventID) As TotalEvent from tblevent_donatur group by DonaturID) sod on a.NO_ID = sod.DonaturID WHERE a.NO_ID = "'+ id +'" And b.KODE_URUT like "' + req.KODE_URUT0 + '%" And f.KodeKelurahan like "' + req.KODE_AREA0 + '%"';
             }
         } else if (typePrson === '2') {   // 2: Donatur
-            sql = 'SELECT a.*, c.TYPE_PRSON, d.groupID FROM tb11_mzjb a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT inner join tb01_lgxh c on a.NO_ID = c.NO_ID left join vfirst_relawanDet d on a.RelawanID = d.RelawanID WHERE a.NO_ID = "'+ id +'" And b.KODE_URUT like "' + req.KODE_URUT0 + '%" And UPPER(c.USER_IDXX) = "' + req.userID.toUpperCase() + '"';
+            sql = 'SELECT a.*, c.TYPE_PRSON, d.groupID, sod.TotalEvent FROM tb11_mzjb a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT inner join tb01_lgxh c on a.NO_ID = c.NO_ID left join vfirst_relawanDet d on a.RelawanID = d.RelawanID left join (select DonaturID, count(EventID) As TotalEvent from tblevent_donatur group by DonaturID) sod on a.NO_ID = sod.DonaturID WHERE a.NO_ID = "'+ id +'" And b.KODE_URUT like "' + req.KODE_URUT0 + '%" And UPPER(c.USER_IDXX) = "' + req.userID.toUpperCase() + '"';
         } else {
-            sql = 'SELECT a.*, c.groupID FROM tb11_mzjb a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT left join vfirst_relawanDet c on a.RelawanID = c.RelawanID WHERE a.NO_ID = "'+ id +'" And b.KODE_URUT like "' + req.KODE_URUT0 + '%"';
+            sql = 'SELECT a.*, c.groupID, sod.TotalEvent FROM tb11_mzjb a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT left join vfirst_relawanDet c on a.RelawanID = c.RelawanID left join (select DonaturID, count(EventID) As TotalEvent from tblevent_donatur group by DonaturID) sod on a.NO_ID = sod.DonaturID WHERE a.NO_ID = "'+ id +'" And b.KODE_URUT like "' + req.KODE_URUT0 + '%"';
         }
 
         db.query(sql, function(err, rows, fields) {
