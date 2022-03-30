@@ -1371,6 +1371,22 @@ export default class Donatur {
 
                                     db.query(sql, function(err, rows, fields) {
                                     });
+
+                                    // insert to detail slp donatur (tabel tb52_slpc)
+                                    sql = 'INSERT INTO tb52_slpc SET ?';
+
+                                    var data2 = {
+                                        transNumber : transNumber2,
+                                        donaturID : rows[0].DonaturID,
+                                        CRTX_DATE : tglNow,
+                                        CRTX_BYXX : req.userID
+                                    };
+
+                                    db.query(sql, data2, (err, result) => {
+                                        if (err) {
+                                            console.log('Error', err);
+                                        }
+                                    });
                                 }
                             });
                         };
@@ -1867,6 +1883,22 @@ export default class Donatur {
                                                 sql = 'update tblMutasi a inner join (select a.TransNumber, c.id from trans_donatur a left join tb00_basx b on a.BankFrom = b.CODD_VALU And b.CODD_FLNM = "BANK" inner join tblMutasi c on DATE_FORMAT(a.TransDate, "%Y-%m-%e %H%i") = DATE_FORMAT(c.TransDate, "%Y-%m-%e %H%i") And a.Amount = c.Amount And b.CODD_VARC = c.KODE_STDX_BANK where a.TransNumber = "' + req.body.transNumber + '") b on a.id = b.id set a.TransNumber = b.TransNumber, a.UPDT_BYXX = "' + req.userID + '", a.UPDT_DATE = "' + tgl + '"';
 
                                                 db.query(sql, function(err, rows, fields) {
+                                                });
+
+                                                // insert to detail slp donatur (tabel tb52_slpc)
+                                                sql = 'INSERT INTO tb52_slpc SET ?';
+
+                                                var data2 = {
+                                                    transNumber : transNumber2,
+                                                    donaturID : rows[0].DonaturID,
+                                                    CRTX_DATE : tgl,
+                                                    CRTX_BYXX : req.userID
+                                                };
+
+                                                db.query(sql, data2, (err, result) => {
+                                                    if (err) {
+                                                        console.log('Error', err);
+                                                    }
                                                 });
                                             }
                                         });
@@ -3116,6 +3148,7 @@ export default class Donatur {
                     });
                 }
             });
+            
         } else {
             response.send({
                 status: true,
@@ -3206,6 +3239,22 @@ export default class Donatur {
                                         response.send({
                                             status: true
                                         });
+                                    }
+                                });
+
+                                // insert to detail slp donatur (tabel tb52_slpc)
+                                sql = 'INSERT INTO tb52_slpc SET ?';
+
+                                var data2 = {
+                                    transNumber : transNumber,
+                                    donaturID : rows[0].DonaturID,
+                                    CRTX_DATE : tgl,
+                                    CRTX_BYXX : 'SYSTEM'
+                                };
+
+                                db.query(sql, data2, (err, result) => {
+                                    if (err) {
+                                        console.log('Error', err);
                                     }
                                 });
                             } else {
