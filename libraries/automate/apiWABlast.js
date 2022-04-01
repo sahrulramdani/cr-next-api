@@ -1,4 +1,5 @@
 import { config } from './config.js';  // config automate
+import axios from 'axios';
 
 
 export default class ApiWA {
@@ -19,7 +20,7 @@ export default class ApiWA {
                 }
             ]
         };
-
+        
         axios.post(config.apiUrl, dataPost, {
             headers : {  
                 'Authorization' : 'Bearer ' + config.token,
