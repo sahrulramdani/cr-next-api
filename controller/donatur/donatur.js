@@ -3409,11 +3409,15 @@ export default class Donatur {
                     });
                 } else {
                     // retrieve transaction based id to create transaction SLP
-                    sql = 'select a.*, d.CODD_VARC As Simbol, c.NAMA_UNIT, c.Tertanda, c.Website from trans_donatur a inner join tb02_bank b on a.MethodPayment = b.KODE_BANK And a.BUSS_CODE = b.BUSS_CODE inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT left join tb00_basx d on a.CurrencyID = d.CODD_VALU And d.CODD_FLNM = "CURR_MNYX" where a.isValidate = "1" And a.isValidate2 = "0" And b.CHKX_CASH = "1" And c.KODE_URUT like "' + req.KODE_URUT0 + '%" And a.id in ("' + sqlListId;
+                    sql = 'select a.*, d.CODD_VARC As Simbol, c.NAMA_UNIT, c.Tertanda, c.Website, CONCAT(e.CodeCountryHP, e.NoHP) As NoHP2, e.NAMA FROM trans_donatur a inner join tb02_bank b on a.MethodPayment = b.KODE_BANK And a.BUSS_CODE = b.BUSS_CODE inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT left join tb00_basx d on a.CurrencyID = d.CODD_VALU And d.CODD_FLNM = "CURR_MNYX" left join tb11_mzjb e on a.DonaturID = e.NO_ID where a.isValidate = "1" And a.isValidate2 = "0" And b.CHKX_CASH = "1" And c.KODE_URUT like "' + req.KODE_URUT0 + '%" And a.id in ("' + sqlListId;
                     
                     db.query(sql, function(err, rows, fields) {
                         // insert to SLP (tabel tb52_slpa)
                         sql = 'INSERT INTO tb52_slpa (transNumber, tglProses, typeProgram, status, tahunBuku, Message, unit, CRTX_DATE, CRTX_BYXX) VALUES ';
+
+                        // insert to SLP Donatur (tabel tb52_slpc)
+                        var sql2 = 'INSERT INTO tb52_slpc (transNumber, donaturID, status, CRTX_BYXX, CRTX_DATE) VALUES ';
+
                         if (rows.length > 0) {
                             var transNumber;
                             if (req.body.transNumber === null || req.body.transNumber === undefined) {
@@ -3437,8 +3441,12 @@ export default class Donatur {
                                 message = message.split('[Website]').join(item.Website);
                                 message = message.split('"').join("'");
 
+                                var status = '2';  // 2: In Progress to WA Chatbot
+
                                 if (index === 0) {
-                                    sql += '("' + transNumber + '", "' + tgl + '", "' + req.body.typeProgram + '", "0", "' + req.body.  tahunBuku + '", "' + message + '", "' + item.BUSS_CODE + '", "' + tgl + '", "' + req.userID + '")';
+                                    sql += '("' + transNumber + '", "' + tgl + '", "' + req.body.typeProgram + '", "' + status + '", "' + req.body.  tahunBuku + '", "' + message + '", "' + item.BUSS_CODE + '", "' + tgl + '", "' + req.userID + '")';
+
+                                    sql2 += '("' + transNumber + '", "' + item.DonaturID + '", "1", "' + req.userID + '", "' + tglNow + '")';
 
                                     nextSequenceFormat = nextSequence.toString().padStart(6, '0');
                                 } else {
@@ -3448,10 +3456,32 @@ export default class Donatur {
                                     transNumber = generateAutonumber(req.body.Initial, req.SequenceUnitCode0, req.body.Tahun, 
                                         nextSequenceFormat);
 
-                                    sql += ',("' + transNumber + '", "' + tgl + '", "' + req.body.typeProgram + '", "0", "' + req.body.  tahunBuku + '", "' + message + '", "' + item.BUSS_CODE + '", "' + tgl + '", "' + req.userID + '")';
+                                    sql += ',("' + transNumber + '", "' + tgl + '", "' + req.body.typeProgram + '", "' + status + '", "' + req.body.  tahunBuku + '", "' + message + '", "' + item.BUSS_CODE + '", "' + tgl + '", "' + req.userID + '")';
+
+                                    sql2 += ',("' + transNumber + '", "' + item.DonaturID + '", "1", "' + req.userID + '", "' + tglNow + '")';
                                 }
 
                                 bussCode = item.BUSS_CODE;
+
+                                // kirim ke WA Chatbot
+                                const callback = (data) => {
+                               }
+           
+                               var data2 = {
+                                   "mobile_no" : item.NoHP2,
+                                   "kode_donasi": item.TransNumber,
+                                   "tanggal_transaksi": moment(new Date(item.TransDate)).format('YYYY-MM-DD HH:mm:ss'),
+                                   "nama": item.NAMA,
+                                   "nominal": item.Amount,
+                                   "program": item.ProgDonatur,
+                                   "status_donasi": "Sukses"
+                               };
+           
+                               var apiWA =  new ApiWA();
+                               apiWA.sendWABlast(data2, callback);
+                            });
+
+                            db.query(sql2, (err, result) => {
                             });
 
                             db.query(sql, (err, result) => {
@@ -3481,6 +3511,7 @@ export default class Donatur {
                                     });
                                 }
                             });
+
                         } else {
                             res.send({
                                 status: true

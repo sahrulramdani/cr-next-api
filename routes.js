@@ -141,7 +141,7 @@ import * as C from './controller/index.js';
       app.route('/crm/donatur/transaction/update').post(C.auth.verifyToken, C.donatur.updateDonaturTrans);
       app.route('/crm/donatur/transaction/delete/soft').post(C.auth.verifyToken, C.donatur.deleteSoftDonaturTrans);
       app.route('/crm/donatur/transaction/delete').post(C.auth.verifyToken, C.donatur.deleteDetTransaction);
-      app.route('/crm/donatur/transaction/verify').post(C.auth.verifyToken, C.donatur.verifyTrans);
+      app.route('/crm/donatur/transaction/verify').post(C.auth.verifyToken, C.donatur.verifyTrans);   // verify Tunai gelondongan
       app.route('/crm/donatur/transaction/:id').get(C.auth.verifyToken, C.donatur.getTransaction);
       app.route('/crm/donatur/save').post(C.auth.verifyToken, C.donatur.saveDonatur);
       app.route('/crm/donatur/wa/update').post(C.auth.verifyToken, C.donatur.updateDonatur2);      // API
