@@ -4,7 +4,7 @@ import routes from './routes.js';
 import multer from 'multer';
 import db from './koneksi.js';
 import { auth } from './controller/auth/index.js';
-import * as ca  from './config.js';  // config app
+import { config }  from './config.js';  // config app
 import fs from 'fs';
 
 
@@ -45,7 +45,7 @@ app.post("/uploadFile", auth.verifyToken, upload, (req, res, next) => {
 
 // API Upload File at Src React Js App
 const storage2 = multer.diskStorage({
-  destination: ca.config.FolderFile,   
+  destination: config.FolderFile,   
   filename: function(req, file, cb) {
      cb(null, file.originalname);
   }

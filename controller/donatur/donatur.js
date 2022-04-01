@@ -3,6 +3,7 @@ import { fncParseComma, generateAutonumber } from './../../libraries/sisqu/Utili
 import GenerateNumber from './../../libraries/sisqu/GenerateNumber.js';
 import moment from 'moment';
 import { fncCheckProcCode } from './../../libraries/local/localUtility.js';
+import ApiWA from './../../libraries/automate/apiWABlast.js';
 
 
 export default class Donatur {
@@ -847,6 +848,11 @@ export default class Donatur {
             transNumber = req.body.transNumber;
         }
 
+        var terminal = req.body.terminal;
+        if (terminal === undefined) {
+            terminal = '1';     // 1: WA Robot
+        }
+
         var data = {
             transNumber : transNumber,
             tglProses : req.body.tglProses,
@@ -855,6 +861,7 @@ export default class Donatur {
             tahunBuku : req.body.tahunBuku,
             Message : req.body.Message,
             unit : req.BUSS_CODE0,
+            terminal : terminal,
             CRTX_DATE : moment(new Date()).format('YYYY-MM-DD HH:mm:ss'),
             CRTX_BYXX : req.userID
         };
@@ -988,10 +995,40 @@ export default class Donatur {
                     message: err.sqlMessage
                 });
             } else {
+                // kirim ke WA Chatbot
+                if (req.body.terminal === '2') {    // 2: WA Chatbot
+                    const callback = (data) => {
+                         // update tb52_slpa
+                         if (data.code === 200) {   // 200: Sukses
+                            sql = 'update tb52_slpa set status = "1"  /* 1: Terkirim */ where transNumber ="' + req.body.transNumber + '"';
 
-                res.send({
-                    status: true
-                });
+                            db.query(sql, (err, result) => {
+                            });
+                         }
+
+                         res.send({
+                            status: true
+                        });
+                    }
+
+                    var data2 = {
+                        "mobile_no" : req.body.NoHP,
+                        "kode_donasi": req.body.TranactionID,
+                        "tanggal_transaksi": req.body.TransDate,
+                        "nama": req.body.Nama,
+                        "nominal": req.body.Amount,
+                        "program": req.body.Programs,
+                        "status_donasi": "Sukses"
+                    };
+
+                    var apiWA =  new ApiWA();
+                    apiWA.sendWABlast(data2, callback);
+                    
+                } else {
+                    res.send({
+                        status: true
+                    });
+                }
             }
         });
     } 
@@ -1319,7 +1356,7 @@ export default class Donatur {
                 var bussCode = req.body.BUSS_CODE;
 
                 // check validation
-                sql = 'select a.*, b.Message, c.NAMA_UNIT, c.Tertanda, c.Website, c.SequenceUnitCode from (select a.* from trans_donatur a left join tb00_basx b on a.BankFrom = b.CODD_VALU And b.CODD_FLNM = "BANK" inner join tblMutasi c on DATE_FORMAT(a.TransDate, "%Y-%m-%e %H%i") = DATE_FORMAT(c.TransDate, "%Y-%m-%e %H%i") And a.Amount = c.Amount And b.CODD_VARC = c.KODE_STDX_BANK where a.isSend <> "1" And a.TransNumber = "' + transNumber + '") a inner join typeslp b on a.BUSS_CODE = b.BUSS_CODE inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT where b.id = "01" And a.BUSS_CODE = "' + bussCode + '"';
+                sql = 'select a.*, b.Message, c.NAMA_UNIT, c.Tertanda, c.Website, c.SequenceUnitCode, CONCAT(a.CodeCountryHP, a.NoHP) As NoHP2 FROM (select a.*, d.CodeCountryHP, d.NoHP, d.NAMA  from trans_donatur a left join tb00_basx b on a.BankFrom = b.CODD_VALU And b.CODD_FLNM = "BANK" inner join tblMutasi c on TIMESTAMPDIFF(MINUTE, a.TransDate, c.TransDate) <= 5 And a.Amount = c.Amount And b.CODD_VARC = c.KODE_STDX_BANK left join tb11_mzjb d on a.DonaturID = d.NO_ID where a.isSend <> "1" And a.TransNumber = "' + transNumber + '") a inner join typeslp b on a.BUSS_CODE = b.BUSS_CODE inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT where b.id = "01" And a.BUSS_CODE = "' + bussCode + '"';
 
                 db.query(sql, function(err, rows, fields) {
                     var tglNow = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
@@ -1345,9 +1382,11 @@ export default class Donatur {
                             message = message.split('[Website]').join(rows[0].Website);
                             message = message.split('"').join("'");
 
-                            sql += '("' + transNumber2 + '", "' + tglNow + '", "01", "0", "' + rows[0].TahunBuku + '", "' + message + '", "' + bussCode + '", "' + tglNow + '", "' + req.userID + '")';
+                            var status = '2';  // 2: In Progress to WA Chatbot
 
-                            db.query(sql, (err, result) => {
+                            sql += '("' + transNumber2 + '", "' + tglNow + '", "01", "' + status + '", "' + rows[0].TahunBuku + '", "' + message + '", "' + bussCode + '", "' + tglNow + '", "' + req.userID + '")';
+
+                            db.query(sql, (err, result) => { 
                                 if (err) {
                                     console.log('Error', err);
                 
@@ -1357,7 +1396,7 @@ export default class Donatur {
                                     });
                                 } else {
                                     // update validate
-                                    var qryCmd4 = 'update trans_donatur a inner join (select a.TransNumber from trans_donatur a left join tb00_basx b on a.BankFrom = b.CODD_VALU And b.CODD_FLNM = "BANK" inner join tblMutasi c on DATE_FORMAT(a.TransDate, "%Y-%m-%e %H%i") = DATE_FORMAT(c.TransDate, "%Y-%m-%e %H%i") And a.Amount = c.Amount And b.CODD_VARC = c.KODE_STDX_BANK where a.isSend <> "1" And a.TransNumber = "' + transNumber + '") b on a.TransNumber = b.TransNumber set a.isValidate = "1", a.isSend = "1", a.TransactionIDSLP = "' + transNumber2 + '"';
+                                    var qryCmd4 = 'update trans_donatur a inner join (select a.TransNumber from trans_donatur a left join tb00_basx b on a.BankFrom = b.CODD_VALU And b.CODD_FLNM = "BANK" inner join tblMutasi c on TIMESTAMPDIFF(MINUTE, a.TransDate, c.TransDate) <= 5 And a.Amount = c.Amount And b.CODD_VARC = c.KODE_STDX_BANK where a.isSend <> "1" And a.TransNumber = "' + transNumber + '") b on a.TransNumber = b.TransNumber set a.isValidate = "1", a.isSend = "1", a.TransactionIDSLP = "' + transNumber2 + '"';
 
                                     db.query(qryCmd4, function(err, rows, fields) {
                                         res.send({
@@ -1367,7 +1406,7 @@ export default class Donatur {
                                     });
 
                                     // update tabel Mutasi
-                                    sql = 'update tblMutasi a inner join (select a.TransNumber, c.id from trans_donatur a left join tb00_basx b on a.BankFrom = b.CODD_VALU And b.CODD_FLNM = "BANK" inner join tblMutasi c on DATE_FORMAT(a.TransDate, "%Y-%m-%e %H%i") = DATE_FORMAT(c.TransDate, "%Y-%m-%e %H%i") And a.Amount = c.Amount And b.CODD_VARC = c.KODE_STDX_BANK where a.TransNumber = "' + req.body.transNumber + '") b on a.id = b.id set a.TransNumber = b.TransNumber, a.UPDT_BYXX = "' + req.userID + '", a.UPDT_DATE = "' + tglNow + '"';
+                                    sql = 'update tblMutasi a inner join (select a.TransNumber, c.id from trans_donatur a left join tb00_basx b on a.BankFrom = b.CODD_VALU And b.CODD_FLNM = "BANK" inner join tblMutasi c on TIMESTAMPDIFF(MINUTE, a.TransDate, c.TransDate) <= 5 And a.Amount = c.Amount And b.CODD_VARC = c.KODE_STDX_BANK where a.TransNumber = "' + req.body.transNumber + '") b on a.id = b.id set a.TransNumber = b.TransNumber, a.UPDT_BYXX = "' + req.userID + '", a.UPDT_DATE = "' + tglNow + '"';
 
                                     db.query(sql, function(err, rows, fields) {
                                     });
@@ -1385,8 +1424,33 @@ export default class Donatur {
                                     db.query(sql, data2, (err, result) => {
                                         if (err) {
                                             console.log('Error', err);
-                                        }
+                                        } 
                                     });
+
+                                    // kirim ke WA Chatbot
+                                    const callback = (data) => {
+                                        // update tb52_slpa
+                                        if (data.code === 200) {   // 200: Sukses
+                                           sql = 'update tb52_slpa set status = "1"  /* 1: Terkirim */ where transNumber ="' + transNumber2 + '"';
+               
+                                           db.query(sql, (err, result) => {
+                                           });
+                                        }
+                                   }
+               
+                                   var data2 = {
+                                       "mobile_no" : rows[0].NoHP2,
+                                       "kode_donasi": rows[0].TransNumber,
+                                       "tanggal_transaksi": moment(new Date(rows[0].TransDate)).format('YYYY-MM-DD HH:mm:ss'),
+                                       "nama": rows[0].NAMA,
+                                       "nominal": rows[0].Amount,
+                                       "program": rows[0].ProgDonatur,
+                                       "status_donasi": "Sukses"
+                                   };
+               
+                                   var apiWA =  new ApiWA();
+                                   apiWA.sendWABlast(data2, callback);
+
                                 }
                             });
                         };
@@ -1765,6 +1829,7 @@ export default class Donatur {
                 'a.BUSS_CODE' : req.body.BUSS_CODE,
                 CurrencyID : req.body.CurrencyID,
                 Amount : req.body.Amount,
+                ProgDonatur : req.body.ProgDonatur,
                 'a.FileName' : req.body.FileName,
                 MethodPayment : req.body.MethodPayment,
                 BankFrom : req.body.BankFrom,
@@ -1787,6 +1852,7 @@ export default class Donatur {
                 'a.BUSS_CODE' : req.body.BUSS_CODE,
                 CurrencyID : req.body.CurrencyID,
                 Amount : req.body.Amount,
+                ProgDonatur : req.body.ProgDonatur,
                 'a.FileName' : req.body.FileName,
                 MethodPayment : req.body.MethodPayment,
                 TransactionIDSLP : req.body.TransactionIDSLP,
@@ -1835,7 +1901,7 @@ export default class Donatur {
                             var bussCode = req.body.BUSS_CODE;
 
                             // check validation
-                            sql = 'select a.*, b.Message, c.NAMA_UNIT, c.Tertanda, c.Website, c.SequenceUnitCode from (select a.* from trans_donatur a left join tb00_basx b on a.BankFrom = b.CODD_VALU And b.CODD_FLNM = "BANK" inner join tblMutasi c on DATE_FORMAT(a.TransDate, "%Y-%m-%e %H%i") = DATE_FORMAT(c.TransDate, "%Y-%m-%e %H%i") And a.Amount = c.Amount And b.CODD_VARC = c.KODE_STDX_BANK where a.isSend <> "1" And a.TransNumber = "' + req.body.transNumber + '") a inner join typeslp b on a.BUSS_CODE = b.BUSS_CODE inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT where b.id = "01" And a.BUSS_CODE = "' + bussCode + '"';
+                            sql = 'select a.*, b.Message, c.NAMA_UNIT, c.Tertanda, c.Website, c.SequenceUnitCode, CONCAT(a.CodeCountryHP, a.NoHP) As NoHP2 FROM (select a.*, d.CodeCountryHP, d.NoHP, d.NAMA from trans_donatur a left join tb00_basx b on a.BankFrom = b.CODD_VALU And b.CODD_FLNM = "BANK" inner join tblMutasi c on TIMESTAMPDIFF(MINUTE, a.TransDate, c.TransDate) <= 5 And a.Amount = c.Amount And b.CODD_VARC = c.KODE_STDX_BANK left join tb11_mzjb d on a.DonaturID = c.NO_ID where a.isSend <> "1" And a.TransNumber = "' + req.body.transNumber + '") a inner join typeslp b on a.BUSS_CODE = b.BUSS_CODE inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT where b.id = "01" And a.BUSS_CODE = "' + bussCode + '"';
 
                             db.query(sql, function(err, rows, fields) {
                                 if (rows.length > 0) {   // if validate
@@ -1859,7 +1925,9 @@ export default class Donatur {
                                         message = message.split('[Website]').join(rows[0].Website);
                                         message = message.split('"').join("'");
                 
-                                        sql += '("' + transNumber2 + '", "' + tgl + '", "01", "0", "' + rows[0].TahunBuku + '", "' + message + '", "' + bussCode + '", "' + tgl + '", "' + req.userID + '")';
+                                        var status = '2';  // 2: In Progress to WA Chatbot
+
+                                        sql += '("' + transNumber2 + '", "' + tgl + '", "01", "' + status + '", "' + rows[0].TahunBuku + '", "' + message + '", "' + bussCode + '", "' + tgl + '", "' + req.userID + '")';
                 
                                         db.query(sql, (err, result) => {
                                             if (err) {
@@ -1870,8 +1938,32 @@ export default class Donatur {
                                                     message: err.sqlMessage
                                                 });
                                             } else {
+                                                // kirim ke WA Chatbot
+                                                const callback = (data) => {
+                                                    // update tb52_slpa
+                                                    if (data.code === 200) {   // 200: Sukses
+                                                       sql = 'update tb52_slpa set status = "1"  /* 1: Terkirim */ where transNumber ="' + transNumber2 + '"';
+                           
+                                                       db.query(sql, (err, result) => {
+                                                       });
+                                                    }
+                                               }
+                           
+                                               var data2 = {
+                                                   "mobile_no" : req.body.NoHP,
+                                                   "kode_donasi": req.body.TranactionID,
+                                                   "tanggal_transaksi": req.body.TransDate,
+                                                   "nama": req.body.Nama,
+                                                   "nominal": req.body.Amount,
+                                                   "program": req.body.Programs,
+                                                   "status_donasi": "Sukses"
+                                               };
+                           
+                                               var apiWA =  new ApiWA();
+                                               apiWA.sendWABlast(data2, callback);
+
                                                 // update validate
-                                                var qryCmd4 = 'update trans_donatur a inner join (select a.TransNumber from trans_donatur a left join tb00_basx b on a.BankFrom = b.CODD_VALU And b.CODD_FLNM = "BANK" inner join tblMutasi c on DATE_FORMAT(a.TransDate, "%Y-%m-%e %H%i") = DATE_FORMAT(c.TransDate, "%Y-%m-%e %H%i") And a.Amount = c.Amount And b.CODD_VARC = c.KODE_STDX_BANK where a.isSend <> "1" And a.TransNumber = "' + req.body.transNumber + '") b on a.TransNumber = b.TransNumber set a.isValidate = "1", a.isSend = "1", a.TransactionIDSLP = "' + transNumber2 + '"';
+                                                var qryCmd4 = 'update trans_donatur a inner join (select a.TransNumber from trans_donatur a left join tb00_basx b on a.BankFrom = b.CODD_VALU And b.CODD_FLNM = "BANK" inner join tblMutasi c on TIMESTAMPDIFF(MINUTE, a.TransDate, c.TransDate) <= 5 And a.Amount = c.Amount And b.CODD_VARC = c.KODE_STDX_BANK where a.isSend <> "1" And a.TransNumber = "' + req.body.transNumber + '") b on a.TransNumber = b.TransNumber set a.isValidate = "1", a.isSend = "1", a.TransactionIDSLP = "' + transNumber2 + '"';
                 
                                                 db.query(qryCmd4, function(err, rows, fields) {
                                                     res.send({
@@ -1939,6 +2031,7 @@ export default class Donatur {
             'a.BUSS_CODE' : req.body.BUSS_CODE,
             CurrencyID : req.body.CurrencyID,
             Amount : req.body.Amount,
+            ProgDonatur : req.body.ProgDonatur,
             'a.FileName' : req.body.FileName,
             MethodPayment : req.body.MethodPayment,
             TransactionIDSLP : req.body.isValidate === '0' ? '' : transNumber2,
@@ -2055,7 +2148,7 @@ export default class Donatur {
 
         var id = req.params.id;
 
-        var sql = 'SELECT a.*, CONCAT(a.DonaturID, " - ", b.NAMA) As Donatur2, b.NAMA, b.ALMT_XXX1 As Alamat, e.CODD_DESC As Pekerjaan, DATE_FORMAT(a.TransDate, "%e-%b-%Y") As TglFormat, IFNULL(f.CHKX_CASH, "") As CHKX_CASH, c.Tertanda, c.Website, c.NAMA_UNIT, c.Alamat As AlamatUnit, c.Email, c.SK_Menkumham, c.Hotline, c.FileName As FileNameUnit, h.groupID As KODE_KLSX, i.StatusKry, j.CODD_DESC As MataUang FROM trans_donatur a LEFT JOIN tb11_mzjb b ON a.DonaturID = b.NO_ID left join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT left join tb00_basx e on b.Pekerjaan = e.CODD_VALU And e.CODD_FLNM = "PEKERJAAN" left join tb02_bank f on a.MethodPayment = f.KODE_BANK And f.KODE_FLNM = "TYPE_BYRX" And f.BUSS_CODE = a.BUSS_CODE left join vfirst_relawandet h on a.KodeNik = h.RelawanID left join tb21_empl i on a.KodeNik = i.KodeNik left join tb00_basx j on a.CurrencyID = j.CODD_VALU And j.CODD_FLNM = "CURR_MNYX" WHERE a.id = "'+ id +'" And c.KODE_URUT like "' + req.KODE_URUT0 + '%"';
+        var sql = 'SELECT a.*, CONCAT(a.DonaturID, " - ", b.NAMA) As Donatur2, b.NAMA, b.ALMT_XXX1 As Alamat, e.CODD_DESC As Pekerjaan, DATE_FORMAT(a.TransDate, "%e-%b-%Y") As TglFormat, IFNULL(f.CHKX_CASH, "") As CHKX_CASH, c.Tertanda, c.Website, c.NAMA_UNIT, c.Alamat As AlamatUnit, c.Email, c.SK_Menkumham, c.Hotline, c.FileName As FileNameUnit, h.groupID As KODE_KLSX, i.StatusKry, j.CODD_DESC As MataUang, CONCAT(IFNULL(b.CodeCountryHP, ""), IFNULL(b.NoHP, "")) As NoHP2 FROM trans_donatur a LEFT JOIN tb11_mzjb b ON a.DonaturID = b.NO_ID left join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT left join tb00_basx e on b.Pekerjaan = e.CODD_VALU And e.CODD_FLNM = "PEKERJAAN" left join tb02_bank f on a.MethodPayment = f.KODE_BANK And f.KODE_FLNM = "TYPE_BYRX" And f.BUSS_CODE = a.BUSS_CODE left join vfirst_relawandet h on a.KodeNik = h.RelawanID left join tb21_empl i on a.KodeNik = i.KodeNik left join tb00_basx j on a.CurrencyID = j.CODD_VALU And j.CODD_FLNM = "CURR_MNYX" WHERE a.id = "'+ id +'" And c.KODE_URUT like "' + req.KODE_URUT0 + '%"';
 
         db.query(sql, function(err, rows, fields) {
             var output = [];
@@ -2653,7 +2746,7 @@ export default class Donatur {
 
             if (typePerson === '1') {  // 1: Relawan,  
                 if (typeRelawan <= '04') { // 04: Korra
-                    qryCmd = "select a.*, c.* from grpx_relx a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT inner join tb20_area c on a.KodeKelurahan = c.AREA_IDXX where b.KODE_URUT like '" + request.KODE_URUT0 + "%' And a.KodeKelurahan like '" + request.KODE_AREA0 + "%' order by a.KODE_URUT";
+                    qryCmd = "select a.*, c.* from grpx_relx a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT inner join tb20_area c on a.KodeKelurahan = c.AREA_IDXX where b.KODE_URUT like '" + request.KODE_URUT0 + "%' And a.KodeKelurahan like '" + request.KODE_AREA0 + "%' And (a.KODE_URUT like '" + request.KODE_URUT_GROUP0 + "%' Or a.KODE_URUT Is Null) order by a.KODE_URUT";
                 }
 
                 if (typeRelawan >= '05') {  // 05: Bendahara Group
@@ -2666,7 +2759,7 @@ export default class Donatur {
             if (typePerson === '1') { // 1: Relawan
                 switch(typeRelawan) {
                     case '01' : case '02' : case '03' : case '04' :    // 04: Korra
-                        qryCmd = "select a.*, c.* from grpx_relx a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT left join tb20_area c on a.KodeKelurahan = c.AREA_IDXX where a.BUSS_CODE = '" + request.params.bussCode + "' And b.KODE_URUT like '" + request.KODE_URUT0 + "%' And a.KodeKelurahan like '" + request.KODE_AREA0 + "%' And a.KODE_URUT like '" + request.KODE_URUT_GROUP0 + "%' order by a.KODE_URUT";
+                        qryCmd = "select a.*, c.* from grpx_relx a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT left join tb20_area c on a.KodeKelurahan = c.AREA_IDXX where a.BUSS_CODE = '" + request.params.bussCode + "' And b.KODE_URUT like '" + request.KODE_URUT0 + "%' And a.KodeKelurahan like '" + request.KODE_AREA0 + "%' And (a.KODE_URUT like '" + request.KODE_URUT_GROUP0 + "%' Or a.KODE_URUT Is Null) order by a.KODE_URUT";
 
                         break;
                     case '05' :   // 05: Bendahara
@@ -3112,6 +3205,7 @@ export default class Donatur {
             informasi : JSON.stringify(request.body.informasi),
             rincian : JSON.stringify(request.body.rincian), 
             statusValidasi : request.body.statusValidasi,
+            json : JSON.stringify(request.body),
             CRTX_BYXX : 'SYSTEM',
             CRTX_DATE : new Date()
         };

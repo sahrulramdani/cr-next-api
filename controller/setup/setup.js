@@ -179,7 +179,7 @@ export default class Setup {
             "WHEN 'PLATINUM' Then 'P' "  +
             "ELSE b.CODD_VARC " +
         "End As Level " +
-        "from typeslp a left join tb00_basx b on a.TypeDonaturMin = b.CODD_DESC And b.CODD_FLNM = 'TYPE_DONATUR' order by a.id";
+        "from typeslp a left join tb00_basx b on a.TypeDonaturMin = b.CODD_DESC And b.CODD_FLNM = 'TYPE_DONATUR' left join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT where c.KODE_URUT like '" + request.KODE_URUT0 + "%' order by a.id";
         
         db.query(qryCmd, function(err, rows, fields) {
             var output = [];
@@ -200,7 +200,16 @@ export default class Setup {
                 })
             }
 
-            response.send(output);
+            const filters = request.query;
+            const filteredUsers = output.filter(item => {
+                let isValid = true;
+                for (var key in filters) {
+                  isValid = isValid && item[key] == filters[key];
+                }
+                return isValid;
+              });
+
+            response.send(filteredUsers);
         });
     }
 
