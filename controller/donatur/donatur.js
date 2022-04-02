@@ -4,6 +4,7 @@ import GenerateNumber from './../../libraries/sisqu/GenerateNumber.js';
 import moment from 'moment';
 import { fncCheckProcCode } from './../../libraries/local/localUtility.js';
 import ApiWA from './../../libraries/automate/apiWABlast.js';
+import { config } from './../../config.js';
 
 
 export default class Donatur {
@@ -1017,7 +1018,7 @@ export default class Donatur {
                         "kode_donasi": req.body.TranactionID,
                         "tanggal_transaksi": req.body.TransDate,
                         "nama": req.body.Nama,
-                        "nominal": req.body.Amount,
+                        "nominal": req.body.Amount + ' (' + config.urlApi + '/crm/donatur/transaction/' + req.body.id + ')',
                         "program": req.body.Programs,
                         "status_donasi": "Sukses"
                     };
@@ -1445,7 +1446,7 @@ export default class Donatur {
                                        "kode_donasi": rows[0].TransNumber,
                                        "tanggal_transaksi": moment(new Date(rows[0].TransDate)).format('YYYY-MM-DD HH:mm:ss'),
                                        "nama": rows[0].NAMA,
-                                       "nominal": rows[0].Amount,
+                                       "nominal": rows[0].Amount + ' (' + config.urlApi + '/crm/donatur/transaction/' + rows[0].id + ')',
                                        "program": rows[0].ProgDonatur,
                                        "status_donasi": "Sukses"
                                    };
@@ -1956,7 +1957,7 @@ export default class Donatur {
                                                    "kode_donasi": rows[0].TransNumber,
                                                    "tanggal_transaksi": moment(new Date(rows[0].TransDate)).format('YYYY-MM-DD HH:mm:ss'),
                                                    "nama": rows[0].NAMA,
-                                                   "nominal": rows[0].Amount,
+                                                   "nominal": rows[0].Amount + ' (' + config.urlApi + '/crm/donatur/transaction/' + rows[0].id + ')',
                                                    "program": rows[0].ProgDonatur,
                                                    "status_donasi": "Sukses"
                                                };
@@ -3227,7 +3228,7 @@ export default class Donatur {
             var noVA = request.body.kodeBiller + request.body.nomorPembayaran;
             var idTransaksi = request.body.idTransaksi;
 
-            sql = 'insert into tblMutasi (TransDate, Keterangan, DK, Amount, Bank, BUSS_CODE, KODE_TRNX, IDXX_GRPX, CRTX_BYXX, CRTX_DATE) select "' + request.body.tanggalTransaksi + '", "BSI Virtual Account No. VA = ' + noVA + '", "K", ' + request.body.totalNominal + ', b.KODE_BANK, b.BUSS_CODE, "' + idTransaksi + '", a.IDXX_GRPX, "SYSTEM", "' + tglNow + '" from grpx_relx a inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT inner join (select a.*, b.KODE_URUT from tb02_bank a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT) b on b.KODE_URUT like CONCAT(c.KODE_URUT, "%") And b.KODE_FLNM = "KASX_BANK" And b.NAMA_BANK = "BSI Virtual Account" And b.kodeBiller = "' + request.body.kodeBiller + '" left join tblMutasi d on b.BUSS_CODE = d.BUSS_CODE And d.KODE_TRNX = "' + idTransaksi + '" where a.NOXX_VAXX = "' + noVA + '" And d.id Is Null';
+            sql = 'insert into tblMutasi (TransDate, Keterangan, DK, Amount, Bank, BUSS_CODE, KODE_TRNX, IDXX_GRPX, CRTX_BYXX, CRTX_DATE, terminal) select "' + request.body.tanggalTransaksi + '", "BSI Virtual Account No. VA = ' + noVA + '", "K", ' + request.body.totalNominal + ', b.KODE_BANK, b.BUSS_CODE, "' + idTransaksi + '", a.IDXX_GRPX, "SYSTEM", "' + tglNow + '", "2" /* 2: BSI VA */ from grpx_relx a inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT inner join (select a.*, b.KODE_URUT from tb02_bank a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT) b on b.KODE_URUT like CONCAT(c.KODE_URUT, "%") And b.KODE_FLNM = "KASX_BANK" And b.NAMA_BANK = "BSI Virtual Account" And b.kodeBiller = "' + request.body.kodeBiller + '" left join tblMutasi d on b.BUSS_CODE = d.BUSS_CODE And d.KODE_TRNX = "' + idTransaksi + '" where a.NOXX_VAXX = "' + noVA + '" And d.id Is Null';
 
             db.query(sql, (err, result) => {
                 if (err) {
@@ -3472,7 +3473,7 @@ export default class Donatur {
                                    "kode_donasi": item.TransNumber,
                                    "tanggal_transaksi": moment(new Date(item.TransDate)).format('YYYY-MM-DD HH:mm:ss'),
                                    "nama": item.NAMA,
-                                   "nominal": item.Amount,
+                                   "nominal": item.Amount + ' (' + config.urlApi + '/crm/donatur/transaction/' + item.id + ')',
                                    "program": item.ProgDonatur,
                                    "status_donasi": "Sukses"
                                };
