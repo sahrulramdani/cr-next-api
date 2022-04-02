@@ -545,7 +545,7 @@ export default class User {
 
         var tgl = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
 
-        var sql = 'INSERT INTO `role_menu` (ROLE_IDXX, PROC_CODE, PATH, BUSS_CODE, MDUL_CODE, TYPE_MDUL, RIGH_AUTH, AUTH_ADDX, AUTH_EDIT, AUTH_DELT, AUTH_APPR, AUTH_PRNT, CRTX_BYXX, CRTX_DATE) SELECT "' + req.body.ROLE_IDXX + '" As ROLE_IDXX, PROC_CODE, PATH, BUSS_CODE, MDUL_CODE, TYPE_MDUL, "1" As RIGH_AUTH, "1" As AUTH_ADDX, "1" As AUTH_EDIT, "1" As AUTH_DELT, "1" As AUTH_APPR, "1" As AUTH_PRNT, "' + req.userID + '", "' + tgl + '" from `tb01_proc` where BUSS_CODE = "' + req.body.BUSS_CODE + '" And PROC_CODE <> "AL01"';
+        var sql = 'INSERT INTO `role_menu` (ROLE_IDXX, PROC_CODE, PATH, BUSS_CODE, MDUL_CODE, TYPE_MDUL, RIGH_AUTH, AUTH_ADDX, AUTH_EDIT, AUTH_DELT, AUTH_APPR, AUTH_PRNT, CRTX_BYXX, CRTX_DATE) SELECT "' + req.body.ROLE_IDXX + '" As ROLE_IDXX, PROC_CODE, PATH, BUSS_CODE, MDUL_CODE, TYPE_MDUL, "1" As RIGH_AUTH, "1" As AUTH_ADDX, "1" As AUTH_EDIT, "1" As AUTH_DELT, "1" As AUTH_APPR, "1" As AUTH_PRNT, "' + req.userID + '", "' + tgl + '" from `tb01_proc` where BUSS_CODE = "' + req.body.UnitID + '" And PROC_CODE <> "AL01"';
 
         var sqlDelete = 'delete from role_menu where ROLE_IDXX = ' + req.body.ROLE_IDXX;
         
