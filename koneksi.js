@@ -18,11 +18,18 @@ import mysql from 'mysql';
 }); */
 
 // server cloud SPS
-const db = mysql.createConnection({
+/* const db = mysql.createConnection({
     host : '202.78.195.170',
     user : 'simz_user',
     password : 'simz@sps100%',
     database : 'db_simzdev'
+}); */
+
+const db = mysql.createConnection({
+    host : '202.78.195.170',
+    user : 'simz_user',
+    password : 'simz@sps100%',
+    database : 'db_simz'
 });
 
 export default db;
