@@ -1357,7 +1357,7 @@ export default class Donatur {
                 var bussCode = req.body.BUSS_CODE;
 
                 // check validation
-                sql = 'select a.*, b.Message, c.NAMA_UNIT, c.Tertanda, c.Website, c.SequenceUnitCode, CONCAT(a.CodeCountryHP, a.NoHP) As NoHP2 FROM (select a.*, d.CodeCountryHP, d.NoHP, d.NAMA  from trans_donatur a left join tb00_basx b on a.BankFrom = b.CODD_VALU And b.CODD_FLNM = "BANK" inner join tblMutasi c on TIMESTAMPDIFF(MINUTE, a.TransDate, c.TransDate) <= 5 And a.Amount = c.Amount And b.CODD_VARC = c.KODE_STDX_BANK left join tb11_mzjb d on a.DonaturID = d.NO_ID where a.isSend <> "1" And a.TransNumber = "' + transNumber + '") a inner join typeslp b on a.BUSS_CODE = b.BUSS_CODE inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT where b.id = "01" And a.BUSS_CODE = "' + bussCode + '"';
+                sql = 'select a.*, b.Message, c.NAMA_UNIT, c.Tertanda, c.Website, c.SequenceUnitCode, CONCAT(a.CodeCountryHP, a.NoHP) As NoHP2 FROM (select a.*, d.CodeCountryHP, d.NoHP, d.NAMA  from trans_donatur a left join tb00_basx b on a.BankFrom = b.CODD_VALU And b.CODD_FLNM = "BANK" inner join tblMutasi c on TIMESTAMPDIFF(MINUTE, a.TransDate, c.TransDate) <= 5 And a.Amount = c.Amount And b.CODD_VARC = c.KODE_STDX_BANK left join tb11_mzjb d on a.DonaturID = d.NO_ID where a.isSend <> "1" And a.TransNumber = "' + transNumber + '" limit 0, 1) a inner join typeslp b on a.BUSS_CODE = b.BUSS_CODE inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT where b.id = "01" And a.BUSS_CODE = "' + bussCode + '"';
 
                 db.query(sql, function(err, rows, fields) {
                     var tglNow = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
@@ -1397,7 +1397,7 @@ export default class Donatur {
                                     });
                                 } else {
                                     // update validate
-                                    var qryCmd4 = 'update trans_donatur a inner join (select a.TransNumber from trans_donatur a left join tb00_basx b on a.BankFrom = b.CODD_VALU And b.CODD_FLNM = "BANK" inner join tblMutasi c on TIMESTAMPDIFF(MINUTE, a.TransDate, c.TransDate) <= 5 And a.Amount = c.Amount And b.CODD_VARC = c.KODE_STDX_BANK where a.isSend <> "1" And a.TransNumber = "' + transNumber + '") b on a.TransNumber = b.TransNumber set a.isValidate = "1", a.isSend = "1", a.TransactionIDSLP = "' + transNumber2 + '"';
+                                    var qryCmd4 = 'update trans_donatur a inner join (select a.TransNumber from trans_donatur a left join tb00_basx b on a.BankFrom = b.CODD_VALU And b.CODD_FLNM = "BANK" inner join tblMutasi c on TIMESTAMPDIFF(MINUTE, a.TransDate, c.TransDate) <= 5 And a.Amount = c.Amount And b.CODD_VARC = c.KODE_STDX_BANK where a.isSend <> "1" And a.TransNumber = "' + transNumber + '" limit 0, 1) b on a.TransNumber = b.TransNumber set a.isValidate = "1", a.isSend = "1", a.TransactionIDSLP = "' + transNumber2 + '"';
 
                                     db.query(qryCmd4, function(err, rows, fields) {
                                         res.send({
@@ -1407,7 +1407,7 @@ export default class Donatur {
                                     });
 
                                     // update tabel Mutasi
-                                    sql = 'update tblMutasi a inner join (select a.TransNumber, c.id from trans_donatur a left join tb00_basx b on a.BankFrom = b.CODD_VALU And b.CODD_FLNM = "BANK" inner join tblMutasi c on TIMESTAMPDIFF(MINUTE, a.TransDate, c.TransDate) <= 5 And a.Amount = c.Amount And b.CODD_VARC = c.KODE_STDX_BANK where a.TransNumber = "' + req.body.TransNumber + '") b on a.id = b.id set a.TransNumber = b.TransNumber, a.UPDT_BYXX = "' + req.userID + '", a.UPDT_DATE = "' + tglNow + '"';
+                                    sql = 'update tblMutasi a inner join (select a.TransNumber, c.id from trans_donatur a left join tb00_basx b on a.BankFrom = b.CODD_VALU And b.CODD_FLNM = "BANK" inner join tblMutasi c on TIMESTAMPDIFF(MINUTE, a.TransDate, c.TransDate) <= 5 And a.Amount = c.Amount And b.CODD_VARC = c.KODE_STDX_BANK where a.TransNumber = "' + req.body.TransNumber + '" limit 0, 1) b on a.id = b.id set a.TransNumber = b.TransNumber, a.UPDT_BYXX = "' + req.userID + '", a.UPDT_DATE = "' + tglNow + '"';
 
                                     db.query(sql, function(err, rows, fields) {
                                     });
@@ -1903,7 +1903,7 @@ export default class Donatur {
                             var bussCode = req.body.BUSS_CODE;
 
                             // check validation
-                            sql = 'select a.*, b.Message, c.NAMA_UNIT, c.Tertanda, c.Website, c.SequenceUnitCode, CONCAT(a.CodeCountryHP, a.NoHP) As NoHP2 FROM (select a.*, d.CodeCountryHP, d.NoHP, d.NAMA from trans_donatur a left join tb00_basx b on a.BankFrom = b.CODD_VALU And b.CODD_FLNM = "BANK" inner join tblMutasi c on TIMESTAMPDIFF(MINUTE, a.TransDate, c.TransDate) <= 5 And a.Amount = c.Amount And b.CODD_VARC = c.KODE_STDX_BANK left join tb11_mzjb d on a.DonaturID = d.NO_ID where a.isSend <> "1" And a.TransNumber = "' + req.body.transNumber + '") a inner join typeslp b on a.BUSS_CODE = b.BUSS_CODE inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT where b.id = "01" And a.BUSS_CODE = "' + bussCode + '"';
+                            sql = 'select a.*, b.Message, c.NAMA_UNIT, c.Tertanda, c.Website, c.SequenceUnitCode, CONCAT(a.CodeCountryHP, a.NoHP) As NoHP2 FROM (select a.*, d.CodeCountryHP, d.NoHP, d.NAMA from trans_donatur a left join tb00_basx b on a.BankFrom = b.CODD_VALU And b.CODD_FLNM = "BANK" inner join tblMutasi c on TIMESTAMPDIFF(MINUTE, a.TransDate, c.TransDate) <= 5 And a.Amount = c.Amount And b.CODD_VARC = c.KODE_STDX_BANK left join tb11_mzjb d on a.DonaturID = d.NO_ID where a.isSend <> "1" And a.TransNumber = "' + req.body.transNumber + '" limit 0, 1) a inner join typeslp b on a.BUSS_CODE = b.BUSS_CODE inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT where b.id = "01" And a.BUSS_CODE = "' + bussCode + '"';
 
                             db.query(sql, function(err, rows, fields) {
                                 if (rows.length > 0) {   // if validate
@@ -1965,7 +1965,7 @@ export default class Donatur {
                                                apiWA.sendWABlast(data2, callback);
 
                                                 // update validate
-                                                var qryCmd4 = 'update trans_donatur a inner join (select a.TransNumber from trans_donatur a left join tb00_basx b on a.BankFrom = b.CODD_VALU And b.CODD_FLNM = "BANK" inner join tblMutasi c on TIMESTAMPDIFF(MINUTE, a.TransDate, c.TransDate) <= 5 And a.Amount = c.Amount And b.CODD_VARC = c.KODE_STDX_BANK where a.isSend <> "1" And a.TransNumber = "' + req.body.transNumber + '") b on a.TransNumber = b.TransNumber set a.isValidate = "1", a.isSend = "1", a.TransactionIDSLP = "' + transNumber2 + '"';
+                                                var qryCmd4 = 'update trans_donatur a inner join (select a.TransNumber from trans_donatur a left join tb00_basx b on a.BankFrom = b.CODD_VALU And b.CODD_FLNM = "BANK" inner join tblMutasi c on TIMESTAMPDIFF(MINUTE, a.TransDate, c.TransDate) <= 5 And a.Amount = c.Amount And b.CODD_VARC = c.KODE_STDX_BANK where a.isSend <> "1" And a.TransNumber = "' + req.body.transNumber + '" limit 0, 1) b on a.TransNumber = b.TransNumber set a.isValidate = "1", a.isSend = "1", a.TransactionIDSLP = "' + transNumber2 + '"';
                 
                                                 db.query(qryCmd4, function(err, rows, fields) {
                                                     res.send({
@@ -1974,7 +1974,7 @@ export default class Donatur {
                                                 });
 
                                                 // update tabel Mutasi
-                                                sql = 'update tblMutasi a inner join (select a.TransNumber, c.id from trans_donatur a left join tb00_basx b on a.BankFrom = b.CODD_VALU And b.CODD_FLNM = "BANK" inner join tblMutasi c on TIMESTAMPDIFF(a.TransDate, c.TransDate) <= 5 And a.Amount = c.Amount And b.CODD_VARC = c.KODE_STDX_BANK where a.TransNumber = "' + req.body.transNumber + '") b on a.id = b.id set a.TransNumber = b.TransNumber, a.UPDT_BYXX = "' + req.userID + '", a.UPDT_DATE = "' + tgl + '"';
+                                                sql = 'update tblMutasi a inner join (select a.TransNumber, c.id from trans_donatur a left join tb00_basx b on a.BankFrom = b.CODD_VALU And b.CODD_FLNM = "BANK" inner join tblMutasi c on TIMESTAMPDIFF(a.TransDate, c.TransDate) <= 5 And a.Amount = c.Amount And b.CODD_VARC = c.KODE_STDX_BANK where a.TransNumber = "' + req.body.transNumber + '" limit 0, 1) b on a.id = b.id set a.TransNumber = b.TransNumber, a.UPDT_BYXX = "' + req.userID + '", a.UPDT_DATE = "' + tgl + '"';
 
                                                 db.query(sql, function(err, rows, fields) {
                                                 });
