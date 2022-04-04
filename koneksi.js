@@ -32,4 +32,11 @@ const db = mysql.createConnection({
     database : 'db_simz'
 });
 
+/* const db = mysql.createConnection({
+    host : '202.78.195.170',
+    user : 'simz_user',
+    password : 'simz@sps100%',
+    database : 'db_simz'
+}); */
+
 export default db;
