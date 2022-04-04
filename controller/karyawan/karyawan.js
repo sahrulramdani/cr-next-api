@@ -61,6 +61,7 @@ export default class Karyawan {
             Pendidikan : req.body.Pendidikan,
             Pekerjaan : req.body.Pekerjaan,
             StatusKry : req.body.StatusKry,
+            NOXX_VAXX : req.body.NOXX_VAXX,
             CRTX_DATE : new Date(),
             CRTX_BYXX : req.userID
         };
@@ -87,9 +88,13 @@ export default class Karyawan {
                             sql = 'delete from tblRelawanDet where RelawanID = "' + kodeNik + '" And prime = "1"';
                             db.query(sql, (err2, result2) => {
                                 // insert to tabel relawan detail
-                                var tglNow = moment(new Date()).format('YYYY-MM-DD');
+                                var tglNow = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
 
-                                sql = 'insert into tblRelawanDet (RelawanID, IDXX_GRPX, CRTX_BYXX, CRTX_DATE, prime) values ("' + kodeNik + '", "' + req.body.IDXX_GRPX + '", "' + req.userID + '", "' + tglNow + '", "1")';
+                                if (req.body.NOXX_VAXX !== undefined && req.body.NOXX_VAXX !== '' && req.body.NOXX_VAXX !== null) {
+                                    sql = 'insert into tblRelawanDet (RelawanID, IDXX_GRPX, CRTX_BYXX, CRTX_DATE, prime, NOXX_VAXX) values select "' + kodeNik + '", IDXX_GRPX, "' + req.userID + '", "' + tglNow + '", "1", "' + req.body.NOXX_VAXX + '" from grpx_relx where IDXX_GRPX = "' + req.body.IDXX_GRPX + '"';
+                                } else {
+                                    sql = 'insert into tblRelawanDet (RelawanID, IDXX_GRPX, CRTX_BYXX, CRTX_DATE, prime, NOXX_VAXX) values select "' + kodeNik + '", IDXX_GRPX, "' + req.userID + '", "' + tglNow + '", "1", NOXX_VAXX from grpx_relx where IDXX_GRPX = "' + req.body.IDXX_GRPX + '"';
+                                }
 
                                 db.query(sql, (err2, result2) => {
                                     res.send({
@@ -285,6 +290,7 @@ export default class Karyawan {
 
         var id = req.body.id;  // id = nik
         var sql = 'UPDATE `tb21_empl` a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT SET ? WHERE a.KodeNik = "'+ id +'" And b.KODE_URUT like "' + req.KODE_URUT0 + '%" ';
+
         var data = {
             noxx_NPWP : req.body.noxx_NPWP,
             NamaKry : req.body.NamaKry,
@@ -312,6 +318,7 @@ export default class Karyawan {
             TypeRelawan : req.body.TypeRelawan,
             Pendidikan : req.body.Pendidikan,
             Pekerjaan : req.body.Pekerjaan,
+            NOXX_VAXX : req.body.NOXX_VAXX,
             'a.UPDT_DATE' : new Date(),
             'a.UPDT_BYXX' : req.userID
         };
@@ -330,9 +337,13 @@ export default class Karyawan {
                     sql = 'delete from tblRelawanDet where RelawanID = "' + id + '" And prime = "1"';
                     db.query(sql, (err2, result2) => {
                         // insert to tabel relawan detail
-                        var tglNow = moment(new Date()).format('YYYY-MM-DD');
+                        var tglNow = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
 
-                        sql = 'insert into tblRelawanDet (RelawanID, IDXX_GRPX, CRTX_BYXX, CRTX_DATE, prime) values ("' + id + '", "' + req.body.IDXX_GRPX + '", "' + req.userID + '", "' + tglNow + '", "1")';
+                        if (req.body.NOXX_VAXX !== undefined && req.body.NOXX_VAXX !== '' && req.body.NOXX_VAXX !== null) {
+                            sql = 'insert into tblRelawanDet (RelawanID, IDXX_GRPX, CRTX_BYXX, CRTX_DATE, prime, NOXX_VAXX) select "' + id + '", IDXX_GRPX, "' + req.userID + '", "' + tglNow + '", "1", "' + req.body.NOXX_VAXX + '" from grpx_relx where idxx_grpx = "' + req.body.IDXX_GRPX + '"';
+                        } else {
+                            sql = 'insert into tblRelawanDet (RelawanID, IDXX_GRPX, CRTX_BYXX, CRTX_DATE, prime, NOXX_VAXX) select "' + id + '", IDXX_GRPX, "' + req.userID + '", "' + tglNow + '", "1", NOXX_VAXX from grpx_relx where idxx_grpx = "' + req.body.IDXX_GRPX + '"';
+                        }
                         
                         db.query(sql, (err2, result2) => {
                             res.send({
@@ -342,7 +353,7 @@ export default class Karyawan {
                     });
                 } else if (req.body.IDXX_GRPX === '') {
                     // hapus di tabel relawan detail
-                    sql = 'delete from tblRelawanDet where RelawanID = "' + id + '"';
+                    sql = 'delete from tblRelawanDet where RelawanID = "' + id + '" And prime = "1"';
                     db.query(sql, (err2, result2) => {
                         res.send({
                             status: true

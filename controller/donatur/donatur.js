@@ -2717,6 +2717,7 @@ export default class Donatur {
             KodeKecamatan: req.body.KodeKecamatan,
             KodeKelurahan: req.body.KodeKelurahan,
             BUSS_CODE: req.BUSS_CODE0,
+            NOXX_VAXX: req.body.NOXX_VAXX,
             CRTX_DATE : moment(new Date()).format('YYYY-MM-DD HH:mm:ss'),
             CRTX_BYXX : req.userID
         };
@@ -2862,16 +2863,19 @@ export default class Donatur {
             return;
         } */
 
-        var id = req.body.id;
+        var id = req.body.id;   // id: IDXX_GRPX
 
         var sql = 'UPDATE grpx_relx a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT SET ? WHERE a.IDXX_GRPX = "' + id + '" And b.KODE_URUT like "' + req.KODE_URUT0 + '%"';
+
+        var tglNow = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
 
         var data = {
             NAMA_GRPX: req.body.NAMA_GRPX,
             BUSS_CODE: req.body.BUSS_CODE,
             KodeKecamatan: req.body.KodeKecamatan, 
             KodeKelurahan : req.body.KodeKelurahan,
-            'a.UPDT_DATE' : moment(new Date()).format('YYYY-MM-DD HH:mm:ss'),
+            NOXX_VAXX : req.body.NOXX_VAXX,
+            'a.UPDT_DATE' : tglNow,
             'a.UPDT_BYXX' : req.userID
         };
         
@@ -2884,6 +2888,11 @@ export default class Donatur {
                     message: err.sqlMessage
                 });
             } else {
+                sql = 'update tblRelawanDet a inner join tb21_empl b on a.RelawanID = b.KodeNik set a.NOXX_VAXX = "' + req.body.NOXX_VAXX + '", a.UPDT_BYXX = "' + req.userID + '", a.UPDT_DATE = "' + tglNow + '" where a.IDXX_GRPX = "' + id + '" And b.NOXX_VAXX Is Null';
+
+                db.query(sql, (err, result) => {
+                });
+
                 res.send({
                     status: true
                 });
