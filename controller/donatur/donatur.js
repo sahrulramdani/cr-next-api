@@ -1358,12 +1358,13 @@ export default class Donatur {
                 var bussCode = req.body.BUSS_CODE;
 
                 // check validation
-                sql = 'select a.*, b.Message, c.NAMA_UNIT, c.Tertanda, c.Website, c.SequenceUnitCode, CONCAT(a.CodeCountryHP, a.NoHP) As NoHP2 FROM (select a.*, d.CodeCountryHP, d.NoHP, d.NAMA  from trans_donatur a left join tb00_basx b on a.BankFrom = b.CODD_VALU And b.CODD_FLNM = "BANK" inner join tblMutasi c on TIMESTAMPDIFF(MINUTE, a.TransDate, c.TransDate) <= 5 And a.Amount = c.Amount And b.CODD_VARC = c.KODE_STDX_BANK left join tb11_mzjb d on a.DonaturID = d.NO_ID where a.isSend <> "1" And a.TransNumber = "' + transNumber + '" limit 0, 1) a inner join typeslp b on a.BUSS_CODE = b.BUSS_CODE inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT where b.id = "01" And a.BUSS_CODE = "' + bussCode + '"';
+                // checkValidation(modeCRUD VARCHAR, transNumber VARCHAR, transNumberSLP VARCHAR, transactionID VARCHAR, bussCode VARCHAR, userID VARCHAR, kodeBPI VARCHAR)
+                sql = 'call checkValidation("1", "' + transNumber + '", "", "", "' + bussCode + '", "", "")';
 
                 db.query(sql, function(err, rows, fields) {
                     var tglNow = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
 
-                    if (rows.length > 0) {   // if validate
+                    if (rows[0].length > 0) {   // if validate
                         const fncNext = (initial, tahun2, transNumber2, nextSequenceFormat) => {
                             // kirim pesan ke WA Blast (tabel tb52_slpa)
                                     
@@ -1371,22 +1372,22 @@ export default class Donatur {
                             sql = 'INSERT INTO tb52_slpa (transNumber, tglProses, typeProgram, status, tahunBuku, Message, unit, CRTX_DATE, CRTX_BYXX, terminal) VALUES ';
 
                             if (transNumber2 === null || transNumber2 === undefined) {
-                                transNumber2 = generateAutonumber(initial, rows[0].SequenceUnitCode, tahun2, 
+                                transNumber2 = generateAutonumber(initial, rows[0][0].SequenceUnitCode, tahun2, 
                                 nextSequenceFormat);
                             } 
                             
-                            var message = rows[0].Message;
-                            message = message.split('[Amount]').join(rows[0].Amount);
-                            message = message.split('[TransDate]').join(moment(rows[0].TransDate).format('DD-MMM-YYYY'));
-                            message = message.split('[Currency]').join(rows[0].CurrencyID);
-                            message = message.split('[NamaUnit]').join(rows[0].NAMA_UNIT);
-                            message = message.split('[Tertanda]').join(rows[0].Tertanda);
-                            message = message.split('[Website]').join(rows[0].Website);
+                            var message = rows[0][0].Message;
+                            message = message.split('[Amount]').join(rows[0][0].Amount);
+                            message = message.split('[TransDate]').join(moment(rows[0][0].TransDate).format('DD-MMM-YYYY'));
+                            message = message.split('[Currency]').join(rows[0][0].CurrencyID);
+                            message = message.split('[NamaUnit]').join(rows[0][0].NAMA_UNIT);
+                            message = message.split('[Tertanda]').join(rows[0][0].Tertanda);
+                            message = message.split('[Website]').join(rows[0][0].Website);
                             message = message.split('"').join("'");
 
                             var status = '2';  // 2: In Progress to WA Chatbot
 
-                            sql += '("' + transNumber2 + '", "' + tglNow + '", "01", "' + status + '", "' + rows[0].TahunBuku + '", "' + message + '", "' + bussCode + '", "' + tglNow + '", "' + req.userID + '", "2")';
+                            sql += '("' + transNumber2 + '", "' + tglNow + '", "01", "' + status + '", "' + rows[0][0].TahunBuku + '", "' + message + '", "' + bussCode + '", "' + tglNow + '", "' + req.userID + '", "2")';
 
                             db.query(sql, (err, result) => { 
                                 if (err) {
@@ -1397,8 +1398,16 @@ export default class Donatur {
                                         message: err.sqlMessage
                                     });
                                 } else {
+                                    // update tabel Mutasi
+                                    // checkValidation(modeCRUD VARCHAR, transNumber VARCHAR, transNumberSLP VARCHAR, transactionID VARCHAR, bussCode VARCHAR, userID VARCHAR, kodeBPI VARCHAR)
+                                    sql = 'call checkValidation("3", "' + transNumber + '", "", "", "", "' + req.userID + '", "")';
+
+                                    db.query(sql, function(err, rows, fields) {
+                                    });
+
                                     // update validate
-                                    var qryCmd4 = 'update trans_donatur a inner join (select a.TransNumber from trans_donatur a left join tb00_basx b on a.BankFrom = b.CODD_VALU And b.CODD_FLNM = "BANK" inner join tblMutasi c on TIMESTAMPDIFF(MINUTE, a.TransDate, c.TransDate) <= 5 And a.Amount = c.Amount And b.CODD_VARC = c.KODE_STDX_BANK where a.isSend <> "1" And a.TransNumber = "' + transNumber + '" limit 0, 1) b on a.TransNumber = b.TransNumber set a.isValidate = "1", a.isSend = "1", a.TransactionIDSLP = "' + transNumber2 + '"';
+                                    // checkValidation(modeCRUD VARCHAR, transNumber VARCHAR, transNumberSLP VARCHAR, transactionID VARCHAR, bussCode VARCHAR, userID VARCHAR, kodeBPI VARCHAR)
+                                    var qryCmd4 = 'call checkValidation("2", "' + transNumber + '", "' + transNumber2 + '", "", "", "' + req.userID + '", "")';
 
                                     db.query(qryCmd4, function(err, rows, fields) {
                                         res.send({
@@ -1407,18 +1416,12 @@ export default class Donatur {
                                         });
                                     });
 
-                                    // update tabel Mutasi
-                                    sql = 'update tblMutasi a inner join (select a.TransNumber, c.id from trans_donatur a left join tb00_basx b on a.BankFrom = b.CODD_VALU And b.CODD_FLNM = "BANK" inner join tblMutasi c on TIMESTAMPDIFF(MINUTE, a.TransDate, c.TransDate) <= 5 And a.Amount = c.Amount And b.CODD_VARC = c.KODE_STDX_BANK where a.TransNumber = "' + req.body.TransNumber + '" limit 0, 1) b on a.id = b.id set a.TransNumber = b.TransNumber, a.UPDT_BYXX = "' + req.userID + '", a.UPDT_DATE = "' + tglNow + '"';
-
-                                    db.query(sql, function(err, rows, fields) {
-                                    });
-
                                     // insert to detail slp donatur (tabel tb52_slpc)
                                     sql = 'INSERT INTO tb52_slpc SET ?';
 
                                     var data2 = {
                                         transNumber : transNumber2,
-                                        donaturID : rows[0].DonaturID,
+                                        donaturID : rows[0][0].DonaturID,
                                         status : '1', // terkirim ke WA Chatbot
                                         CRTX_DATE : tglNow,
                                         CRTX_BYXX : req.userID
@@ -1442,12 +1445,12 @@ export default class Donatur {
                                    }
                
                                    var data2 = {
-                                       "mobile_no" : rows[0].NoHP2,
-                                       "kode_donasi": rows[0].TransNumber,
-                                       "tanggal_transaksi": moment(new Date(rows[0].TransDate)).format('YYYY-MM-DD HH:mm:ss'),
-                                       "nama": rows[0].NAMA,
-                                       "nominal": rows[0].Amount + ' (' + config.urlApi + '/crm/donatur/transaction/' + rows[0].id + ')',
-                                       "program": rows[0].ProgDonatur,
+                                       "mobile_no" : rows[0][0].NoHP2,
+                                       "kode_donasi": rows[0][0].TransNumber,
+                                       "tanggal_transaksi": moment(new Date(rows[0][0].TransDate)).format('YYYY-MM-DD HH:mm:ss'),
+                                       "nama": rows[0][0].NAMA,
+                                       "nominal": rows[0][0].Amount + ' (' + config.urlApi + '/crm/donatur/transaction/' + rows[0][0].id + ')',
+                                       "program": rows[0][0].ProgDonatur,
                                        "status_donasi": "Sukses"
                                    };
                
@@ -1904,10 +1907,11 @@ export default class Donatur {
                             var bussCode = req.body.BUSS_CODE;
 
                             // check validation
-                            sql = 'select a.*, b.Message, c.NAMA_UNIT, c.Tertanda, c.Website, c.SequenceUnitCode, CONCAT(a.CodeCountryHP, a.NoHP) As NoHP2 FROM (select a.*, d.CodeCountryHP, d.NoHP, d.NAMA from trans_donatur a left join tb00_basx b on a.BankFrom = b.CODD_VALU And b.CODD_FLNM = "BANK" inner join tblMutasi c on TIMESTAMPDIFF(MINUTE, a.TransDate, c.TransDate) <= 5 And a.Amount = c.Amount And b.CODD_VARC = c.KODE_STDX_BANK left join tb11_mzjb d on a.DonaturID = d.NO_ID where a.isSend <> "1" And a.TransNumber = "' + req.body.transNumber + '" limit 0, 1) a inner join typeslp b on a.BUSS_CODE = b.BUSS_CODE inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT where b.id = "01" And a.BUSS_CODE = "' + bussCode + '"';
+                            // checkValidation(modeCRUD VARCHAR, transNumber VARCHAR, transNumberSLP VARCHAR, transactionID VARCHAR, bussCode VARCHAR, userID VARCHAR, kodeBPI VARCHAR)
+                            sql = 'call checkValidation("1", "' + req.body.transNumber + '", "", "", "' + bussCode + '", "", "")';
 
                             db.query(sql, function(err, rows, fields) {
-                                if (rows.length > 0) {   // if validate
+                                if (rows[0].length > 0) {   // if validate
                                     const fncNext = (initial, tahun2, transNumber2, nextSequenceFormat) => {
                                         // kirim pesan ke WA Blast (tabel tb52_slpa)
                                                 
@@ -1915,17 +1919,17 @@ export default class Donatur {
                                         sql = 'INSERT INTO tb52_slpa (transNumber, tglProses, typeProgram, status, tahunBuku, Message, unit, CRTX_DATE, CRTX_BYXX, terminal) VALUES ';
                 
                                         if (transNumber2 === null || transNumber2 === undefined) {
-                                            transNumber2 = generateAutonumber(initial, rows[0].SequenceUnitCode, tahun2, 
+                                            transNumber2 = generateAutonumber(initial, rows[0][0].SequenceUnitCode, tahun2, 
                                             nextSequenceFormat);
                                         } 
                                         
-                                        var message = rows[0].Message;
-                                        message = message.split('[Amount]').join(rows[0].Amount);
-                                        message = message.split('[TransDate]').join(moment(rows[0].TransDate).format('DD-MMM-YYYY'));
-                                        message = message.split('[Currency]').join(rows[0].CurrencyID);
-                                        message = message.split('[NamaUnit]').join(rows[0].NAMA_UNIT);
-                                        message = message.split('[Tertanda]').join(rows[0].Tertanda);
-                                        message = message.split('[Website]').join(rows[0].Website);
+                                        var message = rows[0][0]['Message'];
+                                        message = message.split('[Amount]').join(rows[0][0].Amount);
+                                        message = message.split('[TransDate]').join(moment(rows[0][0].TransDate).format('DD-MMM-YYYY'));
+                                        message = message.split('[Currency]').join(rows[0][0].CurrencyID);
+                                        message = message.split('[NamaUnit]').join(rows[0][0].NAMA_UNIT);
+                                        message = message.split('[Tertanda]').join(rows[0][0].Tertanda);
+                                        message = message.split('[Website]').join(rows[0][0].Website);
                                         message = message.split('"').join("'");
                 
                                         var status = '2';  // 2: In Progress to WA Chatbot
@@ -1953,20 +1957,28 @@ export default class Donatur {
                                                }
                            
                                                var data2 = {
-                                                   "mobile_no" : rows[0].NoHP2,
-                                                   "kode_donasi": rows[0].TransNumber,
-                                                   "tanggal_transaksi": moment(new Date(rows[0].TransDate)).format('YYYY-MM-DD HH:mm:ss'),
-                                                   "nama": rows[0].NAMA,
-                                                   "nominal": rows[0].Amount + ' (' + config.urlApi + '/crm/donatur/transaction/' + rows[0].id + ')',
-                                                   "program": rows[0].ProgDonatur,
+                                                   "mobile_no" : rows[0][0].NoHP2,
+                                                   "kode_donasi": rows[0][0].TransNumber,
+                                                   "tanggal_transaksi": moment(new Date(rows[0][0].TransDate)).format('YYYY-MM-DD HH:mm:ss'),
+                                                   "nama": rows[0][0].NAMA,
+                                                   "nominal": rows[0][0].Amount + ' (' + config.urlApi + '/crm/donatur/transaction/' + rows[0][0].id + ')',
+                                                   "program": rows[0][0].ProgDonatur,
                                                    "status_donasi": "Sukses"
                                                };
                            
                                                var apiWA =  new ApiWA();
                                                apiWA.sendWABlast(data2, callback);
 
+                                               // update tabel Mutasi
+                                               // checkValidation(modeCRUD VARCHAR, transNumber VARCHAR, transNumberSLP VARCHAR, transactionID VARCHAR, bussCode VARCHAR, userID VARCHAR, kodeBPI VARCHAR)
+                                               sql = 'call checkValidation("3", "' + req.body.transNumber + '", "", "", "", "' + req.userID + '", "")';
+
+                                               db.query(sql, function(err, rows, fields) {
+                                               });
+
                                                 // update validate
-                                                var qryCmd4 = 'update trans_donatur a inner join (select a.TransNumber from trans_donatur a left join tb00_basx b on a.BankFrom = b.CODD_VALU And b.CODD_FLNM = "BANK" inner join tblMutasi c on TIMESTAMPDIFF(MINUTE, a.TransDate, c.TransDate) <= 5 And a.Amount = c.Amount And b.CODD_VARC = c.KODE_STDX_BANK where a.isSend <> "1" And a.TransNumber = "' + req.body.transNumber + '" limit 0, 1) b on a.TransNumber = b.TransNumber set a.isValidate = "1", a.isSend = "1", a.TransactionIDSLP = "' + transNumber2 + '"';
+                                                // checkValidation(modeCRUD VARCHAR, transNumber VARCHAR, transNumberSLP VARCHAR, transactionID VARCHAR, bussCode VARCHAR, userID VARCHAR, kodeBPI VARCHAR)
+                                                var qryCmd4 = 'call checkValidation("2", "' + req.body.transNumber + '", "' + transNumber2 + '", "", "", "' + req.userID + '", "")';
                 
                                                 db.query(qryCmd4, function(err, rows, fields) {
                                                     res.send({
@@ -1974,18 +1986,12 @@ export default class Donatur {
                                                     });
                                                 });
 
-                                                // update tabel Mutasi
-                                                sql = 'update tblMutasi a inner join (select a.TransNumber, c.id from trans_donatur a left join tb00_basx b on a.BankFrom = b.CODD_VALU And b.CODD_FLNM = "BANK" inner join tblMutasi c on TIMESTAMPDIFF(a.TransDate, c.TransDate) <= 5 And a.Amount = c.Amount And b.CODD_VARC = c.KODE_STDX_BANK where a.TransNumber = "' + req.body.transNumber + '" limit 0, 1) b on a.id = b.id set a.TransNumber = b.TransNumber, a.UPDT_BYXX = "' + req.userID + '", a.UPDT_DATE = "' + tgl + '"';
-
-                                                db.query(sql, function(err, rows, fields) {
-                                                });
-
                                                 // insert to detail slp donatur (tabel tb52_slpc)
                                                 sql = 'INSERT INTO tb52_slpc SET ?';
 
                                                 var data2 = {
                                                     transNumber : transNumber2,
-                                                    donaturID : rows[0].DonaturID,
+                                                    donaturID : rows[0][0].DonaturID,
                                                     status : '1', // kirim ke WA Chatbot
                                                     CRTX_DATE : tgl,
                                                     CRTX_BYXX : req.userID
@@ -3240,12 +3246,13 @@ export default class Donatur {
                     });
                 } else {
                     // check validation
-                    sql = 'select a.*, b.Message, c.NAMA_UNIT, c.Tertanda, c.Website, c.SequenceUnitCode, CONCAT(a.CodeCountryHP, a.NoHP) As NoHP2 FROM (select a.*, d.CodeCountryHP, d.NoHP, d.NAMA from trans_donatur a left join tb00_basx b on a.BankFrom = b.CODD_VALU And b.CODD_FLNM = "BANK" inner join tblMutasi c on TIMESTAMPDIFF(MINUTE, a.TransDate, c.TransDate) <= 5 And a.Amount = c.Amount And b.CODD_VARC = c.KODE_STDX_BANK left join tb11_mzjb d on a.DonaturID = d.NO_ID where a.isSend <> "1" And c.KODE_TRNX = "' + idTransaksi + '" limit 0, 1) a inner join typeslp b on a.BUSS_CODE = b.BUSS_CODE inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT inner join tb02_bank d on a.BUSS_CODE = d.BUSS_CODE And d.KODE_FLNM = "KASX_BANK" And d.kodeBPI = "' + request.body.kodeBPI + '" where b.id = "01"';
+                    // checkValidation(modeCRUD VARCHAR, transNumber VARCHAR, transNumberSLP VARCHAR, transactionID VARCHAR, bussCode VARCHAR, userID VARCHAR, kodeBPI VARCHAR)
+                    sql = 'call checkValidation("1", "", "", "' + idTransaksi + '", "", "", "' + request.body.kodeBPI + '")';
 
                     var userID = 'master';
 
                     db.query(sql, function(err, rows, fields) {
-                        if (rows.length > 0) {   // if validate
+                        if (rows[0].length > 0) {   // if validate
                             const fncNext = (initial, tahun2, transNumber2, nextSequenceFormat) => {
                                 // kirim pesan ke WA Blast (tabel tb52_slpa)
                                         
@@ -3253,22 +3260,22 @@ export default class Donatur {
                                 sql = 'INSERT INTO tb52_slpa (transNumber, tglProses, typeProgram, status, tahunBuku, Message, unit, CRTX_DATE, CRTX_BYXX, terminal) VALUES ';
         
                                 if (transNumber2 === null || transNumber2 === undefined) {
-                                    transNumber2 = generateAutonumber(initial, rows[0].SequenceUnitCode, tahun2, 
+                                    transNumber2 = generateAutonumber(initial, rows[0][0].SequenceUnitCode, tahun2, 
                                     nextSequenceFormat);
                                 } 
                                 
-                                var message = rows[0].Message;
-                                message = message.split('[Amount]').join(rows[0].Amount);
-                                message = message.split('[TransDate]').join(moment(rows[0].TransDate).format('DD-MMM-YYYY'));
-                                message = message.split('[Currency]').join(rows[0].CurrencyID);
-                                message = message.split('[NamaUnit]').join(rows[0].NAMA_UNIT);
-                                message = message.split('[Tertanda]').join(rows[0].Tertanda);
-                                message = message.split('[Website]').join(rows[0].Website);
+                                var message = rows[0][0].Message;
+                                message = message.split('[Amount]').join(rows[0][0].Amount);
+                                message = message.split('[TransDate]').join(moment(rows[0][0].TransDate).format('DD-MMM-YYYY'));
+                                message = message.split('[Currency]').join(rows[0][0].CurrencyID);
+                                message = message.split('[NamaUnit]').join(rows[0][0].NAMA_UNIT);
+                                message = message.split('[Tertanda]').join(rows[0][0].Tertanda);
+                                message = message.split('[Website]').join(rows[0][0].Website);
                                 message = message.split('"').join("'");
         
                                 var status = '2';  // 2: In Progress to WA Chatbot
 
-                                sql += '("' + transNumber2 + '", "' + tglNow + '", "01", "' + status + '", "' + rows[0].TahunBuku + '", "' + message + '", "' + bussCode + '", "' + tglNow + '", "' + req.userID + '", "2")';
+                                sql += '("' + transNumber2 + '", "' + tglNow + '", "01", "' + status + '", "' + rows[0][0].TahunBuku + '", "' + message + '", "' + bussCode + '", "' + tglNow + '", "' + req.userID + '", "2")';
         
                                 db.query(sql, (err, result) => {
                                     if (err) {
@@ -3291,20 +3298,28 @@ export default class Donatur {
                                        }
                    
                                        var data2 = {
-                                           "mobile_no" : rows[0].NoHP2,
-                                           "kode_donasi": rows[0].TransNumber,
-                                           "tanggal_transaksi": moment(new Date(rows[0].TransDate)).format('YYYY-MM-DD HH:mm:ss'),
-                                           "nama": rows[0].NAMA,
-                                           "nominal": rows[0].Amount + ' (' + config.urlApi + '/crm/donatur/transaction/' + rows[0].id + ')',
-                                           "program": rows[0].ProgDonatur,
+                                           "mobile_no" : rows[0][0].NoHP2,
+                                           "kode_donasi": rows[0][0].TransNumber,
+                                           "tanggal_transaksi": moment(new Date(rows[0][0].TransDate)).format('YYYY-MM-DD HH:mm:ss'),
+                                           "nama": rows[0][0].NAMA,
+                                           "nominal": rows[0][0].Amount + ' (' + config.urlApi + '/crm/donatur/transaction/' + rows[0][0].id + ')',
+                                           "program": rows[0][0].ProgDonatur,
                                            "status_donasi": "Sukses"
                                        };
                    
                                        var apiWA =  new ApiWA();
                                        apiWA.sendWABlast(data2, callback);
 
+                                       // update tabel Mutasi
+                                       // checkValidation(modeCRUD VARCHAR, transNumber VARCHAR, transNumberSLP VARCHAR, transactionID VARCHAR, bussCode VARCHAR, userID VARCHAR, kodeBPI VARCHAR)
+                                       sql = 'call checkValidation("3", "' + rows[0][0].TransNumber + '", "", "", "", "' + req.userID + '", "")';
+
+                                       db.query(sql, function(err, rows, fields) {
+                                       });
+
                                         // update validate
-                                        var qryCmd4 = 'update trans_donatur a inner join (select a.TransNumber from trans_donatur a left join tb00_basx b on a.BankFrom = b.CODD_VALU And b.CODD_FLNM = "BANK" inner join tblMutasi c on TIMESTAMPDIFF(MINUTE, a.TransDate, c.TransDate) <= 5 And a.Amount = c.Amount And b.CODD_VARC = c.KODE_STDX_BANK where a.isSend <> "1" And a.TransNumber = "' + rows[0].TransNumber + '" limit 0, 1) b on a.TransNumber = b.TransNumber set a.isValidate = "1", a.isSend = "1", a.TransactionIDSLP = "' + transNumber2 + '"';
+                                        // checkValidation(modeCRUD VARCHAR, transNumber VARCHAR, transNumberSLP VARCHAR, transactionID VARCHAR, bussCode VARCHAR, userID VARCHAR, kodeBPI VARCHAR)
+                                        var qryCmd4 = 'call checkValidation("2", "' + rows[0][0].TransNumber + '", "' + transNumber2 + '", "", "", "' + req.userID + '", "")';
         
                                         db.query(qryCmd4, function(err, rows, fields) {
                                             res.send({
@@ -3312,18 +3327,12 @@ export default class Donatur {
                                             });
                                         });
 
-                                        // update tabel Mutasi
-                                        sql = 'update tblMutasi a inner join (select a.TransNumber, c.id from trans_donatur a left join tb00_basx b on a.BankFrom = b.CODD_VALU And b.CODD_FLNM = "BANK" inner join tblMutasi c on TIMESTAMPDIFF(a.TransDate, c.TransDate) <= 5 And a.Amount = c.Amount And b.CODD_VARC = c.KODE_STDX_BANK where a.TransNumber = "' + rows[0].TransNumber + '" limit 0, 1) b on a.id = b.id set a.TransNumber = b.TransNumber, a.UPDT_BYXX = "SYSTEM", a.UPDT_DATE = "' + tglNow + '"';
-
-                                        db.query(sql, function(err, rows, fields) {
-                                        });
-
                                         // insert to detail slp donatur (tabel tb52_slpc)
                                         sql = 'INSERT INTO tb52_slpc SET ?';
 
                                         var data2 = {
                                             transNumber : transNumber2,
-                                            donaturID : rows[0].DonaturID,
+                                            donaturID : rows[0][0].DonaturID,
                                             status : '1', // kirim ke WA Chatbot
                                             CRTX_DATE : tglNow,
                                             CRTX_BYXX : 'SYSTEM'
@@ -3346,7 +3355,7 @@ export default class Donatur {
                             var tahun = new Date().getFullYear();
                             var generateAutonumber =  new GenerateNumber('NBD', tahun, fncNext);
                             generateAutonumber.setUserID(userID);
-                            generateAutonumber.setBussCode(rows[0].BUSS_CODE);
+                            generateAutonumber.setBussCode(rows[0][0].BUSS_CODE);
                             generateAutonumber.process();
                         } else {
                             response.send({
