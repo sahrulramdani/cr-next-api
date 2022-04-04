@@ -1416,12 +1416,6 @@ export default class Donatur {
                                         });
                                     });
 
-                                    // update tabel Mutasi
-                                    sql = 'update tblMutasi a inner join (select a.TransNumber, c.id from trans_donatur a left join tb00_basx b on a.BankFrom = b.CODD_VALU And b.CODD_FLNM = "BANK" inner join tblMutasi c on TIMESTAMPDIFF(MINUTE, a.TransDate, c.TransDate) <= 5 And a.Amount = c.Amount And b.CODD_VARC = c.KODE_STDX_BANK where a.TransNumber = "' + req.body.TransNumber + '" limit 0, 1) b on a.id = b.id set a.TransNumber = b.TransNumber, a.UPDT_BYXX = "' + req.userID + '", a.UPDT_DATE = "' + tglNow + '"';
-
-                                    db.query(sql, function(err, rows, fields) {
-                                    });
-
                                     // insert to detail slp donatur (tabel tb52_slpc)
                                     sql = 'INSERT INTO tb52_slpc SET ?';
 
@@ -1990,12 +1984,6 @@ export default class Donatur {
                                                     res.send({
                                                         status: true
                                                     });
-                                                });
-
-                                                // update tabel Mutasi
-                                                sql = 'update tblMutasi a inner join (select a.TransNumber, c.id from trans_donatur a left join tb00_basx b on a.BankFrom = b.CODD_VALU And b.CODD_FLNM = "BANK" inner join tblMutasi c on TIMESTAMPDIFF(a.TransDate, c.TransDate) <= 5 And a.Amount = c.Amount And b.CODD_VARC = c.KODE_STDX_BANK where a.TransNumber = "' + req.body.transNumber + '" limit 0, 1) b on a.id = b.id set a.TransNumber = b.TransNumber, a.UPDT_BYXX = "' + req.userID + '", a.UPDT_DATE = "' + tgl + '"';
-
-                                                db.query(sql, function(err, rows, fields) {
                                                 });
 
                                                 // insert to detail slp donatur (tabel tb52_slpc)
