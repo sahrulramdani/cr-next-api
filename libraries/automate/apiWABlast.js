@@ -12,7 +12,7 @@ export default class ApiWA {
                 {
                     "mobile_no": data['mobile_no'],
                     "kode_donasi": data['kode_donasi'],
-                    "tanggal_transaksi": data['kode_donasi'],
+                    "tanggal_transaksi": data['tanggal_transaksi'],
                     "nama": data['nama'],
                     "nominal": data['nominal'],
                     "program": data['program'],
