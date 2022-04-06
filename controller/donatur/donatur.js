@@ -1364,7 +1364,7 @@ export default class Donatur {
                 db.query(sql, function(err, rows, fields) {
                     var tglNow = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
 
-                    if (rows[0].length > 0) {   // if validate
+                    if (rows.length > 0 && rows[0].length > 0) {   // if validate
                         const fncNext = (initial, tahun2, transNumber2, nextSequenceFormat) => {
                             // kirim pesan ke WA Blast (tabel tb52_slpa)
                                     

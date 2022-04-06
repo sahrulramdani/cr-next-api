@@ -729,5 +729,61 @@ export default class Karyawan {
             response.send(output);
         });
     }
-    
+
+    deleteRelawanGroup = function(req, res) {
+        // check Access PROC_CODE 
+        if (fncCheckProcCode(req.body.ProcCode, req.procCodes) === false) {
+            res.status(403).send({ 
+                status: false, 
+                message: 'Access Denied',
+                userAccess: false
+            });
+
+            return;
+        }
+
+        var sql = "delete from `tblrelawandet` where RelawanID = '" + req.body.RelawanID + "' And IDXX_GRPX = '" + req.body.IDXX_GRPX + "'";
+
+        db.query(sql, (err, result) => {
+            if (err) {
+                console.log('Error', err);
+
+                res.send({
+                    status: false,
+                    message: err.sqlMessage
+                });
+            } else {
+                res.send({
+                    status: true
+                });
+            }
+        });
+    }
+
+    saveRelawanGroup = function(req, res) {
+        var tglNow = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
+
+        var sql = 'insert into tblrelawandet (RelawanID, IDXX_GRPX, CRTX_BYXX, CRTX_DATE, prime) select "' + req.body.RelawanID + '", a.IDXX_GRPX, "' + req.userID + '", "' + tglNow + '", Case When b.RelawanID Is Null Then "1" Else "0" End  from grpx_relx a left join vfirst_relawandet b on a.IDXX_GRPX = b.groupID And b.RelawanID = "' + req.body.RelawanID + '" inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT where a.IDXX_GRPX = "' + req.body.IDXX_GRPX + '" And c.KODE_URUT like "' + req.KODE_URUT0 + '%"';
+
+        console.log(sql);
+
+        db.query(sql, (err, result) => {
+            if (err) {
+                console.log('Error', err);
+
+                res.send({
+                    status: false,
+                    message: err.sqlMessage
+                });
+            } else {
+                sql = 'update tblRelawanDet a inner join tb21_empl b on a.RelawanID = b.KodeNik inner join grpx_relx c on a.IDXX_GRPX = c.IDXX_GRPX set a.NOXX_VAXX = IFNULL(b.NOXX_VAXX, c.NOXX_VAXX) where a.RelawanID = "' + req.body.RelawanID + '" And a.IDXX_GRPX = "' + req.body.IDXX_GRPX + '"';
+
+                db.query(sql, (err, result) => {
+                    res.send({
+                        status: true
+                    });
+                });
+            }
+        });
+    }
 }
