@@ -1364,7 +1364,7 @@ export default class Donatur {
                 db.query(sql, function(err, rows, fields) {
                     var tglNow = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
 
-                    if (rows.length > 0 && rows[0].length > 0) {   // if validate
+                    if (rows !== undefined && rows[0].length > 0) {   // if validate
                         const fncNext = (initial, tahun2, transNumber2, nextSequenceFormat) => {
                             // kirim pesan ke WA Blast (tabel tb52_slpa)
                                     
@@ -1911,7 +1911,7 @@ export default class Donatur {
                             sql = 'call checkValidation("1", "' + req.body.transNumber + '", "", "", "' + bussCode + '", "", "")';
 
                             db.query(sql, function(err, rows, fields) {
-                                if (rows.length > 0 && rows[0].length > 0) {   // if validate
+                                if (rows !== undefined && rows[0].length > 0) {   // if validate
                                     const fncNext = (initial, tahun2, transNumber2, nextSequenceFormat) => {
                                         // kirim pesan ke WA Blast (tabel tb52_slpa)
                                                 
@@ -3261,7 +3261,7 @@ export default class Donatur {
                     var userID = 'master';
 
                     db.query(sql, function(err, rows, fields) {
-                        if (rows.length > 0 && rows[0].length > 0) {   // if validate
+                        if (rows !== undefined && rows[0].length > 0) {   // if validate
                             const fncNext = (initial, tahun2, transNumber2, nextSequenceFormat) => {
                                 // kirim pesan ke WA Blast (tabel tb52_slpa)
                                         
