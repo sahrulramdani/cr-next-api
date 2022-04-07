@@ -224,7 +224,7 @@ export default class User {
 
         var hashedPassword;
         var data;
-        if (req.body.password === undefined) {
+        if (req.body.Password === undefined) {
             data = {
                 BUSS_CODE : req.body.BUSS_CODE,
                 KETX_USER : req.body.KETX_USER,
