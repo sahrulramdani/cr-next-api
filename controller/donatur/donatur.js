@@ -1909,7 +1909,7 @@ export default class Donatur {
                             // check validation
                             // checkValidation(modeCRUD VARCHAR, transNumber VARCHAR, transNumberSLP VARCHAR, transactionID VARCHAR, bussCode VARCHAR, userID VARCHAR, kodeBPI VARCHAR)
                             sql = 'call checkValidation("1", "' + req.body.transNumber + '", "", "", "' + bussCode + '", "", "")';
-
+    
                             db.query(sql, function(err, rows, fields) {
                                 if (rows !== undefined && rows[0].length > 0) {   // if validate
                                     const fncNext = (initial, tahun2, transNumber2, nextSequenceFormat) => {
@@ -2553,12 +2553,12 @@ export default class Donatur {
 
                     break;
                 case '06' :
-                    sql = 'select e.KOTA_DESC, e.KECX_DESC, e.KECX_IDXX, e.AREA_DESC, d.NAMA_GRPX, b.NamaKry, a.Amount, h.CODD_VARC As CurrencySimbol from trans_donatur a inner join tb21_empl b on a.KodeNik = b.KodeNik inner join vfirst_relawandet c on b.KodeNik = c.RelawanID inner join grpx_relx d on c.groupID = d.IDXX_GRPX inner join tb20_area e on d.KodeKelurahan = e.AREA_IDXX inner join tb00_unit f on a.BUSS_CODE = f.KODE_UNIT inner join tb01_lgxh g on a.KodeNik = g.NO_ID left join tb00_basx h on a.CurrencyID = h.CODD_VALU And h.CODD_FLNM = "CURR_MNYX" left join tb00_unit i on a.BUSS_CODE = i.KODE_UNIT where i.KODE_URUT like "' + request.KODE_URUT0 + '%" And DATE_FORMAT(a.TransDate, "%Y%m%d") Between "' + tgl1 + '" And "' + tgl2 + '" And UPPER(g.USER_IDXX) = "' + request.userID.toUpperCase() + '" And (a.isDelete <> "1" OR a.isDelete IS NULL) order by e.KOTA_DESC, e.KECX_DESC, e.AREA_DESC, d.NAMA_GRPX, b.NamaKry';
+                    sql = 'select e.KOTA_DESC, e.KECX_DESC, e.KECX_IDXX, e.AREA_DESC, d.NAMA_GRPX, b.NamaKry, a.Amount, h.CODD_VARC As CurrencySimbol from trans_donatur a inner join tb21_empl b on a.KodeNik = b.KodeNik left join vfirst_relawandet c on b.KodeNik = c.RelawanID left join grpx_relx d on c.groupID = d.IDXX_GRPX left join tb20_area e on d.KodeKelurahan = e.AREA_IDXX inner join tb00_unit f on a.BUSS_CODE = f.KODE_UNIT inner join tb01_lgxh g on a.KodeNik = g.NO_ID left join tb00_basx h on a.CurrencyID = h.CODD_VALU And h.CODD_FLNM = "CURR_MNYX" left join tb00_unit i on a.BUSS_CODE = i.KODE_UNIT where i.KODE_URUT like "' + request.KODE_URUT0 + '%" And DATE_FORMAT(a.TransDate, "%Y%m%d") Between "' + tgl1 + '" And "' + tgl2 + '" And UPPER(g.USER_IDXX) = "' + request.userID.toUpperCase() + '" And (a.isDelete <> "1" OR a.isDelete IS NULL) order by e.KOTA_DESC, e.KECX_DESC, e.AREA_DESC, d.NAMA_GRPX, b.NamaKry';
             }
         } 
 
         if (typePerson === '4') {   // 4: Official setingkat Relawan Korwil ('32')
-            sql = 'select e.KOTA_DESC, e.KECX_DESC, e.KECX_IDXX, e.AREA_DESC, d.NAMA_GRPX, b.NamaKry, a.Amount, g.CODD_VARC As CurrencySimbol from trans_donatur a inner join tb21_empl b on a.KodeNik = b.KodeNik inner join vfirst_relawandet c on b.KodeNik = c.RelawanID inner join grpx_relx d on c.groupID = d.IDXX_GRPX inner join tb20_area e on d.KodeKelurahan = e.AREA_IDXX inner join tb00_unit f on a.BUSS_CODE = f.KODE_UNIT left join tb00_basx g on a.CurrencyID = g.CODD_VALU And g.CODD_FLNM = "CURR_MNYX" left join tb00_unit h on a.BUSS_CODE = h.KODE_UNIT where h.KODE_URUT like "' + request.KODE_URUT0 + '%" And DATE_FORMAT(a.TransDate, "%Y%m%d") Between "' + tgl1 + '" And "' + tgl2 + '" And d.KodeKelurahan like "32%" And (a.isDelete <> "1" OR a.isDelete IS NULL) order by e.KOTA_DESC, e.KECX_DESC, e.AREA_DESC, d.NAMA_GRPX, b.NamaKry';
+            sql = 'select e.KOTA_DESC, e.KECX_DESC, e.KECX_IDXX, e.AREA_DESC, d.NAMA_GRPX, b.NamaKry, a.Amount, g.CODD_VARC As CurrencySimbol from trans_donatur a inner join tb21_empl b on a.KodeNik = b.KodeNik left join vfirst_relawandet c on b.KodeNik = c.RelawanID left join grpx_relx d on c.groupID = d.IDXX_GRPX left join tb20_area e on d.KodeKelurahan = e.AREA_IDXX inner join tb00_unit f on a.BUSS_CODE = f.KODE_UNIT left join tb00_basx g on a.CurrencyID = g.CODD_VALU And g.CODD_FLNM = "CURR_MNYX" left join tb00_unit h on a.BUSS_CODE = h.KODE_UNIT where h.KODE_URUT like "' + request.KODE_URUT0 + '%" And DATE_FORMAT(a.TransDate, "%Y%m%d") Between "' + tgl1 + '" And "' + tgl2 + '" And (d.KodeKelurahan like "32%" Or d.IDXX_GRPX Is Null) And (a.isDelete <> "1" OR a.isDelete IS NULL) order by e.KOTA_DESC, e.KECX_DESC, e.AREA_DESC, d.NAMA_GRPX, b.NamaKry';
         }
 
         db.query(sql, function(err, rows, fields) {
@@ -3204,29 +3204,31 @@ export default class Donatur {
 
     // payment notification from BSI Virtual Account
     paymentTransaction = (request, response) => {
+        var dataMasuk = request.body;
+
         var dataStaging = {
-            action: request.body.action,
-            kodeBank : request.body.kodeBank,
-            kodeBiller : request.body.kodeBiller,
-            kodeChannel : request.body.kodeChannel,
-            kodeTerminal : request.body.kodeTerminal,
-            nomorPembayaran : request.body.nomorPembayaran,
-            tanggalTransaksi : request.body.tanggalTransaksi,
-            idTransaksi : request.body.idTransaksi,
-            idTagihan : request.body.idTagihan,
-            totalNominal : request.body.totalNominal,
-            nomorJurnalPembukuan : request.body.nomorJurnalPembukuan,
-            checksum : request.body.checksum,
-            idPelanggan : request.body.idPelanggan,
-            nama : request.body.nama,
-            informasi : JSON.stringify(request.body.informasi),
-            rincian : JSON.stringify(request.body.rincian), 
-            statusValidasi : request.body.statusValidasi,
-            json : JSON.stringify(request.body),
+            action: dataMasuk.action,
+            kodeBank : dataMasuk.kodeBank,
+            kodeBiller : dataMasuk.kodeBiller,
+            kodeChannel : dataMasuk.kodeChannel,
+            kodeTerminal : dataMasuk.kodeTerminal,
+            nomorPembayaran : dataMasuk.nomorPembayaran,
+            tanggalTransaksi : dataMasuk.tanggalTransaksi,
+            idTransaksi : dataMasuk.idTransaksi,
+            idTagihan : dataMasuk.idTagihan,
+            totalNominal : dataMasuk.totalNominal,
+            nomorJurnalPembukuan : dataMasuk.nomorJurnalPembukuan,
+            checksum : dataMasuk.checksum,
+            idPelanggan : dataMasuk.idPelanggan,
+            nama : dataMasuk.nama,
+            informasi : JSON.stringify(dataMasuk.informasi),
+            rincian : JSON.stringify(dataMasuk.rincian), 
+            statusValidasi : dataMasuk.statusValidasi,
+            json : JSON.stringify(dataMasuk),
             CRTX_BYXX : 'SYSTEM',
             CRTX_DATE : new Date()
         };
-
+        
         // save data to table staging
         var sql = 'insert into paymx_stgx set ?';
         db.query(sql, dataStaging, (err, result) => {
@@ -3236,14 +3238,14 @@ export default class Donatur {
         });
 
         // save data to tblMutasi
-        if (request.body.statusValidasi === 'Sukses') {
+        if (dataMasuk.statusValidasi === 'Sukses') {
             var tglNow = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
             /* var tanggal = request.body.tanggalTransaksi.substring(0, 4) + '-' + request.body.tanggalTransaksi.substring(4, 6) + '-' + request.body.tanggalTransaksi.substring(6, 8) + ' ' + request.body.tanggalTransaksi.substring(8, 10) + ':' + request.body.tanggalTransaksi.substring(10, 12) + ':' + request.body.tanggalTransaksi.substring(12, 14); */
             
-            var noVA = request.body.kodeBPI + request.body.nomorPembayaran;
-            var idTransaksi = request.body.idTransaksi;
+            var noVA = dataMasuk.kodeBPI + dataMasuk.nomorPembayaran;
+            var idTransaksi = dataMasuk.idTransaksi;
 
-            sql = 'insert into tblMutasi (TransDate, Keterangan, DK, Amount, Bank, BUSS_CODE, KODE_TRNX, IDXX_GRPX, CRTX_BYXX, CRTX_DATE, terminal, NO_VA) select "' + request.body.tanggalTransaksi + '", "BSI Virtual Account No. VA = ' + noVA + '", "K", ' + request.body.totalNominal + ', b.KODE_BANK, b.BUSS_CODE, "' + idTransaksi + '", a.IDXX_GRPX, "SYSTEM", "' + tglNow + '", "2" /* 2: BSI VA */ , "' + noVA + '" FROM grpx_relx a inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT inner join (select a.*, b.KODE_URUT from tb02_bank a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT) b on b.KODE_URUT like CONCAT(c.KODE_URUT, "%") And b.KODE_FLNM = "KASX_BANK" And b.NAMA_BANK = "BSI Virtual Account" And b.kodeBPI = "' + request.body.kodeBPI + '" left join tblMutasi d on b.BUSS_CODE = d.BUSS_CODE And d.KODE_TRNX = "' + idTransaksi + '" where a.NOXX_VAXX = "' + noVA + '" And d.id Is Null';
+            sql = 'insert into tblMutasi (TransDate, Keterangan, DK, Amount, Bank, BUSS_CODE, KODE_TRNX, IDXX_GRPX, CRTX_BYXX, CRTX_DATE, terminal, NO_VA) select "' + dataMasuk.tanggalTransaksi + '", "BSI Virtual Account No. VA = ' + noVA + '", "K", ' + dataMasuk.totalNominal + ', b.KODE_BANK, b.BUSS_CODE, "' + idTransaksi + '", a.IDXX_GRPX, "SYSTEM", "' + tglNow + '", "2" /* 2: BSI VA */ , "' + noVA + '" FROM vrelawan_nova a inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT inner join (select a.*, b.KODE_URUT from tb02_bank a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT) b on b.KODE_URUT like CONCAT(c.KODE_URUT, "%") And b.KODE_FLNM = "KASX_BANK" And b.NAMA_BANK = "BSI Virtual Account" And b.kodeBPI = "' + dataMasuk.kodeBPI + '" left join tblMutasi d on b.BUSS_CODE = d.BUSS_CODE And d.KODE_TRNX = "' + idTransaksi + '" where a.NoVA = "' + noVA + '" And d.id Is Null';
 
             db.query(sql, (err, result) => {
                 if (err) {
@@ -3256,7 +3258,7 @@ export default class Donatur {
                 } else {
                     // check validation
                     // checkValidation(modeCRUD VARCHAR, transNumber VARCHAR, transNumberSLP VARCHAR, transactionID VARCHAR, bussCode VARCHAR, userID VARCHAR, kodeBPI VARCHAR)
-                    sql = 'call checkValidation("1", "", "", "' + idTransaksi + '", "", "", "' + request.body.kodeBPI + '")';
+                    sql = 'call checkValidation("1", "", "", "' + idTransaksi + '", "", "", "' + dataMasuk.kodeBPI + '")';
 
                     var userID = 'master';
 
@@ -3284,7 +3286,7 @@ export default class Donatur {
         
                                 var status = '2';  // 2: In Progress to WA Chatbot
 
-                                sql += '("' + transNumber2 + '", "' + tglNow + '", "01", "' + status + '", "' + rows[0][0].TahunBuku + '", "' + message + '", "' + bussCode + '", "' + tglNow + '", "' + req.userID + '", "2")';
+                                sql += '("' + transNumber2 + '", "' + tglNow + '", "01", "' + status + '", "' + rows[0][0].TahunBuku + '", "' + message + '", "' + rows[0][0].BUSS_CODE + '", "' + tglNow + '", "' + request.userID + '", "2")';
         
                                 db.query(sql, (err, result) => {
                                     if (err) {
@@ -3321,19 +3323,16 @@ export default class Donatur {
 
                                        // update tabel Mutasi
                                        // checkValidation(modeCRUD VARCHAR, transNumber VARCHAR, transNumberSLP VARCHAR, transactionID VARCHAR, bussCode VARCHAR, userID VARCHAR, kodeBPI VARCHAR)
-                                       sql = 'call checkValidation("3", "' + rows[0][0].TransNumber + '", "", "", "", "' + req.userID + '", "")';
+                                       sql = 'call checkValidation("3", "' + rows[0][0].TransNumber + '", "", "", "", "' + request.userID + '", "' + dataMasuk.kodeBPI + '")';
 
                                        db.query(sql, function(err, rows, fields) {
                                        });
 
                                         // update validate
                                         // checkValidation(modeCRUD VARCHAR, transNumber VARCHAR, transNumberSLP VARCHAR, transactionID VARCHAR, bussCode VARCHAR, userID VARCHAR, kodeBPI VARCHAR)
-                                        var qryCmd4 = 'call checkValidation("2", "' + rows[0][0].TransNumber + '", "' + transNumber2 + '", "", "", "' + req.userID + '", "")';
+                                        var qryCmd4 = 'call checkValidation("2", "' + rows[0][0].TransNumber + '", "' + transNumber2 + '", "", "", "' + request.userID + '", "' + dataMasuk.kodeBPI + '")';
         
                                         db.query(qryCmd4, function(err, rows, fields) {
-                                            res.send({
-                                                status: true
-                                            });
                                         });
 
                                         // insert to detail slp donatur (tabel tb52_slpc)

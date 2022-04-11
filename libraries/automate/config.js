@@ -1,6 +1,6 @@
 var config = {
-    apiUrl : 'https://api.matamantra.id/story/3406/broadcast',
-    token : 'eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2FnZSI6ImFwcF9hY2Nlc3MiLCJpYXQiOjE2NDg0NDM5NTEsInN1YiI6Mzg1fQ.SXIJblYyatoiEOxrozAnyDLPY4DQzp1MOZ9FoJgtHIxllNiRFcvOq35KPV7MiAOLjGWek0OM9_St0aeAMlUcDg'
+    apiUrl : 'https://qudwah-api.matamantra.id/story/4442/broadcast',
+    token : 'eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2FnZSI6ImFwcF9hY2Nlc3MiLCJpYXQiOjE2NDg3OTM0MDcsInN1YiI6MjMwfQ.fh5KJXQklP4R0uLKkYYpKvyhhl5DOMNrpcsNQg1ZS5pVRLl4azmJzeV14foIws8GBF42J52UprIhF57Ox5uwdw'
 }
 
 export { config };
