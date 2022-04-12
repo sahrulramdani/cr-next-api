@@ -50,9 +50,9 @@ export default class AuthController {
             var sql = '';
 
             if (req.body.NotRequiredEntity === '1') {
-                sql = 'select * from tb01_lgxh where UPPER(USER_IDXX) = "' + req.body.USER_IDXX.toUpperCase() + '" And Active = "1" And IsValid = "1"';
+                sql = 'select * from tb01_lgxh where (UPPER(USER_IDXX) = "' + req.body.USER_IDXX.toUpperCase() + '" Or (Alias Is Not Null And UPPER(Alias) = "' + req.body.USER_IDXX.toUpperCase() + '")) And Active = "1" And IsValid = "1"';
             } else {
-                sql = 'select * from tb01_lgxh where UPPER(USER_IDXX) = "' + req.body.USER_IDXX.toUpperCase() + '" And Active = "1" And IsValid = "1" And BUSS_CODE = "' + req.body.BUSS_CODE + '"';
+                sql = 'select * from tb01_lgxh where (UPPER(USER_IDXX) = "' + req.body.USER_IDXX.toUpperCase() + '" Or (Alias Is Not Null And UPPER(Alias) = "' + req.body.USER_IDXX.toUpperCase() + '")) And Active = "1" And IsValid = "1" And BUSS_CODE = "' + req.body.BUSS_CODE + '"';
             }
             db.query(sql, (err, rows) => {
               if (err) {
