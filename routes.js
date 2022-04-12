@@ -175,6 +175,7 @@ import * as C from './controller/index.js';
       app.route('/crm/partner/transactions-per-month/:tgl1/:tgl2').get(C.auth.verifyToken, C.donatur.getPartnerTransactions);
       app.route('/crm/summary/transactions-per-channel/:tgl1/:tgl2').get(C.auth.verifyToken, C.donatur.getTransactionsPerChannel);
       app.route('/crm/summary/transactions-per-group/:tgl1/:tgl2').get(C.auth.verifyToken, C.donatur.getSummaryTransactionPerGroup);
+      app.route('/crm/summary/transactions-per-group2/:tgl1/:tgl2').get(C.auth.verifyToken, C.donatur.getSummaryTransactionPerGroup2);
       app.route('/crm/summary/transactions-per-unit/:tgl1/:tgl2').get(C.auth.verifyToken, C.donatur.getSummaryTransactionPerUnit);
       app.route('/crm/transactions-per-group/:tgl1/:tgl2').get(C.auth.verifyToken, C.donatur.getDetTransactionsPerGroup);
 

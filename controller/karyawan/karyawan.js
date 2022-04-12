@@ -478,7 +478,7 @@ export default class Karyawan {
                         "CASE a.StatusAktif " +
                         "WHEN '1' THEN 'ACTIVE' " +
                         "ELSE 'NOT ACTIVE' " +
-                        "END As StatusAktif2, b.KODE_UNIT, IFNULL(c.groupID, '') As groupID, a.KodeNik As value, CONCAT(a.NamaKry, ' - ', a.KodeNik) As label, d.NAMA_GRPX, Case a.StatusKry When '1' Then 'OFFISIAL' When '5' Then 'RELAWAN' End As StatusKaryawan, f.CODD_DESC As TypeRelawan, d.NAMA_GRPX, e.KODE_URUT As KodeUrutGroup " + 
+                        "END As StatusAktif2, b.KODE_UNIT, IFNULL(c.groupID, '') As groupID, a.KodeNik As value, CONCAT(a.NamaKry, ' - ', a.KodeNik) As label, d.NAMA_GRPX, Case a.StatusKry When '1' Then 'OFFISIAL' When '5' Then 'RELAWAN' End As StatusKaryawan, f.CODD_DESC As TypeRelawan, d.NAMA_GRPX, d.KODE_URUT As KodeUrutGroup " + 
                         "FROM tb21_empl a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT left join vfirst_relawanDet c on a.KodeNik = c.RelawanID left join grpx_relx d on c.groupID = d.IDXX_GRPX inner join tb01_lgxh e on a.KodeNik = e.NO_ID left join tb00_basx f on a.TypeRelawan = f.CODD_VALU And f.CODD_FLNM = 'TYPE_RELAWAN' WHERE b.KODE_UNIT = '" + request.BUSS_CODE0 + "' And UPPER(e.USER_IDXX) = '" + request.userID.toUpperCase() + "' And a.StatusKry = '5' order by d.KODE_URUT, a.NamaKry"; 
                 }
             }
@@ -499,7 +499,7 @@ export default class Karyawan {
             "END As StatusAktif2, b.KODE_UNIT, IFNULL(c.groupID, '') As groupID, a.KodeNik As value, CONCAT(a.NamaKry, ' - ', a.KodeNik) As label, d.NAMA_GRPX, Case a.StatusKry When '1' Then 'OFFISIAL' When '5' Then 'RELAWAN' End As StatusKaryawan, e.CODD_DESC As TypeRelawan " + 
             "FROM tb21_empl a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT left join vfirst_relawanDet c on a.KodeNik = c.RelawanID left join grpx_relx d on c.groupID = d.IDXX_GRPX left join tb00_basx e on a.TypeRelawan = e.CODD_VALU And e.CODD_FLNM = 'TYPE_RELAWAN' where b.KODE_URUT like '" + request.KODE_URUT0 + "%' And a.StatusKry = '" + status + "' order by a.NamaKry";
 
-            if (typePerson === '1') {  // 1: Relawan
+            /* if (typePerson === '1') {  // 1: Relawan
                 switch(typeRelawan) {
                     case '01' : case '02' : case '03' : case '04' :     // 04: Korran
                         qryCmd = "select a.*, CONCAT(IFNULL(a.CodeCountryHP, ''), a.Hp) As NoHP2, " + 
@@ -527,7 +527,7 @@ export default class Karyawan {
                         "END As StatusAktif2, b.KODE_UNIT, IFNULL(c.groupID, '') As groupID, a.KodeNik As value, CONCAT(a.NamaKry, ' - ', a.KodeNik) As label, d.NAMA_GRPX, Case a.StatusKry When '1' Then 'OFFISIAL' When '5' Then 'RELAWAN' End As StatusKaryawan, f.CODD_DESC As TypeRelawan " + 
                         "FROM tb21_empl a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT left join vfirst_relawanDet c on a.KodeNik = c.RelawanID left join grpx_relx d on c.groupID = d.IDXX_GRPX inner join tb01_lgxh e on a.KodeNik = e.NO_ID left join tb00_basx f on a.TypeRelawan = f.CODD_VALU And f.CODD_FLNM = 'TYPE_RELAWAN' WHERE b.KODE_URUT like '" + request.KODE_URUT0 + "%' And a.StatusKry = '" + status + "' And UPPER(e.USER_IDXX) = '" + request.userID.toUpperCase() + "' order by a.NamaKry";
                 }
-            }
+            } */
 
             if (typePerson === '4') {   // 4: Offisial
                 qryCmd = "select a.*, CONCAT(IFNULL(a.CodeCountryHP, ''), a.Hp) As NoHP2, " + 

@@ -2545,12 +2545,66 @@ export default class Donatur {
 
                     break;
                 case '06' :
-                    sql = "select b.NAMA As NAMA_GRPX, COUNT(distinct a.DonaturID) As JumlahDonatur, COUNT(a.Amount) As JumlahTransaksi, SUM(a.Amount) As JumlahDonasi FROM trans_donatur a left join tb11_mzjb b on a.DonaturID = b.NO_ID inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT left join tb00_basx e on b.SEGMX_PROF = e.CODD_VALU And e.CODD_FLNM = 'SEGMENT_PROFILING' inner join tb01_lgxh g on a.KodeNik = g.NO_ID left join vfirst_relawandet h on a.KodeNik = h.RelawanID left join tb21_empl j on a.KodeNik = j.KodeNik WHERE c.KODE_URUT like '" + req.KODE_URUT0 +  "%' And DATE_FORMAT(a.TransDate, '%Y%m%d') Between '" + tgl1 + "' And '" + tgl2 +   "' And UPPER(g.USER_IDXX) = '" + req.userID.toUpperCase() + "' And (a.isDelete <> '1' OR a.isDelete IS NULL) group by b.NAMA";
+                    sql = "select b.NAMA As NAMA_GRPX, l.KOTA_DESC, l.KECX_IDXX, l.KECX_DESC, l.AREA_IDXX, l.AREA_DESC, COUNT(distinct a.DonaturID) As JumlahDonatur, COUNT(a.Amount) As JumlahTransaksi, SUM(a.Amount) As JumlahDonasi FROM trans_donatur a left join tb11_mzjb b on a.DonaturID = b.NO_ID inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT left join tb00_basx e on b.SEGMX_PROF = e.CODD_VALU And e.CODD_FLNM = 'SEGMENT_PROFILING' inner join tb01_lgxh g on a.KodeNik = g.NO_ID left join vfirst_relawandet h on a.KodeNik = h.RelawanID left join tb21_empl j on a.KodeNik = j.KodeNik left join grpx_relx k on h.groupID = k.IDXX_GRPX left join tb20_area l on k.KodeKelurahan = l.AREA_IDXX WHERE c.KODE_URUT like '" + req.KODE_URUT0 +  "%' And DATE_FORMAT(a.TransDate, '%Y%m%d') Between '" + tgl1 + "' And '" + tgl2 +   "' And UPPER(g.USER_IDXX) = '" + req.userID.toUpperCase() + "' And (a.isDelete <> '1' OR a.isDelete IS NULL) group by b.NAMA";
             }
         }
 
         if (typePerson === '4') {  // 4: Official setingkat Relawan Korwil ('32')
-            sql = "select Case When h.IDXX_GRPX Is Null Then 'OFISIAL' Else i.KOTA_DESC End As NAMA_GRPX, COUNT(distinct a.DonaturID) As JumlahDonatur, COUNT(a.Amount) As JumlahTransaksi, SUM(a.Amount) As JumlahDonasi FROM trans_donatur a left join tb11_mzjb b on a.DonaturID = b.NO_ID inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT left join tb00_basx e on b.SEGMX_PROF = e.CODD_VALU And e.CODD_FLNM = 'SEGMENT_PROFILING' left join vfirst_relawandet g on a.KodeNik = g.RelawanID left join grpx_relx h on g.groupID = h.IDXX_GRPX left join tb20_area i on h.KodeKelurahan = i.AREA_IDXX WHERE c.KODE_URUT like '" + req.KODE_URUT0 +  "%' And DATE_FORMAT(a.TransDate, '%Y%m%d') Between '" + tgl1 + "' And '" + tgl2 +   "' And (h.KodeKelurahan like '32%' OR h.IDXX_GRPX is null) And (a.isDelete <> '1' OR a.isDelete IS NULL) group by i.KOTA_DESC";
+            sql = "select Case When h.IDXX_GRPX Is Null Then 'OFISIAL' Else i.KOTA_DESC End As NAMA_GRPX, Case When h.IDXX_GRPX Is Null Then 'OFISIAL' Else i.KOTA_DESC End As NAMA_GRPX2, i.KOTA_DESC, i.KECX_IDXX, i.KECX_DESC, i.AREA_IDXX, i.AREA_DESC, COUNT(distinct a.DonaturID) As JumlahDonatur, COUNT(a.Amount) As JumlahTransaksi, SUM(a.Amount) As JumlahDonasi FROM trans_donatur a left join tb11_mzjb b on a.DonaturID = b.NO_ID inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT left join tb00_basx e on b.SEGMX_PROF = e.CODD_VALU And e.CODD_FLNM = 'SEGMENT_PROFILING' left join vfirst_relawandet g on a.KodeNik = g.RelawanID left join grpx_relx h on g.groupID = h.IDXX_GRPX left join tb20_area i on h.KodeKelurahan = i.AREA_IDXX WHERE c.KODE_URUT like '" + req.KODE_URUT0 +  "%' And DATE_FORMAT(a.TransDate, '%Y%m%d') Between '" + tgl1 + "' And '" + tgl2 +   "' And (h.KodeKelurahan like '32%' OR h.IDXX_GRPX is null) And (a.isDelete <> '1' OR a.isDelete IS NULL) group by i.KOTA_DESC";
+        }
+        
+        db.query(sql, function(err, rows, fields) {
+            var output = [];
+    
+            if (rows.length > 0) {
+                rows.forEach(function(row) {
+                    var obj = new Object();
+                    for(var key in row) {
+                        obj[key] = row[key]; 
+                    }
+
+                    obj['AUTH_PRNT'] = authPrnt;
+    
+                    output.push(obj);
+                })
+            }
+    
+            res.send(output);
+        });
+    }
+
+    getSummaryTransactionPerGroup2 = function(req, res) {
+        var authPrnt = req.AUTH_PRNT;
+
+        var tgl1 = req.params.tgl1;
+        var tgl2 = req.params.tgl2;
+        var typePerson = req.TYPE_PRSON0;
+        var typeRelawan = req.TypeRelawan0;
+
+       /*  var period = '%';
+        if (req.params.period !== undefined && req.params.period !== 'all') {
+            period = req.params.period;
+        } */
+
+        var sql = "select * from trans_donatur where 0";
+
+        if (typePerson === '1') {
+            switch(typeRelawan) {
+                case '01' : case '02' : case '03' : case '04' :   // 04: Korra
+                    sql = "select l.KECX_DESC, l.AREA_IDXX, k.NAMA_GRPX, l.KOTA_DESC, l.KECX_IDXX, l.AREA_IDXX, COUNT(distinct a.DonaturID) As JumlahDonatur, COUNT(a.Amount) As JumlahTransaksi, SUM(a.Amount) As JumlahDonasi FROM trans_donatur a left join tb11_mzjb b on a.DonaturID = b.NO_ID inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT left join tb00_basx e on b.SEGMX_PROF = e.CODD_VALU And e.CODD_FLNM = 'SEGMENT_PROFILING' left join vfirst_relawandet g on a.KodeNik = g.RelawanID left join grpx_relx h on g.groupID = h.IDXX_GRPX left join tb20_area i on h.KodeKelurahan = i.AREA_IDXX left join grpx_relx k on f.groupID = k.IDXX_GRPX left join tb20_area l on k.KodeKelurahan = l.AREA_IDXX  WHERE c.KODE_URUT like '" + req.KODE_URUT0 +  "%' And DATE_FORMAT(a.TransDate, '%Y%m%d') Between '" + tgl1 + "' And '" + tgl2 +   "' And h.KodeKelurahan like '" + req.KODE_AREA0 + "%' And (a.isDelete <> '1' OR a.isDelete IS NULL) group by l.KECX_DESC, l.AREA_DESC, k,NAMA_GRPX";
+
+                    break;
+                case '05' :  // bendahara
+                    sql = "select k.NAMA_GRPX, l.KOTA_DESC, l.KECX_IDXX, l.KECX_DESC, l.AREA_IDXX, l.AREA_DESC, COUNT(distinct a.DonaturID) As JumlahDonatur, COUNT(a.Amount) As JumlahTransaksi, SUM(a.Amount) As JumlahDonasi FROM trans_donatur a left join tb11_mzjb b on a.DonaturID = b.NO_ID inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT left join tb00_basx e on b.SEGMX_PROF = e.CODD_VALU And e.CODD_FLNM = 'SEGMENT_PROFILING' left join vfirst_relawandet f on a.KodeNik = f.RelawanID left join tb21_empl h on a.KodeNik = h.KodeNik left join grpx_relx k on f.groupID = k.IDXX_GRPX left join tb20_area l on k.KodeKelurahan = l.AREA_IDXX WHERE c.KODE_URUT like '" + req.KODE_URUT0 +  "%' And DATE_FORMAT(a.TransDate, '%Y%m%d') Between '" + tgl1 + "' And '" + tgl2 +   "' And f.groupID = '" + req.groupID + "' And (a.isDelete <> '1' OR a.isDelete IS NULL) group by k.NAMA_GRPX";
+
+                    break;
+                case '06' :
+                    sql = "select k.NAMA_GRPX, l.KOTA_DESC, l.KECX_IDXX, l.KECX_DESC, l.AREA_IDXX, l.AREA_DESC, COUNT(distinct a.DonaturID) As JumlahDonatur, COUNT(a.Amount) As JumlahTransaksi, SUM(a.Amount) As JumlahDonasi FROM trans_donatur a left join tb11_mzjb b on a.DonaturID = b.NO_ID inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT left join tb00_basx e on b.SEGMX_PROF = e.CODD_VALU And e.CODD_FLNM = 'SEGMENT_PROFILING' inner join tb01_lgxh g on a.KodeNik = g.NO_ID left join vfirst_relawandet h on a.KodeNik = h.RelawanID left join tb21_empl j on a.KodeNik = j.KodeNik left join grpx_relx k on h.groupID = k.IDXX_GRPX left join tb20_area l on k.KodeKelurahan = l.AREA_IDXX WHERE c.KODE_URUT like '" + req.KODE_URUT0 +  "%' And DATE_FORMAT(a.TransDate, '%Y%m%d') Between '" + tgl1 + "' And '" + tgl2 +   "' And UPPER(g.USER_IDXX) = '" + req.userID.toUpperCase() + "' And (a.isDelete <> '1' OR a.isDelete IS NULL) group by k.NAMA_GRPX";
+            }
+        }
+
+        if (typePerson === '4') {  // 4: Official setingkat Relawan Korwil ('32')
+            sql = "select Case When h.IDXX_GRPX Is Null Then 'OFISIAL' Else i.KOTA_DESC End As NAMA_GRPX, i.KOTA_DESC, i.KECX_IDXX, i.KECX_DESC, i.AREA_IDXX, i.AREA_DESC, COUNT(distinct a.DonaturID) As JumlahDonatur, COUNT(a.Amount) As JumlahTransaksi, SUM(a.Amount) As JumlahDonasi FROM trans_donatur a left join tb11_mzjb b on a.DonaturID = b.NO_ID inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT left join tb00_basx e on b.SEGMX_PROF = e.CODD_VALU And e.CODD_FLNM = 'SEGMENT_PROFILING' left join vfirst_relawandet g on a.KodeNik = g.RelawanID left join grpx_relx h on g.groupID = h.IDXX_GRPX left join tb20_area i on h.KodeKelurahan = i.AREA_IDXX WHERE c.KODE_URUT like '" + req.KODE_URUT0 +  "%' And DATE_FORMAT(a.TransDate, '%Y%m%d') Between '" + tgl1 + "' And '" + tgl2 +   "' And (h.KodeKelurahan like '32%' OR h.IDXX_GRPX is null) And (a.isDelete <> '1' OR a.isDelete IS NULL) group by i.KOTA_DESC";
         }
         
         db.query(sql, function(err, rows, fields) {
