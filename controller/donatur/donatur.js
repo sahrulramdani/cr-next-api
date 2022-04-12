@@ -1444,7 +1444,7 @@ export default class Donatur {
                                         }
                                    }
                
-                                   var data2 = {
+                                   data2 = {
                                        "mobile_no" : rows[0][0].NoHP2,
                                        "kode_donasi": rows[0][0].TransNumber,
                                        "tanggal_transaksi": moment(new Date(rows[0][0].TransDate)).format('YYYY-MM-DD HH:mm:ss'),
@@ -1989,7 +1989,7 @@ export default class Donatur {
                                                 // insert to detail slp donatur (tabel tb52_slpc)
                                                 sql = 'INSERT INTO tb52_slpc SET ?';
 
-                                                var data2 = {
+                                                data2 = {
                                                     transNumber : transNumber2,
                                                     donaturID : rows[0][0].DonaturID,
                                                     status : '1', // kirim ke WA Chatbot
@@ -2058,7 +2058,6 @@ export default class Donatur {
             'a.UPDT_BYXX' : req.userID
         };
         
-        
         db.query(sql, data, (err, result) => {
             if (err) {
                 console.log('Error', err);
@@ -2082,7 +2081,7 @@ export default class Donatur {
     
                             db.query(sql, (err, result) => {
                                 // get Message from Setup Type SLP
-                                sql = 'select a.*, b.NAMA_UNIT, b.Tertanda, b.Website from typeslp a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where a.id = "01"';
+                                sql = 'select a.*, b.NAMA_UNIT, b.Tertanda, b.Website, CONCAT(IFNULL(d.CodeCountryHP, ""), IFNULL(d.NoHP, "")) As NoHP2, d.NAMA FROM typeslp a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT left join trans_donatur c on a.BUSS_CODE = c.BUSS_CODE And SUBSTRING(c.TransNumber, 6) = "' + id + '" left join tb11_mzjb d on c.DonaturID = d.NO_ID where a.id = "01"';
 
                                 db.query(sql, (err, rows, fields) => {
                                     if (rows.length > 0) {
@@ -2096,12 +2095,55 @@ export default class Donatur {
                                         message = message.split('"').join("'");
 
                                         // kirim notification ke WA Blast (tabel tb52_slpa)
-                                        sql = 'insert into tb52_slpa (transNumber, tglProses, typeProgram, status, tahunBuku, unit, Message, CRTX_BYXX, CRTX_DATE) VALUES ("' + transNumber2 + '", "' + tgl + '", "01", "0", "", "' + req.body.BUSS_CODE + '", "' + message + '", "SYSTEM", "' + tgl + '")';
+                                        var status  = '2'; // kirim ke WA Chatbot
+                                        sql = 'insert into tb52_slpa (transNumber, tglProses, typeProgram, status, tahunBuku, unit, Message, CRTX_BYXX, CRTX_DATE) VALUES ("' + transNumber2 + '", "' + tgl + '", "01", "' + status + '", "", "' + req.body.BUSS_CODE + '", "' + message + '", "SYSTEM", "' + tgl + '")';
 
+                                        var data2;
                                         db.query(sql, (err, result) => {
-                                            res.send({
-                                                status: true
-                                            });
+                                            // kirim ke WA Chatbot
+                                            const callback = (data) => {
+                                                // update tb52_slpa
+                                                if (data.code === 200) {   // 200: Sukses
+                                                    sql = 'update tb52_slpa set status = "1"  /* 1: Terkirim */ where transNumber ="' + transNumber2 + '"';
+                        
+                                                    db.query(sql, (err, result) => {
+                                                    });
+                                                }
+                                            }
+
+                                            data2 = {
+                                                "mobile_no" : rows[0].NoHP2,
+                                                "kode_donasi": rows[0].TransNumber,
+                                                "tanggal_transaksi": tgl,
+                                                "nama": rows[0].NAMA,
+                                                "nominal": rows[0].Amount + ' (' + config.urlApi + '/crm/donatur/transaction/' + rows[0].id + ')',
+                                                "program": rows[0].ProgDonatur,
+                                                "status_donasi": "Sukses"
+                                            };
+                        
+                                            var apiWA =  new ApiWA();
+                                            apiWA.sendWABlast(data2, callback);
+                                        });
+
+                                        // insert to detail slp donatur (tabel tb52_slpc)
+                                        sql = 'INSERT INTO tb52_slpc SET ?';
+
+                                        data2 = {
+                                            transNumber : transNumber2,
+                                            donaturID : rows[0].DonaturID,
+                                            status : '1',  // 1: terkirim
+                                            CRTX_DATE : tgl,
+                                            CRTX_BYXX : 'SYSTEM'
+                                        };
+
+                                        db.query(sql, data2, (err, result) => {
+                                            if (err) {
+                                                console.log('Error', err);
+                                            } else {
+                                                res.send({
+                                                    status: true
+                                                });
+                                            }
                                         });
                                     } else {
                                         res.send({
@@ -3338,7 +3380,7 @@ export default class Donatur {
                                         // insert to detail slp donatur (tabel tb52_slpc)
                                         sql = 'INSERT INTO tb52_slpc SET ?';
 
-                                        var data2 = {
+                                        data2 = {
                                             transNumber : transNumber2,
                                             donaturID : rows[0][0].DonaturID,
                                             status : '1', // kirim ke WA Chatbot
@@ -3430,7 +3472,7 @@ export default class Donatur {
                         var bussCode = request.BUSS_CODE0;
 
                         // retrieve type slp
-                        sql = 'select a.*, b.Message, c.NAMA_UNIT, c.Tertanda, c.Website from trans_donatur a inner join typeslp b on a.BUSS_CODE = b.BUSS_CODE inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT where b.id = "01" And a.NoInvoice = "' + request.body.NoInvoice + '" And a.BUSS_CODE = "' + bussCode + '"';
+                        sql = 'select a.*, b.Message, c.NAMA_UNIT, c.Tertanda, c.Website, CONCAT(IFNULL(d.CodeCountryHP, ""), IFNULL(d.NoHP, "")) As NoHP2, d.NAMA FROM trans_donatur a inner join typeslp b on a.BUSS_CODE = b.BUSS_CODE inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT left join tb11_mzjb d on a.DonaturID = d.NO_ID where b.id = "01" And a.NoInvoice = "' + request.body.NoInvoice + '" And a.BUSS_CODE = "' + bussCode + '"';
 
                         db.query(sql, function(err, rows, fields) {
                             if (rows.length > 0) {
@@ -3451,8 +3493,10 @@ export default class Donatur {
                                 message = message.split('[Website]').join(rows[0].Website);
                                 message = message.split('"').join("'");
 
-                                sql += '("' + transNumber + '", "' + tgl + '", "01", "0", "' + rows[0].TahunBuku + '", "' + message + '", "' + bussCode + '", "' + tgl + '", "' + request.userID + '")';
+                                var status = '2';  // 2: Progress in WA Chatbot 
+                                sql += '("' + transNumber + '", "' + tgl + '", "01", "' + status + '", "' + rows[0].TahunBuku + '", "' + message + '", "' + bussCode + '", "' + tgl + '", "' + request.userID + '")';
 
+                                var data2;
                                 db.query(sql, (err, result) => {
                                     if (err) {
                                         console.log('Error', err);
@@ -3462,6 +3506,30 @@ export default class Donatur {
                                             message: err.sqlMessage
                                         });
                                     } else {
+                                        // kirim ke WA Chatbot
+                                        const callback = (data) => {
+                                            // update tb52_slpa
+                                            if (data.code === 200) {   // 200: Sukses
+                                                sql = 'update tb52_slpa set status = "1"  /* 1: Terkirim */ where transNumber ="' + transNumber + '"';
+                    
+                                                db.query(sql, (err, result) => {
+                                                });
+                                            }
+                                        }
+
+                                        data2 = {
+                                            "mobile_no" : rows[0].NoHP2,
+                                            "kode_donasi": rows[0].TransNumber,
+                                            "tanggal_transaksi": tgl,
+                                            "nama": rows[0].NAMA,
+                                            "nominal": rows[0].Amount + ' (' + config.urlApi + '/crm/donatur/transaction/' + rows[0].id + ')',
+                                            "program": rows[0].ProgDonatur,
+                                            "status_donasi": "Sukses"
+                                        };
+                    
+                                        var apiWA =  new ApiWA();
+                                        apiWA.sendWABlast(data2, callback);
+
                                         response.send({
                                             status: true
                                         });
