@@ -1018,7 +1018,7 @@ export default class Donatur {
                         "kode_donasi": req.body.TranactionID,
                         "tanggal_transaksi": req.body.TransDate,
                         "nama": req.body.Nama,
-                        "nominal": req.body.Amount + ' (' + config.urlApi + '/crm/donatur/transaction/' + req.body.id + ')',
+                        "nominal": req.body.Amount + ' (' + config.urlApp + '/crm/donatur/transaction/' + req.body.id + ')',
                         "program": req.body.Programs,
                         "status_donasi": "Sukses"
                     };
@@ -1970,7 +1970,7 @@ export default class Donatur {
                                                    "kode_donasi": rows[0][0].TransNumber,
                                                    "tanggal_transaksi": moment(new Date(rows[0][0].TransDate)).format('YYYY-MM-DD HH:mm:ss'),
                                                    "nama": rows[0][0].NAMA,
-                                                   "nominal": rows[0][0].Amount + ' (' + config.urlApi + '/crm/donatur/transaction/' + rows[0][0].id + ')',
+                                                   "nominal": rows[0][0].Amount + ' (' + config.urlApp + '/crm/donatur/transaction/' + rows[0][0].id + ')',
                                                    "program": rows[0][0].ProgDonatur,
                                                    "status_donasi": "Sukses"
                                                };
@@ -2125,7 +2125,7 @@ export default class Donatur {
                                                 "kode_donasi": rows[0].TransNumber,
                                                 "tanggal_transaksi": tgl,
                                                 "nama": rows[0].NAMA,
-                                                "nominal": rows[0].Amount + ' (' + config.urlApi + '/crm/donatur/transaction/' + rows[0].id + ')',
+                                                "nominal": rows[0].Amount + ' (' + config.urlApp + '/crm/donatur/transaction/' + rows[0].id + ')',
                                                 "program": rows[0].ProgDonatur,
                                                 "status_donasi": "Sukses"
                                             };
@@ -3472,7 +3472,7 @@ export default class Donatur {
                                            "kode_donasi": rows[0][0].TransNumber,
                                            "tanggal_transaksi": moment(new Date(rows[0][0].TransDate)).format('YYYY-MM-DD HH:mm:ss'),
                                            "nama": rows[0][0].NAMA,
-                                           "nominal": rows[0][0].Amount + ' (' + config.urlApi + '/crm/donatur/transaction/' + rows[0][0].id + ')',
+                                           "nominal": rows[0][0].Amount + ' (' + config.urlApp + '/crm/donatur/transaction/' + rows[0][0].id + ')',
                                            "program": rows[0][0].ProgDonatur,
                                            "status_donasi": "Sukses"
                                        };
@@ -3639,7 +3639,7 @@ export default class Donatur {
                                             "kode_donasi": rows[0].TransNumber,
                                             "tanggal_transaksi": tgl,
                                             "nama": rows[0].NAMA,
-                                            "nominal": rows[0].Amount + ' (' + config.urlApi + '/crm/donatur/transaction/' + rows[0].id + ')',
+                                            "nominal": rows[0].Amount + ' (' + config.urlApp + '/crm/donatur/transaction/' + rows[0].id + ')',
                                             "program": rows[0].ProgDonatur,
                                             "status_donasi": "Sukses"
                                         };
