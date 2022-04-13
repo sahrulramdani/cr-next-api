@@ -17,7 +17,7 @@ import mysql from 'mysql';
     database : 'db_simzdev'
 }); */
 
-// server cloud SPS
+// server cloud production
 const db = mysql.createConnection({
     host : '202.78.195.170',
     user : 'simz_user',
@@ -30,6 +30,14 @@ const db = mysql.createConnection({
     user : 'simz_user',
     password : 'simz@sps100%',
     database : 'db_simz'
+}); */
+
+// server development
+/* const db = mysql.createConnection({
+    host : '202.78.195.171',
+    user : 'sisqu',
+    password : 'admin@sisqu100%',
+    database : 'db_sisqu_dev'
 }); */
 
 export default db;

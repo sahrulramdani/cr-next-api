@@ -1449,7 +1449,7 @@ export default class Donatur {
                                        "kode_donasi": rows[0][0].TransNumber,
                                        "tanggal_transaksi": moment(new Date(rows[0][0].TransDate)).format('YYYY-MM-DD HH:mm:ss'),
                                        "nama": rows[0][0].NAMA,
-                                       "nominal": rows[0][0].Amount + ' (' + config.urlApi + '/crm/donatur/transaction/' + rows[0][0].id + ')',
+                                       "nominal": rows[0][0].Amount + ' (' + config.urlApp + '/crm/donatur/transaction/' + rows[0][0].id + ')',
                                        "program": rows[0][0].ProgDonatur,
                                        "status_donasi": "Sukses"
                                    };
