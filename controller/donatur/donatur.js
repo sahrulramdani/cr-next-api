@@ -1479,6 +1479,15 @@ export default class Donatur {
 
     // Save Detail Transaction Donatur dari WA Chatbot
     saveDetTransaction2 = function(req, res) {
+        if (req.body.Initial === undefined || req.body.Tahun === undefined || req.body.NextSequenceFormat === undefined) {
+            res.send({
+                status: false,
+                message: 'Initial, Tahun, dan NextSequenceFormat harus diisi!'
+            });
+
+            return;
+        }
+
         // get Donatur ID
         var sql = 'select NO_ID from tb11_mzjb where SUBSTRING(NO_ID, 7) = "' + req.body.NextSequenceFormat2 + '"';
 
