@@ -475,7 +475,8 @@ export default class Donatur {
             EmailPIC: req.body.EmailPIC,
             TITLE : req.body.TITLE,
             CRTX_DATE : moment(new Date()).format('YYYY-MM-DD HH:mm:ss'),
-            CRTX_BYXX : req.userID
+            CRTX_BYXX : req.userID,
+            UPDT_DATE : moment(new Date()).format('YYYY-MM-DD HH:mm:ss'),
         };
         
         db.query(sql, data, (err, result) => {
@@ -1343,7 +1344,8 @@ export default class Donatur {
             isValidate : req.body.isValidate,
             isDelete : req.body.isDelete,
             CRTX_DATE : moment(new Date()).format('YYYY-MM-DD HH:mm:ss'),
-            CRTX_BYXX : req.userID
+            CRTX_BYXX : req.userID,
+            UPDT_DATE : moment(new Date()).format('YYYY-MM-DD HH:mm:ss'),
         };
         
         db.query(sql, data, (err, result) => {
