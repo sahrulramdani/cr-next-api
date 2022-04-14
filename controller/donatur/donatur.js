@@ -2767,7 +2767,7 @@ export default class Donatur {
 
                     break;
                 case '06' :
-                    sql = "select c.NAMA_UNIT, COUNT(distinct a.DonaturID) As JumlahDonatur, COUNT(a.Amount) As JumlahTransaksi, SUM(a.Amount) As JumlahDonasi FROM trans_donatur a left join tb11_mzjb b on a.DonaturID = b.NO_ID inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT left join tb00_basx e on b.SEGMX_PROF = e.CODD_VALU And e.CODD_FLNM = 'SEGMENT_PROFILING' left join vfirst_relawandet f on a.KodeNik = f.RelawanID WHERE c.KODE_URUT like '" + req.KODE_URUT0 +  "%' And DATE_FORMAT(a.TransDate, '%Y%m%d') Between '" + tgl1 + "' And '" + tgl2 +   "' And f.groupID = '" + req.groupID + "' And (a.isDelete <> '1' OR a.isDelete IS NULL) group by c.NAMA_UNIT";
+                    sql = "select c.NAMA_UNIT, COUNT(distinct a.DonaturID) As JumlahDonatur, COUNT(a.Amount) As JumlahTransaksi, SUM(a.Amount) As JumlahDonasi FROM trans_donatur a left join tb11_mzjb b on a.DonaturID = b.NO_ID inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT left join tb00_basx e on b.SEGMX_PROF = e.CODD_VALU And e.CODD_FLNM = 'SEGMENT_PROFILING' left join vfirst_relawandet f on a.KodeNik = f.RelawanID left join tb01_lgxh g on a.KodeNik = g.NO_ID WHERE c.KODE_URUT like '" + req.KODE_URUT0 +  "%' And DATE_FORMAT(a.TransDate, '%Y%m%d') Between '" + tgl1 + "' And '" + tgl2 +   "' And (f.groupID = '" + req.groupID + "' Or f.groupID Is Null) And (a.isDelete <> '1' OR a.isDelete IS NULL) And UPPER(g.USER_IDXX) = '" + req.userID.toUpperCase() + "' group by c.NAMA_UNIT";
             }
         }
 
@@ -3698,7 +3698,7 @@ export default class Donatur {
         selectedIds = fncParseComma(req.body.selectedIds);
         var arrayLength = selectedIds.length;
 
-        var sql = 'UPDATE trans_donatur a inner join tb02_bank b on a.MethodPayment = b.KODE_BANK And a.BUSS_CODE = b.BUSS_CODE inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT SET isValidate3 = Case a.isValidate2 When "1" Then "1" Else "0" End, a.isValidate2 = Case a.isValidate When "1" Then "1" Else "0" End, a.isValidate = "1", a.UPDT_DATE = "' + tgl + '", a.UPDT_BYXX = "' + req.userID + '" WHERE c.KODE_URUT like "' + req.KODE_URUT0 + '%" And (a.isValidate = "0" Or (a.isValidate = "1" And a.isValidate2 = "0") Or (a.isValidate2 = "1" And a.isValidate3 = "0")) And b.CHKX_CASH = "1" And a.id in ("';
+        var sql = 'UPDATE trans_donatur a inner join tb02_bank b on a.MethodPayment = b.KODE_BANK And a.BUSS_CODE = b.BUSS_CODE inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT SET isValidate3 = Case a.isValidate2 When "1" Then "1" Else "0" End, a.isValidate2 = Case a.isValidate When "1" Then "1" Else "0" End, a.isValidate = "1", a.UPDT_DATE = "' + tgl + '", a.UPDT_BYXX = "' + req.userID + '", a.isSend = Case a.isValidate When "1" Then "1" Else "0" End WHERE c.KODE_URUT like "' + req.KODE_URUT0 + '%" And (a.isValidate = "0" Or (a.isValidate = "1" And a.isValidate2 = "0") Or (a.isValidate2 = "1" And a.isValidate3 = "0")) And b.CHKX_CASH = "1" And a.id in ("';
         
         var sqlListId = '';
         if (arrayLength > 0) {
@@ -3787,7 +3787,7 @@ export default class Donatur {
                                    "kode_donasi": item.TransNumber,
                                    "tanggal_transaksi": moment(new Date(item.TransDate)).format('YYYY-MM-DD HH:mm:ss'),
                                    "nama": item.NAMA,
-                                   "nominal": item.Amount + ' (' + config.urlApi + '/crm/donatur/transaction/' + item.id + ')',
+                                   "nominal": item.Amount + ' (' + config.urlApp + '/crm/donatur/transaction/' + item.id + ')',
                                    "program": item.ProgDonatur,
                                    "status_donasi": "Sukses"
                                };
