@@ -87,9 +87,10 @@ export default class AuthController {
                             expiresIn: tokenExpiresIn   
                         });
 
+                        
                         // write Start Login
                         var tgl = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
-                        sql = 'update tb01_lgxh set LOGN_STRT = "' + tgl + '" where USER_IDXX = "' + user.USER_IDXX + '"';
+                        sql = 'update tb01_lgxh set LOGN_STRT = "' + tgl + '", IpAddress = "' + req.body.IpAddress + '" where USER_IDXX = "' + user.USER_IDXX + '"';
 
                         db.query(sql, (err, rows) => {
                         });
