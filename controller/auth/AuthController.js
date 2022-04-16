@@ -95,6 +95,12 @@ export default class AuthController {
                         db.query(sql, (err, rows) => {
                         });
 
+                        // write history login
+                        sql = 'insert into history_login (USER_IDXX, START_DATE, IP_ADDRESS) values ("' + user.USER_IDXX + '", "' + tgl + '", "' + req.body.IpAddress + '")';
+
+                        db.query(sql, (err, rows) => {
+                        });
+
                         res.send({
                             status: true,
                             token: token
