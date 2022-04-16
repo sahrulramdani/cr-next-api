@@ -1945,7 +1945,7 @@ export default class Donatur {
                 
                                         var status = '2';  // 2: In Progress to WA Chatbot
 
-                                        sql += '("' + transNumber2 + '", "' + tgl + '", "01", "' + status + '", "' + rows[0].TahunBuku + '", "' + message + '", "' + bussCode + '", "' + tgl + '", "' + req.userID + '", "2")';
+                                        sql += '("' + transNumber2 + '", "' + tgl + '", "01", "' + status + '", "' + rows[0][0].TahunBuku + '", "' + message + '", "' + bussCode + '", "' + tgl + '", "' + req.userID + '", "2")';
                 
                                         db.query(sql, (err, result) => {
                                             if (err) {
