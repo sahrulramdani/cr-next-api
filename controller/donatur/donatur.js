@@ -3693,6 +3693,28 @@ export default class Donatur {
         }
     }
 
+    saveSimpleTrans = (request, response) => {
+        var sql = 'INSERT INTO trans_stgx SET ?';
+        var data = {
+            CodeCountryHP : req.body.CodeCountryHP,
+            NoHP : req.body.NoHP,    // No HP Donatur
+            NamaDonatur : req.body.NamaDonatur,
+            Program : req.body.Program,
+            MethodPayment : req.body.MethodPayment,
+            Amount : req.body.Amount,
+            NoInvoice : req.body.NoInvoice,
+            LinkPayment : req.body.LinkPayment,
+            statusPembayaran : req.body.statusPembayaran,
+            CodeCountryHP2 : req.body.CodeCountryHP2,   // Code Country Relawan
+            NoHPRelawan : req.body.NoHPRelawan,
+            CRTX_DATE : moment(new Date()).format('YYYY-MM-DD HH:mm:ss'),
+            CRTX_BYXX : req.userID
+        };
+        
+        db.query(sql, data, (err, result) => {
+        });
+    }
+
     verifyTrans = function(req, res) {
         var tgl = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
 
