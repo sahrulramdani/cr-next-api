@@ -2924,7 +2924,7 @@ export default class Donatur {
                 }
             }
         } else {
-            qryCmd = "select a.* from grpx_relx a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where b.KODE_URUT like '" + request.KODE_URUT0 + "%' order by a.KODE_URUT";
+            qryCmd = "select a.*, c.* from grpx_relx a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT left join tb20_area c on a.KodeKelurahan = c.AREA_IDXX where b.KODE_URUT like '" + request.KODE_URUT0 + "%' order by a.KODE_URUT";
 
             if (typePerson === '1') { // 1: Relawan
                 switch(typeRelawan) {
