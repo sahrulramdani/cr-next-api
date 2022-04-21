@@ -66,6 +66,40 @@ export default class Karyawan {
             CRTX_BYXX : req.userID
         };
 
+        if (req.body.NOXX_VAXX === '') {
+            data = {
+                KodeNik : kodeNik,
+                noxx_NPWP : req.body.noxx_NPWP,
+                NamaKry : req.body.NamaKry,
+                Title : req.body.Title,
+                NICK_NAME : req.body.NICK_NAME,
+                JenisKel : req.body.JenisKel,
+                Alamat1 : req.body.Alamat1,
+                AlamatDomisili : req.body.AlamatDomisili,
+                Hp : req.body.Hp,
+                CodeCountryHP : req.body.CodeCountryHP,
+                email : req.body.email,
+                TempatLahir : req.body.TempatLahir,
+                TglLahir : req.body.TglLahir,
+                BUSS_CODE : bussCode,
+                NoKTP : req.body.NoKTP,
+                StatusAktif : '1',
+                StatusKawin : req.body.StatusKawin,
+                TglMasuk : req.body.TglMasuk,
+                GolDarah : req.body.GolDarah,
+                PIC: req.body.PIC,
+                NoHPPIC: req.body.NoHPPIC,
+                CodeCountryHPPIC : req.body.CodeCountryHPPIC,
+                EmailPIC: req.body.EmailPIC,
+                TypeRelawan : req.body.TypeRelawan,
+                Pendidikan : req.body.Pendidikan,
+                Pekerjaan : req.body.Pekerjaan,
+                StatusKry : req.body.StatusKry,
+                CRTX_DATE : new Date(),
+                CRTX_BYXX : req.userID
+            };
+        }
+
         var sqlDelete = 'DELETE FROM tb21_empl WHERE KodeNik = "' + data.KodeNik + '"';
         
         // execute query Delete
@@ -322,6 +356,39 @@ export default class Karyawan {
             'a.UPDT_DATE' : new Date(),
             'a.UPDT_BYXX' : req.userID
         };
+
+        if (req.body.NOXX_VAXX === '') {
+            data = {
+                noxx_NPWP : req.body.noxx_NPWP,
+                NamaKry : req.body.NamaKry,
+                BUSS_CODE : bussCode,
+                NICK_NAME : req.body.NICK_NAME,
+                JenisKel : req.body.JenisKel,
+                Alamat1 : req.body.Alamat1,
+                AlamatDomisili : req.body.AlamatDomisili,
+                Hp : req.body.Hp,
+                CodeCountryHP : req.body.CodeCountryHP,
+                'a.email' : req.body.email,
+                TempatLahir : req.body.TempatLahir,
+                TglLahir : req.body.TglLahir,
+                NoKTP : req.body.NoKTP,
+                StatusAktif : '1',
+                StatusKawin : req.body.StatusKawin,
+                StatusKry : req.body.StatusKry,
+                TglMasuk : req.body.TglMasuk,
+                GolDarah : req.body.GolDarah,
+                Title : req.body.Title,
+                PIC: req.body.PIC,
+                NoHPPIC: req.body.NoHPPIC,
+                CodeCountryHPPIC : req.body.CodeCountryHPPIC,
+                EmailPIC: req.body.EmailPIC,
+                TypeRelawan : req.body.TypeRelawan,
+                Pendidikan : req.body.Pendidikan,
+                Pekerjaan : req.body.Pekerjaan,
+                'a.UPDT_DATE' : new Date(),
+                'a.UPDT_BYXX' : req.userID
+            };
+        }
         
         db.query(sql, data, (err, result) => {
             if (err) {
