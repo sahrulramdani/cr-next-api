@@ -1660,8 +1660,8 @@ export default class Donatur {
                 }
             } else if (typePerson === '4') {    // 4: Ofisial
                 if (isValid === '0",null') {
-                    isValid = '1"';
-                    isValid2 = '1';
+                    isValid = '0"';
+                    isValid2 = '0';
                     isValid3 = '0';
                     isValid4 = '0';
                     isValidTransfer = '0';
@@ -3722,7 +3722,7 @@ export default class Donatur {
         selectedIds = fncParseComma(req.body.selectedIds);
         var arrayLength = selectedIds.length;
 
-        var sql = 'UPDATE trans_donatur a inner join tb02_bank b on a.MethodPayment = b.KODE_BANK And a.BUSS_CODE = b.BUSS_CODE inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT SET isValidate3 = Case a.isValidate2 When "1" Then "1" Else "0" End, a.isValidate2 = Case a.isValidate When "1" Then "1" Else "0" End, a.isValidate = "1", a.UPDT_DATE = "' + tgl + '", a.UPDT_BYXX = "' + req.userID + '", a.isSend = Case a.isValidate When "1" Then "1" Else "0" End WHERE c.KODE_URUT like "' + req.KODE_URUT0 + '%" And (a.isValidate = "0" Or (a.isValidate = "1" And a.isValidate2 = "0") Or (a.isValidate2 = "1" And a.isValidate3 = "0")) And b.CHKX_CASH = "1" And a.id in ("';
+        var sql = 'UPDATE trans_donatur a inner join tb02_bank b on a.MethodPayment = b.KODE_BANK And a.BUSS_CODE = b.BUSS_CODE inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT SET a.isValidate3 = Case a.isValidate2 When "1" Then "1" Else "0" End, a.isValidate2 = Case a.isValidate When "1" Then "1" Else "0" End, a.isValidate = "1", a.UPDT_DATE = "' + tgl + '", a.UPDT_BYXX = "' + req.userID + '", a.isSend = Case a.isValidate When "1" Then "1" Else "0" End WHERE c.KODE_URUT like "' + req.KODE_URUT0 + '%" And (a.isValidate = "0" Or (a.isValidate = "1" And a.isValidate2 = "0") Or (a.isValidate2 = "1" And a.isValidate3 = "0")) And b.CHKX_CASH = "1" And a.id in ("';
         
         var sqlListId = '';
         if (arrayLength > 0) {
