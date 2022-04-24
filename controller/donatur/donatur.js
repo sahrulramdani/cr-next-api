@@ -3909,4 +3909,35 @@ export default class Donatur {
         }
 
     }
+
+    deleteDonatur = function(req, res) {
+        var id = req.body.id;  // NO_ID
+
+        var sql = 'insert into tb11_mzjb_del select * from tb11_mzjb where NO_ID = "' + id + '"';        
+        db.query(sql, (err, result) => {
+            if (err) {
+                console.log('Error', err);
+
+                res.send({
+                    status: false,
+                    message: err.sqlMessage
+                });
+            } else {
+                sql = "delete from `tb11_mzjb` where NO_ID = '" + id + "'";
+
+                db.query(sql, (err, result) => {
+                    res.send({
+                        status: true
+                    });
+                });
+
+                // update create date 
+                sql = "update tb11_mzjb_del set CRTX_BYXX = '" + req.userID + "', CRTX_DATE = DATE_FORMAT(NOW(), '%Y-%m-%d %H:%i:%s') where NO_ID = '" + id + "'";
+
+                db.query(sql, (err, result) => {
+                    
+                });
+            }
+        });
+    }
 }
