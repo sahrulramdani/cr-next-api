@@ -1867,7 +1867,7 @@ export default class Donatur {
                 'a.isValidate' : req.body.isValidate,
                 isValidate2 : req.body.isValidate2,
                 isValidate3 : req.body.isValidate3,
-                isSend : req.body.isValidate === '1' && req.body.isValidate2 === '0' ? '1' : '0',
+                isSend : req.body.isValidate === '1' ? '1' : '0',
                 'a.isDelete' : req.body.isDelete,
                 'a.UPDT_DATE' : tgl,
                 'a.UPDT_BYXX' : req.userID
@@ -1891,7 +1891,7 @@ export default class Donatur {
                 'a.isValidate' : req.body.isValidate,
                 isValidate2 : req.body.isValidate2,
                 isValidate3 : req.body.isValidate3,
-                isSend : req.body.isValidate === '1' && req.body.isValidate2 === '0' ? '1' : '0',
+                isSend : req.body.isValidate === '1' ? '1' : '0',
                 'a.isDelete' : req.body.isDelete,
                 'a.UPDT_DATE' : tgl,
                 'a.UPDT_BYXX' : req.userID
@@ -1916,7 +1916,7 @@ export default class Donatur {
 
                     db.query(sql, (err, result) => {
                         // update tabel mutasi - TransNumber (link ke tabel Transaksi Donatur)
-                        if (req.body.isValidate === '1' && req.body.isValidate2 === '0') {
+                        if (req.body.isValidate === '1') {
                             sql = 'UPDATE `tblMutasi` SET TransNumber = "' + req.body.transNumber + '", UPDT_BYXX = "' + req.userID + '", UPDT_DATE = "' + tgl + '" WHERE id = ' + req.body.idMutasi;
     
                             db.query(sql, (err, result) => {
@@ -3758,7 +3758,7 @@ export default class Donatur {
                     });
                 } else {
                     // retrieve transaction based id to create transaction SLP
-                    sql = 'select a.*, d.CODD_VARC As Simbol, c.NAMA_UNIT, c.Tertanda, c.Website, CONCAT(e.CodeCountryHP, e.NoHP) As NoHP2, e.NAMA FROM trans_donatur a inner join tb02_bank b on a.MethodPayment = b.KODE_BANK And a.BUSS_CODE = b.BUSS_CODE inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT left join tb00_basx d on a.CurrencyID = d.CODD_VALU And d.CODD_FLNM = "CURR_MNYX" left join tb11_mzjb e on a.DonaturID = e.NO_ID where a.isValidate = "1" And a.isValidate2 = "0" And b.CHKX_CASH = "1" And c.KODE_URUT like "' + req.KODE_URUT0 + '%" And a.id in ("' + sqlListId;
+                    sql = 'select a.*, d.CODD_VARC As Simbol, c.NAMA_UNIT, c.Tertanda, c.Website, CONCAT(e.CodeCountryHP, e.NoHP) As NoHP2, e.NAMA FROM trans_donatur a inner join tb02_bank b on a.MethodPayment = b.KODE_BANK And a.BUSS_CODE = b.BUSS_CODE inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT left join tb00_basx d on a.CurrencyID = d.CODD_VALU And d.CODD_FLNM = "CURR_MNYX" left join tb11_mzjb e on a.DonaturID = e.NO_ID where a.isValidate = "1" And b.CHKX_CASH = "1" And c.KODE_URUT like "' + req.KODE_URUT0 + '%" And a.id in ("' + sqlListId;
                     
                     db.query(sql, function(err, rows, fields) {
                         // insert to SLP (tabel tb52_slpa)
@@ -3881,7 +3881,7 @@ export default class Donatur {
         selectedIds = fncParseComma(req.body.selectedIds);
         var arrayLength = selectedIds.length;
 
-        var sql = 'select a.*, c.NAMA_UNIT from trans_donatur a inner join tb02_bank b on a.MethodPayment = b.KODE_BANK And a.BUSS_CODE = b.BUSS_CODE inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT where (a.isValidate = "0" Or (a.isValidate = "1" And a.isValidate2 = "0") Or (a.isValidate2 = "1" And a.isValidate3 = "0")) And c.KODE_URUT like "' + req.KODE_URUT0 + '%" And b.CHKX_CASH = "1" And a.id in ("';
+        var sql = 'select a.*, c.NAMA_UNIT from trans_donatur a inner join tb02_bank b on a.MethodPayment = b.KODE_BANK And a.BUSS_CODE = b.BUSS_CODE inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT where a.isValidate = "0" And c.KODE_URUT like "' + req.KODE_URUT0 + '%" And b.CHKX_CASH = "1" And a.id in ("';
 
         if (arrayLength > 0) {
             for(var i=0; i<arrayLength; i++) {
