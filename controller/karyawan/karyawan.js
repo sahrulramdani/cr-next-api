@@ -528,9 +528,9 @@ export default class Karyawan {
                             "WHEN '1' THEN 'ACTIVE' " +
                             "ELSE 'NOT ACTIVE' " +
                         "END As StatusAktif2, b.KODE_UNIT, SUBSTRING(a.Alamat1, 1, 20) As Alamat, Case a.StatusKry When '1' Then 'OFFISIAL' When '5' Then 'RELAWAN' End As StatusKaryawan, a.KodeNik As value, CONCAT(a.NamaKry, ' - ', a.KodeNik) As label, e.CODD_DESC As TypeRelawan, d.KODE_URUT As KodeUrutGroup, d.NAMA_GRPX " + 
-                        "FROM tb21_empl a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT left join vfirst_relawandet c on a.KodeNik = c.RelawanID left join grpx_relx d on c.groupID = d.IDXX_GRPX left join tb00_basx e on a.TypeRelawan = e.CODD_VALU And e.CODD_FLNM = 'TYPE_RELAWAN' where (b.KODE_UNIT = '" + request.BUSS_CODE0 + "' Or (d.KODE_URUT Is Not Null And d.KODE_URUT like '" + request.KODE_URUT_GROUP0 + "%')) And d.KodeKelurahan like '" + request.KODE_AREA0 + "%' And a.StatusKry = '5' order by d.KODE_URUT, a.NamaKry";
+                        "FROM tb21_empl a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT left join vfirst_relawandet c on a.KodeNik = c.RelawanID left join grpx_relx d on c.groupID = d.IDXX_GRPX left join tb00_basx e on a.TypeRelawan = e.CODD_VALU And e.CODD_FLNM = 'TYPE_RELAWAN' left join tb00_unit f on d.BUSS_CODE = f.KODE_UNIT WHERE (b.KODE_UNIT = '" + request.BUSS_CODE0 + "' Or (d.KODE_URUT Is Not Null And d.KODE_URUT like '" + request.KODE_URUT_GROUP0 + "%') Or f.KODE_UNIT = '" + request.BUSS_CODE0 + "') And d.KodeKelurahan like '" + request.KODE_AREA0 + "%' And a.StatusKry = '5' order by d.KODE_URUT, a.NamaKry";
 
-                        break;
+                        break; 
                     case '05' : // bendahara
                         qryCmd = "select a.*, CONCAT(IFNULL(a.CodeCountryHP, ''), a.Hp) As NoHP2, " + 
                         "CASE a.StatusAktif " +
