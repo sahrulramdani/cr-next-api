@@ -1761,15 +1761,15 @@ export default class Donatur {
                 switch(typeRelawan) {
                     case '01' : case '02' : case '03' : case '04' :   // 04: Korra
                         if (isValid === '0",null') {
-                            isValid = '1"';
+                            isValid = '0"';
                             isValid2 = '0';
                             isValidTransfer = '0';
                         } else {
-                            isValid2 = '1';
+                            // isValid2 = '1';
                             isValidTransfer = '1';
                         }
 
-                        sql = 'SELECT COUNT(*) As TotalData FROM trans_donatur a left join tb11_mzjb b on a.donaturID = b.NO_ID inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT left join tb00_basx d on b.Channel = d.CODD_VALU And d.CODD_FLNM = "CHANNEL_DONATUR" left join vfirst_transaction e on a.DonaturID = e.DonaturID left join vdepartment g on a.CRTX_BYXX = g.USER_IDXX left join tb02_bank h on a.BankTo = h.KODE_BANK And h.KODE_FLNM = "KASX_BANK" left join tb00_basx i on b.SEGMX_PROF = i.CODD_VALU And i.CODD_FLNM = "SEGMENT_PROFILING" left join vfirst_relawandet l on a.KodeNik = l.RelawanID left join grpx_relx m on l.groupID = m.IDXX_GRPX left join tb02_bank n on a.MethodPayment = n.KODE_BANK And a.BUSS_CODE = n.BUSS_CODE And n.KODE_FLNM = "TYPE_BYRX" left join tb21_empl o on a.KodeNik = o.KodeNik WHERE ((n.CHKX_CASH = "1" And a.isValidate in ("' + isValid + ') And a.isValidate2 = "' + isValid2 + '") Or (n.CHKX_CASH = "0" And a.isValidate = "' + isValidTransfer + '")) And (a.isDelete <> "1" OR a.isDelete IS NULL) And c.KODE_URUT like "' + req.KODE_URUT0 + '%" And m.KodeKelurahan like "' + req.KODE_AREA0 + '%" And IFNULL(g.Department, "") like "' + department + '%" And DATE_FORMAT(a.TransDate, "%Y%m") like "' + yearMonth + '%" And o.NamaKry like "%' + relawan + '%" order by c.KODE_URUT, a.TransDate Desc, a.TransNumber';
+                        sql = 'SELECT COUNT(*) As TotalData FROM trans_donatur a left join tb11_mzjb b on a.donaturID = b.NO_ID inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT left join tb00_basx d on b.Channel = d.CODD_VALU And d.CODD_FLNM = "CHANNEL_DONATUR" left join vfirst_transaction e on a.DonaturID = e.DonaturID left join vdepartment g on a.CRTX_BYXX = g.USER_IDXX left join tb02_bank h on a.BankTo = h.KODE_BANK And h.KODE_FLNM = "KASX_BANK" left join tb00_basx i on b.SEGMX_PROF = i.CODD_VALU And i.CODD_FLNM = "SEGMENT_PROFILING" left join vfirst_relawandet l on a.KodeNik = l.RelawanID left join grpx_relx m on l.groupID = m.IDXX_GRPX left join tb02_bank n on a.MethodPayment = n.KODE_BANK And a.BUSS_CODE = n.BUSS_CODE And n.KODE_FLNM = "TYPE_BYRX" left join tb21_empl o on a.KodeNik = o.KodeNik WHERE ((n.CHKX_CASH = "1" And a.isValidate in ("' + isValid + ')) Or (n.CHKX_CASH = "0" And a.isValidate = "' + isValidTransfer + '")) And (a.isDelete <> "1" OR a.isDelete IS NULL) And c.KODE_URUT like "' + req.KODE_URUT0 + '%" And m.KodeKelurahan like "' + req.KODE_AREA0 + '%" And IFNULL(g.Department, "") like "' + department + '%" And DATE_FORMAT(a.TransDate, "%Y%m") like "' + yearMonth + '%" And o.NamaKry like "%' + relawan + '%" order by c.KODE_URUT, a.TransDate Desc, a.TransNumber';
 
                         break;
                     case '05' :  // Bendahara
@@ -1781,17 +1781,17 @@ export default class Donatur {
                             isValid2 = '0';
                             isValid3 = '0';
                         } else {
-                            isValid2 = '1';
-                            isValid3 = '1';
+                            // isValid2 = '1';
+                            // isValid3 = '1';
                         }
     
-                        sql = 'SELECT COUNT(*) As TotalData FROM trans_donatur a left join tb11_mzjb b on a.donaturID = b.NO_ID inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT left join tb00_basx d on b.Channel = d.CODD_VALU And d.CODD_FLNM = "CHANNEL_DONATUR" left join vfirst_transaction e on a.DonaturID = e.DonaturID left join vdepartment g on a.CRTX_BYXX = g.USER_IDXX left join tb02_bank h on a.BankTo = h.KODE_BANK And h.KODE_FLNM = "KASX_BANK" left join tb00_basx i on b.SEGMX_PROF = i.CODD_VALU And i.CODD_FLNM = "SEGMENT_PROFILING" left join tb01_lgxh l on b.RelawanID = l.NO_ID left join tb02_bank n on a.MethodPayment = n.KODE_BANK And a.BUSS_CODE = n.BUSS_CODE And n.KODE_FLNM = "TYPE_BYRX" left join tb21_empl o on a.KodeNik = o.KodeNik WHERE ((n.CHKX_CASH = "1" And a.isValidate in ("' + isValid + ') And a.isValidate2 = "' + isValid2 + '" And a.isValidate3 = "' + isValid3 + '") Or (n.CHKX_CASH = "0" And a.isValidate in ("' + isValid + '))) And (a.isDelete <> "1" OR a.isDelete IS NULL) And c.KODE_URUT like "' + req.KODE_URUT0 + '%" And UPPER(l.USER_IDXX) = "' + req.userID.toUpperCase() + '" And IFNULL(g.Department, "") like "' + department + '%" And DATE_FORMAT(a.TransDate, "%Y%m") like "' + yearMonth + '%" And o.NamaKry like "%' + relawan + '%" order by c.KODE_URUT, a.TransDate Desc, a.TransNumber';
+                        sql = 'SELECT COUNT(*) As TotalData FROM trans_donatur a left join tb11_mzjb b on a.donaturID = b.NO_ID inner join tb00_unit c on a.BUSS_CODE = c.KODE_UNIT left join tb00_basx d on b.Channel = d.CODD_VALU And d.CODD_FLNM = "CHANNEL_DONATUR" left join vfirst_transaction e on a.DonaturID = e.DonaturID left join vdepartment g on a.CRTX_BYXX = g.USER_IDXX left join tb02_bank h on a.BankTo = h.KODE_BANK And h.KODE_FLNM = "KASX_BANK" left join tb00_basx i on b.SEGMX_PROF = i.CODD_VALU And i.CODD_FLNM = "SEGMENT_PROFILING" left join tb01_lgxh l on b.RelawanID = l.NO_ID left join tb02_bank n on a.MethodPayment = n.KODE_BANK And a.BUSS_CODE = n.BUSS_CODE And n.KODE_FLNM = "TYPE_BYRX" left join tb21_empl o on a.KodeNik = o.KodeNik WHERE ((n.CHKX_CASH = "1" And a.isValidate in ("' + isValid + ')) Or (n.CHKX_CASH = "0" And a.isValidate in ("' + isValid + '))) And (a.isDelete <> "1" OR a.isDelete IS NULL) And c.KODE_URUT like "' + req.KODE_URUT0 + '%" And UPPER(l.USER_IDXX) = "' + req.userID.toUpperCase() + '" And IFNULL(g.Department, "") like "' + department + '%" And DATE_FORMAT(a.TransDate, "%Y%m") like "' + yearMonth + '%" And o.NamaKry like "%' + relawan + '%" order by c.KODE_URUT, a.TransDate Desc, a.TransNumber';
                 }
             } else if (typePerson === '4') {    // 4: Ofisial
                 if (isValid === '0",null') {
-                    isValid = '1"';
-                    isValid2 = '1';
-                    isValid3 = '0';
+                    isValid = '0"';
+                    // isValid2 = '1';
+                    // isValid3 = '0';
                     isValid4 = '0';
                     isValidTransfer = '0';
                 } else {
