@@ -134,7 +134,7 @@ import * as C from './controller/index.js';
       app.route('/crm/donatur/transactions/filter/:tgl1/:tgl2').get(C.auth.verifyToken, C.donatur.getTransactionsFilter);
       app.route('/crm/donatur/transactions/tunai').post(C.auth.verifyToken, C.donatur.getTransCash);
       app.route('/crm/donatur/transactions/total/:isValid').get(C.auth.verifyToken, C.donatur.getTotalTransaction);
-      app.route('/crm/donatur/transactions2/:isValid/:limit?/:offset?').get(C.auth.verifyToken, C.donatur.getDonaturTransactions);
+      app.route('/crm/donatur/transactions2/:isValid/:limit?/:offset?').get(C.auth.verifyToken, C.donatur.getDonaturTransactions2);
       app.route('/crm/donatur/transactions/:isValid').get(C.auth.verifyToken, C.donatur.getDonaturTransactions);
       app.route('/crm/donatur/transactions/:isValid/:bussCode').get(C.auth.verifyToken, C.donatur.getDonaturTransactions);
       app.route('/crm/donatur/transaction/simpan').post(C.auth.verifyToken, C.donatur.saveDetTransaction2);  // API External
