@@ -537,7 +537,7 @@ export default class Karyawan {
                         "WHEN '1' THEN 'ACTIVE' " +
                         "ELSE 'NOT ACTIVE' " +
                         "END As StatusAktif2, b.KODE_UNIT, SUBSTRING(a.Alamat1, 1, 20) As Alamat, Case a.StatusKry When '1' Then 'OFFISIAL' When '5' Then 'RELAWAN' End As StatusKaryawan, a.KodeNik As value, CONCAT(a.NamaKry, ' - ', a.KodeNik) As label, d.CODD_DESC As TypeRelawan, e.NAMA_GRPX, e.KODE_URUT As KodeUrutGroup " + 
-                        "FROM tb21_empl a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT left join vfirst_relawandet c on a.KodeNik = c.RelawanID left join tb00_basx d on a.TypeRelawan = d.CODD_VALU And d.CODD_FLNM = 'TYPE_RELAWAN' left join grpx_relx e on c.RelawanID = e.IDXX_GRPX where b.KODE_UNIT like '" + request.BUSS_CODE0 + "' And c.groupID = '" + request.groupID + "' And a.StatusKry = '5' order by e.KODE_URUT, a.NamaKry";
+                        "FROM tb21_empl a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT left join vfirst_relawandet c on a.KodeNik = c.RelawanID left join tb00_basx d on a.TypeRelawan = d.CODD_VALU And d.CODD_FLNM = 'TYPE_RELAWAN' left join grpx_relx e on c.groupID = e.IDXX_GRPX left join tb00_unit f on e.BUSS_CODE = f.KODE_UNIT  where (b.KODE_UNIT = '" + request.BUSS_CODE0 + "' Or f.KODE_UNIT = '" + request.BUSS_CODE0 + "') And c.groupID = '" + request.groupID + "' And a.StatusKry = '5' order by e.KODE_URUT, a.NamaKry";
 
                         break;
                     case '06' :
