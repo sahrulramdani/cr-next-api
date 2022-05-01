@@ -823,4 +823,35 @@ export default class Karyawan {
             }
         });
     }
+
+    deleteKaryawan = function(req, res) {
+        var id = req.body.id;  // KodeNik
+
+        var sql = 'insert into tb21_empl_del select * from tb21_empl where KodeNik = "' + id + '"';        
+        db.query(sql, (err, result) => {
+            if (err) {
+                console.log('Error', err);
+
+                res.send({
+                    status: false,
+                    message: err.sqlMessage
+                });
+            } else {
+                sql = "delete from `tb21_empl` where KodeNik = '" + id + "'";
+
+                db.query(sql, (err, result) => {
+                    res.send({
+                        status: true
+                    });
+                });
+
+                // update create date 
+                sql = "update tb21_empl set CRTX_BYXX = '" + req.userID + "', CRTX_DATE = DATE_FORMAT(NOW(), '%Y-%m-%d %H:%i:%s') where KodeNik = '" + id + "'";
+
+                db.query(sql, (err, result) => {
+                    
+                });
+            }
+        });
+    }
 }
