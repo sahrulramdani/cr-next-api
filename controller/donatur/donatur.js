@@ -2807,11 +2807,6 @@ export default class Donatur {
         var typePerson = req.TYPE_PRSON0;
         var typeRelawan = req.TypeRelawan0;
 
-        /* var noID = filters.NoID;
-        if (noID === undefined || noID === null) {
-            noID = '';
-        } */
-
        /*  var period = '%';
         if (req.params.period !== undefined && req.params.period !== 'all') {
             period = req.params.period;

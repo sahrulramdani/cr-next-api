@@ -156,7 +156,7 @@ import * as C from './controller/index.js';
       app.route('/crm/idDonaturs/:status').get(C.auth.verifyToken, C.donatur.idDonaturs);
       app.route('/crm/transaction/wa/payment_notification').post(C.auth.verifyToken, C.donatur.paymentWATransaction);  // API External
       app.route('/crm/transaction/payment_notification').post(C.donatur.paymentTransaction);
-      app.route('/crm/simple_transaction/save').post(C.donatur.saveSimpleTrans);    // API External
+      // app.route('/crm/simple_transaction/save').post(C.donatur.saveSimpleTrans);    // API External
       app.route('/crm/transaction/item/delete').post(C.auth.verifyToken, C.donatur.deleteTransItem);
       app.route('/crm/transaction/item/save').post(C.auth.verifyToken, C.donatur.saveTransItem);
       app.route('/crm/transaction/item/simpan').post(C.auth.verifyToken, C.donatur.saveTransItemArray2);   // API External
