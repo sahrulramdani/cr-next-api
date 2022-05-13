@@ -3855,24 +3855,208 @@ export default class Donatur {
     }
 
     saveSimpleTrans = (request, response) => {
+        var tglNow = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
+        var tglNow2 = moment(new Date()).format('YYYY-MM-DD');
+
         var sql = 'INSERT INTO trans_stgx SET ?';
         var data = {
-            CodeCountryHP : req.body.CodeCountryHP,
-            NoHP : req.body.NoHP,    // No HP Donatur
-            NamaDonatur : req.body.NamaDonatur,
-            Program : req.body.Program,
-            MethodPayment : req.body.MethodPayment,
-            Amount : req.body.Amount,
-            NoInvoice : req.body.NoInvoice,
-            LinkPayment : req.body.LinkPayment,
-            statusPembayaran : req.body.statusPembayaran,
-            CodeCountryHP2 : req.body.CodeCountryHP2,   // Code Country Relawan
-            NoHPRelawan : req.body.NoHPRelawan,
-            CRTX_DATE : moment(new Date()).format('YYYY-MM-DD HH:mm:ss'),
-            CRTX_BYXX : req.userID
+            CodeCountryHP : request.body.CodeCountryHP,
+            NoHP : request.body.NoHP,    // No HP Donatur
+            NamaDonatur : request.body.NamaDonatur,
+            Program : request.body.Program,
+            KodeProgram : request.body.KodeProgram,
+            MethodPayment : request.body.MethodPayment,
+            TglTransaksi : request.body.TglTransaksi,   // format : YYYY-MM-DD HH:ii:ss
+            Amount : request.body.Amount,
+            NoInvoice : request.body.NoInvoice,
+            LinkPayment : request.body.LinkPayment,
+            statusPembayaran : request.body.statusPembayaran,
+            NoHPRelawan : request.body.NoHPRelawan,
+            CRTX_DATE : tglNow,
+            CRTX_BYXX : request.userID
         };
         
         db.query(sql, data, (err, result) => {
+            var bussCode = request.BUSS_CODE0;
+
+            // cek donatur di db
+            sql = 'select NO_ID from tb11_mzjb where NoHP = "' + request.body.NoHP + '" Limit 1';
+
+            db.query(sql, (err, result) => {
+                if (result.length > 0) {
+                    var tahun = new Date().getFullYear();
+                    var donaturID = result[0].NO_ID;
+
+                    const fncNext2 = (initial, tahun2, generateNumber, nextSequenceFormat) => {
+                        if (generateNumber === null || generateNumber === undefined) {
+                            generateNumber = generateAutonumber(initial, request.SequenceUnitCode0, tahun2, 
+                            nextSequenceFormat);
+                        } 
+
+                        var isValidate;
+                        if (request.body.statusPembayaran === 'Sukses') {
+                            isValidate = '1';
+                        } else {
+                            isValidate = '0';
+                        }
+
+                        // save transaction induk
+                        sql = 'INSERT INTO trans_donatur (TransNumber, TransDate, BUSS_CODE, DonaturID, CurrencyID, Amount, MethodPayment, FileName, ProgDonatur, KodeNik, NoInvoice, isValidate, isDelete, TahunBuku, isSend, CRTX_DATE, CRTX_BYXX) VALUES ("' + generateNumber + '", "' + request.body.TglTransaksi + '", "' + bussCode + '", "' + donaturID + '", "IDR", ' + request.body.Amount + ', "01", "", "' + request.body.Program + '", (select KodeNik from tb21_empl where Hp = "' + request.body.NoHPRelawan + '" Limit 1), "' + request.body.NoInvoice + '", "' + isValidate + '", "0", (select THNX_AJAR from tb00_thna where CABX_CODE = "' + bussCode + '" And "' + tglNow2 + '" Between DATE_FORMAT(TGLX_STRT, "%Y-%m-%d") And DATE_FORMAT(TGLX_ENDX, "%Y-%m-%d") Limit 1), "' + isValidate + '", "' + tglNow + '", "' + request.userID + '")';  
+
+                        db.query(sql, (err, result) => {
+                        });
+
+                        // save transaction item
+                        sql = 'INSERT INTO trans_item (TransNumber, BUSS_CODE, KodeNik, ProgDonatur, Amount_item, THNX_BUKU, CRTX_BYXX, CRTX_DATE) VALUES ("' + generateNumber + '", "' + bussCode + '", (select KodeNik from tb21_empl where Hp = "' + request.body.NoHPRelawan + '" Limit 1), "' + request.body.KodeProgram + '", ' + request.body.Amount + ', (select THNX_AJAR from tb00_thna where CABX_CODE = "' + bussCode + '" And "' + tglNow2 + '" Between DATE_FORMAT(TGLX_STRT, "%Y-%m-%d") And DATE_FORMAT(TGLX_ENDX, "%Y-%m-%d") Limit 1), "' + request.userID + '", "' + tglNow + '")';
+
+                        db.query(sql, (err, result) => {
+                        });
+
+                        if (isValidate === '1') {
+                            // Kirim ke WA Blast
+                            const callback = () => {
+                            };
+
+                            var data2 = {
+                                "mobile_no" : request.body.CodeCountryHP + request.body.NoHP,
+                                "kode_donasi": generateNumber,
+                                "tanggal_transaksi": request.body.TglTransaksi,
+                                "nama": request.body.NamaDonatur,
+                                "nominal": request.body.Amount,
+                                "program": request.body.Program,
+                                "status_donasi": "Sukses"
+                            };
+        
+                            var apiWA =  new ApiWA();
+                            apiWA.sendWABlast(data2, callback);
+                        }
+
+                        response.send({
+                            status: true,
+                            message: 'Sukses'
+                        });
+                    }
+
+                    var generateAutonumber2 =  new GenerateNumber('TRD', tahun, fncNext2);
+                    generateAutonumber2.setBussCode(bussCode);
+                    generateAutonumber2.process();
+                    
+                } else {
+                    var tahun = new Date().getFullYear();
+                    var donaturID = '';
+                    const fncNext = (initial, tahun2, generateNumber, nextSequenceFormat) => {
+                        if (generateNumber === null || generateNumber === undefined) {
+                            generateNumber = generateAutonumber(initial, request.SequenceUnitCode0, tahun2, 
+                            nextSequenceFormat);
+                        } 
+
+                        donaturID = generateNumber;
+
+                        // save donatur
+                        sql = 'insert into tb11_mzjb (NO_ID, NAMA, ALMT_XXX1, AlamatDomisili, BUSS_CODE, TglX_MASK, Stat_aktf, TypeBadan, CodeCountryHP, NoHP, Status, TypeDonatur, RelawanID, CRTX_BYXX, CRTX_DATE) values ("' + generateNumber + '", "' + request.body.NamaDonatur + '", "-", "-", "' + bussCode + '", "' + tglNow + '", "1", "1", "' + request.body.CodeCountryHP + '", "' + request.body.NoHP + '", "2" /* 2: Submit */ , "02", (select KodeNik from tb21_empl where Hp = "' + request.body.NoHPRelawan + '" Limit 1), "' + request.userID + '", "' + tglNow + '")';
+
+                        db.query(sql, (err, result) => {
+                            const fncNext2 = (initial, tahun2, generateNumber, nextSequenceFormat) => {
+                                if (generateNumber === null || generateNumber === undefined) {
+                                    generateNumber = generateAutonumber(initial, request.SequenceUnitCode0, tahun2, 
+                                    nextSequenceFormat);
+                                } 
+
+                                var isValidate;
+                                if (request.body.Status === 'Sukses') {
+                                    isValidate = '1';
+                                } else {
+                                    isValidate = '0';
+                                }
+
+                                // save transaction induk
+                                sql = 'INSERT INTO trans_donatur (TransNumber, TransDate, BUSS_CODE, DonaturID, CurrencyID, Amount, FileName, ProgDonatur, KodeNik, NoInvoice, isValidate, isDelete, TahunBuku, isSend, CRTX_DATE, CRTX_BYXX) VALUES ("' + generateNumber + '", "' + request.body.TglTransaksi + '", "' + bussCode + '", "' + donaturID + '", "IDR", ' + request.body.Amount + ', "", "' + request.body.Program + '", (select KodeNik from tb21_empl where Hp = "' + request.body.NoHPRelawan + '" Limit 1), "' + request.body.NoInvoice + '", "' + isValidate + '", "0", (select THNX_AJAR from tb00_thna where CABX_CODE = "' + bussCode + '" And "' + tglNow2 + '" Between DATE_FORMAT(TGLX_STRT, "%Y-%m-%d") And DATE_FORMAT(TGLX_ENDX, "%Y-%m-%d") Limit 1), "' + isValidate + '", "' + tglNow + '", "' + request.userID + '")';  
+
+                                db.query(sql, (err, result) => {
+                                });
+
+                                // save transaction item
+                                sql = 'INSERT INTO trans_item (TransNumber, BUSS_CODE, KodeNik, ProgDonatur, Amount_item, THNX_BUKU, CRTX_BYXX, CRTX_DATE) VALUES ("' + generateNumber + '", "' + bussCode + '", (select KodeNik from tb21_empl where Hp = "' + request.body.NoHPRelawan + '" Limit 1), "' + request.body.KodeProgram + '", ' + request.body.Amount + ', (select THNX_AJAR from tb00_thna where CABX_CODE = "' + bussCode + '" And "' + tglNow2 + '" Between DATE_FORMAT(TGLX_STRT, "%Y-%m-%d") And DATE_FORMAT(TGLX_ENDX, "%Y-%m-%d") Limit 1), "' + request.userID + '", "' + tglNow + '")';
+
+                                db.query(sql, (err, result) => {
+                                });
+
+                                if (isValidate === '1') {
+                                    // Kirim ke WA Blast
+                                    const callback = () => {
+                                    };
+
+                                    var data2 = {
+                                        "mobile_no" : request.body.CodeCountryHP + request.body.NoHP,
+                                        "kode_donasi": generateNumber,
+                                        "tanggal_transaksi": request.body.TglTransaksi,
+                                        "nama": request.body.NamaDonatur,
+                                        "nominal": request.body.Amount,
+                                        "program": request.body.Program,
+                                        "status_donasi": "Sukses"
+                                    };
+                
+                                    var apiWA =  new ApiWA();
+                                    apiWA.sendWABlast(data2, callback);
+                                }
+                                
+                                response.send({
+                                    status: true,
+                                    message: 'Sukses'
+                                });
+                            }
+                            var generateAutonumber2 =  new GenerateNumber('TRD', tahun, fncNext2);
+                            generateAutonumber2.setBussCode(bussCode);
+                            generateAutonumber2.process();
+                        });
+                    };
+                    
+                    var generateAutonumberObj =  new GenerateNumber('DO', tahun, fncNext);
+                    generateAutonumberObj.setBussCode(bussCode);
+                    generateAutonumberObj.process();
+                }
+            });
+        });
+    }
+
+    updateSimpleTrans = (req, res) => {
+        var sql = "update trans_donatur set ? where NoInvoice = '" + req.body.NoInvoice + "'";
+        var data = {
+            isValidate : req.body.statusPembayaran === 'Sukses' ? '1' : '0',
+            UPDT_BYXX : req.userID,
+            UPDT_DATE : moment(new Date()).format('YYYY-MM-DD HH:mm:ss')
+        }
+
+        db.query(sql, data, (err, result) => {
+            if (req.body.statusPembayaran === 'Sukses') {
+                sql = "select a.TransNumber, a.Amount, DATE_FORMAT(a.TransDate, '%Y-%m-%d %H:%i:%s') As tglFormat, CONCAT(b.CodeCountryHP, b.NoHP) As NoHP2, b.NAMA from trans_donatur a inner join tb11_mzjb b on a.DonaturID = b.NO_ID where a.NoInvoice = '" + req.body.NoInvoice + "' limit 1";
+
+                db.query(sql, function(err, rows, fields) {
+                    // Kirim ke WA Blast
+                    if (rows.length > 0) {
+                        const callback = () => {
+                        };
+
+                        var data2 = {
+                            "mobile_no" : rows[0].NoHP2,
+                            "kode_donasi": rows[0].TransNumber,
+                            "tanggal_transaksi": rows[0].tglFormat,
+                            "nama": rows[0].NAMA,
+                            "nominal": rows[0].Amount,
+                            "program": rows[0].ProgDonatur,
+                            "status_donasi": "Sukses"
+                        };
+
+                        var apiWA =  new ApiWA();
+                        apiWA.sendWABlast(data2, callback);
+                    }
+                });
+            } 
+
+            res.send({
+                status: true,
+                message: 'Sukses'
+            });
         });
     }
 
