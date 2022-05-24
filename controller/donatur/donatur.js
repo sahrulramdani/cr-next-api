@@ -2454,6 +2454,34 @@ export default class Donatur {
         });
     }
 
+    getTransactionsPerChannel2 = function(req, res) {
+        var authPrnt = req.AUTH_PRNT;
+
+        var tgl1 = req.params.tgl1;
+        var tgl2 = req.params.tgl2;
+
+        var sql = "select c.CODD_DESC As Channel, SUM(a.Amount) As Total, COUNT(DISTINCT b.NO_ID) As JumlahDonatur, COUNT(a.TransNumber) As JumlahTransaksi FROM trans_donatur a inner join tb11_mzjb b on a.DonaturID = b.NO_ID inner join tb00_basx c on b.Channel = c.CODD_VALU And c.CODD_FLNM = 'CHANNEL_DONATUR' inner join tb00_unit d on a.BUSS_CODE = d.KODE_UNIT left join tb21_empl e on a.KodeNik = e.KodeNik left join tb00_basx f on e.DepartmentID = f.CODD_VALU And f.CODD_FLNM = 'DEPARTMENT' WHERE a.isValidate = '1' And DATE_FORMAT(a.TransDate, '%Y-%m-%d') between '" + tgl1 + "' and '" + tgl2 + "' And d.KODE_URUT like '" + req.KODE_URUT0 + "%' And (a.isDelete <> '1' OR a.isDelete IS NULL) group by c.CODD_DESC order by SUM(a.Amount) desc";
+    
+        db.query(sql, function(err, rows, fields) {
+            var output = [];
+    
+            if (rows.length > 0) {
+                rows.forEach(function(row) {
+                    var obj = new Object();
+                    for(var key in row) {
+                        obj[key] = row[key]; 
+                    }
+
+                    obj['AUTH_PRNT'] = authPrnt;
+    
+                    output.push(obj);
+                })
+            }
+    
+            res.send(output);
+        });
+    }
+
     updateTransSLPDonatur = function(req, res) {
         // check Access PROC_CODE 
         if (fncCheckProcCode(req.body.ProcCode, req.procCodes) === false) {

@@ -308,7 +308,7 @@ export default class Accounting {
 
         getActiveTahunBuku = function(req, res) {
             var tgl = moment(new Date()).format('YYYYMMDD');
-            var sql = 'SELECT * FROM `tb00_thna` WHERE "' + tgl + '" Between DATE_FORMAT(TGLX_STRT, "%Y%m%d") And DATE_FORMAT(TGLX_ENDX, "%Y%m%d") And CABX_CODE = "' + req.BUSS_CODE0 + '"';
+            var sql = 'SELECT * FROM `tb00_thna` WHERE ("' + tgl + '" Between DATE_FORMAT(TGLX_STRT, "%Y%m%d") And DATE_FORMAT(TGLX_ENDX, "%Y%m%d") And CABX_CODE = "' + req.BUSS_CODE0 + '") Or STAT_AKTF = "1"';
             
             db.query(sql, function(err, rows, fields) {
                 res.send(rows);
@@ -316,8 +316,8 @@ export default class Accounting {
         }
 
         getActiveTahunDonasi = function(req, res) {
-            var tgl = moment(new Date()).format('YYYY-MM-DD');
-            var sql = 'SELECT a.*, b.DashboardView FROM `tb00_thna` a left join tb00_unit b on a.CABX_CODE = b.KODE_UNIT WHERE "' + tgl + '" Between DATE_FORMAT(a.TGLX_STRT2, "%Y%m%d") And DATE_FORMAT(a.TGLX_ENDX2, "%Y%m%d") And a.CABX_CODE = "' + req.BUSS_CODE0 + '"';
+            var tgl = moment(new Date()).format('YYYYMMDD');
+            var sql = 'SELECT a.*, b.DashboardView FROM `tb00_thna` a left join tb00_unit b on a.CABX_CODE = b.KODE_UNIT WHERE ("' + tgl + '" Between DATE_FORMAT(a.TGLX_STRT2, "%Y%m%d") And DATE_FORMAT(a.TGLX_ENDX2, "%Y%m%d") And a.CABX_CODE = "' + req.BUSS_CODE0 + '") Or STAT_AKTF = "1"';
             
             db.query(sql, function(err, rows, fields) {
                 var output = [];
