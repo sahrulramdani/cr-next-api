@@ -306,9 +306,69 @@ export default class Accounting {
             });
         }
 
+        getListPeriode = function(req, res) {
+            // get user Access
+            var authAdd = req.AUTH_ADDX;
+            var authEdit = req.AUTH_EDIT;
+
+            var sql = 'SELECT a.*, DATE_FORMAT(a.TGLX_STRT, "%Y-%m-%d") As TGLX_STRT, DATE_FORMAT(a.TGLX_ENDX, "%Y-%m-%d") As TGLX_ENDX, DATE_FORMAT(a.TGLX_STRT2, "%Y-%m-%d") As TGLX_STRT2, DATE_FORMAT(a.TGLX_ENDX2, "%Y-%m-%d") As TGLX_ENDX2 FROM `tb00_thna` a inner join tb00_unit b on a.CABX_CODE = b.KODE_UNIT where b.KODE_URUT like "' + req.KODE_URUT0 + '%" order by a.TGLX_STRT desc';
+            
+            db.query(sql, function(err, rows, fields) {
+                var output = [];
+    
+                if (rows.length > 0) {
+                    rows.forEach(function(row) {
+                        var obj = new Object();
+                        for(var key in row) {
+                            obj[key] = row[key];
+                        }
+    
+                        obj['AUTH_ADDX'] = authAdd;
+                        obj['AUTH_EDIT'] = authEdit;
+    
+                        output.push(obj);
+                    })
+                }
+    
+                res.send(output);
+            });
+        }
+
+        getTahunPeriode = function(req, res) {
+            // get user Access
+            var authAdd = req.AUTH_ADDX;
+            var authEdit = req.AUTH_EDIT;
+            var authDelt = req.AUTH_DELT;
+            var authAppr = req.AUTH_APPR;  // auth Approve
+            
+            var id = req.params.id;
+            var sql = 'SELECT * FROM `tb00_thna` WHERE id = ' + id;
+            db.query(sql, function(err, rows, fields) {
+                var output = [];
+    
+                if (rows.length > 0) {
+                    rows.forEach(function(row) {
+                        var obj = new Object();
+                        for(var key in row) {
+                            obj[key] = row[key];
+                        }
+    
+                        obj['AUTH_ADDX'] = authAdd;
+                        obj['AUTH_EDIT'] = authEdit;
+                        obj['AUTH_DELT'] = authDelt;
+                        obj['AUTH_APPR'] = authAppr;
+    
+                        output.push(obj);
+                    })
+                }
+    
+                res.send(output);
+            });
+        }
+
         getActiveTahunBuku = function(req, res) {
             var tgl = moment(new Date()).format('YYYYMMDD');
-            var sql = 'SELECT * FROM `tb00_thna` WHERE ("' + tgl + '" Between DATE_FORMAT(TGLX_STRT, "%Y%m%d") And DATE_FORMAT(TGLX_ENDX, "%Y%m%d") And CABX_CODE = "' + req.BUSS_CODE0 + '") Or STAT_AKTF = "1"';
+            var sql = 'SELECT `tb00_thna`.* FROM `tb00_thna` WHERE ("' + tgl + '" Between DATE_FORMAT(TGLX_STRT, "%Y%m%d") And DATE_FORMAT(TGLX_ENDX, "%Y%m%d") Or STAT_AKTF = "1") And CABX_CODE = "' + req.BUSS_CODE0 + '"';
             
             db.query(sql, function(err, rows, fields) {
                 res.send(rows);
@@ -368,6 +428,35 @@ export default class Accounting {
 
             db.query(qryCmd, function(err, rows, fields) {
                 response.send(rows);
+            });
+        }
+
+        updatePeriode = function(req, res) {
+            var sql = 'UPDATE tb00_thna SET ? WHERE id = ' + req.body.id;
+
+            var data = {
+                TGLX_STRT : req.body.TGLX_STRT,
+                TGLX_ENDX : req.body.TGLX_ENDX,
+                TGLX_STRT2 : req.body.TGLX_STRT2,
+                TGLX_ENDX2 : req.body.TGLX_ENDX2,
+                STAT_AKTF : req.body.STAT_AKTF,
+                UPDT_DATE : new Date(),
+                UPDT_BYXX : req.userID
+            };
+            
+            db.query(sql, data, (err, result) => {
+                if (err) {
+                    console.log('Error', err);
+    
+                    res.send({
+                        status: false,
+                        message: err.sqlMessage
+                    });
+                } else {
+                    res.send({
+                        status: true
+                    });
+                }
             });
         }
 }

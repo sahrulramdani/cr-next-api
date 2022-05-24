@@ -186,8 +186,11 @@ import * as C from './controller/index.js';
       app.route('/crm/transactions-per-group/:tgl1/:tgl2').get(C.auth.verifyToken, C.donatur.getDetTransactionsPerGroup);
 
       // ------ Accounting --------------
+      app.route('/accounting/tahun-periode/list').get(C.auth.verifyToken, C.accounting.getListPeriode);
       app.route('/accounting/tahun-buku/save').post(C.auth.verifyToken, C.accounting.saveTahunBuku);
+      app.route('/accounting/tahun-buku/update').post(C.auth.verifyToken, C.accounting.updatePeriode);
       app.route('/accounting/tahun-buku/active').get(C.auth.verifyToken, C.accounting.getActiveTahunBuku);
+      app.route('/accounting/tahun-buku/:id').get(C.auth.verifyToken, C.accounting.getTahunPeriode);
       app.route('/accounting/tahun-donasi/active').get(C.auth.verifyToken, C.accounting.getActiveTahunDonasi);
       app.route('/accounting/tahun-bukus').get(C.auth.verifyToken, C.accounting.tahunBukuAll);
       app.route('/accounting/mutasi/save').post(C.auth.verifyToken, C.accounting.saveMutasi);
