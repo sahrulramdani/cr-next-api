@@ -1533,7 +1533,6 @@ export default class Donatur {
                 Catatan : req.body.Catatan,
                 KodeNik : req.body.KodeNik,
                 KODE_KLSX : req.body.KODE_KLSX,
-                TahunBuku : req.body.TahunBuku,
                 NoInvoice : req.body.NoInvoice,
                 isValidate : req.body.isValidate,
                 isDelete : req.body.isDelete,
@@ -3931,7 +3930,7 @@ export default class Donatur {
                         }
 
                         // save transaction induk
-                        sql = 'INSERT INTO trans_donatur (TransNumber, TransDate, BUSS_CODE, DonaturID, CurrencyID, Amount, MethodPayment, FileName, ProgDonatur, KodeNik, NoInvoice, isValidate, isDelete, TahunBuku, isSend, CRTX_DATE, CRTX_BYXX, transaction) VALUES ("' + generateNumber + '", "' + request.body.TglTransaksi + '", "' + bussCode + '", "' + donaturID + '", "IDR", ' + request.body.Amount + ', "01", "", "' + request.body.Program + '", (select KodeNik from tb21_empl where Hp = "' + request.body.NoHPRelawan + '" Limit 1), "' + request.body.NoInvoice + '", "' + isValidate + '", "0", (select THNX_AJAR from tb00_thna where CABX_CODE = "' + bussCode + '" And "' + tglNow2 + '" Between DATE_FORMAT(TGLX_STRT, "%Y-%m-%d") And DATE_FORMAT(TGLX_ENDX, "%Y-%m-%d") Limit 1), "' + isValidate + '", "' + tglNow + '", "' + request.userID + '", "2" /* 2: WA Chatbot */)';  
+                        sql = 'INSERT INTO trans_donatur (TransNumber, TransDate, BUSS_CODE, DonaturID, CurrencyID, Amount, MethodPayment, FileName, ProgDonatur, KodeNik, NoInvoice, isValidate, isDelete, TahunBuku, isSend, CRTX_DATE, CRTX_BYXX, transaction) VALUES ("' + generateNumber + '", "' + request.body.TglTransaksi + '", "' + bussCode + '", "' + donaturID + '", "IDR", ' + request.body.Amount + ', "01", "", "' + request.body.Program + '", (select KodeNik from tb21_empl where Hp = "' + request.body.NoHPRelawan + '" Limit 1), "' + request.body.NoInvoice + '", "' + isValidate + '", "0", (select THNX_AJAR from tb00_thna where CABX_CODE = "' + bussCode + '" And ("' + tglNow2 + '" Between DATE_FORMAT(TGLX_STRT, "%Y-%m-%d") And DATE_FORMAT(TGLX_ENDX, "%Y-%m-%d") Or STAT_AKTF = "1") Limit 1), "' + isValidate + '", "' + tglNow + '", "' + request.userID + '", "2" /* 2: WA Chatbot */)';  
 
                         db.query(sql, (err, result) => {
                         });
@@ -4000,7 +3999,7 @@ export default class Donatur {
                                 }
 
                                 // save transaction induk
-                                sql = 'INSERT INTO trans_donatur (TransNumber, TransDate, BUSS_CODE, DonaturID, CurrencyID, Amount, FileName, ProgDonatur, KodeNik, NoInvoice, isValidate, isDelete, TahunBuku, isSend, CRTX_DATE, CRTX_BYXX) VALUES ("' + generateNumber + '", "' + request.body.TglTransaksi + '", "' + bussCode + '", "' + donaturID + '", "IDR", ' + request.body.Amount + ', "", "' + request.body.Program + '", (select KodeNik from tb21_empl where Hp = "' + request.body.NoHPRelawan + '" Limit 1), "' + request.body.NoInvoice + '", "' + isValidate + '", "0", (select THNX_AJAR from tb00_thna where CABX_CODE = "' + bussCode + '" And "' + tglNow2 + '" Between DATE_FORMAT(TGLX_STRT, "%Y-%m-%d") And DATE_FORMAT(TGLX_ENDX, "%Y-%m-%d") Limit 1), "' + isValidate + '", "' + tglNow + '", "' + request.userID + '")';  
+                                sql = 'INSERT INTO trans_donatur (TransNumber, TransDate, BUSS_CODE, DonaturID, CurrencyID, Amount, FileName, ProgDonatur, KodeNik, NoInvoice, isValidate, isDelete, TahunBuku, isSend, CRTX_DATE, CRTX_BYXX) VALUES ("' + generateNumber + '", "' + request.body.TglTransaksi + '", "' + bussCode + '", "' + donaturID + '", "IDR", ' + request.body.Amount + ', "", "' + request.body.Program + '", (select KodeNik from tb21_empl where Hp = "' + request.body.NoHPRelawan + '" Limit 1), "' + request.body.NoInvoice + '", "' + isValidate + '", "0", (select THNX_AJAR from tb00_thna where CABX_CODE = "' + bussCode + '" And ("' + tglNow2 + '" Between DATE_FORMAT(TGLX_STRT, "%Y-%m-%d") And DATE_FORMAT(TGLX_ENDX, "%Y-%m-%d") Or STAT_AKTF = "1") Limit 1), "' + isValidate + '", "' + tglNow + '", "' + request.userID + '")';  
 
                                 db.query(sql, (err, result) => {
                                 });
