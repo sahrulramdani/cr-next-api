@@ -3901,6 +3901,7 @@ export default class Donatur {
             LinkPayment : request.body.LinkPayment,
             statusPembayaran : request.body.statusPembayaran,
             NoHPRelawan : request.body.NoHPRelawan,
+            BankFrom : request.body.BankFrom,
             CRTX_DATE : tglNow,
             CRTX_BYXX : request.userID
         };
@@ -3930,7 +3931,7 @@ export default class Donatur {
                         }
 
                         // save transaction induk
-                        sql = 'INSERT INTO trans_donatur (TransNumber, TransDate, BUSS_CODE, DonaturID, CurrencyID, Amount, MethodPayment, FileName, ProgDonatur, KodeNik, NoInvoice, isValidate, isDelete, TahunBuku, isSend, CRTX_DATE, CRTX_BYXX, transaction) VALUES ("' + generateNumber + '", "' + request.body.TglTransaksi + '", "' + bussCode + '", "' + donaturID + '", "IDR", ' + request.body.Amount + ', "01", "", "' + request.body.Program + '", (select KodeNik from tb21_empl where Hp = "' + request.body.NoHPRelawan + '" Limit 1), "' + request.body.NoInvoice + '", "' + isValidate + '", "0", (select THNX_AJAR from tb00_thna where CABX_CODE = "' + bussCode + '" And ("' + tglNow2 + '" Between DATE_FORMAT(TGLX_STRT, "%Y-%m-%d") And DATE_FORMAT(TGLX_ENDX, "%Y-%m-%d") Or STAT_AKTF = "1") Limit 1), "' + isValidate + '", "' + tglNow + '", "' + request.userID + '", "2" /* 2: WA Chatbot */)';  
+                        sql = 'INSERT INTO trans_donatur (TransNumber, TransDate, BUSS_CODE, DonaturID, CurrencyID, Amount, MethodPayment, FileName, ProgDonatur, KodeNik, NoInvoice, isValidate, isDelete, TahunBuku, isSend, CRTX_DATE, CRTX_BYXX, terminal, BankTo, BankFrom) VALUES ("' + generateNumber + '", "' + request.body.TglTransaksi + '", "' + bussCode + '", "' + donaturID + '", "IDR", ' + request.body.Amount + ', "' + request.body.MethodPayment + '", "", "' + request.body.Program + '", (select KodeNik from tb21_empl where Hp = "' + request.body.NoHPRelawan + '" Limit 1), "' + request.body.NoInvoice + '", "' + isValidate + '", "0", (select THNX_AJAR from tb00_thna where CABX_CODE = "' + bussCode + '" And ("' + tglNow2 + '" Between DATE_FORMAT(TGLX_STRT, "%Y-%m-%d") And DATE_FORMAT(TGLX_ENDX, "%Y-%m-%d") Or STAT_AKTF = "1") Limit 1), "' + isValidate + '", "' + tglNow + '", "' + request.userID + '", "2" /* 2: WA Chatbot */, (select KODE_KASX_BANK from tb02_bank where KODE_BANK = "' + request.body.MethodPayment + '" And KODE_FLNM = "TYPE_BYRX" And BUSS_CODE = "' + bussCode + '"), "' + request.body.BankFrom + '")';  
 
                         db.query(sql, (err, result) => {
                         });
@@ -3999,7 +4000,7 @@ export default class Donatur {
                                 }
 
                                 // save transaction induk
-                                sql = 'INSERT INTO trans_donatur (TransNumber, TransDate, BUSS_CODE, DonaturID, CurrencyID, Amount, FileName, ProgDonatur, KodeNik, NoInvoice, isValidate, isDelete, TahunBuku, isSend, CRTX_DATE, CRTX_BYXX) VALUES ("' + generateNumber + '", "' + request.body.TglTransaksi + '", "' + bussCode + '", "' + donaturID + '", "IDR", ' + request.body.Amount + ', "", "' + request.body.Program + '", (select KodeNik from tb21_empl where Hp = "' + request.body.NoHPRelawan + '" Limit 1), "' + request.body.NoInvoice + '", "' + isValidate + '", "0", (select THNX_AJAR from tb00_thna where CABX_CODE = "' + bussCode + '" And ("' + tglNow2 + '" Between DATE_FORMAT(TGLX_STRT, "%Y-%m-%d") And DATE_FORMAT(TGLX_ENDX, "%Y-%m-%d") Or STAT_AKTF = "1") Limit 1), "' + isValidate + '", "' + tglNow + '", "' + request.userID + '")';  
+                                sql = 'INSERT INTO trans_donatur (TransNumber, TransDate, BUSS_CODE, DonaturID, CurrencyID, Amount, FileName, ProgDonatur, KodeNik, NoInvoice, isValidate, isDelete, TahunBuku, isSend, CRTX_DATE, CRTX_BYXX, MethodPayment, BankTo, terminal, BankFrom) VALUES ("' + generateNumber + '", "' + request.body.TglTransaksi + '", "' + bussCode + '", "' + donaturID + '", "IDR", ' + request.body.Amount + ', "", "' + request.body.Program + '", (select KodeNik from tb21_empl where Hp = "' + request.body.NoHPRelawan + '" Limit 1), "' + request.body.NoInvoice + '", "' + isValidate + '", "0", (select THNX_AJAR from tb00_thna where CABX_CODE = "' + bussCode + '" And ("' + tglNow2 + '" Between DATE_FORMAT(TGLX_STRT, "%Y-%m-%d") And DATE_FORMAT(TGLX_ENDX, "%Y-%m-%d") Or STAT_AKTF = "1") Limit 1), "' + isValidate + '", "' + tglNow + '", "' + request.userID + '", "' + request.body.MethodPayment + '", (select KODE_KASX_BANK from tb02_bank where KODE_BANK = "' + request.body.MethodPayment + '" And KODE_FLNM = "TYPE_BYRX" And BUSS_CODE = "' + bussCode + '"), "2", "' + request.body.BankFrom + '")';  
 
                                 db.query(sql, (err, result) => {
                                 });
