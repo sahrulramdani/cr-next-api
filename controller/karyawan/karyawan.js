@@ -127,7 +127,7 @@ export default class Karyawan {
                                 if (req.body.NOXX_VAXX !== undefined && req.body.NOXX_VAXX !== '' && req.body.NOXX_VAXX !== null) {
                                     sql = 'insert into tblRelawanDet (RelawanID, IDXX_GRPX, CRTX_BYXX, CRTX_DATE, prime, NOXX_VAXX) values select "' + kodeNik + '", IDXX_GRPX, "' + req.userID + '", "' + tglNow + '", "1", "' + req.body.NOXX_VAXX + '" from grpx_relx where IDXX_GRPX = "' + req.body.IDXX_GRPX + '"';
                                 } else {
-                                    sql = 'insert into tblRelawanDet (RelawanID, IDXX_GRPX, CRTX_BYXX, CRTX_DATE, prime, NOXX_VAXX) values select "' + kodeNik + '", IDXX_GRPX, "' + req.userID + '", "' + tglNow + '", "1", NOXX_VAXX from grpx_relx where IDXX_GRPX = "' + req.body.IDXX_GRPX + '"';
+                                    sql = 'insert into tblRelawanDet (RelawanID, IDXX_GRPX, CRTX_BYXX, CRTX_DATE, prime, NOXX_VAXX) select "' + kodeNik + '", IDXX_GRPX, "' + req.userID + '", "' + tglNow + '", "1", NOXX_VAXX from grpx_relx where IDXX_GRPX = "' + req.body.IDXX_GRPX + '"';
                                 }
 
                                 db.query(sql, (err2, result2) => {
