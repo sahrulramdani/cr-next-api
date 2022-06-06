@@ -155,7 +155,7 @@ import * as C from './controller/index.js';
       app.route('/crm/idDonaturs/all').get(C.auth.verifyToken, C.donatur.idDonatursAll);
       app.route('/crm/idDonaturs/:status').get(C.auth.verifyToken, C.donatur.idDonaturs);
       app.route('/crm/transaction/wa/payment_notification').post(C.auth.verifyToken, C.donatur.paymentWATransaction);  // API External
-      app.route('/crm/transaction/payment_notification').post(C.donatur.paymentTransaction);
+      app.route('/crm/transaction/payment_notification').post(C.donatur.paymentTransaction);  // payment notification from BSI Virtual Account
       app.route('/crm/simple_transaction/save').post(C.auth.verifyToken, C.donatur.saveSimpleTrans);    // API External
       app.route('/crm/simple_transaction/update').post(C.auth.verifyToken, C.donatur.updateSimpleTrans);    // API External
       app.route('/crm/transaction/item/delete').post(C.auth.verifyToken, C.donatur.deleteTransItem);
