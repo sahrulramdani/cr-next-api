@@ -34,7 +34,8 @@ const db = mysql.createConnection({
 
 // server development
 /* const db = mysql.createConnection({
-    host : '202.78.195.171',
+    host : '202.78.195.173',
+    port : 5506,
     user : 'sisqu',
     password : 'admin@sisqu100%',
     database : 'db_sisqu_dev'

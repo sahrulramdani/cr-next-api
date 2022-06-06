@@ -1392,6 +1392,7 @@ export default class Donatur {
 
                             sql += '("' + transNumber2 + '", "' + tglNow + '", "01", "' + status + '", "' + rows[0][0].TahunBuku + '", "' + message + '", "' + bussCode + '", "' + tglNow + '", "' + req.userID + '", "2")';
 
+                            var transactionID = rows[0][0].id;
                             db.query(sql, (err, result) => { 
                                 if (err) {
                                     console.log('Error', err);
@@ -1415,6 +1416,8 @@ export default class Donatur {
                                     db.query(qryCmd4, function(err, rows, fields) {
                                         res.send({
                                             transNumber: transNumber,
+                                            ID: transactionID,
+                                            isValidate: '1',
                                             status: true
                                         });
                                     });
