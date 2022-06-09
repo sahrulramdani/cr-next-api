@@ -1016,9 +1016,9 @@ export default class Donatur {
 
                     var data2 = {
                         "mobile_no" : req.body.NoHP,
-                        "kode_donasi": req.body.TranactionID,
+                        "kode_donasi": req.body.NoInvoice,
                         "tanggal_transaksi": req.body.TransDate,
-                        "nama": req.body.Nama,
+                        "nama": req.body.Nama + " (" + req.body.transNumber + ") ",
                         "nominal": req.body.Amount + ' (' + config.urlApp + '/crm/donatur/transaction/' + req.body.id + ')',
                         "program": req.body.Programs,
                         "status_donasi": "Sukses"
@@ -1451,9 +1451,9 @@ export default class Donatur {
                
                                    data2 = {
                                        "mobile_no" : rows[0][0].NoHP2,
-                                       "kode_donasi": rows[0][0].TransNumber,
+                                       "kode_donasi": rows[0][0].NoInvoice,
                                        "tanggal_transaksi": moment(new Date(rows[0][0].TransDate)).format('YYYY-MM-DD HH:mm:ss'),
-                                       "nama": rows[0][0].NAMA,
+                                       "nama": rows[0][0].NAMA + " (" + rows[0][0].TransNumber + ") ",
                                        "nominal": rows[0][0].Amount + ' (' + config.urlApp + '/crm/donatur/transaction/' + rows[0][0].id + ')',
                                        "program": rows[0][0].ProgDonatur,
                                        "status_donasi": "Sukses"
@@ -2105,9 +2105,9 @@ export default class Donatur {
                            
                                                var data2 = {
                                                    "mobile_no" : rows[0][0].NoHP2,
-                                                   "kode_donasi": rows[0][0].TransNumber,
+                                                   "kode_donasi": rows[0][0].NoInvoice,
                                                    "tanggal_transaksi": moment(new Date(rows[0][0].TransDate)).format('YYYY-MM-DD HH:mm:ss'),
-                                                   "nama": rows[0][0].NAMA,
+                                                   "nama": rows[0][0].NAMA + " (" + rows[0][0].TransNumber + ") ",
                                                    "nominal": rows[0][0].Amount + ' (' + config.urlApp + '/crm/donatur/transaction/' + rows[0][0].id + ')',
                                                    "program": rows[0][0].ProgDonatur,
                                                    "status_donasi": "Sukses"
@@ -3653,9 +3653,9 @@ export default class Donatur {
                    
                                        var data2 = {
                                            "mobile_no" : rows[0][0].NoHP2,
-                                           "kode_donasi": rows[0][0].TransNumber,
+                                           "kode_donasi": rows[0][0].NoInvoice,
                                            "tanggal_transaksi": moment(new Date(rows[0][0].TransDate)).format('YYYY-MM-DD HH:mm:ss'),
-                                           "nama": rows[0][0].NAMA,
+                                           "nama": rows[0][0].NAMA + " (" + rows[0][0].TransNumber + ") ",
                                            "nominal": rows[0][0].Amount + ' (' + config.urlApp + '/crm/donatur/transaction/' + rows[0][0].id + ')',
                                            "program": rows[0][0].ProgDonatur,
                                            "status_donasi": "Sukses"
@@ -3944,9 +3944,9 @@ export default class Donatur {
 
                             var data2 = {
                                 "mobile_no" : request.body.CodeCountryHP + request.body.NoHP,
-                                "kode_donasi": generateNumber,
+                                "kode_donasi": request.body.NoInvoice,
                                 "tanggal_transaksi": request.body.TglTransaksi,
-                                "nama": request.body.NamaDonatur,
+                                "nama": request.body.NamaDonatur + " (" + generateNumber + ") ",
                                 "nominal": request.body.Amount,
                                 "program": request.body.Program,
                                 "status_donasi": "Sukses"
@@ -4016,9 +4016,9 @@ export default class Donatur {
 
                                     var data2 = {
                                         "mobile_no" : request.body.CodeCountryHP + request.body.NoHP,
-                                        "kode_donasi": generateNumber,
+                                        "kode_donasi": request.body.NoInvoice,
                                         "tanggal_transaksi": request.body.TglTransaksi,
-                                        "nama": request.body.NamaDonatur,
+                                        "nama": request.body.NamaDonatur + " (" + generateNumber + ") ",
                                         "nominal": request.body.Amount,
                                         "program": request.body.Program,
                                         "status_donasi": "Sukses"
@@ -4067,9 +4067,9 @@ export default class Donatur {
 
                         var data2 = {
                             "mobile_no" : rows[0].NoHP2,
-                            "kode_donasi": rows[0].TransNumber,
+                            "kode_donasi": req.body.NoInvoice,
                             "tanggal_transaksi": rows[0].tglFormat,
-                            "nama": rows[0].NAMA,
+                            "nama": rows[0].NAMA + " (" + rows[0].TransNumber + ") ",
                             "nominal": rows[0].Amount,
                             "program": rows[0].ProgDonatur,
                             "status_donasi": "Sukses"
