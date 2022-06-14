@@ -3918,10 +3918,10 @@ export default class Donatur {
                         var isValidate;
                         var isSend;
                         if (request.body.statusPembayaran === 'Sukses') {
-                            isValidate = '2';
+                            isValidate = '1';
                             isSend = '1';
                         } else {
-                            isValidate = '1';
+                            isValidate = '0';
                             isSend = '0';
                         }
 
