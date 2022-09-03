@@ -7,12 +7,13 @@ import { accounting } from './accounting/index.js';
 import { auth } from './auth/index.js';
 import { menu } from './menu/index.js';
 import { utility } from './utility/index.js';
+import { perencanaan } from './perencanaan/index.js';
  
 var index = (request, response) => {
     response.json({ info: 'API SISQU 23/11/2021 10:53' })
   };
 
 export { index, setup, issue, karyawan, user, donatur, accounting, 
-         auth, menu, utility, event
+         auth, menu, utility, event, perencanaan
  	   };
 

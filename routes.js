@@ -222,6 +222,13 @@ import * as C from './controller/index.js';
       app.route('/utility/sequence/save').post(C.auth.verifyToken, C.utility.saveSequence);
       app.route('/utility/sequence/update').post(C.auth.verifyToken, C.utility.updateSequence);
       app.route('/utility/sequence/:initial/:tahun/:bussCode').get(C.auth.verifyToken, C.utility.getSequence);
+
+      // ------ Perencanaan --------------
+      app.route('/prog-kerja/list').get(C.auth.verifyToken, C.perencanaan.listProgramKerja);
+      app.route('/prog-kerja/save').post(C.auth.verifyToken, C.perencanaan.saveProgKerja);
+      app.route('/prog-kerja/update').post(C.auth.verifyToken, C.perencanaan.updateProgKerja);
+      app.route('/prog-kerja/delete/:id').get(C.auth.verifyToken, C.perencanaan.deleteProgKerja);  // id: Kode Program
+      app.route('/prog-kerja/:id').get(C.auth.verifyToken, C.perencanaan.getProgramKerja);   // id: Kode Program
 }
 
 
