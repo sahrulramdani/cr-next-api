@@ -6,17 +6,27 @@ import db from './koneksi.js';
 import { auth } from './controller/auth/index.js';
 import { config }  from './config.js';  // config app
 import fs from 'fs';
-
+import bodyParser from 'body-parser';
 
 const app = express();
 
 app.use(
     express.urlencoded({
-        extended: true
+        extended: true,
+        limit: '500mb',
+        parameterLimit: 10000000,
     })
 )
 app.use(express.json())
 app.use(cors());
+
+app.use(bodyParser.json({ limit: '500mb' }))
+app.use(bodyParser.urlencoded({
+  limit: '500mb',
+  extended: true,
+  parameterLimit: 10000000,
+}))      
+
 
 routes(app);
 

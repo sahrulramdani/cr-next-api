@@ -68,6 +68,14 @@ export default class Perencanaan {
         });
     }
 
+    getTreeview = function (req,res){
+        var sql = "SELECT a.*, b.NamaProgram, b.Type, b.Kategori, b.Active  FROM tb53_mbg a INNER JOIN progx_kerja b ON a.AccountCode = b.KodeAccount WHERE b.Kategori = '1' ";
+        db.query(sql, function(err, rows, fields) {
+            res.send(rows);
+        })
+    };
+    
+
     updateProgKerja = (req, res) => {
         var sql = 'update progx_kerja set ? where id = ' + req.body.id;
         var data = {

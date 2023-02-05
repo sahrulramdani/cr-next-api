@@ -1,3 +1,5 @@
+import { marketing } from './marketing/index.js';
+import { jamaah } from './jamaah/index.js';
 import { setup } from './setup/index.js';
 import { issue } from './issue/index.js';
 import { karyawan } from './karyawan/index.js';
@@ -10,10 +12,12 @@ import { utility } from './utility/index.js';
 import { perencanaan } from './perencanaan/index.js';
  
 var index = (request, response) => {
-    response.json({ info: 'API SISQU 23/11/2021 10:53' })
+    var d= new Date();
+    response.json({ info: 'API ERP ' + d.getDate()+"/"+d.getMonth()+"/"+d.getFullYear() + " "+ 
+    d.getHours()+":"+d.getMinutes()+":"+d.getMilliseconds() })
   };
 
-export { index, setup, issue, karyawan, user, donatur, accounting, 
+export { index, marketing, jamaah,setup, issue, karyawan, user, donatur, accounting, 
          auth, menu, utility, event, perencanaan
  	   };
 

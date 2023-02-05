@@ -8,7 +8,7 @@ const db = mysql.createConnection({
 
 module.exports = db; */
 
-import mysql from 'mysql';
+import mysql from "mysql";
 
 /* const db = mysql.createConnection({
     host : 'localhost',
@@ -18,12 +18,12 @@ import mysql from 'mysql';
 }); */
 
 // server cloud production
-const db = mysql.createConnection({
-    host : '202.78.195.170',
-    user : 'simz_user',
-    password : 'simz@sps100%',
-    database : 'db_simzdev'
-});
+// const db = mysql.createConnection({
+//     host : '202.78.195.170',
+//     user : 'simz_user',
+//     password : 'simz@sps100%',
+//     database : 'db_simzdev'
+// });
 
 /* const db = mysql.createConnection({
     host : '202.78.195.170',
@@ -33,12 +33,20 @@ const db = mysql.createConnection({
 }); */
 
 // server development
-/* const db = mysql.createConnection({
-    host : '202.78.195.173',
-    port : 5506,
-    user : 'sisqu',
-    password : 'admin@sisqu100%',
-    database : 'db_sisqu_dev'
-}); */
+const db = mysql.createConnection({
+  host: "localhost",
+  port: 3306,
+  user: "root",
+  password: "",
+  database: "db_cahayaraudhah",
+});
+
+// const db = mysql.createConnection({
+//     host : 'localhost',
+//     port : 4406,
+//     user : 'root',
+//     password : 'formed',
+//     database : 'pte_projman'
+// });
 
 export default db;

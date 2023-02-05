@@ -1,3 +1,5 @@
+import { request } from 'express';
+import  db from './../../koneksi.js';
 // -----  MANIPULATION STRING -------------
 
 // Collection (Set) to String (union with semicolon)
@@ -76,6 +78,16 @@ function ExcelDateToJSDate(serial) {
    }
 }
 
+function randomString(length) {
+    var result           = '';
+    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = characters.length;
+    for ( var i = 0; i < length; i++ ) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+}
+
 // -----  MANIPULATION NUMBER -------------
 function separatorNumber(angka) {
     // separator ','   descimal '.'
@@ -129,9 +141,34 @@ const generateAutonumber = (initial, sequenceUnitCode, tahun, nextSequenceFormat
     return output;
 }
 
+//-----------------Serial Number PTE-----------
+const numberSerial=(req,respon)=>{
+    var dataParam={
+        BUSS_CODE: req.body.buss_code,
+        MODX_APPS: req.body.modx_apps,
+        THNX_CODE: req.body.thnx_code,
+        BLNX_CODE: req.body.blnx_code,
+        TYPE_FORM: req.body.type_form
+    };
+    var qryCmd = "UPDATE tb_nourut set NOXX_URUT=NOXX_URUT+1 where MODX_APPS = '" + modulApp + "' and THNX_CODE='" + thn+ "' and TYPE_FORM='" + typeForm + "'";
+    db.query(qryCmd,(err, result) => {
+        if(err){
+            qryCmd="INSERT INTO SET ?";
+            db.query(qryCmd, dataParam,(err,result)=>{
+                if(err){
+                    
+                }else{
+
+                }
+            })
+        }else{
+
+        }
+    });
+}
 
 export { 
     fncUnionComma, fncParseComma, ExcelDateToJSDate, 
     generateAutonumber, weekOfMonth, separatorNumber,
-    fncAnd
+    fncAnd, randomString
 };
