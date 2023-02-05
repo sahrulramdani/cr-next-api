@@ -26,6 +26,29 @@ import  express from 'express';
       app.route("/marketing/jadwal/update").post(C.marketing.updateJadwal);
       app.route('/marketing/jadwal/delete').post(C.marketing.deleteJadwal);
 
+      //---- Inventory Satuan ----
+      app.route("/inventory/satuan/getAllSatuan").get(C.inventory.getAllSatuan);
+      app.route("/inventory/satuan/getDetailSatuan/:id").get(C.inventory.getDetailSatuan);
+      app.route("/inventory/satuan/update").post(C.inventory.updateInventory);
+      app.route("/inventory/satuan/save").post(C.inventory.saveInvetorySatuan);
+      app.route("/inventory/satuan/delete").post(C.inventory.deleteInventorySatuan);
+
+      //---- Inventory Barang ----
+      app.route("/inventory/barang/getAllBarang").get(C.inventory.getBarangAll);
+      app.route("/inventory/barang/getdetail/:id").get(C.inventory.getDetailBarang);
+      app.route('/inventory/barang/save').post(C.inventory.saveBarang);
+      app.route('/inventory/barang/update').post(C.inventory.updateBarang);
+      app.route('/inventory/barang/updateStok').post(C.inventory.updateStokBarang);
+      app.route('/inventory/barang/delete').post(C.inventory.deleteBarang);
+
+      //--- Inventory Grup Barang
+      app.route("/inventory/grupbrg/getGrupBrgHeaderAll").get(C.inventory.getGrupBrgHeaderAll);
+      app.route("/inventory/grupsbrg/getGrupDetail/:id").get(C.inventory.getGrupBrgDetail);
+      app.route("/inventory/grupbrg/save").post(C.inventory.saveGrupBarangHeader);
+      app.route("/inventory/grupbrg/saveDetail").post(C.inventory.saveGrupBarangDetail);
+      app.route("/inventory/grupbrg/deleteGrupBarang").post(C.inventory.deleteGrupBarang);
+      app.route("/inventory/grupbrg/deleteGrupBarangDetail").post(C.inventory.deleteGrupBarangDetail);
+
       // --- Jamaah Jamaah --
 
       app.route('/jamaah/all-jamaah').get(C.jamaah.getAllJamaah);
