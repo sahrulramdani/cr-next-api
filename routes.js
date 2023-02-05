@@ -16,15 +16,15 @@ import  express from 'express';
       app.route('/marketing/agency/detail/downline/:id').get(C.marketing.getDetailDownlineAgency);
 
       //--- Marketing Jadwal --
-      // app.route("/marketing/jadwal/getjenispaket").get(C.marketing.getJenisPaket);
-      // app.route("/marketing/jadwal/getpaket").get(C.marketing.getPaket);
-      // app.route("/marketing/jadwal/getmatauang").get(C.marketing.getMataUang);
-      // app.route("/marketing/jadwal/getAllJadwal").get(C.marketing.getAllJadwal);
-      // app.route("/marketing/jadwal/getTransit").get(C.marketing.getTransit);
-      // app.route("/marketing/jadwal/getDetail/:id").get(C.marketing.getDetailJadwal);
-      // app.route("/marketing/jadwal/save").post(C.marketing.saveJadwal);
-      // app.route("/marketing/jadwal/update").post(C.marketing.updateJadwal);
-      // app.route('/marketing/jadwal/delete').post(C.marketing.deleteJadwal);
+      app.route("/marketing/jadwal/getjenispaket").get(C.marketing.getJenisPaket);
+      app.route("/marketing/jadwal/getpaket").get(C.marketing.getPaket);
+      app.route("/marketing/jadwal/getmatauang").get(C.marketing.getMataUang);
+      app.route("/marketing/jadwal/getAllJadwal").get(C.marketing.getAllJadwal);
+      app.route("/marketing/jadwal/getTransit").get(C.marketing.getTransit);
+      app.route("/marketing/jadwal/getDetail/:id").get(C.marketing.getDetailJadwal);
+      app.route("/marketing/jadwal/save").post(C.marketing.saveJadwal);
+      app.route("/marketing/jadwal/update").post(C.marketing.updateJadwal);
+      app.route('/marketing/jadwal/delete').post(C.marketing.deleteJadwal);
 
       // --- Jamaah Jamaah --
 

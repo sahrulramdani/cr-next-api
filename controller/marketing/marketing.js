@@ -9,6 +9,7 @@ import e from "express";
 // import multer from "multer";
 import fs from 'fs';
 import { randomString } from './../../libraries/sisqu/Utility.js';
+import date from 'date-and-time';
   
 export default class Marketing {
   
@@ -482,7 +483,7 @@ export default class Marketing {
     db.query(sql, function (err, rows, fields) {
       res.send(rows);
     });
-  }
+  }  
 
   getDetailPelangganAgency = (req, res) => {
     var sql = `SELECT a.KDXX_JMAH, a.STAS_BYAR, b.NAMA_LGKP, c.TGLX_BGKT, c.NAMA_PKET, c.JENS_PKET, IF( c.TGLX_BGKT <= DATE_FORMAT(NOW(), "%Y-%m-%d" ) ,1,0) AS CEK, d.NAMA_KNTR FROM mrkt_daftarh a LEFT JOIN jmah_jamaahh b ON a.KDXX_JMAH = b.KDXX_JMAH LEFT JOIN mrkt_jadwalh c ON a.KDXX_PKET = c.KDXX_JDWL LEFT JOIN hrsc_mkantorh d ON a.KDXX_KNTR = d.KDXX_KNTR WHERE a.KDXX_MRKT = '${req.params.id}'`
@@ -507,4 +508,182 @@ export default class Marketing {
       res.send(rows);
     });
   }
+
+
+  saveJadwal = (req,res) => {
+    var sql = "SELECT NOXX_AKHR FROM tb00_sequence WHERE IDXX_XXXX = '1' AND DOCX_CODE = 'JWL'";
+    db.query(sql,function(err,rows,fields) {
+
+      const now = new Date();
+      const tgl = date.format(now,"YYYY-MM-DD");
+      const tglReplace = tgl.replace(/-/g,"").toString();
+      
+      if(rows != '') {
+        var no = '';
+        rows.map((data) => {
+           no = parseInt(data.NOXX_AKHR) + 1;
+        })
+      }
+
+      var sqlUpdtSequence = `UPDATE tb00_sequence SET NOXX_AKHR = '${no}' WHERE IDXX_XXXX = '1' AND DOCX_CODE = 'JWL' `;
+
+      db.query(sqlUpdtSequence, function(err,rows,fields) {
+        var id = "J"+tglReplace+"00"+no;
+        
+        var sqlInsert = "INSERT INTO mrkt_jadwalh SET ?";
+        var data = {
+          KDXX_JDWL: req.body.KDXX_JDWL,
+          IDXX_JDWL: id,
+          NAMA_PKET: req.body.NAMA_PKET,
+          JENS_PKET: req.body.JENS_PKET,
+          TJAN_PKET: req.body.TJAN_PKET,
+          TGLX_BGKT: req.body.TGLX_BGKT,
+          TGLX_PLNG: req.body.TGLX_PLNG,
+          JMLX_HARI: req.body.JMLX_HARI,
+          JENS_PSWT: req.body.JENS_PSWT,
+          RUTE_AWAL: req.body.RUTE_AWAL,
+          RUTE_TRNS: req.body.RUTE_TRNS,
+          RUTE_AKHR: req.body.RUTE_AKHR,
+          TARIF_PKET: req.body.TARIF_PKET,
+          JMLX_SEAT: req.body.JMLX_SEAT,
+          MATA_UANG: req.body.MATA_UANG,
+          STAS_AKTF : '1',
+          KETERANGAN: req.body.KETERANGAN,
+          CRTX_DATE : new Date(),
+          CRTX_BYXX : "alfi",
+        }
+        
+        db.query(sqlInsert,data,(err,result) => {
+          if (err) {
+            console.log(err);
+            res.send({
+              status: false,
+              message: err.sqlMessage,
+            });
+          } else {
+            res.send({
+              status: true
+            });
+          }
+        });
+
+      });
+    });
+
+  }
+
+  updateJadwal = (req,res) => {
+    var sql = `UPDATE mrkt_jadwalh SET ? WHERE IDXX_JDWL = "${req.body.IDXX_JDWL}" `;
+
+    var data = {
+       IDXX_JDWL :  req.body.IDXX_JDWL,
+       NAMA_PKET : req.body.NAMA_PKET,
+       JENS_PKET : req.body.JENS_PKET,
+       TJAN_PKET : req.body.TJAN_PKET,
+       TGLX_BGKT : moment(req.body.TGLX_BGKT).format("YYYY-MM-DD"),
+       TGLX_PLNG : moment(req.body.TGLX_PLNG).format("YYYY-MM-DD"),
+       JMLX_HARI : req.body.JMLX_HARI,
+       JENS_PSWT : req.body.JENS_PSWT,
+       RUTE_AWAL : req.body.RUTE_AWAL,
+       RUTE_AWAL: req.body.RUTE_AWAL,
+      RUTE_TRNS: req.body.RUTE_TRNS,
+       TARIF_PKET : req.body.TARIF_PKET,
+       JMLX_SEAT : req.body.JMLX_SEAT,
+       MATA_UANG : req.body.MATA_UANG,
+       KETERANGAN : req.body.KETERANGAN,
+       UPDT_DATE : new Date(),
+       UPDT_BYXX : "alfi",
+    };
+
+    db.query(sql, data, (err, result) => {
+      if (err) {
+          console.log('Error', err);
+
+          res.send({
+              status: false,
+              message: err.sqlMessage
+          });
+      } else {
+        res.send({
+          status: true
+        });
+      }
+  });
+
+  }
+
+  deleteJadwal = (req,res) => {
+    var sql = `UPDATE mrkt_jadwalh SET ? WHERE IDXX_JDWL = "${req.body.IDXX_JDWL}" `;
+
+    var data = {
+      STAS_AKTF : '0',
+      UPDT_DATE : new Date(),
+      UPDT_BYXX : "alfi",
+    };
+
+    db.query(sql, data, (err, result) => {
+      if (err) {
+          console.log('Error', err);
+
+          res.send({
+              status: false,
+              message: err.sqlMessage
+          });
+      } else {
+        res.send({
+          status: true
+        });
+      }
+  });
+
+  }
+
+  getJenisPaket = (req,res) => {
+    var sql = "SELECT CODD_VALU, CODD_DESC FROM tb00_basx WHERE CODD_FLNM = 'JNS_PAKET'";
+    db.query(sql,function(err,rows,fields) {
+      res.send(rows);
+    });
+  }
+
+  getPaket = (req,res) => {
+    var sql = "SELECT CODD_VALU, CODD_DESC FROM tb00_basx WHERE CODD_FLNM = 'PAKET_XXXX'";
+    db.query(sql,function(err,rows,fields) {
+      res.send(rows);
+    });
+  }
+
+  getMataUang = (req, res) => {
+    var sql = "SELECT CODD_VALU, CODD_DESC FROM tb00_basx WHERE CODD_FLNM = 'CURR_MNYX'";
+    db.query(sql,function(err,rows,fields) {
+      res.send(rows);
+    });
+  }
+
+  getTransit = (req,res) => {
+    var sql = "SELECT IDXX_RTS, NAMA_NEGR FROM m_rutetransit";
+    db.query(sql, function(err,rows,fields) {
+      res.send(rows);
+    })
+  }
+
+  getAllJadwal = (req,res) => {
+    // DATE_FORMAT(a.TGL_PRMN, "%Y-%m-%d") AS TGL_TRAN
+    var sql = `SELECT a.IDXX_JDWL,a.TJAN_PKET,a.JENS_PSWT,a.RUTE_AWAL,a.RUTE_TRNS,a.RUTE_AKHR,a.JMLX_SEAT,( SELECT b.CODD_DESC FROM tb00_basx b WHERE b.CODD_VALU = a.NAMA_PKET AND b.CODD_FLNM = "PAKET_XXXX" ) AS namaPaket,( SELECT b.CODD_DESC FROM tb00_basx b WHERE b.CODD_VALU = a.JENS_PKET AND b.CODD_FLNM = "JNS_PAKET" ) AS jenisPaket,DATE_FORMAT( a.TGLX_BGKT, "%d-%m-%Y" ) AS TGLX_BGKT,DATE_FORMAT( a.TGLX_PLNG, "%d-%m-%Y" ) AS TGLX_PLNG,a.JMLX_HARI,a.TARIF_PKET,a.MATA_UANG,a.KETERANGAN,IF( a.TGLX_BGKT <= DATE_FORMAT(NOW(), "%Y-%m-%d" ) ,1,0) AS status FROM mrkt_jadwalh a WHERE a.STAS_AKTF = '1'`;
+
+    db.query(sql, function(err, rows, fields) {
+      res.send(rows);
+    })
+  }
+
+  getDetailJadwal = (req,res) => {
+    var id = req.params.id;
+    var sql = `SELECT a.IDXX_JDWL,a.TJAN_PKET,a.JENS_PSWT,a.RUTE_AWAL,a.RUTE_TRNS,b.NAMA_NEGR,a.RUTE_AKHR,a.JMLX_SEAT,( SELECT b.CODD_DESC FROM tb00_basx b WHERE b.CODD_VALU = a.NAMA_PKET AND b.CODD_FLNM = "PAKET_XXXX" ) AS namaPaket,a.NAMA_PKET,( SELECT b.CODD_DESC FROM tb00_basx b WHERE b.CODD_VALU = a.JENS_PKET AND b.CODD_FLNM = "JNS_PAKET" ) AS jenisPaket,a.JENS_PKET,DATE_FORMAT( a.TGLX_BGKT, "%d-%m-%Y" ) AS TGLX_BGKT,DATE_FORMAT( a.TGLX_PLNG, "%d-%m-%Y" ) AS TGLX_PLNG,a.JMLX_HARI,a.TARIF_PKET,a.MATA_UANG,( SELECT b.CODD_DESC FROM tb00_basx b WHERE b.CODD_VALU = a.MATA_UANG AND b.CODD_FLNM = "CURR_MNYX") AS MataUang,a.KETERANGAN,IF( a.TGLX_BGKT <= DATE_FORMAT(NOW(), "%Y-%m-%d" ) ,1,0) AS status FROM mrkt_jadwalh a LEFT JOIN m_rutetransit b ON a.RUTE_TRNS = b.IDXX_RTS WHERE a.IDXX_JDWL = "${id}"`;
+
+    db.query(sql, function(err, rows, fields) {
+      res.send(rows);
+    })
+  }
+
+
+
 }
