@@ -668,12 +668,22 @@ export default class Marketing {
 
   getAllJadwal = (req,res) => {
     // DATE_FORMAT(a.TGL_PRMN, "%Y-%m-%d") AS TGL_TRAN
-    var sql = `SELECT a.IDXX_JDWL,a.TJAN_PKET,a.JENS_PSWT,a.RUTE_AWAL,a.RUTE_TRNS,a.RUTE_AKHR,a.JMLX_SEAT,( SELECT b.CODD_DESC FROM tb00_basx b WHERE b.CODD_VALU = a.NAMA_PKET AND b.CODD_FLNM = "PAKET_XXXX" ) AS namaPaket,( SELECT b.CODD_DESC FROM tb00_basx b WHERE b.CODD_VALU = a.JENS_PKET AND b.CODD_FLNM = "JNS_PAKET" ) AS jenisPaket,DATE_FORMAT( a.TGLX_BGKT, "%d-%m-%Y" ) AS TGLX_BGKT,DATE_FORMAT( a.TGLX_PLNG, "%d-%m-%Y" ) AS TGLX_PLNG,a.JMLX_HARI,a.TARIF_PKET,a.MATA_UANG,a.KETERANGAN,IF( a.TGLX_BGKT <= DATE_FORMAT(NOW(), "%Y-%m-%d" ) ,1,0) AS status FROM mrkt_jadwalh a WHERE a.STAS_AKTF = '1'`;
+    var sql = `SELECT a.IDXX_JDWL,a.TJAN_PKET,a.JENS_PSWT,a.RUTE_AWAL,a.RUTE_TRNS,a.RUTE_AKHR,a.JMLX_SEAT,( SELECT b.CODD_DESC FROM tb00_basx b WHERE b.CODD_VALU = a.NAMA_PKET AND b.CODD_FLNM = "PAKET_XXXX" ) AS namaPaket,( SELECT b.CODD_DESC FROM tb00_basx b WHERE b.CODD_VALU = a.JENS_PKET AND b.CODD_FLNM = "JNS_PAKET" ) AS jenisPaket,DATE_FORMAT( a.TGLX_BGKT, "%d-%m-%Y" ) AS TGLX_BGKT,DATE_FORMAT( a.TGLX_PLNG, "%d-%m-%Y" ) AS TGLX_PLNG,a.JMLX_HARI,a.TARIF_PKET,a.MATA_UANG, (a.JMLX_SEAT - (IFNULL((SELECT SUM(c.KDXX_DFTR) FROM mrkt_daftarh c WHERE c.KDXX_PKET = a.IDXX_JDWL),0))) AS SISA ,a.KETERANGAN,IF( a.TGLX_BGKT <= DATE_FORMAT(NOW(), "%Y-%m-%d" ) ,1,0) AS status FROM mrkt_jadwalh a WHERE a.STAS_AKTF = '1'`;
 
     db.query(sql, function(err, rows, fields) {
       res.send(rows);
     })
   }
+
+  
+  getJadwalAvailable = (req,res) => {
+    var sql = `SELECT a.IDXX_JDWL,a.TJAN_PKET,a.JENS_PSWT,a.RUTE_AWAL,a.RUTE_TRNS,a.RUTE_AKHR,a.JMLX_SEAT,( SELECT b.CODD_DESC FROM tb00_basx b WHERE b.CODD_VALU = a.NAMA_PKET AND b.CODD_FLNM = "PAKET_XXXX" ) AS namaPaket,( SELECT b.CODD_DESC FROM tb00_basx b WHERE b.CODD_VALU = a.JENS_PKET AND b.CODD_FLNM = "JNS_PAKET" ) AS jenisPaket,DATE_FORMAT( a.TGLX_BGKT, "%d-%m-%Y" ) AS TGLX_BGKT,DATE_FORMAT( a.TGLX_PLNG, "%d-%m-%Y" ) AS TGLX_PLNG,a.JMLX_HARI,a.TARIF_PKET, a.STAS_AKTF AS STS ,a.MATA_UANG,a.KETERANGAN,IF( a.TGLX_BGKT <= DATE_FORMAT(NOW(), "%Y-%m-%d" ) ,1,0) AS status, (a.JMLX_SEAT - (IFNULL((SELECT SUM(c.KDXX_DFTR) FROM mrkt_daftarh c WHERE c.KDXX_PKET = a.IDXX_JDWL),0))) AS SISA FROM mrkt_jadwalh a HAVING status = '0' AND STS = '1' AND SISA > 0`;
+
+    db.query(sql, function(err, rows, fields) {
+      res.send(rows);
+    })
+  }
+
 
   getDetailJadwal = (req,res) => {
     var id = req.params.id;

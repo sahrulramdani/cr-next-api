@@ -51,4 +51,12 @@ export default class Setup {
         res.send(rows);
       });
     }
+
+    getKamarAll = (req, res) => {
+      var sql = "SELECT CODD_FLNM, CODD_VALU, CODD_DESC FROM tb00_basx WHERE CODD_FLNM = 'JENIS_KAMAR'"
+    
+      db.query(sql, function (err, rows, fields) {
+        res.send(rows);
+      });
+    }
 }

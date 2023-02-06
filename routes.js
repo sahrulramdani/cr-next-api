@@ -20,6 +20,7 @@ import  express from 'express';
       app.route("/marketing/jadwal/getpaket").get(C.marketing.getPaket);
       app.route("/marketing/jadwal/getmatauang").get(C.marketing.getMataUang);
       app.route("/marketing/jadwal/getAllJadwal").get(C.marketing.getAllJadwal);
+      app.route("/marketing/jadwal/get-jadwal").get(C.marketing.getJadwalAvailable);
       app.route("/marketing/jadwal/getTransit").get(C.marketing.getTransit);
       app.route("/marketing/jadwal/getDetail/:id").get(C.marketing.getDetailJadwal);
       app.route("/marketing/jadwal/save").post(C.marketing.saveJadwal);
@@ -52,11 +53,15 @@ import  express from 'express';
       // --- Jamaah Jamaah --
 
       app.route('/jamaah/all-jamaah').get(C.jamaah.getAllJamaah);
-      app.route('/jamaah/jamaah/pendaftaran').post(C.jamaah.pendaftaranJamaah);
       app.route('/jamaah/jamaah/save').post(C.jamaah.saveJamaah);
       app.route('/jamaah/jamaah/update').post(C.jamaah.updateJamaah);
       app.route('/jamaah/jamaah/delete').post(C.jamaah.deleteJamaah);
       app.route('/jamaah/jamaah/detail/:id').get(C.jamaah.getDetailJamaah);
+
+      // --- Jamaah Pendaftaran --
+      app.route('/jamaah/pendaftaran/kode').get(C.jamaah.generateNumberPendaftaran);
+      app.route('/jamaah/pendaftaran/save').post(C.jamaah.pendaftaranJamaah);
+      app.route('/jamaah/pendaftaran/tagihan').get(C.jamaah.generateNumberTagihan);
 
       app.use('/uploads', express.static('uploads'));
       // app.route('/marketing/location').get(C.marketing.getLocation);
@@ -71,6 +76,7 @@ import  express from 'express';
       app.route('/setup/pendidikans').get(C.setup.getPendidikan);
       app.route('/setup/pekerjaans').get(C.setup.getPekerjaan);
       app.route('/setup/banks').get(C.setup.getBankAll);
+      app.route('/setup/kamars').get(C.setup.getKamarAll);
       // app.route('/setup/save').post(C.auth.verifyToken, C.setup.saveSetup);
       // app.route('/setup/update').post(C.auth.verifyToken, C.setup.updateSetup);
       // app.route('/setup/delete').post(C.auth.verifyToken, C.setup.deleteSetup);

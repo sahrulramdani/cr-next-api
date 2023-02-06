@@ -8,7 +8,8 @@ import e from "express";
 // import multer from "multer.js";
 // import multer from "multer";
 import fs from 'fs';
-import { randomString } from './../../libraries/sisqu/Utility.js';
+import date from 'date-and-time';
+import { fncParseComma, randomString } from './../../libraries/sisqu/Utility.js';
   
 export default class Jamaah {
     getAllJamaah = (req, res) => {
@@ -358,6 +359,214 @@ export default class Jamaah {
   }
 
   pendaftaranJamaah = (req, res) => {
-    console.log('Cek Daftar');
+    // Menyimpan Foto KK
+    var fotoKkDaftar = req.body.FOTO_KKXX;
+    if (fotoKkDaftar != 'TIDAK') {        
+      var fotoKkDaftarName = randomString(10) + Date.now() + '.png';
+      fs.writeFile(`uploads/${fotoKkDaftarName}`, fotoKkDaftar, {encoding:'base64'}, function(err){
+        if (err) {
+          console.log(err);
+        }else{
+          console.log('berhasil');
+        }
+      });
+      var namaKk = fotoKkDaftarName;
+    }else{
+      var namaKk = '';
+    }
+
+    // Menyimpan Foto Dokumen Lain
+    var fotoKkDaftar = req.body.FOTO_DOCX;
+    if (fotoKkDaftar != 'TIDAK') {        
+      var fotoKkDaftarName = randomString(10) + Date.now() + '.png';
+      fs.writeFile(`uploads/${fotoKkDaftarName}`, fotoKkDaftar, {encoding:'base64'}, function(err){
+        if (err) {
+          console.log(err);
+        }else{
+          console.log('berhasil');
+        }
+      });
+      var namaDok = fotoKkDaftarName;
+    }else{
+      var namaDok = '';
+    }
+
+    // Menyimpan pendaftaran header
+    var qry = `INSERT INTO mrkt_daftarh SET ?`;
+    var data = {
+      KDXX_DFTR : req.body.KDXX_DFTR,
+      KDXX_JMAH : req.body.NOXX_IDNT,
+      KDXX_PKET : req.body.KDXX_JDWL,
+      KDXX_KNTR : req.body.KDXX_KNTR,
+      DOKX_KTPX : req.body.DOKX_KTPX,
+      DOKX_KKXX : req.body.DOKX_KKXX,
+      DOKX_LAIN : req.body.DOKX_LAIN,
+      PEMB_PSPR : req.body.PEMB_PSPR,
+      PRSS_VKSN : req.body.PRSS_VKSN,
+      HANDLING : req.body.HANDLING,
+      REFRENSI : req.body.REFRENSI,
+      KDXX_MRKT : req.body.KDXX_MRKT,
+      ESTX_TOTL : req.body.ESTX_TOTL,
+      JTUH_TEMP : req.body.JTUH_TEMP,
+      FOTO_KKXX : namaKk,
+      FOTO_DOCX : namaDok,
+      STAS_BYAR : 0,
+      UPDT_DATE : new Date(),
+      UPDT_BYXX : 'sahrulramdani20'
+    };
+
+    db.query(qry, data, (err, result) => {
+      if (err) {
+        console.log(err);
+        res.send({
+          status: false,
+          message: err.sqlMessage,
+        });
+      } else {
+        var tagihan = req.body.TAGIHAN;
+        var jsonTagihan = JSON.parse(tagihan);
+        var sts;
+
+        for (let i = 0; i < jsonTagihan.length; i++) {
+          var qry = `INSERT INTO mrkt_tagihanh SET ?`;
+          var data = {
+            // NOXX_TGIH : req.body.NOXX_TGIH,
+            KDXX_DFTR : req.body.KDXX_DFTR,
+            JENS_TGIH : jsonTagihan[i]['nama_tagihan'],
+            TARIF_TGIH : jsonTagihan[i]['total_tagihan'],
+            TOTL_TGIH : jsonTagihan[i]['total_tagihan'],
+            SISA_TGIH : 0,
+            UPDT_DATE : new Date(),
+            UPDT_BYXX : 'sahrulramdani20'
+          };      
+
+          db.query(qry, data, (err, result) => {
+              if (err) {
+                  sts = false;
+              } else {
+                  sts = true;
+              }
+          });
+        }
+
+        res.send({
+          status : true
+        });
+      }
+    });
+
   }
+
+  generateNumberPendaftaran = (req, res) => {
+    const now = new Date();
+    const tgl = date.format(now,"YYYY-MM-DD");
+    const tahun = date.format(now,"YYYY");
+    const tglReplace = tgl.replace(/-/g,"").toString();
+
+    var sql = "SELECT NOXX_AKHR FROM tb00_sequence WHERE IDXX_XXXX = '5' AND DOCX_CODE = 'PLG'";
+    db.query(sql,function(err,rows,fields) {
+      if (rows == '') {
+        var sql = "INSERT INTO tb00_sequence SET ?";
+        
+        var data = {
+          THNX_XXXX : tahun,
+          IDXX_XXXX : '5',
+          DOCX_CODE : 'PLG',
+          DTLX_CODE : 'ID Pelanggan',
+          NOXX_AKHR : 1,
+        }
+  
+        db.query(sql,data,(err,result) => {
+          if (err) {
+            console.log(err);
+            res.send({
+              status: false,
+              message: err.sqlMessage,
+            });
+          } else {
+            res.send({
+              idPelanggan : `P${tglReplace}001`
+            });
+          }
+        });
+      }else{
+        var no = '';
+        rows.map((data) => {
+           no = parseInt(data.NOXX_AKHR) + 1;
+        })
+
+        var sqlUpdtSequence = `UPDATE tb00_sequence SET NOXX_AKHR = '${no}' WHERE IDXX_XXXX = '5' AND DOCX_CODE = 'PLG' `;
+        db.query(sqlUpdtSequence, (err,result) => {
+          if (err) {
+            console.log(err);
+            res.send({
+              status: false,
+              message: err.sqlMessage,
+            });
+          } else {
+            res.send({
+              idPelanggan : "P" + tglReplace + no.toString().padStart(3,"0"),
+            });
+          }
+        });
+      }
+    });
+  }
+
+  generateNumberTagihan = (req, res) => {
+    const now = new Date();
+    const tgl = date.format(now,"YYYY-MM-DD");
+    const tahun = date.format(now,"YYYY");
+    const tglReplace = tgl.replace(/-/g,"").toString();
+
+    var sql = "SELECT NOXX_AKHR FROM tb00_sequence WHERE IDXX_XXXX = '6' AND DOCX_CODE = 'TGI'";
+    db.query(sql,function(err,rows,fields) {
+      if (rows == '') {
+        var sql = "INSERT INTO tb00_sequence SET ?";
+        
+        var data = {
+          THNX_XXXX : tahun,
+          IDXX_XXXX : '6',
+          DOCX_CODE : 'TGI',
+          DTLX_CODE : 'No Tagihan',
+          NOXX_AKHR : 1,
+        }
+  
+        db.query(sql,data,(err,result) => {
+          if (err) {
+            console.log(err);
+            res.send({
+              status: false,
+              message: err.sqlMessage,
+            });
+          } else {
+            res.send({
+              idTagihan : `T${tglReplace}001`
+            });
+          }
+        });
+      }else{
+        var no = '';
+        rows.map((data) => {
+           no = parseInt(data.NOXX_AKHR) + 1;
+        })
+
+        var sqlUpdtSequence = `UPDATE tb00_sequence SET NOXX_AKHR = '${no}' WHERE IDXX_XXXX = '6' AND DOCX_CODE = 'TGI' `;
+        db.query(sqlUpdtSequence, (err,result) => {
+          if (err) {
+            console.log(err);
+            res.send({
+              status: false,
+              message: err.sqlMessage,
+            });
+          } else {
+            res.send({
+              idTagihan : "T" + tglReplace + no.toString().padStart(3,"0"),
+            });
+          }
+        });
+      }
+    });
+  }
+  
 }
