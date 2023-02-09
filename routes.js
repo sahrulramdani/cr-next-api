@@ -53,15 +53,28 @@ import  express from 'express';
       // --- Jamaah Jamaah --
 
       app.route('/jamaah/all-jamaah').get(C.jamaah.getAllJamaah);
+      app.route('/jamaah/all-pelanggan').get(C.jamaah.getPelanggan);
       app.route('/jamaah/jamaah/save').post(C.jamaah.saveJamaah);
       app.route('/jamaah/jamaah/update').post(C.jamaah.updateJamaah);
       app.route('/jamaah/jamaah/delete').post(C.jamaah.deleteJamaah);
       app.route('/jamaah/jamaah/detail/:id').get(C.jamaah.getDetailJamaah);
+      app.route('/jamaah/jamaah/detail/info-paket/:id').get(C.jamaah.getDetailInfoPaket);
+      app.route('/jamaah/jamaah/detail/info-pelanggan/:id').get(C.jamaah.getDetailInfoPelanggan);
+      app.route('/jamaah/jamaah/detail/info-estimasi/:id').get(C.jamaah.getDetailInfoEstimasi);
+      app.route('/jamaah/jamaah/detail/info-bayar/:id').get(C.jamaah.getDetailRiwayatBayar);
+      app.route('/jamaah/jamaah/lainnya/kwitansi/:id').get(C.jamaah.getLainnyaKwitansi);
 
       // --- Jamaah Pendaftaran --
       app.route('/jamaah/pendaftaran/kode').get(C.jamaah.generateNumberPendaftaran);
       app.route('/jamaah/pendaftaran/save').post(C.jamaah.pendaftaranJamaah);
-      app.route('/jamaah/pendaftaran/tagihan').get(C.jamaah.generateNumberTagihan);
+
+      // --- Finance Pembayaran --
+      app.route('/finance/penerbangan/get-profit').get(C.finance.getPenerbanganLoss);
+      app.route('/finance/pembayaran/get-jamaah').get(C.finance.getJamaahDenganTagihan);
+      app.route('/finance/pembayaran/get-jadwal/:id').get(C.finance.getJadwalJamaah);
+      app.route('/finance/pembayaran/get-tagihan/:id').get(C.finance.getTagihanJamaah);
+      app.route('/finance/pembayaran/no-faktur').get(C.finance.generateNumberFaktur);
+      app.route('/finance/pembayaran/save').post(C.finance.savePembayaran);
 
       app.use('/uploads', express.static('uploads'));
       // app.route('/marketing/location').get(C.marketing.getLocation);

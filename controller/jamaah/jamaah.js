@@ -13,7 +13,7 @@ import { fncParseComma, randomString } from './../../libraries/sisqu/Utility.js'
   
 export default class Jamaah {
     getAllJamaah = (req, res) => {
-        var sql = `SELECT a.*, TIMESTAMPDIFF(year,a.TGLX_LHIR,CURDATE()) AS UMUR, b.CODD_DESC AS MENIKAH, c.CODD_DESC AS PENDIDIKAN, d.CODD_DESC AS PEKERJAAN, e.NOXX_PSPR, e.NAMA_PSPR, e.KLUR_DIXX, e.TGLX_KLUR, e.TGLX_EXPX FROM jmah_jamaahh a LEFT JOIN tb00_basx b ON a.JENS_MNKH = b.CODD_VALU LEFT JOIN tb00_basx c ON a.JENS_PEND = c.CODD_VALU LEFT JOIN tb00_basx d ON a.JENS_PKRJ = d.CODD_VALU LEFT JOIN jmah_jamaahp e ON a.NOXX_IDNT = e.NOXX_IDNT`;
+        var sql = `SELECT a.*, TIMESTAMPDIFF(year,a.TGLX_LHIR,CURDATE()) AS UMUR, b.CODD_DESC AS MENIKAH, c.CODD_DESC AS PENDIDIKAN, d.CODD_DESC AS PEKERJAAN, e.NOXX_PSPR, e.NAMA_PSPR, e.KLUR_DIXX, e.TGLX_KLUR, e.TGLX_EXPX FROM jmah_jamaahh a LEFT JOIN tb00_basx b ON a.JENS_MNKH = b.CODD_VALU LEFT JOIN tb00_basx c ON a.JENS_PEND = c.CODD_VALU LEFT JOIN tb00_basx d ON a.JENS_PKRJ = d.CODD_VALU LEFT JOIN jmah_jamaahp e ON a.NOXX_IDNT = e.NOXX_IDNT ORDER BY CRTX_DATE DESC`;
     
         db.query(sql, function (err, rows, fields) {
           res.send(rows);
@@ -26,6 +26,54 @@ export default class Jamaah {
       db.query(sql, function (err, rows, fields) {
         res.send(rows);
       });
+    }
+
+    getPelanggan = (req, res) => {
+      var sql = `SELECT a.*,TIMESTAMPDIFF(year,a.TGLX_LHIR,CURDATE()) AS UMUR, b.KDXX_DFTR, b.HANDLING, IF(b.KDXX_MRKT = '' , b.REFRENSI, c.NAMA_LGKP) AS NAMA_MRKT, IFNULL(d.NOXX_PSPR,'BELUM') AS PASPORAN, (SELECT SUM(e.JMLX_BYAR) FROM mrkt_tagihanh e WHERE e.KDXX_DFTR = b.KDXX_DFTR) AS UANG_MASUK, ((b.ESTX_TOTL) - (SELECT SUM(e.JMLX_BYAR) FROM mrkt_tagihanh e WHERE e.KDXX_DFTR = b.KDXX_DFTR)) AS SISA, DATE_FORMAT(f.TGLX_BGKT, "%d-%m-%Y" )	AS BERANGKAT, IF(f.TGLX_BGKT <= DATE_FORMAT( NOW(), "%Y-%m-%d" ), 1, 0 ) AS STS_BRGKT, g.NAMA_KNTR FROM jmah_jamaahh a LEFT JOIN mrkt_daftarh b ON a.NOXX_IDNT = b.KDXX_JMAH LEFT JOIN mrkt_agensih c ON b.KDXX_MRKT = c.KDXX_MRKT LEFT JOIN jmah_jamaahp d ON a.NOXX_IDNT = d.NOXX_IDNT LEFT JOIN mrkt_jadwalh f ON b.KDXX_PKET = f.IDXX_JDWL LEFT JOIN hrsc_mkantorh g ON b.KDXX_KNTR = g.KDXX_KNTR WHERE b.KDXX_DFTR != ''`
+  
+      db.query(sql, function (err, rows, fields) {
+        res.send(rows);
+      });
+    }
+
+    getDetailInfoPaket = (req,res) => {
+      var sql = `SELECT a.IDXX_JDWL,a.TJAN_PKET,a.JENS_PSWT,a.RUTE_AWAL,a.RUTE_TRNS,a.RUTE_AKHR,a.JMLX_SEAT,( SELECT b.CODD_DESC FROM tb00_basx b WHERE b.CODD_VALU = a.NAMA_PKET AND b.CODD_FLNM = "PAKET_XXXX" ) AS namaPaket,( SELECT b.CODD_DESC FROM tb00_basx b WHERE b.CODD_VALU = a.JENS_PKET AND b.CODD_FLNM = "JNS_PAKET" ) AS jenisPaket,DATE_FORMAT( a.TGLX_BGKT, "%d-%m-%Y" ) AS TGLX_BGKT,DATE_FORMAT( a.TGLX_PLNG, "%d-%m-%Y" ) AS TGLX_PLNG,a.JMLX_HARI,a.TARIF_PKET,a.MATA_UANG, ((a.JMLX_SEAT) - (IFNULL((SELECT COUNT(c.KDXX_DFTR) FROM mrkt_daftarh c WHERE c.KDXX_PKET = a.IDXX_JDWL),0))) AS SISA ,a.KETERANGAN,IF( a.TGLX_BGKT <= DATE_FORMAT(NOW(), "%Y-%m-%d" ) ,1,0) AS status, d.KDXX_JMAH FROM mrkt_jadwalh a LEFT JOIN mrkt_daftarh d ON a.IDXX_JDWL = d.KDXX_PKET WHERE d.KDXX_DFTR = '${req.params.id}'`;
+  
+      db.query(sql, function(err, rows, fields) {
+        res.send(rows);
+      })
+    }
+
+    getDetailInfoPelanggan = (req,res) => {
+      var sql = `SELECT a.*, DATE_FORMAT( a.TGLX_LHIR, "%d-%m-%Y" ) AS KELAHIRAN, IF(a.JENS_KLMN = 'P', 'Pria', 'Wanita') AS KELAMIN, b.CODD_DESC AS MENIKAH, c.CODD_DESC AS PENDIDIKAN, d.CODD_DESC AS PEKERJAAN, e.NOXX_PSPR, e.NAMA_PSPR, e.KLUR_DIXX, e.TGLX_KLUR, e.TGLX_EXPX,f.KDXX_DFTR FROM jmah_jamaahh a LEFT JOIN tb00_basx b ON a.JENS_MNKH = b.CODD_VALU LEFT JOIN tb00_basx c ON a.JENS_PEND = c.CODD_VALU LEFT JOIN tb00_basx d ON a.JENS_PKRJ = d.CODD_VALU LEFT JOIN jmah_jamaahp e ON a.NOXX_IDNT = e.NOXX_IDNT LEFT JOIN mrkt_daftarh f ON a.NOXX_IDNT = f.KDXX_JMAH WHERE f.KDXX_DFTR = '${req.params.id}'`;
+  
+      db.query(sql, function(err, rows, fields) {
+        res.send(rows);
+      })
+    }
+
+    getDetailInfoEstimasi = (req,res) => {
+      var sql = `SELECT a.KDXX_DFTR, a.HANDLING, a.ESTX_TOTL, IF(STAS_BYAR = 1,'LUNAS','BELUM') AS STS_LUNAS, DATE_FORMAT( a.JTUH_TEMP, "%d-%m-%Y" ) AS JATUH_TEMP, (IFNULL((SELECT b.TOTL_TGIH FROM mrkt_tagihanh b WHERE b.KDXX_DFTR = a.KDXX_DFTR AND b.JENS_TGIH = 'Vaksin'),0)) AS VAKSIN, (IFNULL((SELECT b.TOTL_TGIH FROM mrkt_tagihanh b WHERE b.KDXX_DFTR = a.KDXX_DFTR AND b.JENS_TGIH = 'Paspor'),0)) AS PASPOR, (IFNULL((SELECT b.TOTL_TGIH FROM mrkt_tagihanh b WHERE b.KDXX_DFTR = a.KDXX_DFTR AND b.JENS_TGIH = 'Biaya Admin'),0)) AS ADMIN, (SELECT SUM(b.JMLX_BYAR) FROM mrkt_tagihanh b WHERE b.KDXX_DFTR = a.KDXX_DFTR) AS UANG_MASUK, ((a.ESTX_TOTL) - (SELECT SUM(b.JMLX_BYAR) FROM mrkt_tagihanh b WHERE b.KDXX_DFTR = a.KDXX_DFTR)) AS SISA_TAGIHAN, c.TARIF_PKET AS BIAYA_PKET FROM mrkt_daftarh a LEFT JOIN mrkt_jadwalh c ON a.KDXX_PKET = c.IDXX_JDWL WHERE a.KDXX_DFTR = '${req.params.id}'`;
+  
+      db.query(sql, function(err, rows, fields) {
+        res.send(rows);
+      })
+    }
+
+    getDetailRiwayatBayar = (req, res) => {
+      var sql = `SELECT a.*, a.CRTX_DATE AS CRTXX, b.*, c.*, (IF(b.DIBAYARKAN = c.TOTL_TGIH,'Pelunasan','Pencicilan')) AS STS_PEMBAYARAN, ('Debit') AS JENIS FROM finc_bayarjamahh a LEFT JOIN finc_bayarjamahd b ON a.NOXX_FAKT = b.NOXX_FAKT LEFT JOIN mrkt_tagihanh c ON b.NOXX_TGIH = c.NOXX_TGIH WHERE c.KDXX_DFTR = '${req.params.id}' ORDER BY CRTXX DESC`;
+
+      db.query(sql, function(err, rows, fields) {
+        res.send(rows);
+      })
+    }
+
+    getLainnyaKwitansi = (req, res) => {
+      var sql = `SELECT a.*, IFNULL( b.CODD_DESC, 'Tunai' ) AS NAME_BANK, IF ( a.NAMA_BANK, b.CODD_FLNM, 'TUNAI' ) AS CODD FROM finc_bayarjamahh a LEFT JOIN tb00_basx b ON a.NAMA_BANK = b.CODD_VALU HAVING KDXX_DFTR = '${req.params.id}' AND CODD = 'BANK' OR KDXX_DFTR = '${req.params.id}'AND CODD = 'TUNAI' ORDER BY CRTX_DATE DESC`;
+
+      db.query(sql, function(err, rows, fields) {
+        res.send(rows);
+      })
     }
 
     saveJamaah = (req, res) => {
@@ -358,6 +406,30 @@ export default class Jamaah {
     });
   }
 
+  generateNumberTagihan = () => {
+    const now = new Date();
+    const tgl = date.format(now,"YYYY-MM-DD");
+    const tglReplace = tgl.replace(/-/g,"").toString();
+  
+    return new Promise((resolve, reject) => {
+        const sql = `SELECT MAX(RIGHT(a.NOXX_TGIH, 3)) AS URUTX FROM mrkt_tagihanh a WHERE DATE_FORMAT( a.CRTX_DATE, "%Y-%m-%d" ) = DATE_FORMAT(NOW(), "%Y-%m-%d" )`;
+        db.query(sql, function (err, rows, fields) {
+          rows.map((data) => {
+            if (data['URUTX'] == null) {
+              var noTagihan = `T${tglReplace}001`;
+  
+              resolve(noTagihan);
+            } else {
+              var no = parseInt(data['URUTX']) + 1;
+              var noTagihan = 'T' + tglReplace + no.toString().padStart(3,"0");
+              
+              resolve(noTagihan);
+            }
+          });
+        });
+    });
+  };
+
   pendaftaranJamaah = (req, res) => {
     // Menyimpan Foto KK
     var fotoKkDaftar = req.body.FOTO_KKXX;
@@ -411,11 +483,11 @@ export default class Jamaah {
       FOTO_KKXX : namaKk,
       FOTO_DOCX : namaDok,
       STAS_BYAR : 0,
-      UPDT_DATE : new Date(),
-      UPDT_BYXX : 'sahrulramdani20'
+      CRTX_DATE : new Date(),
+      CRTX_BYXX : 'sahrulramdani20'
     };
 
-    db.query(qry, data, (err, result) => {
+    db.query(qry, data, async (err, result) => {
       if (err) {
         console.log(err);
         res.send({
@@ -428,18 +500,19 @@ export default class Jamaah {
         var sts;
 
         for (let i = 0; i < jsonTagihan.length; i++) {
+          var idTagih = await this.generateNumberTagihan();
+
           var qry = `INSERT INTO mrkt_tagihanh SET ?`;
           var data = {
-            // NOXX_TGIH : req.body.NOXX_TGIH,
+            NOXX_TGIH : idTagih,
             KDXX_DFTR : req.body.KDXX_DFTR,
             JENS_TGIH : jsonTagihan[i]['nama_tagihan'],
-            TARIF_TGIH : jsonTagihan[i]['total_tagihan'],
             TOTL_TGIH : jsonTagihan[i]['total_tagihan'],
-            SISA_TGIH : 0,
-            UPDT_DATE : new Date(),
-            UPDT_BYXX : 'sahrulramdani20'
+            JMLX_BYAR : 0,
+            SISA_TGIH : jsonTagihan[i]['total_tagihan'],
+            CRTX_DATE : new Date(),
+            CRTX_BYXX : 'sahrulramdani20'
           };      
-
           db.query(qry, data, (err, result) => {
               if (err) {
                   sts = false;
@@ -448,7 +521,6 @@ export default class Jamaah {
               }
           });
         }
-
         res.send({
           status : true
         });
@@ -506,62 +578,6 @@ export default class Jamaah {
           } else {
             res.send({
               idPelanggan : "P" + tglReplace + no.toString().padStart(3,"0"),
-            });
-          }
-        });
-      }
-    });
-  }
-
-  generateNumberTagihan = (req, res) => {
-    const now = new Date();
-    const tgl = date.format(now,"YYYY-MM-DD");
-    const tahun = date.format(now,"YYYY");
-    const tglReplace = tgl.replace(/-/g,"").toString();
-
-    var sql = "SELECT NOXX_AKHR FROM tb00_sequence WHERE IDXX_XXXX = '6' AND DOCX_CODE = 'TGI'";
-    db.query(sql,function(err,rows,fields) {
-      if (rows == '') {
-        var sql = "INSERT INTO tb00_sequence SET ?";
-        
-        var data = {
-          THNX_XXXX : tahun,
-          IDXX_XXXX : '6',
-          DOCX_CODE : 'TGI',
-          DTLX_CODE : 'No Tagihan',
-          NOXX_AKHR : 1,
-        }
-  
-        db.query(sql,data,(err,result) => {
-          if (err) {
-            console.log(err);
-            res.send({
-              status: false,
-              message: err.sqlMessage,
-            });
-          } else {
-            res.send({
-              idTagihan : `T${tglReplace}001`
-            });
-          }
-        });
-      }else{
-        var no = '';
-        rows.map((data) => {
-           no = parseInt(data.NOXX_AKHR) + 1;
-        })
-
-        var sqlUpdtSequence = `UPDATE tb00_sequence SET NOXX_AKHR = '${no}' WHERE IDXX_XXXX = '6' AND DOCX_CODE = 'TGI' `;
-        db.query(sqlUpdtSequence, (err,result) => {
-          if (err) {
-            console.log(err);
-            res.send({
-              status: false,
-              message: err.sqlMessage,
-            });
-          } else {
-            res.send({
-              idTagihan : "T" + tglReplace + no.toString().padStart(3,"0"),
             });
           }
         });

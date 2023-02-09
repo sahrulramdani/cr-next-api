@@ -2,6 +2,7 @@ import { marketing } from './marketing/index.js';
 import { jamaah } from './jamaah/index.js';
 import { inventory } from './inventory/index.js';
 import { setup } from './setup/index.js';
+import { finance } from './finance/index.js';
 import { issue } from './issue/index.js';
 import { karyawan } from './karyawan/index.js';
 import { user } from './user/index.js';
@@ -18,7 +19,7 @@ var index = (request, response) => {
     d.getHours()+":"+d.getMinutes()+":"+d.getMilliseconds() })
   };
 
-export { index, marketing, jamaah, inventory, setup, issue, karyawan, user, donatur, accounting, 
+export { index, marketing, jamaah, inventory, setup, finance ,issue, karyawan, user, donatur, accounting, 
          auth, menu, utility, event, perencanaan
  	   };
 
