@@ -15,7 +15,7 @@ import { perencanaan } from './perencanaan/index.js';
  
 var index = (request, response) => {
     var d= new Date();
-    response.json({ info: 'API ERP ' + d.getDate()+"/"+d.getMonth()+"/"+d.getFullYear() + " "+ 
+    response.json({ info: 'API Cahaya Raudhah ' + d.getDate()+"/"+d.getMonth()+"/"+d.getFullYear() + " "+ 
     d.getHours()+":"+d.getMinutes()+":"+d.getMilliseconds() })
   };
 

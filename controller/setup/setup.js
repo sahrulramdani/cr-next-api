@@ -59,4 +59,12 @@ export default class Setup {
         res.send(rows);
       });
     }
+
+    getPlusTujuan = (req, res) => {
+      var sql = "SELECT a.* FROM xxxx_masterdata a WHERE a.KDXX_FLNM = 'PLUS_TJUAN'"
+    
+      db.query(sql, function (err, rows, fields) {
+        res.send(rows);
+      });
+    }
 }
