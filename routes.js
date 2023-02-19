@@ -1,10 +1,10 @@
 import * as C from './controller/index.js';
-import  express from 'express';
+import express from 'express';
 
- const routes = (app) => {
+const routes = (app) => {
 
       app.route('/').get(C.index);
-      //--- Marketing Agency --- 
+      //---- Marketing----
       app.route('/marketing/all-agency').get(C.marketing.getAllAgency);
       app.route('/marketing/calon-agency').get(C.marketing.getCalonAgency);
       app.route('/marketing/agency/save').post(C.marketing.saveAgency);
@@ -14,6 +14,7 @@ import  express from 'express';
       app.route('/marketing/agency/detail/pelanggan/:id').get(C.marketing.getDetailPelangganAgency);
       app.route('/marketing/agency/detail/bank/:id').get(C.marketing.getDetailBankAgency);
       app.route('/marketing/agency/detail/downline/:id').get(C.marketing.getDetailDownlineAgency);
+      app.route('/marketing/agency/detail/upline/:id').get(C.marketing.getDetailUpline);
 
       //--- Marketing Jadwal --
       app.route("/marketing/jadwal/getjenispaket").get(C.marketing.getJenisPaket);
@@ -22,10 +23,37 @@ import  express from 'express';
       app.route("/marketing/jadwal/getAllJadwal").get(C.marketing.getAllJadwal);
       app.route("/marketing/jadwal/get-jadwal").get(C.marketing.getJadwalAvailable);
       app.route("/marketing/jadwal/getTransit").get(C.marketing.getTransit);
+      app.route("/marketing/jadwal/getMaskapai").get(C.marketing.getMaskapai);
+      app.route("/marketing/jadwal/getHotel").get(C.marketing.getHotel);
       app.route("/marketing/jadwal/getDetail/:id").get(C.marketing.getDetailJadwal);
+      app.route("/marketing/jadwal/getDetail-jamaah/:id").get(C.marketing.getDetailJadwalJamaah);
       app.route("/marketing/jadwal/save").post(C.marketing.saveJadwal);
       app.route("/marketing/jadwal/update").post(C.marketing.updateJadwal);
       app.route('/marketing/jadwal/delete').post(C.marketing.deleteJadwal);
+
+      //-- Marketing Pemberangkatan --
+      app.route('/marketing/pemberangkatan/all-pemberangkatan').get(C.marketing.getAllPemberangkatan);
+      app.route('/marketing/pemberangkatan/list-jamaah-berangkat/:id').get(C.marketing.getListJamaahPemberangkatan);
+      app.route('/marketing/pemberangkatan/detail-jamaah-berangkat/:id').get(C.marketing.getDetailJamaahPemberangkatan);
+
+      //-- Marketing Rute Transit --
+      app.route("/marketing/rutetransit/getDetailTransit/:id").get(C.marketing.getDetailTransit);
+      app.route("/marketing/rutetransit/save").post(C.marketing.saveRuteTransit);
+      app.route("/marketing/rutetransit/update").post(C.marketing.updateRuteTransit);
+      app.route("/marketing/rutetransit/delete").post(C.marketing.deleteRuteTransit);
+
+      //-- Marketing Maskapai --
+      app.route('/marketing/maskapai/save').post(C.marketing.saveMaskapai);
+      app.route('/marketing/maskapai/update').post(C.marketing.updateMaskapai);
+      app.route('/marketing/maskapai/delete').post(C.marketing.deleteMaskapai);
+      app.route('/marketing/maskapai/getDetailMaskapai/:id').get(C.marketing.getDetailMaskapai);
+
+      //-- Marketing Hotel
+      app.route('/marketing/hotel/save').post(C.marketing.saveHotel);
+      app.route('/marketing/hotel/update').post(C.marketing.updateHotel);
+      app.route('/marketing/hotel/delete').post(C.marketing.deleteHotel);
+      app.route('/marketing/hotel/getBintangHtl').get(C.marketing.getBintangHotel);
+      app.route('/marketing/hotel/getDetailHotel/:id').get(C.marketing.getDetailHotel);
 
       //---- Inventory Satuan ----
       app.route("/inventory/satuan/getAllSatuan").get(C.inventory.getAllSatuan);
@@ -68,20 +96,25 @@ import  express from 'express';
       app.route('/jamaah/pendaftaran/kode').get(C.jamaah.generateNumberPendaftaran);
       app.route('/jamaah/pendaftaran/save').post(C.jamaah.pendaftaranJamaah);
 
-      // --- Finance Pembayaran --
+      // --- Finance Pembayaran --  
+      // Chart
+      app.route('/finance/chart/total-bulanan').get(C.finance.getPembayaranBulanan);
+      app.route('/finance/info-data/total-tagihan').get(C.finance.getTotalTagihan);
+      app.route('/finance/info-data/list-cabang').get(C.finance.getPembayaranCabang);
+
       app.route('/finance/penerbangan/get-profit').get(C.finance.getPenerbanganLoss);
       app.route('/finance/pembayaran/get-jamaah').get(C.finance.getJamaahDenganTagihan);
       app.route('/finance/pembayaran/get-jadwal/:id').get(C.finance.getJadwalJamaah);
       app.route('/finance/pembayaran/get-tagihan/:id').get(C.finance.getTagihanJamaah);
       app.route('/finance/pembayaran/no-faktur').get(C.finance.generateNumberFaktur);
       app.route('/finance/pembayaran/save').post(C.finance.savePembayaran);
-
+      
       app.use('/uploads', express.static('uploads'));
       // app.route('/marketing/location').get(C.marketing.getLocation);
       // app.route('/marketing/agency/kode').get(C.marketing.getIDAgency);
       // app.route('/marketing/agency/delete').post(C.marketing.deleteAgency);
       // app.route('/marketing/agency/detail/bank/:id').get(C.marketing.getDetailBankAgency);
-      
+            
       //---- Setup ----
       app.route('/setup/kantor').get(C.setup.kantorAll);
       app.route('/setup/fee-level').get(C.setup.getFeeLevel);
@@ -90,6 +123,12 @@ import  express from 'express';
       app.route('/setup/pekerjaans').get(C.setup.getPekerjaan);
       app.route('/setup/banks').get(C.setup.getBankAll);
       app.route('/setup/kamars').get(C.setup.getKamarAll);
+      app.route('/setup/plus-tujuan').get(C.setup.getPlusTujuan);
+
+      //---- Setup ----
+      app.route('/info/dashboard/main-dashboard').get(C.info.getMainDashboardInfo);
+
+
       // app.route('/setup/save').post(C.auth.verifyToken, C.setup.saveSetup);
       // app.route('/setup/update').post(C.auth.verifyToken, C.setup.updateSetup);
       // app.route('/setup/delete').post(C.auth.verifyToken, C.setup.deleteSetup);

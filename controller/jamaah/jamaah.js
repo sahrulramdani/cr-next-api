@@ -29,7 +29,7 @@ export default class Jamaah {
     }
 
     getPelanggan = (req, res) => {
-      var sql = `SELECT a.*,TIMESTAMPDIFF(year,a.TGLX_LHIR,CURDATE()) AS UMUR, b.KDXX_DFTR, b.HANDLING, IF(b.KDXX_MRKT = '' , b.REFRENSI, c.NAMA_LGKP) AS NAMA_MRKT, IFNULL(d.NOXX_PSPR,'BELUM') AS PASPORAN, (SELECT SUM(e.JMLX_BYAR) FROM mrkt_tagihanh e WHERE e.KDXX_DFTR = b.KDXX_DFTR) AS UANG_MASUK, ((b.ESTX_TOTL) - (SELECT SUM(e.JMLX_BYAR) FROM mrkt_tagihanh e WHERE e.KDXX_DFTR = b.KDXX_DFTR)) AS SISA, DATE_FORMAT(f.TGLX_BGKT, "%d-%m-%Y" )	AS BERANGKAT, IF(f.TGLX_BGKT <= DATE_FORMAT( NOW(), "%Y-%m-%d" ), 1, 0 ) AS STS_BRGKT, g.NAMA_KNTR FROM jmah_jamaahh a LEFT JOIN mrkt_daftarh b ON a.NOXX_IDNT = b.KDXX_JMAH LEFT JOIN mrkt_agensih c ON b.KDXX_MRKT = c.KDXX_MRKT LEFT JOIN jmah_jamaahp d ON a.NOXX_IDNT = d.NOXX_IDNT LEFT JOIN mrkt_jadwalh f ON b.KDXX_PKET = f.IDXX_JDWL LEFT JOIN hrsc_mkantorh g ON b.KDXX_KNTR = g.KDXX_KNTR WHERE b.KDXX_DFTR != ''`
+      var sql = `SELECT a.*,TIMESTAMPDIFF(year,a.TGLX_LHIR,CURDATE()) AS UMUR, b.KDXX_DFTR, b.HANDLING, IF(b.KDXX_MRKT = '' , b.REFRENSI, c.NAMA_LGKP) AS NAMA_MRKT, IFNULL(d.NOXX_PSPR,'BELUM') AS PASPORAN, (SELECT SUM(e.JMLX_BYAR) FROM mrkt_tagihanh e WHERE e.KDXX_DFTR = b.KDXX_DFTR) AS UANG_MASUK, ((b.ESTX_TOTL) - (SELECT SUM(e.JMLX_BYAR) FROM mrkt_tagihanh e WHERE e.KDXX_DFTR = b.KDXX_DFTR)) AS SISA, DATE_FORMAT(f.TGLX_BGKT, "%d-%m-%Y" )	AS BERANGKAT, IF(f.TGLX_BGKT <= DATE_FORMAT( NOW(), "%Y-%m-%d" ), 1, 0 ) AS STS_BRGKT, g.NAMA_KNTR FROM jmah_jamaahh a LEFT JOIN mrkt_daftarh b ON a.NOXX_IDNT = b.KDXX_JMAH LEFT JOIN mrkt_agensih c ON b.KDXX_MRKT = c.KDXX_MRKT LEFT JOIN jmah_jamaahp d ON a.NOXX_IDNT = d.NOXX_IDNT LEFT JOIN mrkt_jadwalh f ON b.KDXX_PKET = f.IDXX_JDWL LEFT JOIN hrsc_mkantorh g ON b.KDXX_KNTR = g.KDXX_KNTR WHERE b.KDXX_DFTR != '' ORDER BY b.KDXX_DFTR DESC`
   
       db.query(sql, function (err, rows, fields) {
         res.send(rows);
@@ -37,7 +37,7 @@ export default class Jamaah {
     }
 
     getDetailInfoPaket = (req,res) => {
-      var sql = `SELECT a.IDXX_JDWL,a.TJAN_PKET,a.JENS_PSWT,a.RUTE_AWAL,a.RUTE_TRNS,a.RUTE_AKHR,a.JMLX_SEAT,( SELECT b.CODD_DESC FROM tb00_basx b WHERE b.CODD_VALU = a.NAMA_PKET AND b.CODD_FLNM = "PAKET_XXXX" ) AS namaPaket,( SELECT b.CODD_DESC FROM tb00_basx b WHERE b.CODD_VALU = a.JENS_PKET AND b.CODD_FLNM = "JNS_PAKET" ) AS jenisPaket,DATE_FORMAT( a.TGLX_BGKT, "%d-%m-%Y" ) AS TGLX_BGKT,DATE_FORMAT( a.TGLX_PLNG, "%d-%m-%Y" ) AS TGLX_PLNG,a.JMLX_HARI,a.TARIF_PKET,a.MATA_UANG, ((a.JMLX_SEAT) - (IFNULL((SELECT COUNT(c.KDXX_DFTR) FROM mrkt_daftarh c WHERE c.KDXX_PKET = a.IDXX_JDWL),0))) AS SISA ,a.KETERANGAN,IF( a.TGLX_BGKT <= DATE_FORMAT(NOW(), "%Y-%m-%d" ) ,1,0) AS status, d.KDXX_JMAH FROM mrkt_jadwalh a LEFT JOIN mrkt_daftarh d ON a.IDXX_JDWL = d.KDXX_PKET WHERE d.KDXX_DFTR = '${req.params.id}'`;
+      var sql = `SELECT a.IDXX_JDWL,a.TJAN_PKET,a.PSWT_BGKT, a.PSWT_PLNG ,a.JMLX_SEAT,( SELECT b.CODD_DESC FROM tb00_basx b WHERE b.CODD_VALU = a.NAMA_PKET AND b.CODD_FLNM = "PAKET_XXXX" ) AS namaPaket,( SELECT b.CODD_DESC FROM tb00_basx b WHERE b.CODD_VALU = a.JENS_PKET AND b.CODD_FLNM = "JNS_PAKET" ) AS jenisPaket,DATE_FORMAT( a.TGLX_BGKT, "%d-%m-%Y" ) AS TGLX_BGKT,DATE_FORMAT( a.TGLX_PLNG, "%d-%m-%Y" ) AS TGLX_PLNG,a.JMLX_HARI,a.TARIF_PKET,a.MATA_UANG, ((a.JMLX_SEAT) - (IFNULL((SELECT COUNT(c.KDXX_DFTR) FROM mrkt_daftarh c WHERE c.KDXX_PKET = a.IDXX_JDWL),0))) AS SISA ,a.KETERANGAN,IF( a.TGLX_BGKT <= DATE_FORMAT(NOW(), "%Y-%m-%d" ) ,1,0) AS status, d.KDXX_JMAH FROM mrkt_jadwalh a LEFT JOIN mrkt_daftarh d ON a.IDXX_JDWL = d.KDXX_PKET WHERE d.KDXX_DFTR = '${req.params.id}'`;
   
       db.query(sql, function(err, rows, fields) {
         res.send(rows);
@@ -483,6 +483,7 @@ export default class Jamaah {
       FOTO_KKXX : namaKk,
       FOTO_DOCX : namaDok,
       STAS_BYAR : 0,
+      STAS_BGKT : 0,
       CRTX_DATE : new Date(),
       CRTX_BYXX : 'sahrulramdani20'
     };
@@ -521,6 +522,17 @@ export default class Jamaah {
               }
           });
         }
+
+        // TAMBAH POIN
+        var sqlUpdPerd = `UPDATE mrkt_agensih SET PERD_JMAH = (PERD_JMAH + 1), TOTL_JMAH = (TOTL_JMAH + 1) WHERE KDXX_MRKT = '${req.body.KDXX_MRKT}'`;
+        db.query(sqlUpdPerd, (err,result) => {
+          if (err) {
+            sts = false;
+          } else {
+            sts = true;
+          }
+        });
+
         res.send({
           status : true
         });
@@ -535,14 +547,14 @@ export default class Jamaah {
     const tahun = date.format(now,"YYYY");
     const tglReplace = tgl.replace(/-/g,"").toString();
 
-    var sql = "SELECT NOXX_AKHR FROM tb00_sequence WHERE IDXX_XXXX = '5' AND DOCX_CODE = 'PLG'";
+    var sql = "SELECT NOXX_AKHR FROM tb00_sequence WHERE IDXX_XXXX = '8' AND DOCX_CODE = 'PLG'";
     db.query(sql,function(err,rows,fields) {
       if (rows == '') {
         var sql = "INSERT INTO tb00_sequence SET ?";
         
         var data = {
           THNX_XXXX : tahun,
-          IDXX_XXXX : '5',
+          IDXX_XXXX : '8',
           DOCX_CODE : 'PLG',
           DTLX_CODE : 'ID Pelanggan',
           NOXX_AKHR : 1,
@@ -567,7 +579,7 @@ export default class Jamaah {
            no = parseInt(data.NOXX_AKHR) + 1;
         })
 
-        var sqlUpdtSequence = `UPDATE tb00_sequence SET NOXX_AKHR = '${no}' WHERE IDXX_XXXX = '5' AND DOCX_CODE = 'PLG' `;
+        var sqlUpdtSequence = `UPDATE tb00_sequence SET NOXX_AKHR = '${no}' WHERE IDXX_XXXX = '8' AND DOCX_CODE = 'PLG' `;
         db.query(sqlUpdtSequence, (err,result) => {
           if (err) {
             console.log(err);
