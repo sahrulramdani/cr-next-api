@@ -24,11 +24,13 @@ const routes = (app) => {
       app.route("/marketing/jadwal/get-jadwal").get(C.marketing.getJadwalAvailable);
       app.route("/marketing/jadwal/getTransit").get(C.marketing.getTransit);
       app.route("/marketing/jadwal/getMaskapai").get(C.marketing.getMaskapai);
+
       app.route("/marketing/jadwal/getHotelMekkah").get(C.marketing.getHotelMekkah);
       app.route("/marketing/jadwal/getHotelMadinah").get(C.marketing.getHotelMadinah);
       app.route("/marketing/jadwal/getHotelPlus").get(C.marketing.getHotelPlus);
       app.route("/marketing/jadwal/getHotelTransit").get(C.marketing.getHotelTransit);
       app.route("/marketing/jadwal/getKota").get(C.marketing.getKota);
+
       app.route("/marketing/jadwal/getDetail/:id").get(C.marketing.getDetailJadwal);
       app.route("/marketing/jadwal/getDetail-jamaah/:id").get(C.marketing.getDetailJadwalJamaah);
       app.route("/marketing/jadwal/save").post(C.marketing.saveJadwal);
@@ -115,7 +117,7 @@ const routes = (app) => {
       app.route('/finance/pembayaran/get-tagihan/:id').get(C.finance.getTagihanJamaah);
       app.route('/finance/pembayaran/no-faktur').get(C.finance.generateNumberFaktur);
       app.route('/finance/pembayaran/save').post(C.finance.savePembayaran);
-
+      
       app.use('/uploads', express.static('uploads'));
       // app.route('/marketing/location').get(C.marketing.getLocation);
       // app.route('/marketing/agency/kode').get(C.marketing.getIDAgency);
@@ -134,7 +136,6 @@ const routes = (app) => {
 
       //---- Setup ----
       app.route('/info/dashboard/main-dashboard').get(C.info.getMainDashboardInfo);
-
 
       // app.route('/setup/save').post(C.auth.verifyToken, C.setup.saveSetup);
       // app.route('/setup/update').post(C.auth.verifyToken, C.setup.updateSetup);
