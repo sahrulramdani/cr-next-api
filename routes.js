@@ -24,7 +24,6 @@ const routes = (app) => {
       app.route("/marketing/jadwal/get-jadwal").get(C.marketing.getJadwalAvailable);
       app.route("/marketing/jadwal/getTransit").get(C.marketing.getTransit);
       app.route("/marketing/jadwal/getMaskapai").get(C.marketing.getMaskapai);
-
       app.route("/marketing/jadwal/getHotelMekkah").get(C.marketing.getHotelMekkah);
       app.route("/marketing/jadwal/getHotelMadinah").get(C.marketing.getHotelMadinah);
       app.route("/marketing/jadwal/getHotelPlus").get(C.marketing.getHotelPlus);
