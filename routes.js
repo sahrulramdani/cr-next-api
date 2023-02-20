@@ -24,7 +24,11 @@ const routes = (app) => {
       app.route("/marketing/jadwal/get-jadwal").get(C.marketing.getJadwalAvailable);
       app.route("/marketing/jadwal/getTransit").get(C.marketing.getTransit);
       app.route("/marketing/jadwal/getMaskapai").get(C.marketing.getMaskapai);
-      app.route("/marketing/jadwal/getHotel").get(C.marketing.getHotel);
+      app.route("/marketing/jadwal/getHotelMekkah").get(C.marketing.getHotelMekkah);
+      app.route("/marketing/jadwal/getHotelMadinah").get(C.marketing.getHotelMadinah);
+      app.route("/marketing/jadwal/getHotelPlus").get(C.marketing.getHotelPlus);
+      app.route("/marketing/jadwal/getHotelTransit").get(C.marketing.getHotelTransit);
+      app.route("/marketing/jadwal/getKota").get(C.marketing.getKota);
       app.route("/marketing/jadwal/getDetail/:id").get(C.marketing.getDetailJadwal);
       app.route("/marketing/jadwal/getDetail-jamaah/:id").get(C.marketing.getDetailJadwalJamaah);
       app.route("/marketing/jadwal/save").post(C.marketing.saveJadwal);
@@ -54,6 +58,9 @@ const routes = (app) => {
       app.route('/marketing/hotel/delete').post(C.marketing.deleteHotel);
       app.route('/marketing/hotel/getBintangHtl').get(C.marketing.getBintangHotel);
       app.route('/marketing/hotel/getDetailHotel/:id').get(C.marketing.getDetailHotel);
+
+      //---- Chart Marketing
+      app.route('/marketing/chart').get(C.marketing.getChart);
 
       //---- Inventory Satuan ----
       app.route("/inventory/satuan/getAllSatuan").get(C.inventory.getAllSatuan);
@@ -108,13 +115,13 @@ const routes = (app) => {
       app.route('/finance/pembayaran/get-tagihan/:id').get(C.finance.getTagihanJamaah);
       app.route('/finance/pembayaran/no-faktur').get(C.finance.generateNumberFaktur);
       app.route('/finance/pembayaran/save').post(C.finance.savePembayaran);
-      
+
       app.use('/uploads', express.static('uploads'));
       // app.route('/marketing/location').get(C.marketing.getLocation);
       // app.route('/marketing/agency/kode').get(C.marketing.getIDAgency);
       // app.route('/marketing/agency/delete').post(C.marketing.deleteAgency);
       // app.route('/marketing/agency/detail/bank/:id').get(C.marketing.getDetailBankAgency);
-            
+
       //---- Setup ----
       app.route('/setup/kantor').get(C.setup.kantorAll);
       app.route('/setup/fee-level').get(C.setup.getFeeLevel);

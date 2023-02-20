@@ -10,9 +10,9 @@ import e from "express";
 import fs from 'fs';
 import { randomString } from './../../libraries/sisqu/Utility.js';
 import date from 'date-and-time';
-  
+
 export default class Marketing {
-  
+
   getAllAgency = (req, res) => {
     var sql = "SELECT a.* , IF( a.STAS_AGEN = '1', 'Aktif', 'Tidak Aktif' ) AS STATUS_AGEN, b.CODD_DESC AS FEE, c.CODD_DESC AS FIRST_LVL, d.NAMA_KNTR FROM mrkt_agensih a LEFT JOIN tb00_basx b ON a.FEEX_LVEL = b.CODD_VALU LEFT JOIN tb00_basx c ON a.FIRST_LVEL = c.CODD_VALU LEFT JOIN hrsc_mkantorh d ON a.KDXX_KNTR = d.KDXX_KNTR ORDER BY CRTX_DATE DESC";
 
@@ -32,39 +32,39 @@ export default class Marketing {
   getIDAgency = (req, res) => {
     var kode;
     var getLast = "SELECT MAX(KDXX_AGEN) AS LAST FROM mrkt_agensi";
-  
-    db.query(getLast, function (err, rows, fields){
-        rows.map((data) => {
-          if (data.LAST != null) {            
-            var lastCode = data.LAST.slice(-5);
-            var getNumberCode = parseInt(lastCode) + 1;
-            var numberCode = String(getNumberCode).padStart(5, '0');
-            kode = 'AGMR' + numberCode;  
-          }else{
-            kode = 'AGMR00001' 
-          }
-        });
 
-        res.send(kode);
+    db.query(getLast, function (err, rows, fields) {
+      rows.map((data) => {
+        if (data.LAST != null) {
+          var lastCode = data.LAST.slice(-5);
+          var getNumberCode = parseInt(lastCode) + 1;
+          var numberCode = String(getNumberCode).padStart(5, '0');
+          kode = 'AGMR' + numberCode;
+        } else {
+          kode = 'AGMR00001'
+        }
+      });
+
+      res.send(kode);
     })
-  
+
   }
 
   saveAgency = (req, res) => {
     // --Menyimpan Gambar Agensi
     var fotoAgency = req.body.FOTO_AGEN;
-    if (fotoAgency != 'TIDAK') {        
+    if (fotoAgency != 'TIDAK') {
       var fotoAgencyName = randomString(10) + Date.now() + '.png';
-      fs.writeFile(`uploads/${fotoAgencyName}`, fotoAgency, {encoding:'base64'}, function(err){
+      fs.writeFile(`uploads/${fotoAgencyName}`, fotoAgency, { encoding: 'base64' }, function (err) {
         if (err) {
           console.log(err);
-        }else{
+        } else {
           console.log('berhasil');
         }
       });
 
       var namaFoto = fotoAgencyName;
-    }else{
+    } else {
       var namaFoto = req.body.FOTO_LMAX;
     }
 
@@ -72,15 +72,15 @@ export default class Marketing {
     var fotoKtpAgen = req.body.FOTO_KTPX;
     if (fotoKtpAgen != 'TIDAK') {
       var fotoKtpAgenName = randomString(10) + Date.now() + '.png';
-      fs.writeFile(`uploads/${fotoKtpAgenName}`, fotoKtpAgen, {encoding:'base64'}, function(err){
+      fs.writeFile(`uploads/${fotoKtpAgenName}`, fotoKtpAgen, { encoding: 'base64' }, function (err) {
         if (err) {
           console.log(err);
-        }else{
+        } else {
           console.log('berhasil');
         }
       });
       var namaKtp = fotoKtpAgenName
-    }else{
+    } else {
       var namaKtp = req.body.KTPX_LMAX;
     }
 
@@ -88,37 +88,37 @@ export default class Marketing {
     var qryIns = 'INSERT INTO mrkt_agensih SET ?';
 
     var data = {
-      KDXX_MRKT : req.body.KDXX_AGEN,
-      NOXX_IDNT : req.body.NOXX_IDNT,
-      NAMA_LGKP : req.body.NAMA_LGKP,
-      JENS_KLMN : req.body.JENS_KLMN,
-      TMPT_LHIR : req.body.TMPT_LHIR,
-      TGLX_LHIR : req.body.TGLX_LHIR,
-      ALAMAT : req.body.ALAMAT,
-      KDXX_KNTR : req.body.KDXX_KNTR,
-      KDXX_PROV : req.body.KDXX_PROV,
-      KDXX_KOTA : req.body.KDXX_KOTA,
-      KDXX_KECX : req.body.KDXX_KECX,
-      KDXX_KELX : req.body.KDXX_KELX,
-      KDXX_POSX : req.body.KDXX_POSX,
-      KDXX_LEAD : req.body.KDXX_LEAD,
-      FEEX_LVEL : req.body.FEEX_LVEL,
-      FIRST_LVEL : '4801',
-      NAMA_AYAH : req.body.NAMA_AYAH,
-      NOXX_TELP : req.body.NOXX_TELP,
-      JENS_MNKH : req.body.JENS_MNKH,
-      JENS_PEND : req.body.JENS_PEND,
-      JENS_PKRJ : req.body.JENS_PKRJ,
-      FEEX_LVEL : req.body.FEEX_LVEL,
-      FOTO_AGEN : namaFoto,
-      FOTO_KTPX : namaKtp,
-      STAS_AGEN : 1,
-      PERD_JMAH : 0,
-      TOTL_JMAH : 0,
-      TOTL_POIN : 0,
-      TGLX_GBNG : moment(new Date()).format('YYYY-MM-DD'),
-      CRTX_DATE : new Date(),
-      CRTX_BYXX : 'sahrulramdani20'
+      KDXX_MRKT: req.body.KDXX_AGEN,
+      NOXX_IDNT: req.body.NOXX_IDNT,
+      NAMA_LGKP: req.body.NAMA_LGKP,
+      JENS_KLMN: req.body.JENS_KLMN,
+      TMPT_LHIR: req.body.TMPT_LHIR,
+      TGLX_LHIR: req.body.TGLX_LHIR,
+      ALAMAT: req.body.ALAMAT,
+      KDXX_KNTR: req.body.KDXX_KNTR,
+      KDXX_PROV: req.body.KDXX_PROV,
+      KDXX_KOTA: req.body.KDXX_KOTA,
+      KDXX_KECX: req.body.KDXX_KECX,
+      KDXX_KELX: req.body.KDXX_KELX,
+      KDXX_POSX: req.body.KDXX_POSX,
+      KDXX_LEAD: req.body.KDXX_LEAD,
+      FEEX_LVEL: req.body.FEEX_LVEL,
+      FIRST_LVEL: '4801',
+      NAMA_AYAH: req.body.NAMA_AYAH,
+      NOXX_TELP: req.body.NOXX_TELP,
+      JENS_MNKH: req.body.JENS_MNKH,
+      JENS_PEND: req.body.JENS_PEND,
+      JENS_PKRJ: req.body.JENS_PKRJ,
+      FEEX_LVEL: req.body.FEEX_LVEL,
+      FOTO_AGEN: namaFoto,
+      FOTO_KTPX: namaKtp,
+      STAS_AGEN: 1,
+      PERD_JMAH: 0,
+      TOTL_JMAH: 0,
+      TOTL_POIN: 0,
+      TGLX_GBNG: moment(new Date()).format('YYYY-MM-DD'),
+      CRTX_DATE: new Date(),
+      CRTX_BYXX: 'sahrulramdani20'
     };
 
     db.query(qryIns, data, (err, result) => {
@@ -133,16 +133,16 @@ export default class Marketing {
         if (req.body.NOXX_PSPR != '') {
           var qryPspr = 'INSERT INTO mrkt_agensip SET ?';
           var dataPspr = {
-            KDXX_MRKT : req.body.KDXX_AGEN,
-            NOXX_PSPR : req.body.NOXX_PSPR,
-            NAMA_PSPR : req.body.NAMA_LGKP,
-            KLUR_DIXX : req.body.KLUR_DIXX,
-            TGLX_KLUR : req.body.TGLX_KLUR,
-            TGLX_EXPX : req.body.TGLX_EXPX,
-            CRTX_DATE : new Date(),
-            CRTX_BYXX : 'sahrulramdani20'
+            KDXX_MRKT: req.body.KDXX_AGEN,
+            NOXX_PSPR: req.body.NOXX_PSPR,
+            NAMA_PSPR: req.body.NAMA_LGKP,
+            KLUR_DIXX: req.body.KLUR_DIXX,
+            TGLX_KLUR: req.body.TGLX_KLUR,
+            TGLX_EXPX: req.body.TGLX_EXPX,
+            CRTX_DATE: new Date(),
+            CRTX_BYXX: 'sahrulramdani20'
           };
-  
+
           db.query(qryPspr, dataPspr, (err, result) => {
             if (err) {
               console.log(err);
@@ -156,7 +156,7 @@ export default class Marketing {
               });
             }
           });
-        }else{
+        } else {
           res.send({
             status: true
           });
@@ -169,19 +169,19 @@ export default class Marketing {
     var id = req.body.KDXX_MRKT;
     var sql = `SELECT a.* FROM mrkt_agensir a WHERE a.KDXX_MRKT = '${id}'`;
 
-    db.query(sql, function (err, rows, fields){
-      if (rows != '') {     
+    db.query(sql, function (err, rows, fields) {
+      if (rows != '') {
         var qryUpd = `update mrkt_agensir set ? where KDXX_MRKT = '${req.body.KDXX_MRKT}'`;
         var dataUpd = {
-            KDXX_MRKT : req.body.KDXX_MRKT,
-            NOXX_REKX : req.body.NOXX_REKX,
-            NAMA_REKX : req.body.NAMA_REKX,
-            KDXX_BANK : req.body.KDXX_BANK,
-            STAS_REKX : req.body.STAS_REKX,
-            UPDT_DATE : new Date(),
-            UPDT_BYXX : 'sahrulramdani20'
+          KDXX_MRKT: req.body.KDXX_MRKT,
+          NOXX_REKX: req.body.NOXX_REKX,
+          NAMA_REKX: req.body.NAMA_REKX,
+          KDXX_BANK: req.body.KDXX_BANK,
+          STAS_REKX: req.body.STAS_REKX,
+          UPDT_DATE: new Date(),
+          UPDT_BYXX: 'sahrulramdani20'
         }
-                  
+
         db.query(qryUpd, dataUpd, (err, result) => {
           if (err) {
             console.log(err);
@@ -195,20 +195,20 @@ export default class Marketing {
             });
           }
         });
-      }else{
+      } else {
         var qryIns = 'INSERT INTO mrkt_agensir SET ?';
 
         var dataIns = {
-          KDXX_MRKT : req.body.KDXX_MRKT,
-          NOXX_REKX : req.body.NOXX_REKX,
-          NAMA_REKX : req.body.NAMA_REKX,
-          KDXX_BANK : req.body.KDXX_BANK,
-          STAS_REKX : req.body.STAS_REKX,
-          CRTX_DATE : new Date(),
-          CRTX_BYXX : 'sahrulramdani20'
+          KDXX_MRKT: req.body.KDXX_MRKT,
+          NOXX_REKX: req.body.NOXX_REKX,
+          NAMA_REKX: req.body.NAMA_REKX,
+          KDXX_BANK: req.body.KDXX_BANK,
+          STAS_REKX: req.body.STAS_REKX,
+          CRTX_DATE: new Date(),
+          CRTX_BYXX: 'sahrulramdani20'
         };
 
-          
+
         db.query(qryIns, dataIns, (err, result) => {
           if (err) {
             console.log(err);
@@ -232,17 +232,17 @@ export default class Marketing {
 
     db.query(sql, function (err, rows, fields) {
       // --Menentukan First level
-      if (rows != '') {     
+      if (rows != '') {
         var firstLvl = '';
 
         rows.map((data) => {
           if (data.FIRST_LEVL < 4804) {
             firstLvl = parseInt(data.FIRST_LEVL) + 1;
-          }else{
+          } else {
             firstLvl = '4804'
           }
         })
-      }else{
+      } else {
         var firstLvl = '4801';
       }
 
@@ -251,37 +251,37 @@ export default class Marketing {
       if (fotoLama != '') {
         if (req.body.FOTO_AGEN == 'TIDAK') {
           var namaFoto = fotoLama;
-        }else{
-          fs.unlink(`uploads/${fotoLama}`,function(err){
-            if(err) return console.log(err);
+        } else {
+          fs.unlink(`uploads/${fotoLama}`, function (err) {
+            if (err) return console.log(err);
             console.log('file deleted successfully');
-          });  
+          });
 
           var fotoAgen = req.body.FOTO_AGEN;
           var fotoAgenName = randomString(10) + Date.now() + '.png';
-          fs.writeFile(`uploads/${fotoAgenName}`, fotoAgen, {encoding:'base64'}, function(err){
+          fs.writeFile(`uploads/${fotoAgenName}`, fotoAgen, { encoding: 'base64' }, function (err) {
             if (err) {
               console.log(err);
-            }else{
+            } else {
               console.log('berhasil');
             }
           });
           var namaFoto = fotoAgenName;
         }
-      }else{
-        if(req.body.FOTO_AGEN == 'TIDAK'){
+      } else {
+        if (req.body.FOTO_AGEN == 'TIDAK') {
           var namaFoto = '';
-        }else{
+        } else {
           var fotoAgen = req.body.FOTO_AGEN;
           var fotoAgenName = randomString(10) + Date.now() + '.png';
-          fs.writeFile(`uploads/${fotoAgenName}`, fotoAgen, {encoding:'base64'}, function(err){
+          fs.writeFile(`uploads/${fotoAgenName}`, fotoAgen, { encoding: 'base64' }, function (err) {
             if (err) {
               console.log(err);
-            }else{
+            } else {
               console.log('berhasil');
             }
           });
-    
+
           var namaFoto = fotoAgenName;
         }
       }
@@ -291,33 +291,33 @@ export default class Marketing {
       if (ktpLama != '') {
         if (req.body.FOTO_KTPX == 'TIDAK') {
           var namaKtp = ktpLama;
-        }else{
-          fs.unlink(`uploads/${ktpLama}`,function(err){
-            if(err) return console.log(err);
+        } else {
+          fs.unlink(`uploads/${ktpLama}`, function (err) {
+            if (err) return console.log(err);
             console.log('file deleted successfully');
-          });  
+          });
 
           var fotoKtpAgen = req.body.FOTO_KTPX;
           var fotoKtpAgenName = randomString(10) + Date.now() + '.png';
-          fs.writeFile(`uploads/${fotoKtpAgenName}`, fotoKtpAgen, {encoding:'base64'}, function(err){
+          fs.writeFile(`uploads/${fotoKtpAgenName}`, fotoKtpAgen, { encoding: 'base64' }, function (err) {
             if (err) {
               console.log(err);
-            }else{
+            } else {
               console.log('berhasil');
             }
           });
           var namaKtp = fotoKtpAgenName;
         }
-      }else{
+      } else {
         if (req.body.FOTO_KTPX == 'TIDAK') {
           var namaKtp = '';
         } else {
           var fotoKtpAgen = req.body.FOTO_KTPX;
           var fotoKtpAgenName = randomString(10) + Date.now() + '.png';
-          fs.writeFile(`uploads/${fotoKtpAgenName}`, fotoKtpAgen, {encoding:'base64'}, function(err){
+          fs.writeFile(`uploads/${fotoKtpAgenName}`, fotoKtpAgen, { encoding: 'base64' }, function (err) {
             if (err) {
               console.log(err);
-            }else{
+            } else {
               console.log('berhasil');
             }
           });
@@ -328,36 +328,36 @@ export default class Marketing {
       // --Menyimpan ke database
       var qryUpdate = `UPDATE mrkt_agensih SET ? WHERE KDXX_MRKT = '${req.body.KDXX_AGEN}'`;
       var data = {
-        KDXX_MRKT : req.body.KDXX_AGEN,
-        NOXX_IDNT : req.body.NOXX_IDNT,
-        NAMA_LGKP : req.body.NAMA_LGKP,
-        JENS_KLMN : req.body.JENS_KLMN,
-        TMPT_LHIR : req.body.TMPT_LHIR,
-        TGLX_LHIR : req.body.TGLX_LHIR,
-        ALAMAT : req.body.ALAMAT,
-        KDXX_KNTR : req.body.KDXX_KNTR,
-        KDXX_PROV : req.body.KDXX_PROV,
-        KDXX_KOTA : req.body.KDXX_KOTA,
-        KDXX_KECX : req.body.KDXX_KECX,
-        KDXX_KELX : req.body.KDXX_KELX,
-        KDXX_POSX : req.body.KDXX_POSX,
-        KDXX_LEAD : req.body.KDXX_LEAD,
-        FEEX_LVEL : req.body.FEEX_LVEL,
-        FIRST_LVEL : firstLvl,
-        NAMA_AYAH : req.body.NAMA_AYAH,
-        NOXX_TELP : req.body.NOXX_TELP,
-        JENS_MNKH : req.body.JENS_MNKH,
-        JENS_PEND : req.body.JENS_PEND,
-        JENS_PKRJ : req.body.JENS_PKRJ,
-        FEEX_LVEL : req.body.FEEX_LVEL,
-        FOTO_AGEN : namaFoto,
-        FOTO_KTPX : namaKtp,
-        STAS_AGEN : req.body.STAS_AGEN,
-        TGLX_GBNG : moment(new Date()).format('YYYY-MM-DD'),
-        UPDT_DATE : new Date(),
-        UPDT_BYXX : 'sahrulramdani20'
+        KDXX_MRKT: req.body.KDXX_AGEN,
+        NOXX_IDNT: req.body.NOXX_IDNT,
+        NAMA_LGKP: req.body.NAMA_LGKP,
+        JENS_KLMN: req.body.JENS_KLMN,
+        TMPT_LHIR: req.body.TMPT_LHIR,
+        TGLX_LHIR: req.body.TGLX_LHIR,
+        ALAMAT: req.body.ALAMAT,
+        KDXX_KNTR: req.body.KDXX_KNTR,
+        KDXX_PROV: req.body.KDXX_PROV,
+        KDXX_KOTA: req.body.KDXX_KOTA,
+        KDXX_KECX: req.body.KDXX_KECX,
+        KDXX_KELX: req.body.KDXX_KELX,
+        KDXX_POSX: req.body.KDXX_POSX,
+        KDXX_LEAD: req.body.KDXX_LEAD,
+        FEEX_LVEL: req.body.FEEX_LVEL,
+        FIRST_LVEL: firstLvl,
+        NAMA_AYAH: req.body.NAMA_AYAH,
+        NOXX_TELP: req.body.NOXX_TELP,
+        JENS_MNKH: req.body.JENS_MNKH,
+        JENS_PEND: req.body.JENS_PEND,
+        JENS_PKRJ: req.body.JENS_PKRJ,
+        FEEX_LVEL: req.body.FEEX_LVEL,
+        FOTO_AGEN: namaFoto,
+        FOTO_KTPX: namaKtp,
+        STAS_AGEN: req.body.STAS_AGEN,
+        TGLX_GBNG: moment(new Date()).format('YYYY-MM-DD'),
+        UPDT_DATE: new Date(),
+        UPDT_BYXX: 'sahrulramdani20'
       };
-      
+
       db.query(qryUpdate, data, (err, result) => {
         if (err) {
           console.log(err);
@@ -371,19 +371,19 @@ export default class Marketing {
 
             db.query(cari, function (err, rows, fields) {
               console.log('cari');
-              if (rows != '') {     
+              if (rows != '') {
                 var updPass = `UPDATE mrkt_agensip SET ? where KDXX_MRKT = '${req.body.KDXX_MRKT}'`;
                 var dataPass = {
-                    KDXX_MRKT : req.body.KDXX_MRKT,
-                    NOXX_PSPR : req.body.NOXX_PSPR,
-                    NAMA_PSPR : req.body.NAMA_LGKP,
-                    KLUR_DIXX : req.body.KLUR_DIXX,
-                    TGLX_KLUR : req.body.TGLX_KLUR,
-                    TGLX_EXPX : req.body.TGLX_EXPX,
-                    UPDT_DATE : new Date(),
-                    UPDT_BYXX : 'sahrulramdani20'
+                  KDXX_MRKT: req.body.KDXX_MRKT,
+                  NOXX_PSPR: req.body.NOXX_PSPR,
+                  NAMA_PSPR: req.body.NAMA_LGKP,
+                  KLUR_DIXX: req.body.KLUR_DIXX,
+                  TGLX_KLUR: req.body.TGLX_KLUR,
+                  TGLX_EXPX: req.body.TGLX_EXPX,
+                  UPDT_DATE: new Date(),
+                  UPDT_BYXX: 'sahrulramdani20'
                 }
-  
+
                 db.query(updPass, dataPass, (err, result) => {
                   if (err) {
                     console.log(err);
@@ -397,19 +397,19 @@ export default class Marketing {
                     });
                   }
                 });
-              }else{
+              } else {
                 var qryPspr = 'INSERT INTO mrkt_agensip SET ?';
                 var dataPspr = {
-                  KDXX_MRKT : req.body.KDXX_AGEN,
-                  NOXX_PSPR : req.body.NOXX_PSPR,
-                  NAMA_PSPR : req.body.NAMA_LGKP,
-                  KLUR_DIXX : req.body.KLUR_DIXX,
-                  TGLX_KLUR : req.body.TGLX_KLUR,
-                  TGLX_EXPX : req.body.TGLX_EXPX,
-                  CRTX_DATE : new Date(),
-                  CRTX_BYXX : 'sahrulramdani20'
+                  KDXX_MRKT: req.body.KDXX_AGEN,
+                  NOXX_PSPR: req.body.NOXX_PSPR,
+                  NAMA_PSPR: req.body.NAMA_LGKP,
+                  KLUR_DIXX: req.body.KLUR_DIXX,
+                  TGLX_KLUR: req.body.TGLX_KLUR,
+                  TGLX_EXPX: req.body.TGLX_EXPX,
+                  CRTX_DATE: new Date(),
+                  CRTX_BYXX: 'sahrulramdani20'
                 };
-      
+
                 db.query(qryPspr, dataPspr, (err, result) => {
                   console.log('insert pass');
                   if (err) {
@@ -424,9 +424,10 @@ export default class Marketing {
                     });
                   }
                 });
-              }}
+              }
+            }
             );
-          }else{
+          } else {
             res.send({
               status: true
             });
@@ -441,20 +442,20 @@ export default class Marketing {
   deleteAgency = (req, res) => {
     var id = req.body.KDXX_AGEN;
     var sql = `delete from mrkt_agensi where KDXX_AGEN = '${id}'`;
-    
-    db.query(sql, (err, result) => {
-        if (err) {
-            console.log('Error', err);
 
-            res.send({
-                status: false,
-                message: err.sqlMessage
-            });
-        } else {
-            res.send({
-                status: true
-            });
-        }
+    db.query(sql, (err, result) => {
+      if (err) {
+        console.log('Error', err);
+
+        res.send({
+          status: false,
+          message: err.sqlMessage
+        });
+      } else {
+        res.send({
+          status: true
+        });
+      }
     });
   }
 
@@ -464,7 +465,7 @@ export default class Marketing {
     db.query(sql, function (err, rows, fields) {
       res.send(rows);
     });
-  }  
+  }
 
   getDetailPelangganAgency = (req, res) => {
     var sql = `SELECT a.KDXX_JMAH, a.STAS_BYAR, b.NAMA_LGKP, c.TGLX_BGKT, IF ( c.TGLX_BGKT <= DATE_FORMAT( NOW(), "%Y-%m-%d" ), 1, 0 ) AS CEK, d.NAMA_KNTR,	( SELECT e.CODD_DESC FROM tb00_basx e WHERE e.CODD_VALU = c.NAMA_PKET AND e.CODD_FLNM = "PAKET_XXXX" ) AS PAKETNA, ( SELECT e.CODD_DESC FROM tb00_basx e WHERE e.CODD_VALU = c.JENS_PKET AND e.CODD_FLNM = "JNS_PAKET" ) AS JENISNA FROM mrkt_daftarh a LEFT JOIN jmah_jamaahh b ON a.KDXX_JMAH = b.NOXX_IDNT LEFT JOIN mrkt_jadwalh c ON a.KDXX_PKET = c.IDXX_JDWL LEFT JOIN hrsc_mkantorh d ON a.KDXX_KNTR = d.KDXX_KNTR WHERE a.KDXX_MRKT = '${req.params.id}'`
@@ -476,7 +477,7 @@ export default class Marketing {
 
   getDetailBankAgency = (req, res) => {
     var sql = `SELECT a.*, b.CODD_DESC AS NAMA_BANK FROM mrkt_agensir a LEFT JOIN tb00_basx b ON a.KDXX_BANK = b.CODD_VALU WHERE b.CODD_FLNM = 'BANK' AND a.KDXX_MRKT = '${req.params.id}'`
-    
+
     db.query(sql, function (err, rows, fields) {
       res.send(rows);
     });
@@ -484,7 +485,7 @@ export default class Marketing {
 
   getDetailDownlineAgency = (req, res) => {
     var sql = `SELECT a.*, b.CODD_DESC AS FEE, c.NAMA_KNTR FROM mrkt_agensih a LEFT JOIN tb00_basx b ON a.FEEX_LVEL = b.CODD_VALU LEFT JOIN hrsc_mkantorh c ON a.KDXX_KNTR = c.KDXX_KNTR WHERE a.KDXX_LEAD = '${req.params.id}'`
-    
+
     db.query(sql, function (err, rows, fields) {
       res.send(rows);
     });
@@ -492,7 +493,7 @@ export default class Marketing {
 
   getDetailUpline = (req, res) => {
     var sql = `SELECT a.KDXX_LEAD, b.*, c.CODD_DESC AS FEE, d.NAMA_KNTR FROM mrkt_agensih a LEFT JOIN mrkt_agensih b ON a.KDXX_LEAD = b.KDXX_MRKT  LEFT JOIN tb00_basx c ON b.FEEX_LVEL = c.CODD_VALU LEFT JOIN hrsc_mkantorh d ON b.KDXX_KNTR = d.KDXX_KNTR WHERE a.KDXX_MRKT = '${req.params.id}'`
-    
+
     db.query(sql, function (err, rows, fields) {
       res.send(rows);
     });
@@ -642,23 +643,23 @@ export default class Marketing {
 
   }
 
-  getJenisPaket = (req,res) => {
+  getJenisPaket = (req, res) => {
     var sql = "SELECT CODD_VALU, CODD_DESC FROM tb00_basx WHERE CODD_FLNM = 'JNS_PAKET'";
-    db.query(sql,function(err,rows,fields) {
+    db.query(sql, function (err, rows, fields) {
       res.send(rows);
     });
   }
 
-  getPaket = (req,res) => {
+  getPaket = (req, res) => {
     var sql = "SELECT CODD_VALU, CODD_DESC FROM tb00_basx WHERE CODD_FLNM = 'PAKET_XXXX'";
-    db.query(sql,function(err,rows,fields) {
+    db.query(sql, function (err, rows, fields) {
       res.send(rows);
     });
   }
 
   getMataUang = (req, res) => {
     var sql = "SELECT CODD_VALU, CODD_DESC FROM tb00_basx WHERE CODD_FLNM = 'CURR_MNYX'";
-    db.query(sql,function(err,rows,fields) {
+    db.query(sql, function (err, rows, fields) {
       res.send(rows);
     });
   }
@@ -677,8 +678,28 @@ export default class Marketing {
     })
   }
 
-  getHotel = (req, res) => {
-    var sql = "SELECT a.IDXX_HTLX, a.NAMA_HTLX, a.BINTG_HTLX,b.CODD_DESC FROM m_hotel a INNER JOIN tb00_basx b ON a.BINTG_HTLX = b.CODD_VALU WHERE b.CODD_FLNM = 'BINTG_HTLX' ORDER BY a.CRTX_DATE DESC";
+  getHotelMekkah = (req, res) => {
+    var sql = "SELECT a.IDXX_HTLX, a.NAMA_HTLX, a.BINTG_HTLX,b.CODD_DESC,c.CODD_DESC as KOTA FROM m_hotel a INNER JOIN tb00_basx b ON a.BINTG_HTLX = b.CODD_VALU INNER JOIN tb00_basx c ON a.KTGR_HTLX = c.CODD_VALU WHERE b.CODD_FLNM = 'BINTG_HTLX' AND c.CODD_FLNM = 'KOTA_XXX' AND a.KTGR_HTLX = '01' ORDER BY a.BINTG_HTLX DESC";
+    db.query(sql, function (err, rows, fields) {
+      res.send(rows);
+    })
+  }
+  getHotelMadinah = (req, res) => {
+    var sql = "SELECT a.IDXX_HTLX, a.NAMA_HTLX, a.BINTG_HTLX,b.CODD_DESC,c.CODD_DESC as KOTA FROM m_hotel a INNER JOIN tb00_basx b ON a.BINTG_HTLX = b.CODD_VALU INNER JOIN tb00_basx c ON a.KTGR_HTLX = c.CODD_VALU WHERE b.CODD_FLNM = 'BINTG_HTLX' AND c.CODD_FLNM = 'KOTA_XXX' AND a.KTGR_HTLX = '02' ORDER BY a.BINTG_HTLX DESC";
+    db.query(sql, function (err, rows, fields) {
+      res.send(rows);
+    })
+  }
+
+  getHotelPlus = (req, res) => {
+    var sql = "SELECT a.IDXX_HTLX, a.NAMA_HTLX, a.BINTG_HTLX,b.CODD_DESC,c.CODD_DESC as KOTA FROM m_hotel a INNER JOIN tb00_basx b ON a.BINTG_HTLX = b.CODD_VALU INNER JOIN tb00_basx c ON a.KTGR_HTLX = c.CODD_VALU WHERE b.CODD_FLNM = 'BINTG_HTLX' AND c.CODD_FLNM = 'KOTA_XXX' AND a.KTGR_HTLX = '03' ORDER BY a.BINTG_HTLX DESC";
+    db.query(sql, function (err, rows, fields) {
+      res.send(rows);
+    })
+  }
+
+  getHotelTransit = (req, res) => {
+    var sql = "SELECT a.IDXX_HTLX, a.NAMA_HTLX, a.BINTG_HTLX,b.CODD_DESC,c.CODD_DESC as KOTA FROM m_hotel a INNER JOIN tb00_basx b ON a.BINTG_HTLX = b.CODD_VALU INNER JOIN tb00_basx c ON a.KTGR_HTLX = c.CODD_VALU WHERE b.CODD_FLNM = 'BINTG_HTLX' AND c.CODD_FLNM = 'KOTA_XXX' AND a.KTGR_HTLX = '04' ORDER BY a.BINTG_HTLX DESC";
     db.query(sql, function (err, rows, fields) {
       res.send(rows);
     })
@@ -686,17 +707,17 @@ export default class Marketing {
 
   getAllJadwal = (req, res) => {
     // DATE_FORMAT(a.TGL_PRMN, "%Y-%m-%d") AS TGL_TRAN
-    var sql = `SELECT a.IDXX_JDWL,a.TJAN_PKET, a.PSWT_BGKT, a.PSWT_PLNG, a.RUTE_AWAL_BRKT,a.RUTE_TRNS_BRKT,a.RUTE_AKHR_BRKT,a.JMLX_SEAT,( SELECT b.CODD_DESC FROM tb00_basx b WHERE b.CODD_VALU = a.NAMA_PKET AND b.CODD_FLNM = "PAKET_XXXX" ) AS namaPaket,( SELECT b.CODD_DESC FROM tb00_basx b WHERE b.CODD_VALU = a.JENS_PKET AND b.CODD_FLNM = "JNS_PAKET" ) AS jenisPaket,DATE_FORMAT( a.TGLX_BGKT, "%d-%m-%Y" ) AS TGLX_BGKT,DATE_FORMAT( a.TGLX_PLNG, "%d-%m-%Y" ) AS TGLX_PLNG,a.JMLX_HARI,a.TARIF_PKET,a.MATA_UANG,a.KETERANGAN,IF( a.TGLX_BGKT <= DATE_FORMAT(NOW(), "%Y-%m-%d" ) ,1,0) AS status, ((a.JMLX_SEAT) - (IFNULL((SELECT COUNT(c.KDXX_DFTR) FROM mrkt_daftarh c WHERE c.KDXX_PKET = a.IDXX_JDWL),0))) AS SISA FROM mrkt_jadwalh a WHERE a.STAS_AKTF = '1' ORDER BY a.TGLX_BGKT DESC`;
+    var sql = `SELECT a.IDXX_JDWL,a.TJAN_PKET, a.PSWT_BGKT, a.PSWT_PLNG,(SELECT b.NAMA_PSWT FROM m_pesawat b WHERE b.IDXX_PSWT = a.PSWT_BGKT) AS NAME_PESWT_BGKT,(SELECT b.NAMA_PSWT FROM m_pesawat b WHERE b.IDXX_PSWT = a.PSWT_PLNG) AS NAME_PESWT_PLNG, a.RUTE_AWAL_BRKT,a.RUTE_TRNS_BRKT,a.RUTE_AKHR_BRKT,a.JMLX_SEAT,( SELECT b.CODD_DESC FROM tb00_basx b WHERE b.CODD_VALU = a.NAMA_PKET AND b.CODD_FLNM = "PAKET_XXXX" ) AS namaPaket,( SELECT b.CODD_DESC FROM tb00_basx b WHERE b.CODD_VALU = a.JENS_PKET AND b.CODD_FLNM = "JNS_PAKET" ) AS jenisPaket,DATE_FORMAT( a.TGLX_BGKT, "%d-%m-%Y" ) AS TGLX_BGKT,DATE_FORMAT( a.TGLX_PLNG, "%d-%m-%Y" ) AS TGLX_PLNG,a.JMLX_HARI,a.TARIF_PKET,a.MATA_UANG,a.KETERANGAN,IF( a.TGLX_BGKT <= DATE_FORMAT(NOW(), "%Y-%m-%d" ) ,1,0) AS status, ((a.JMLX_SEAT) - (IFNULL((SELECT COUNT(c.KDXX_DFTR) FROM mrkt_daftarh c WHERE c.KDXX_PKET = a.IDXX_JDWL),0))) AS SISA FROM mrkt_jadwalh a WHERE a.STAS_AKTF = '1' ORDER BY a.TGLX_BGKT DESC`;
 
     db.query(sql, function (err, rows, fields) {
       res.send(rows);
     })
   }
 
-  getJadwalAvailable = (req,res) => {
+  getJadwalAvailable = (req, res) => {
     var sql = `SELECT a.IDXX_JDWL,a.TJAN_PKET,a.PSWT_BGKT, a.PSWT_PLNG,a.JMLX_SEAT,( SELECT b.CODD_DESC FROM tb00_basx b WHERE b.CODD_VALU = a.NAMA_PKET AND b.CODD_FLNM = "PAKET_XXXX" ) AS namaPaket,( SELECT b.CODD_DESC FROM tb00_basx b WHERE b.CODD_VALU = a.JENS_PKET AND b.CODD_FLNM = "JNS_PAKET" ) AS jenisPaket,DATE_FORMAT( a.TGLX_BGKT, "%d-%m-%Y" ) AS TGLX_BGKT,DATE_FORMAT( a.TGLX_PLNG, "%d-%m-%Y" ) AS TGLX_PLNG,a.JMLX_HARI,a.TARIF_PKET, a.STAS_AKTF AS STS ,a.MATA_UANG,a.KETERANGAN,IF( a.TGLX_BGKT <= DATE_FORMAT(NOW(), "%Y-%m-%d" ) ,1,0) AS status, ((a.JMLX_SEAT) - (IFNULL((SELECT COUNT(c.KDXX_DFTR) FROM mrkt_daftarh c WHERE c.KDXX_PKET = a.IDXX_JDWL),0))) AS SISA FROM mrkt_jadwalh a HAVING status = '0' AND STS = '1' AND SISA > 0 ORDER BY a.TGLX_BGKT DESC`;
 
-    db.query(sql, function(err, rows, fields) {
+    db.query(sql, function (err, rows, fields) {
       res.send(rows);
     })
   }
@@ -704,12 +725,13 @@ export default class Marketing {
   getDetailJadwal = (req, res) => {
     var id = req.params.id;
 
-    var sql = `SELECT a.IDXX_JDWL, a.TJAN_PKET, a.PSWT_BGKT, a.PSWT_PLNG, a.RUTE_AWAL_BRKT, a.RUTE_TRNS_BRKT, b.NAMA_NEGR, a.RUTE_AKHR_BRKT, a.RUTE_AWAL_PLNG, a.RUTE_TRNS_PLNG,( SELECT e.NAMA_NEGR FROM m_rutetransit e WHERE e.IDXX_RTS = a.RUTE_TRNS_PLNG ) AS NAMA_NEGRATRPLNG, a.RUTE_AKHR_PLNG, a.JMLX_SEAT, a.HOTL_MEKX, a.HOTL_MADX, a.HOTL_JEDX, a.HOTL_TRAX, c.NAMA_PSWT AS PESAWAT_BERANGKAT, d.NAMA_HTLX AS HOTEL_MEKKAH,( SELECT b.CODD_DESC FROM tb00_basx b WHERE b.CODD_VALU = a.NAMA_PKET AND b.CODD_FLNM = "PAKET_XXXX" ) AS namaPaket, a.NAMA_PKET,( SELECT b.CODD_DESC FROM tb00_basx b WHERE b.CODD_VALU = a.JENS_PKET AND b.CODD_FLNM = "JNS_PAKET" ) AS jenisPaket, a.JENS_PKET, DATE_FORMAT( a.TGLX_BGKT, "%d-%m-%Y" ) AS TGLX_BGKT, DATE_FORMAT( a.TGLX_PLNG, "%d-%m-%Y" ) AS TGLX_PLNG, a.JMLX_HARI, a.TARIF_PKET, a.MATA_UANG,( SELECT b.CODD_DESC FROM tb00_basx b WHERE b.CODD_VALU = a.MATA_UANG AND b.CODD_FLNM = "CURR_MNYX" ) AS MataUang, a.KETERANGAN, IF ( a.TGLX_BGKT <= DATE_FORMAT( NOW(), "%Y-%m-%d" ), 1, 0 ) AS STATUS, f.NAMA_PSWT AS PESAWAT_PULANG, g.NAMA_HTLX AS HOTEL_MADINAH, h.NAMA_HTLX AS HOTEL_JEDDAH, i.NAMA_HTLX AS HOTEL_TRANSIT, j.KDXX_DESC AS NAMA_TUJUAN FROM mrkt_jadwalh a LEFT JOIN m_rutetransit b ON a.RUTE_TRNS_BRKT = b.IDXX_RTS LEFT JOIN m_pesawat c ON a.PSWT_BGKT = c.IDXX_PSWT LEFT JOIN m_hotel d ON a.HOTL_MEKX = d.IDXX_HTLX LEFT JOIN m_pesawat f ON a.PSWT_PLNG = f.IDXX_PSWT LEFT JOIN m_hotel g ON a.HOTL_MADX = g.IDXX_HTLX LEFT JOIN m_hotel h ON a.HOTL_JEDX = h.IDXX_HTLX LEFT JOIN m_hotel i ON a.HOTL_TRAX = i.IDXX_HTLX LEFT JOIN xxxx_masterdata j ON a.TJAN_PKET = j.KDXX_VALU WHERE a.IDXX_JDWL = "${id}"`
+    var sql = `SELECT a.IDXX_JDWL,a.TJAN_PKET,a.PSWT_BGKT,a.PSWT_PLNG,a.RUTE_AWAL_BRKT,a.RUTE_TRNS_BRKT,b.NAMA_NEGR,a.RUTE_AKHR_BRKT,a.RUTE_AWAL_PLNG,a.RUTE_TRNS_PLNG,(SELECT e.NAMA_NEGR FROM m_rutetransit e WHERE e.IDXX_RTS = a.RUTE_TRNS_PLNG ) AS NAMA_NEGRATRPLNG,a.RUTE_AKHR_PLNG,a.JMLX_SEAT,a.HOTL_MEKX,a.HOTL_MADX,a.HOTL_JEDX,a.HOTL_TRAX,c.NAMA_PSWT AS PESAWAT_BERANGKAT,d.NAMA_HTLX AS HOTEL_MEKKAH,(SELECT b.CODD_DESC FROM tb00_basx b WHERE b.CODD_VALU = a.NAMA_PKET AND b.CODD_FLNM = "PAKET_XXXX" ) AS namaPaket,a.NAMA_PKET,(SELECT b.CODD_DESC FROM tb00_basx b WHERE b.CODD_VALU = a.JENS_PKET AND b.CODD_FLNM = "JNS_PAKET" ) AS jenisPaket,a.JENS_PKET,DATE_FORMAT( a.TGLX_BGKT, "%d-%m-%Y" )AS TGLX_BGKT,DATE_FORMAT( a.TGLX_PLNG, "%d-%m-%Y" ) AS TGLX_PLNG,a.JMLX_HARI,a.TARIF_PKET,a.MATA_UANG,(SELECT b.CODD_DESC FROM tb00_basx b WHERE b.CODD_VALU = a.MATA_UANG AND b.CODD_FLNM = "CURR_MNYX" ) AS MataUang,a.KETERANGAN,IF( a.TGLX_BGKT <= DATE_FORMAT( NOW(), "%Y-%m-%d" ), 1, 0 ) AS STATUS,f.NAMA_PSWT AS PESAWAT_PULANG,g.NAMA_HTLX AS HOTEL_MADINAH,h.NAMA_HTLX AS HOTEL_JEDDAH,i.NAMA_HTLX AS HOTEL_TRANSIT,j.KDXX_DESC AS NAMA_TUJUAN FROM mrkt_jadwalh a LEFT JOIN m_rutetransit b ON a.RUTE_TRNS_BRKT = b.IDXX_RTS LEFT JOIN m_pesawat c ON a.PSWT_BGKT = c.IDXX_PSWT LEFT JOIN m_hotel d ON a.HOTL_MEKX = d.IDXX_HTLX LEFT JOIN m_pesawat f ON a.PSWT_PLNG = f.IDXX_PSWT LEFT JOIN m_hotel g ON a.HOTL_MADX = g.IDXX_HTLX LEFT JOIN m_hotel h ON a.HOTL_JEDX = h.IDXX_HTLX LEFT JOIN m_hotel i ON a.HOTL_TRAX = i.IDXX_HTLX LEFT JOIN xxxx_masterdata j ON a.TJAN_PKET = j.KDXX_VALU WHERE a.IDXX_JDWL = "${id}"`;
 
     db.query(sql, function (err, rows, fields) {
       res.send(rows);
     })
   }
+
 
   getDetailJadwalJamaah = (req, res) => {
     var id = req.params.id;
@@ -721,30 +743,30 @@ export default class Marketing {
     })
   }
 
-  getAllPemberangkatan = (req,res) => {
+  getAllPemberangkatan = (req, res) => {
     var sql = `SELECT a.IDXX_JDWL, a.JMLX_HARI, a.KETERANGAN, a.JMLX_SEAT,( SELECT b.CODD_DESC FROM tb00_basx b WHERE b.CODD_VALU = a.NAMA_PKET AND b.CODD_FLNM = "PAKET_XXXX" ) AS namaPaket,( SELECT b.CODD_DESC FROM tb00_basx b WHERE b.CODD_VALU = a.JENS_PKET AND b.CODD_FLNM = "JNS_PAKET") AS jenisPaket, DATE_FORMAT( a.TGLX_BGKT, "%d-%m-%Y" ) AS TGLX_BGKT, DATE_FORMAT( a.TGLX_PLNG, "%d-%m-%Y" ) AS TGLX_PLNG, IF ( a.TGLX_BGKT <= DATE_FORMAT( NOW(), "%Y-%m-%d" ), 1, 0 ) AS STATUS, (( a.JMLX_SEAT ) - ( IFNULL(( SELECT COUNT( c.KDXX_DFTR ) FROM mrkt_daftarh c WHERE c.KDXX_PKET = a.IDXX_JDWL ), 0 ))) AS SISA, IFNULL((SELECT COUNT(d.KDXX_DFTR) FROM mrkt_daftarh d WHERE d.KDXX_MRKT != '' AND d.KDXX_PKET = a.IDXX_JDWL),0) AS JAMAAH_AGEN, IFNULL((SELECT COUNT(d.KDXX_DFTR) FROM mrkt_daftarh d WHERE d.KDXX_MRKT = '' AND d.KDXX_PKET = a.IDXX_JDWL),0) AS JAMAAH_KNTR, IFNULL(( SELECT COUNT( d.KDXX_DFTR ) FROM mrkt_daftarh d WHERE d.KDXX_PKET = a.IDXX_JDWL ), 0 ) AS TOTL_KONFIRMASI FROM mrkt_jadwalh a WHERE a.STAS_AKTF = '1' ORDER BY a.TGLX_BGKT DESC`;
 
-    db.query(sql, function(err, rows, fields) {
+    db.query(sql, function (err, rows, fields) {
       res.send(rows);
     })
   }
 
-  getListJamaahPemberangkatan = (req,res) => {
+  getListJamaahPemberangkatan = (req, res) => {
     var sql = `SELECT a.KDXX_DFTR, a.KDXX_MRKT, b.NAMA_LGKP AS NAMA_JMAH, c.NAMA_LGKP AS NAMA_MRKT, IF(a.KDXX_MRKT = '','Langsung','Marketing') AS JENIS_DAFTAR, e.CODD_DESC AS FIRST_LEVEL, f.NAMA_KNTR AS DAFTAR_VIA, IF((SELECT SUM(g.SISA_TGIH) FROM mrkt_tagihanh g WHERE g.KDXX_DFTR = a.KDXX_DFTR) = 0,'Lunas','Belum') AS BIAYA, IF((SELECT h.NOXX_REKX FROM mrkt_agensir h WHERE h.KDXX_MRKT = a.KDXX_MRKT), '1', '0') AS VB FROM mrkt_daftarh a LEFT JOIN jmah_jamaahh b ON a.KDXX_JMAH = b.NOXX_IDNT LEFT JOIN mrkt_agensih c ON a.KDXX_MRKT = c.KDXX_MRKT LEFT JOIN tb00_basx e ON c.FIRST_LVEL = e.CODD_VALU LEFT JOIN hrsc_mkantorh f ON a.KDXX_KNTR = f.KDXX_KNTR WHERE a.KDXX_PKET = '${req.params.id}' ORDER BY a.CRTX_DATE`;
 
-    db.query(sql, function(err, rows, fields) {
+    db.query(sql, function (err, rows, fields) {
       res.send(rows);
     })
   }
 
-  getDetailJamaahPemberangkatan = (req,res) => {
+  getDetailJamaahPemberangkatan = (req, res) => {
     var sql = `SELECT a.KDXX_DFTR, a.KDXX_MRKT, b.NAMA_LGKP AS NAMA_JMAH, b.NOXX_TELP AS TELP_JMAH, c.NAMA_LGKP AS NAMA_MRKT, (SELECT m.CODD_DESC FROM tb00_basx m WHERE m.CODD_VALU = g.JENS_PKET AND m.CODD_FLNM = 'JNS_PAKET') AS JENIS_PAKET, c.NOXX_TELP AS TELP_MRKT, IF(a.KDXX_MRKT = '','Langsung','Marketing') AS JENIS_DAFTAR, e.CODD_DESC AS FIRST_LEVEL, f.NAMA_KNTR AS DAFTAR_VIA, IF((SELECT SUM(g.SISA_TGIH) FROM mrkt_tagihanh g WHERE g.KDXX_DFTR = a.KDXX_DFTR) = 0,'Lunas','Belum') AS BIAYA, DATE_FORMAT( g.TGLX_BGKT, "%d-%m-%Y" ) AS TGLX_BGKT, (SELECT h.NAMA_LGKP FROM mrkt_agensih h WHERE h.KDXX_MRKT = c.KDXX_LEAD) AS LEAD_FIRST, (SELECT j.NAMA_LGKP FROM mrkt_agensih i LEFT JOIN mrkt_agensih j ON i.KDXX_LEAD = j.KDXX_MRKT WHERE i.KDXX_MRKT = c.KDXX_LEAD) AS LEAD_SECOND, (SELECT l.NOXX_REKX FROM mrkt_agensih h LEFT JOIN mrkt_agensir l ON l.KDXX_MRKT = h.KDXX_MRKT WHERE h.KDXX_MRKT = c.KDXX_LEAD ) AS SVB_FIRST, (SELECT k.NOXX_REKX FROM mrkt_agensih i LEFT JOIN mrkt_agensih j ON i.KDXX_LEAD = j.KDXX_MRKT LEFT JOIN mrkt_agensir k ON j.KDXX_MRKT = k.KDXX_MRKT WHERE i.KDXX_MRKT = c.KDXX_LEAD ) AS SVB_SECOND FROM mrkt_daftarh a LEFT JOIN jmah_jamaahh b ON a.KDXX_JMAH = b.NOXX_IDNT LEFT JOIN mrkt_agensih c ON a.KDXX_MRKT = c.KDXX_MRKT LEFT JOIN tb00_basx e ON c.FIRST_LVEL = e.CODD_VALU LEFT JOIN hrsc_mkantorh f ON a.KDXX_KNTR = f.KDXX_KNTR LEFT JOIN mrkt_jadwalh g ON a.KDXX_PKET = g.IDXX_JDWL WHERE a.KDXX_DFTR = '${req.params.id}'`;
 
-    db.query(sql, function(err, rows, fields) {
+    db.query(sql, function (err, rows, fields) {
       res.send(rows);
     })
   }
-  
+
   // Rute Transit
 
   getDetailTransit = (req, res) => {
@@ -1045,4 +1067,19 @@ export default class Marketing {
       res.send(rows);
     })
   }
+
+  getKota = (req, res) => {
+    var sql = "SELECT CODD_VALU, CODD_DESC FROM tb00_basx WHERE CODD_FLNM = 'KOTA_XXX'";
+    db.query(sql, function (err, rows, fields) {
+      res.send(rows);
+    })
+  }
+
+  getChart = (req, res) => {
+    var sql = `SELECT NAMA_LGKP, KDXX_POSX FROM mrkt_agensih`;
+    db.query(sql, function (err, rows, fields) {
+      res.send(rows);
+    })
+  }
+
 }
