@@ -1,6 +1,6 @@
 import * as C from './controller/index.js';
 import express from 'express';
-
+import sharp from 'sharp';
 const routes = (app) => {
 
       app.route('/').get(C.index);
@@ -8,7 +8,9 @@ const routes = (app) => {
       app.route('/marketing/all-agency').get(C.marketing.getAllAgency);
       app.route('/marketing/calon-agency').get(C.marketing.getCalonAgency);
       app.route('/marketing/agency/save').post(C.marketing.saveAgency);
+      app.route('/marketing/agency/save-foto').post(C.marketing.saveFotoAgency);
       app.route('/marketing/agency/update').post(C.marketing.updateAgency);
+      app.route('/marketing/agency/update-foto').post(C.marketing.updateFotoAgency);
       app.route('/marketing/agency/bank/save').post(C.marketing.saveAgencyBank);
       app.route('/marketing/agency/detail/:id').get(C.marketing.getDetailAgency);
       app.route('/marketing/agency/detail/pelanggan/:id').get(C.marketing.getDetailPelangganAgency);
@@ -91,7 +93,9 @@ const routes = (app) => {
       app.route('/jamaah/all-jamaah').get(C.jamaah.getAllJamaah);
       app.route('/jamaah/all-pelanggan').get(C.jamaah.getPelanggan);
       app.route('/jamaah/jamaah/save').post(C.jamaah.saveJamaah);
+      app.route('/jamaah/jamaah/save-foto').post(C.jamaah.saveFotoJamaah);
       app.route('/jamaah/jamaah/update').post(C.jamaah.updateJamaah);
+      app.route('/jamaah/jamaah/update-foto').post(C.jamaah.updateFotoJamaah);
       app.route('/jamaah/jamaah/delete').post(C.jamaah.deleteJamaah);
       app.route('/jamaah/jamaah/detail/:id').get(C.jamaah.getDetailJamaah);
       app.route('/jamaah/jamaah/detail/info-paket/:id').get(C.jamaah.getDetailInfoPaket);
@@ -103,6 +107,7 @@ const routes = (app) => {
       // --- Jamaah Pendaftaran --
       app.route('/jamaah/pendaftaran/kode').get(C.jamaah.generateNumberPendaftaran);
       app.route('/jamaah/pendaftaran/save').post(C.jamaah.pendaftaranJamaah);
+      app.route('/jamaah/pendaftaran/save-foto').post(C.jamaah.pendaftaranJamaahFoto);
 
       // --- Finance Pembayaran --  
       // Chart
@@ -117,7 +122,16 @@ const routes = (app) => {
       app.route('/finance/pembayaran/no-faktur').get(C.finance.generateNumberFaktur);
       app.route('/finance/pembayaran/save').post(C.finance.savePembayaran);
       
-      app.use('/uploads', express.static('uploads'));
+      app.use('/uploads/foto', express.static('uploads/foto'));
+      app.use('/uploads/ktp', express.static('uploads/ktp'));
+      
+      app.get('/get-profil-koper/foto/:id', (req, res) => {
+            var id = req.params.id;
+            sharp('uploads/foto/' + id)
+              .rotate(90)
+              // Simpan gambar yang sudah diputar ke response
+              .pipe(res);
+      });
       // app.route('/marketing/location').get(C.marketing.getLocation);
       // app.route('/marketing/agency/kode').get(C.marketing.getIDAgency);
       // app.route('/marketing/agency/delete').post(C.marketing.deleteAgency);

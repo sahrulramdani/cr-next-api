@@ -76,11 +76,11 @@ export default class Jamaah {
       })
     }
 
-    saveJamaah = (req, res) => {
+    saveFotoJamaah = (req, res) => {
       var fotoJamaah = req.body.FOTO_JMAH;
       if (fotoJamaah != 'TIDAK') {        
-        var fotoJamaahName = randomString(10) + Date.now() + '.png';
-        fs.writeFile(`uploads/${fotoJamaahName}`, fotoJamaah, {encoding:'base64'}, function(err){
+        var fotoJamaahName = req.body.NOXX_IDNT + '.png';
+        fs.writeFile(`uploads/foto/${fotoJamaahName}`, fotoJamaah, {encoding:'base64'}, function(err){
           if (err) {
             console.log(err);
           }else{
@@ -94,8 +94,8 @@ export default class Jamaah {
 
       var fotoKtpJamaah = req.body.FOTO_KTPX;
       if (fotoKtpJamaah != 'TIDAK') {
-        var fotoKtpJamaahName = randomString(10) + Date.now() + '.png';
-        fs.writeFile(`uploads/${fotoKtpJamaahName}`, fotoKtpJamaah, {encoding:'base64'}, function(err){
+        var fotoKtpJamaahName = req.body.NOXX_IDNT + '.png';
+        fs.writeFile(`uploads/ktp/${fotoKtpJamaahName}`, fotoKtpJamaah, {encoding:'base64'}, function(err){
           if (err) {
             console.log(err);
           }else{
@@ -107,6 +107,14 @@ export default class Jamaah {
         var namaKtp = '';
       }
 
+      res.send({
+        status: true,
+        foto: namaFoto,
+        ktpx: namaKtp
+      });
+    }
+
+    saveJamaah = (req, res) => {
       var qryIns = 'INSERT INTO jmah_jamaahh SET ?';
       var data = {
         NOXX_IDNT : req.body.NOXX_IDNT,
@@ -125,10 +133,10 @@ export default class Jamaah {
         JENS_MNKH : req.body.JENS_MNKH,
         JENS_PEND : req.body.JENS_PEND,
         JENS_PKRJ : req.body.JENS_PKRJ,
-        FOTO_JMAH : namaFoto,
-        FOTO_KTPX : namaKtp,
+        FOTO_JMAH : req.body.NAMA_FOTO,
+        FOTO_KTPX : req.body.NAMA_KTPX,
         CRTX_DATE : new Date(),
-        CRTX_BYXX : 'sahrulramdani20'
+        CRTX_BYXX : 'admin'
       };
 
       db.query(qryIns, data, (err, result) => {
@@ -150,7 +158,7 @@ export default class Jamaah {
               TGLX_KLUR : req.body.TGLX_KLUR,
               TGLX_EXPX : req.body.TGLX_EXPX,
               CRTX_DATE : new Date(),
-              CRTX_BYXX : 'sahrulramdani20'
+              CRTX_BYXX : 'admin'
             };
   
             db.query(qryPspr, dataPspr, (err, result) => {
@@ -175,25 +183,25 @@ export default class Jamaah {
       });
   };
 
-  updateJamaah = (req, res) => {
+  updateFotoJamaah = (req, res) => {
     // FOTO LAMA JAMAAH
     var fotoLama = req.body.FOTO_LAMA;
     if (fotoLama != '') {
       if (req.body.FOTO_JMAH == 'TIDAK') {
         var namaFoto = fotoLama;
       }else{
-        fs.unlink(`uploads/${fotoLama}`,function(err){
+        fs.unlink(`uploads/foto/${fotoLama}`,function(err){
           if(err) return console.log(err);
-          console.log('file deleted successfully');
+          console.log('FOTO LAMA BERHASIL DIHAPUS');
         });  
 
         var fotoJamaah = req.body.FOTO_JMAH;
-        var fotoJamaahName = randomString(10) + Date.now() + '.png';
-        fs.writeFile(`uploads/${fotoJamaahName}`, fotoJamaah, {encoding:'base64'}, function(err){
+        var fotoJamaahName = req.body.NOXX_IDNT + '.png';
+        fs.writeFile(`uploads/foto/${fotoJamaahName}`, fotoJamaah, {encoding:'base64'}, function(err){
           if (err) {
-            console.log(err);
+            console.log('FOTO BARU GAGAL DIUPLOAD',err);
           }else{
-            console.log('berhasil');
+            console.log('FOTO BARU BERHASIL DIUPLOAD');
           }
         });
         var namaFoto = fotoJamaahName;
@@ -203,12 +211,12 @@ export default class Jamaah {
         var namaFoto = '';
       }else{
         var fotoJamaah = req.body.FOTO_JMAH;
-        var fotoJamaahName = randomString(10) + Date.now() + '.png';
-        fs.writeFile(`uploads/${fotoJamaahName}`, fotoJamaah, {encoding:'base64'}, function(err){
+        var fotoJamaahName = req.body.NOXX_IDNT + '.png';
+        fs.writeFile(`uploads/foto/${fotoJamaahName}`, fotoJamaah, {encoding:'base64'}, function(err){
           if (err) {
-            console.log(err);
+            console.log('FOTO LAMA GAGAL DIUPLOAD',err);
           }else{
-            console.log('berhasil');
+            console.log('FOTO BARU BERHASIL DIUPLOAD');
           }
         });
   
@@ -222,18 +230,18 @@ export default class Jamaah {
       if (req.body.FOTO_KTPX == 'TIDAK') {
         var namaKtp = ktpLama;
       }else{
-        fs.unlink(`uploads/${ktpLama}`,function(err){
+        fs.unlink(`uploads/ktp/${ktpLama}`,function(err){
           if(err) return console.log(err);
-          console.log('file deleted successfully');
+          console.log('KTP BARU BERHASIL DIHAPUS');
         });  
 
         var fotoKtpJamaah = req.body.FOTO_KTPX;
-        var fotoKtpJamaahName = randomString(10) + Date.now() + '.png';
-        fs.writeFile(`uploads/${fotoKtpJamaahName}`, fotoKtpJamaah, {encoding:'base64'}, function(err){
+        var fotoKtpJamaahName = req.body.NOXX_IDNT + '.png';
+        fs.writeFile(`uploads/ktp/${fotoKtpJamaahName}`, fotoKtpJamaah, {encoding:'base64'}, function(err){
           if (err) {
-            console.log(err);
+            console.log('KTP BARU GAGAL DIUPLOAD', err);
           }else{
-            console.log('berhasil');
+            console.log('KTP BARU BERHASIL DIUPLOAD');
           }
         });
         var namaKtp = fotoKtpJamaahName;
@@ -243,18 +251,26 @@ export default class Jamaah {
         var namaKtp = '';
       } else {
         var fotoKtpJamaah = req.body.FOTO_KTPX;
-        var fotoKtpJamaahName = randomString(10) + Date.now() + '.png';
-        fs.writeFile(`uploads/${fotoKtpJamaahName}`, fotoKtpJamaah, {encoding:'base64'}, function(err){
+        var fotoKtpJamaahName = req.body.NOXX_IDNT + '.png';
+        fs.writeFile(`uploads/ktp/${fotoKtpJamaahName}`, fotoKtpJamaah, {encoding:'base64'}, function(err){
           if (err) {
-            console.log(err);
+            console.log('KTP BARU GAGAL DIUPLOAD',err);
           }else{
-            console.log('berhasil');
+            console.log('KTP BARU BERHASIL DIUPLOAD');
           }
         });
         var namaKtp = fotoKtpJamaahName;
       }
     }
 
+    res.send({
+      status: true,
+      foto: namaFoto,
+      ktpx: namaKtp
+    });
+  }
+
+  updateJamaah = (req, res) => {
     var qryUpdate = `UPDATE jmah_jamaahh SET ? WHERE NOXX_IDNT = '${req.body.NOXX_IDNT}'`;
     var data = {
       NOXX_IDNT : req.body.NOXX_IDNT,
@@ -273,10 +289,10 @@ export default class Jamaah {
       JENS_MNKH : req.body.JENS_MNKH,
       JENS_PEND : req.body.JENS_PEND,
       JENS_PKRJ : req.body.JENS_PKRJ,
-      FOTO_JMAH : namaFoto,
-      FOTO_KTPX : namaKtp,
+      FOTO_JMAH : req.body.NAMA_FOTO,
+      FOTO_KTPX : req.body.NAMA_KTPX,
       UPDT_DATE : new Date(),
-      UPDT_BYXX : 'sahrulramdani20'
+      UPDT_BYXX : 'admin'
     };
 
     db.query(qryUpdate, data, (err, result) => {
@@ -301,7 +317,7 @@ export default class Jamaah {
                   TGLX_KLUR : req.body.TGLX_KLUR,
                   TGLX_EXPX : req.body.TGLX_EXPX,
                   UPDT_DATE : new Date(),
-                  UPDT_BYXX : 'sahrulramdani20'
+                  UPDT_BYXX : 'admin'
               }
 
               db.query(updPass, dataPass, (err, result) => {
@@ -328,7 +344,7 @@ export default class Jamaah {
                 TGLX_KLUR : req.body.TGLX_KLUR,
                 TGLX_EXPX : req.body.TGLX_EXPX,
                 CRTX_DATE : new Date(),
-                CRTX_BYXX : 'sahrulramdani20'
+                CRTX_BYXX : 'admin'
               };
     
               db.query(qryPspr, dataPspr, (err, result) => {
@@ -430,16 +446,16 @@ export default class Jamaah {
     });
   };
 
-  pendaftaranJamaah = (req, res) => {
+  pendaftaranJamaahFoto = (req, res) => {
     // Menyimpan Foto KK
     var fotoKkDaftar = req.body.FOTO_KKXX;
     if (fotoKkDaftar != 'TIDAK') {        
-      var fotoKkDaftarName = randomString(10) + Date.now() + '.png';
-      fs.writeFile(`uploads/${fotoKkDaftarName}`, fotoKkDaftar, {encoding:'base64'}, function(err){
+      var fotoKkDaftarName = req.body.NOXX_IDNT + '.png';
+      fs.writeFile(`uploads/kk/${fotoKkDaftarName}`, fotoKkDaftar, {encoding:'base64'}, function(err){
         if (err) {
-          console.log(err);
+          console.log('UPLOAD FOTO KK BERHASIL',err);
         }else{
-          console.log('berhasil');
+          console.log('UPLOAD FOTO KK GAGAl');
         }
       });
       var namaKk = fotoKkDaftarName;
@@ -448,21 +464,30 @@ export default class Jamaah {
     }
 
     // Menyimpan Foto Dokumen Lain
-    var fotoKkDaftar = req.body.FOTO_DOCX;
-    if (fotoKkDaftar != 'TIDAK') {        
-      var fotoKkDaftarName = randomString(10) + Date.now() + '.png';
-      fs.writeFile(`uploads/${fotoKkDaftarName}`, fotoKkDaftar, {encoding:'base64'}, function(err){
+    var fotoDokDaftar = req.body.FOTO_DOCX;
+    if (fotoDokDaftar != 'TIDAK') {        
+      var fotoDokDaftarName = req.body.NOXX_IDNT + '.png';
+      fs.writeFile(`uploads/lampiran/${fotoDokDaftarName}`, fotoDokDaftar, {encoding:'base64'}, function(err){
         if (err) {
-          console.log(err);
+          console.log('UPLOAD LAMPIRAN BERHASIL', err);
         }else{
-          console.log('berhasil');
+          console.log('UPLOAD LAMPIRAN GAGAL');
         }
       });
-      var namaDok = fotoKkDaftarName;
+      var namaDok = fotoDokDaftarName;
     }else{
       var namaDok = '';
     }
 
+    res.send({
+      status: true,
+      kkxx: namaKk,
+      dokx: namaDok
+    });
+  }
+
+
+  pendaftaranJamaah = (req, res) => {
     // Menyimpan pendaftaran header
     var qry = `INSERT INTO mrkt_daftarh SET ?`;
     var data = {
@@ -480,12 +505,12 @@ export default class Jamaah {
       KDXX_MRKT : req.body.KDXX_MRKT,
       ESTX_TOTL : req.body.ESTX_TOTL,
       JTUH_TEMP : req.body.JTUH_TEMP,
-      FOTO_KKXX : namaKk,
-      FOTO_DOCX : namaDok,
+      FOTO_KKXX : req.body.NAMA_KKXX,
+      FOTO_DOCX : req.body.NAMA_DOCX,
       STAS_BYAR : 0,
       STAS_BGKT : 0,
       CRTX_DATE : new Date(),
-      CRTX_BYXX : 'sahrulramdani20'
+      CRTX_BYXX : 'admin'
     };
 
     db.query(qry, data, async (err, result) => {
@@ -512,7 +537,7 @@ export default class Jamaah {
             JMLX_BYAR : 0,
             SISA_TGIH : jsonTagihan[i]['total_tagihan'],
             CRTX_DATE : new Date(),
-            CRTX_BYXX : 'sahrulramdani20'
+            CRTX_BYXX : 'admin'
           };      
           db.query(qry, data, (err, result) => {
               if (err) {

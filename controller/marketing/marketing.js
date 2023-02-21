@@ -50,16 +50,16 @@ export default class Marketing {
 
   }
 
-  saveAgency = (req, res) => {
+  saveFotoAgency = (req, res) => {
     // --Menyimpan Gambar Agensi
     var fotoAgency = req.body.FOTO_AGEN;
     if (fotoAgency != 'TIDAK') {
-      var fotoAgencyName = randomString(10) + Date.now() + '.png';
-      fs.writeFile(`uploads/${fotoAgencyName}`, fotoAgency, { encoding: 'base64' }, function (err) {
+      var fotoAgencyName = req.body.NOXX_IDNT + '.png';
+      fs.writeFile(`uploads/foto/${fotoAgencyName}`, fotoAgency, { encoding: 'base64' }, function (err) {
         if (err) {
-          console.log(err);
+          console.log('FOTO GAGAL DIUPLOAD', err);
         } else {
-          console.log('berhasil');
+          console.log('FOTO BERHASIL DIUPLOAD');
         }
       });
 
@@ -71,12 +71,12 @@ export default class Marketing {
     // --Menyimpan Gambar KTP
     var fotoKtpAgen = req.body.FOTO_KTPX;
     if (fotoKtpAgen != 'TIDAK') {
-      var fotoKtpAgenName = randomString(10) + Date.now() + '.png';
-      fs.writeFile(`uploads/${fotoKtpAgenName}`, fotoKtpAgen, { encoding: 'base64' }, function (err) {
+      var fotoKtpAgenName = req.body.NOXX_IDNT + '.png';
+      fs.writeFile(`uploads/ktp/${fotoKtpAgenName}`, fotoKtpAgen, { encoding: 'base64' }, function (err) {
         if (err) {
-          console.log(err);
+          console.log('FOTO GAGAL DIUPLOAD', err);
         } else {
-          console.log('berhasil');
+          console.log('FOTO BERHASIL DIUPLOAD');
         }
       });
       var namaKtp = fotoKtpAgenName
@@ -84,6 +84,14 @@ export default class Marketing {
       var namaKtp = req.body.KTPX_LMAX;
     }
 
+    res.send({
+      status: true,
+      foto: namaFoto,
+      ktpx: namaKtp
+    });
+  }
+
+  saveAgency = (req, res) => {
     // Menyimpan Ke Database
     var qryIns = 'INSERT INTO mrkt_agensih SET ?';
 
@@ -110,15 +118,15 @@ export default class Marketing {
       JENS_PEND: req.body.JENS_PEND,
       JENS_PKRJ: req.body.JENS_PKRJ,
       FEEX_LVEL: req.body.FEEX_LVEL,
-      FOTO_AGEN: namaFoto,
-      FOTO_KTPX: namaKtp,
+      FOTO_AGEN: req.body.NAMA_FOTO,
+      FOTO_KTPX: req.body.NAMA_KTPX,
       STAS_AGEN: 1,
       PERD_JMAH: 0,
       TOTL_JMAH: 0,
       TOTL_POIN: 0,
       TGLX_GBNG: moment(new Date()).format('YYYY-MM-DD'),
       CRTX_DATE: new Date(),
-      CRTX_BYXX: 'sahrulramdani20'
+      CRTX_BYXX: 'admin'
     };
 
     db.query(qryIns, data, (err, result) => {
@@ -140,7 +148,7 @@ export default class Marketing {
             TGLX_KLUR: req.body.TGLX_KLUR,
             TGLX_EXPX: req.body.TGLX_EXPX,
             CRTX_DATE: new Date(),
-            CRTX_BYXX: 'sahrulramdani20'
+            CRTX_BYXX: 'admin'
           };
 
           db.query(qryPspr, dataPspr, (err, result) => {
@@ -165,6 +173,7 @@ export default class Marketing {
     });
   }
 
+
   saveAgencyBank = (req, res) => {
     var id = req.body.KDXX_MRKT;
     var sql = `SELECT a.* FROM mrkt_agensir a WHERE a.KDXX_MRKT = '${id}'`;
@@ -179,7 +188,7 @@ export default class Marketing {
           KDXX_BANK: req.body.KDXX_BANK,
           STAS_REKX: req.body.STAS_REKX,
           UPDT_DATE: new Date(),
-          UPDT_BYXX: 'sahrulramdani20'
+          UPDT_BYXX: 'admin'
         }
 
         db.query(qryUpd, dataUpd, (err, result) => {
@@ -205,7 +214,7 @@ export default class Marketing {
           KDXX_BANK: req.body.KDXX_BANK,
           STAS_REKX: req.body.STAS_REKX,
           CRTX_DATE: new Date(),
-          CRTX_BYXX: 'sahrulramdani20'
+          CRTX_BYXX: 'admin'
         };
 
 
@@ -224,6 +233,94 @@ export default class Marketing {
         });
       }
     })
+  }
+
+
+  updateFotoAgency = (req, res) => {
+      // --Menyimpan Gambar
+      var fotoLama = req.body.FOTO_LAMA;
+      if (fotoLama != '') {
+        if (req.body.FOTO_AGEN == 'TIDAK') {
+          var namaFoto = fotoLama;
+        } else {
+          fs.unlink(`uploads/foto/${fotoLama}`, function (err) {
+            if (err) return console.log(err);
+            console.log('FOTO LAMA BERHASIL DIHAPUS');
+          });
+
+          var fotoAgen = req.body.FOTO_AGEN;
+          var fotoAgenName = req.body.NOXX_IDNT + '.png';
+          fs.writeFile(`uploads/foto/${fotoAgenName}`, fotoAgen, { encoding: 'base64' }, function (err) {
+            if (err) {
+              console.log('FOTO BARU GAGAL DIUPLOAD' ,err);
+            } else {
+              console.log('FOTO BARU BERHASIL DIUPLOAD');
+            }
+          });
+          var namaFoto = fotoAgenName;
+        }
+      } else {
+        if (req.body.FOTO_AGEN == 'TIDAK') {
+          var namaFoto = '';
+        } else {
+          var fotoAgen = req.body.FOTO_AGEN;
+          var fotoAgenName = req.body.NOXX_IDNT + '.png';
+          fs.writeFile(`uploads/foto/${fotoAgenName}`, fotoAgen, { encoding: 'base64' }, function (err) {
+            if (err) {
+              console.log('FOTO BARU GAGAL DIUPLOAD', err);
+            } else {
+              console.log('FOTO BARU BERHASIL DIUPLOAD');
+            }
+          });
+
+          var namaFoto = fotoAgenName;
+        }
+      }
+
+      // Menyimpan KTP
+      var ktpLama = req.body.KTPX_LAMA;
+      if (ktpLama != '') {
+        if (req.body.FOTO_KTPX == 'TIDAK') {
+          var namaKtp = ktpLama;
+        } else {
+          fs.unlink(`uploads/ktp/${ktpLama}`, function (err) {
+            if (err) return console.log(err);
+            console.log('FOTO KTP BERHASIL DIHAPUS');
+          });
+
+          var fotoKtpAgen = req.body.FOTO_KTPX;
+          var fotoKtpAgenName = req.body.NOXX_IDNT + '.png';
+          fs.writeFile(`uploads/ktp/${fotoKtpAgenName}`, fotoKtpAgen, { encoding: 'base64' }, function (err) {
+            if (err) {
+              console.log('KTP BARU GAGAL DIUPLOAD', err);
+            } else {
+              console.log('KTP BARU BERHASIL DIUPLOAD');
+            }
+          });
+          var namaKtp = fotoKtpAgenName;
+        }
+      } else {
+        if (req.body.FOTO_KTPX == 'TIDAK') {
+          var namaKtp = '';
+        } else {
+          var fotoKtpAgen = req.body.FOTO_KTPX;
+          var fotoKtpAgenName = req.body.NOXX_IDNT + '.png';
+          fs.writeFile(`uploads/ktp/${fotoKtpAgenName}`, fotoKtpAgen, { encoding: 'base64' }, function (err) {
+            if (err) {
+              console.log('KTP BARU GAGAL DIUPLOAD', err);
+            } else {
+              console.log('KTP BARU BERHASIL DIUPLOAD');
+            }
+          });
+          var namaKtp = fotoKtpAgenName;
+        }
+      }
+      
+    res.send({
+      status: true,
+      foto: namaFoto,
+      ktpx: namaKtp
+    });
   }
 
   updateAgency = (req, res) => {
@@ -245,86 +342,7 @@ export default class Marketing {
       } else {
         var firstLvl = '4801';
       }
-
-      // --Menyimpan Gambar
-      var fotoLama = req.body.FOTO_LAMA;
-      if (fotoLama != '') {
-        if (req.body.FOTO_AGEN == 'TIDAK') {
-          var namaFoto = fotoLama;
-        } else {
-          fs.unlink(`uploads/${fotoLama}`, function (err) {
-            if (err) return console.log(err);
-            console.log('file deleted successfully');
-          });
-
-          var fotoAgen = req.body.FOTO_AGEN;
-          var fotoAgenName = randomString(10) + Date.now() + '.png';
-          fs.writeFile(`uploads/${fotoAgenName}`, fotoAgen, { encoding: 'base64' }, function (err) {
-            if (err) {
-              console.log(err);
-            } else {
-              console.log('berhasil');
-            }
-          });
-          var namaFoto = fotoAgenName;
-        }
-      } else {
-        if (req.body.FOTO_AGEN == 'TIDAK') {
-          var namaFoto = '';
-        } else {
-          var fotoAgen = req.body.FOTO_AGEN;
-          var fotoAgenName = randomString(10) + Date.now() + '.png';
-          fs.writeFile(`uploads/${fotoAgenName}`, fotoAgen, { encoding: 'base64' }, function (err) {
-            if (err) {
-              console.log(err);
-            } else {
-              console.log('berhasil');
-            }
-          });
-
-          var namaFoto = fotoAgenName;
-        }
-      }
-
-      // Menyimpan KTP
-      var ktpLama = req.body.KTPX_LAMA;
-      if (ktpLama != '') {
-        if (req.body.FOTO_KTPX == 'TIDAK') {
-          var namaKtp = ktpLama;
-        } else {
-          fs.unlink(`uploads/${ktpLama}`, function (err) {
-            if (err) return console.log(err);
-            console.log('file deleted successfully');
-          });
-
-          var fotoKtpAgen = req.body.FOTO_KTPX;
-          var fotoKtpAgenName = randomString(10) + Date.now() + '.png';
-          fs.writeFile(`uploads/${fotoKtpAgenName}`, fotoKtpAgen, { encoding: 'base64' }, function (err) {
-            if (err) {
-              console.log(err);
-            } else {
-              console.log('berhasil');
-            }
-          });
-          var namaKtp = fotoKtpAgenName;
-        }
-      } else {
-        if (req.body.FOTO_KTPX == 'TIDAK') {
-          var namaKtp = '';
-        } else {
-          var fotoKtpAgen = req.body.FOTO_KTPX;
-          var fotoKtpAgenName = randomString(10) + Date.now() + '.png';
-          fs.writeFile(`uploads/${fotoKtpAgenName}`, fotoKtpAgen, { encoding: 'base64' }, function (err) {
-            if (err) {
-              console.log(err);
-            } else {
-              console.log('berhasil');
-            }
-          });
-          var namaKtp = fotoKtpAgenName;
-        }
-      }
-
+      
       // --Menyimpan ke database
       var qryUpdate = `UPDATE mrkt_agensih SET ? WHERE KDXX_MRKT = '${req.body.KDXX_AGEN}'`;
       var data = {
@@ -350,12 +368,12 @@ export default class Marketing {
         JENS_PEND: req.body.JENS_PEND,
         JENS_PKRJ: req.body.JENS_PKRJ,
         FEEX_LVEL: req.body.FEEX_LVEL,
-        FOTO_AGEN: namaFoto,
-        FOTO_KTPX: namaKtp,
+        FOTO_AGEN: req.body.NAMA_FOTO,
+        FOTO_KTPX: req.body.NAMA_KTPX,
         STAS_AGEN: req.body.STAS_AGEN,
         TGLX_GBNG: moment(new Date()).format('YYYY-MM-DD'),
         UPDT_DATE: new Date(),
-        UPDT_BYXX: 'sahrulramdani20'
+        UPDT_BYXX: 'admin'
       };
 
       db.query(qryUpdate, data, (err, result) => {
@@ -381,7 +399,7 @@ export default class Marketing {
                   TGLX_KLUR: req.body.TGLX_KLUR,
                   TGLX_EXPX: req.body.TGLX_EXPX,
                   UPDT_DATE: new Date(),
-                  UPDT_BYXX: 'sahrulramdani20'
+                  UPDT_BYXX: 'admin'
                 }
 
                 db.query(updPass, dataPass, (err, result) => {
@@ -407,7 +425,7 @@ export default class Marketing {
                   TGLX_KLUR: req.body.TGLX_KLUR,
                   TGLX_EXPX: req.body.TGLX_EXPX,
                   CRTX_DATE: new Date(),
-                  CRTX_BYXX: 'sahrulramdani20'
+                  CRTX_BYXX: 'admin'
                 };
 
                 db.query(qryPspr, dataPspr, (err, result) => {
