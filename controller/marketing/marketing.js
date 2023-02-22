@@ -696,6 +696,14 @@ export default class Marketing {
     })
   }
 
+  getHotel = (req, res) => {
+    var sql = "SELECT a.IDXX_HTLX, a.NAMA_HTLX, a.BINTG_HTLX,a.KTGR_HTLX,c.CODD_DESC AS namaKota,b.CODD_DESC FROM m_hotel a INNER JOIN tb00_basx b ON a.BINTG_HTLX = b.CODD_VALU INNER JOIN tb00_basx c ON a.KTGR_HTLX = c.CODD_VALU WHERE b.CODD_FLNM = 'BINTG_HTLX' AND c.CODD_FLNM = 'KOTA_XXX' ORDER BY a.CRTX_DATE DESC";
+    db.query(sql, function (err, rows, fields) {
+      res.send(rows);
+    })
+  }
+
+
   getHotelMekkah = (req, res) => {
     var sql = "SELECT a.IDXX_HTLX, a.NAMA_HTLX, a.BINTG_HTLX,b.CODD_DESC,c.CODD_DESC as KOTA FROM m_hotel a INNER JOIN tb00_basx b ON a.BINTG_HTLX = b.CODD_VALU INNER JOIN tb00_basx c ON a.KTGR_HTLX = c.CODD_VALU WHERE b.CODD_FLNM = 'BINTG_HTLX' AND c.CODD_FLNM = 'KOTA_XXX' AND a.KTGR_HTLX = '01' ORDER BY a.BINTG_HTLX DESC";
     db.query(sql, function (err, rows, fields) {
@@ -882,7 +890,7 @@ export default class Marketing {
     });
   }
 
-
+  
   // Maskapai
   saveMaskapai = (req, res) => {
     var sql = "SELECT NOXX_AKHR FROM tb00_sequence WHERE IDXX_XXXX = '6' AND DOCX_CODE = 'PWT'";
@@ -1001,6 +1009,7 @@ export default class Marketing {
           IDXX_HTLX: id,
           NAMA_HTLX: req.body.NAMA_HTLX,
           BINTG_HTLX: req.body.BINTG_HTLX,
+          KTGR_HTLX: req.body.KTGR_HTLX,
           CRTX_BYXX: "alfi",
           CRTX_DATE: new Date(),
         }
@@ -1031,6 +1040,7 @@ export default class Marketing {
       IDXX_HTLX: req.body.IDXX_HTLX,
       NAMA_HTLX: req.body.NAMA_HTLX,
       BINTG_HTLX: req.body.BINTG_HTLX,
+      KTGR_HTLX: req.body.KTGR_HTLX,
       UPDT_BYXX: "alfi",
       UPDT_DATE: new Date(),
     }
@@ -1073,7 +1083,7 @@ export default class Marketing {
 
   getDetailHotel = (req, res) => {
     var id = req.params.id;
-    var sql = `SELECT a.IDXX_HTLX, a.NAMA_HTLX, a.BINTG_HTLX,b.CODD_DESC FROM m_hotel a INNER JOIN tb00_basx b ON a.BINTG_HTLX = b.CODD_VALU WHERE IDXX_HTLX = '${id}' AND b.CODD_FLNM = 'BINTG_HTLX'`;
+    var sql = `SELECT a.IDXX_HTLX, a.NAMA_HTLX, a.BINTG_HTLX,a.KTGR_HTLX,c.CODD_DESC as namaKota,b.CODD_DESC FROM m_hotel a INNER JOIN tb00_basx b ON a.BINTG_HTLX = b.CODD_VALU INNER JOIN tb00_basx c ON a.KTGR_HTLX = c.CODD_VALU WHERE b.CODD_FLNM = 'BINTG_HTLX' AND c.CODD_FLNM = 'KOTA_XXX'AND IDXX_HTLX = '${id}'`;
     db.query(sql, function (err, rows, fields) {
       res.send(rows);
     })
@@ -1081,6 +1091,13 @@ export default class Marketing {
 
   getBintangHotel = (req, res) => {
     var sql = "SELECT CODD_VALU, CODD_DESC FROM tb00_basx WHERE CODD_FLNM = 'BINTG_HTLX'";
+    db.query(sql, function (err, rows, fields) {
+      res.send(rows);
+    })
+  }
+
+  getKategori = (req, res) => {
+    var sql = "SELECT CODD_VALU, CODD_DESC FROM tb00_basx WHERE CODD_FLNM = 'KOTA_XXX'";
     db.query(sql, function (err, rows, fields) {
       res.send(rows);
     })

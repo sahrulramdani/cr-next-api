@@ -118,6 +118,8 @@ export default class AuthController {
             res.send({
               status: true,
               token: token,
+              namaUser : rows[0]['KETX_USER'],
+              fotoUser : rows[0]['NamaFile'],
             });
           }
         } else {

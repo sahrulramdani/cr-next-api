@@ -26,6 +26,7 @@ const routes = (app) => {
       app.route("/marketing/jadwal/get-jadwal").get(C.marketing.getJadwalAvailable);
       app.route("/marketing/jadwal/getTransit").get(C.marketing.getTransit);
       app.route("/marketing/jadwal/getMaskapai").get(C.marketing.getMaskapai);
+      app.route("/marketing/jadwal/getHotel").get(C.marketing.getHotel);
       app.route("/marketing/jadwal/getHotelMekkah").get(C.marketing.getHotelMekkah);
       app.route("/marketing/jadwal/getHotelMadinah").get(C.marketing.getHotelMadinah);
       app.route("/marketing/jadwal/getHotelPlus").get(C.marketing.getHotelPlus);
@@ -60,6 +61,7 @@ const routes = (app) => {
       app.route('/marketing/hotel/update').post(C.marketing.updateHotel);
       app.route('/marketing/hotel/delete').post(C.marketing.deleteHotel);
       app.route('/marketing/hotel/getBintangHtl').get(C.marketing.getBintangHotel);
+      app.route('/marketing/hotel/getKategori').get(C.marketing.getKategori);
       app.route('/marketing/hotel/getDetailHotel/:id').get(C.marketing.getDetailHotel);
 
       //---- Chart Marketing
@@ -121,7 +123,7 @@ const routes = (app) => {
       app.route('/finance/pembayaran/get-tagihan/:id').get(C.finance.getTagihanJamaah);
       app.route('/finance/pembayaran/no-faktur').get(C.finance.generateNumberFaktur);
       app.route('/finance/pembayaran/save').post(C.finance.savePembayaran);
-      
+
       app.use('/uploads/foto', express.static('uploads/foto'));
       app.use('/uploads/ktp', express.static('uploads/ktp'));
       
@@ -149,6 +151,22 @@ const routes = (app) => {
 
       //---- Setup ----
       app.route('/info/dashboard/main-dashboard').get(C.info.getMainDashboardInfo);
+
+      // marketing
+      app.route('/chart/dashboard/marketing').get(C.info.getChartMarketing);
+      app.route('/data/dashboard/marketing').get(C.info.getDataAgensiMarketing);
+      app.route('/info/dashboard/marketing').get(C.info.getDataAgensiMarketing);
+
+      // jamaah
+      app.route('/info/dashboard/jamaah').get(C.info.getInfoJamaah);
+      app.route('/data/dashboard/jamaah').get(C.info.getDataJamaah);
+      app.route('/chart/dashboard/jamaah').get(C.info.getChartJamaah);
+
+      // overview
+      app.route('/data/dashboard/overview').get(C.info.getDataOverview);
+
+
+
 
       // app.route('/setup/save').post(C.auth.verifyToken, C.setup.saveSetup);
       // app.route('/setup/update').post(C.auth.verifyToken, C.setup.updateSetup);
