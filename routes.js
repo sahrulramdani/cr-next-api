@@ -23,6 +23,7 @@ const routes = (app) => {
       app.route("/marketing/jadwal/getpaket").get(C.marketing.getPaket);
       app.route("/marketing/jadwal/getmatauang").get(C.marketing.getMataUang);
       app.route("/marketing/jadwal/getAllJadwal").get(C.marketing.getAllJadwal);
+      app.route("/marketing/jadwal/getAllJadwalDash").get(C.marketing.getAllJadwalDash);
       app.route("/marketing/jadwal/get-jadwal").get(C.marketing.getJadwalAvailable);
       app.route("/marketing/jadwal/getTransit").get(C.marketing.getTransit);
       app.route("/marketing/jadwal/getMaskapai").get(C.marketing.getMaskapai);
@@ -154,8 +155,16 @@ const routes = (app) => {
 
       // marketing
       app.route('/chart/dashboard/marketing').get(C.info.getChartMarketing);
+      app.route('/chart/dashboard/laporan-tahunan').get(C.info.getChartLaporanTahunan);
+      app.route('/data/dashboard/laporan-tahunan').get(C.info.getDataLaporanTahunan);
+      app.route('/data/dashboard/detail/laporan-tahunan').get(C.info.getDetailLaporanTahunan);
+      app.route('/data/dashboard/detail/laporan-pencapaian/:tahun/:kode').get(C.info.getDetailLaporanPencapaian);
       app.route('/data/dashboard/marketing').get(C.info.getDataAgensiMarketing);
       app.route('/info/dashboard/marketing').get(C.info.getDataAgensiMarketing);
+
+      app.route('/info/dashboard/agency').get(C.info.getInfoAgency);
+      app.route('/info/dashboard/jadwal').get(C.info.getInfoJadwal);
+      app.route('/info/dashboard/pemberangkatan').get(C.info.getInfoPemberangkatan);
 
       // jamaah
       app.route('/info/dashboard/jamaah').get(C.info.getInfoJamaah);

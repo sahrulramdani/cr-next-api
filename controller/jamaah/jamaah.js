@@ -13,7 +13,7 @@ import { fncParseComma, randomString } from './../../libraries/sisqu/Utility.js'
   
 export default class Jamaah {
     getAllJamaah = (req, res) => {
-        var sql = `SELECT a.*, TIMESTAMPDIFF(year,a.TGLX_LHIR,CURDATE()) AS UMUR, b.CODD_DESC AS MENIKAH, c.CODD_DESC AS PENDIDIKAN, d.CODD_DESC AS PEKERJAAN, e.NOXX_PSPR, e.NAMA_PSPR, e.KLUR_DIXX, e.TGLX_KLUR, e.TGLX_EXPX FROM jmah_jamaahh a LEFT JOIN tb00_basx b ON a.JENS_MNKH = b.CODD_VALU LEFT JOIN tb00_basx c ON a.JENS_PEND = c.CODD_VALU LEFT JOIN tb00_basx d ON a.JENS_PKRJ = d.CODD_VALU LEFT JOIN jmah_jamaahp e ON a.NOXX_IDNT = e.NOXX_IDNT ORDER BY CRTX_DATE DESC`;
+        var sql = `SELECT a.*, TIMESTAMPDIFF( YEAR, a.TGLX_LHIR, CURDATE()) AS UMUR, (SELECT b.CODD_DESC FROM tb00_basx b WHERE b.CODD_FLNM = 'MARRYXX' AND b.CODD_VALU = a.JENS_MNKH) AS MENIKAH, (SELECT c.CODD_DESC FROM tb00_basx c WHERE c.CODD_FLNM = 'PENDXX' AND c.CODD_VALU = a.JENS_PEND) AS PENDIDIKAN, (SELECT d.CODD_DESC FROM tb00_basx d WHERE d.CODD_FLNM = 'PEKERJAAN' AND d.CODD_VALU = a.JENS_PKRJ) AS PEKERJAAN, e.NOXX_PSPR, e.NAMA_PSPR, e.KLUR_DIXX, e.TGLX_KLUR, e.TGLX_EXPX FROM jmah_jamaahh a LEFT JOIN jmah_jamaahp e ON a.NOXX_IDNT = e.NOXX_IDNT ORDER BY CRTX_DATE DESC`;
     
         db.query(sql, function (err, rows, fields) {
           res.send(rows);

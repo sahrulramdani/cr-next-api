@@ -14,7 +14,9 @@ import date from 'date-and-time';
 export default class Marketing {
 
   getAllAgency = (req, res) => {
-    var sql = "SELECT a.* , IF( a.STAS_AGEN = '1', 'Aktif', 'Tidak Aktif' ) AS STATUS_AGEN, b.CODD_DESC AS FEE, c.CODD_DESC AS FIRST_LVL, d.NAMA_KNTR FROM mrkt_agensih a LEFT JOIN tb00_basx b ON a.FEEX_LVEL = b.CODD_VALU LEFT JOIN tb00_basx c ON a.FIRST_LVEL = c.CODD_VALU LEFT JOIN hrsc_mkantorh d ON a.KDXX_KNTR = d.KDXX_KNTR ORDER BY CRTX_DATE DESC";
+    // var sql = "SELECT a.* , IF( a.STAS_AGEN = '1', 'Aktif', 'Tidak Aktif' ) AS STATUS_AGEN, b.CODD_DESC AS FEE, c.CODD_DESC AS FIRST_LVL, d.NAMA_KNTR FROM mrkt_agensih a LEFT JOIN tb00_basx b ON a.FEEX_LVEL = b.CODD_VALU LEFT JOIN tb00_basx c ON a.FIRST_LVEL = c.CODD_VALU LEFT JOIN hrsc_mkantorh d ON a.KDXX_KNTR = d.KDXX_KNTR ORDER BY CRTX_DATE DESC";
+
+    var sql = "SELECT a.* , IF( a.STAS_AGEN = '1', 'Aktif', 'Tidak Aktif' ) AS STATUS_AGEN,IFNULL(b.CODD_DESC, '-') AS FEE, IFNULL((SELECT e.CODD_DESC FROM tb00_basx e WHERE e.CODD_VALU = a.FEEX_LVEL AND e.CODD_FLNM = 'FEELEVEL'),'-') AS FIRST_LVL, d.NAMA_KNTR FROM mrkt_agensih a LEFT JOIN tb00_basx b ON a.FEEX_LVEL = b.CODD_VALU  LEFT JOIN hrsc_mkantorh d ON a.KDXX_KNTR = d.KDXX_KNTR ORDER BY CRTX_DATE DESC";
 
     db.query(sql, function (err, rows, fields) {
       res.send(rows);
@@ -111,6 +113,9 @@ export default class Marketing {
       KDXX_POSX: req.body.KDXX_POSX,
       KDXX_LEAD: req.body.KDXX_LEAD,
       FEEX_LVEL: req.body.FEEX_LVEL,
+      KATX_MRKT: req.body.KATX_MRKT,
+      NAMA_PJWB: req.body.NAMA_PJWB,
+      TELP_PJWB: req.body.TELP_PJWB,
       FIRST_LVEL: '4801',
       NAMA_AYAH: req.body.NAMA_AYAH,
       NOXX_TELP: req.body.NOXX_TELP,
@@ -361,6 +366,9 @@ export default class Marketing {
         KDXX_POSX: req.body.KDXX_POSX,
         KDXX_LEAD: req.body.KDXX_LEAD,
         FEEX_LVEL: req.body.FEEX_LVEL,
+        KATX_MRKT: req.body.KATX_MRKT,
+        NAMA_PJWB: req.body.NAMA_PJWB,
+        TELP_PJWB: req.body.TELP_PJWB,
         FIRST_LVEL: firstLvl,
         NAMA_AYAH: req.body.NAMA_AYAH,
         NOXX_TELP: req.body.NOXX_TELP,
@@ -565,6 +573,7 @@ export default class Marketing {
           JMLX_SEAT: req.body.JMLX_SEAT,
           MATA_UANG: req.body.MATA_UANG,
           STAS_AKTF: '1',
+          STAS_BGKT: '0',
           KETERANGAN: req.body.KETERANGAN,
           CRTX_DATE: new Date(),
           CRTX_BYXX: "alfi",
@@ -740,6 +749,14 @@ export default class Marketing {
     })
   }
 
+  getAllJadwalDash = (req, res) => {
+    var sql = `SELECT a.IDXX_JDWL,a.TJAN_PKET, a.PSWT_BGKT, a.KETX_RUTE, a.KETX_HTLX, a.PSWT_PLNG,(SELECT b.NAMA_PSWT FROM m_pesawat b WHERE b.IDXX_PSWT = a.PSWT_BGKT) AS NAME_PESWT_BGKT,(SELECT b.NAMA_PSWT FROM m_pesawat b WHERE b.IDXX_PSWT = a.PSWT_PLNG) AS NAME_PESWT_PLNG, a.RUTE_AWAL_BRKT,a.RUTE_TRNS_BRKT,a.RUTE_AKHR_BRKT,a.RUTE_AWAL_PLNG,a.JMLX_SEAT,( SELECT b.CODD_DESC FROM tb00_basx b WHERE b.CODD_VALU = a.NAMA_PKET AND b.CODD_FLNM = "PAKET_XXXX" ) AS namaPaket,( SELECT b.CODD_DESC FROM tb00_basx b WHERE b.CODD_VALU = a.JENS_PKET AND b.CODD_FLNM = "JNS_PAKET" ) AS jenisPaket,DATE_FORMAT( a.TGLX_BGKT, "%d-%m-%Y" ) AS TGLX_BGKT,DATE_FORMAT( a.TGLX_PLNG, "%d-%m-%Y" ) AS TGLX_PLNG,a.JMLX_HARI,a.TARIF_PKET,a.MATA_UANG,a.KETERANGAN,IF( a.TGLX_BGKT <= DATE_FORMAT(NOW(), "%Y-%m-%d" ) ,1,0) AS status, ((a.JMLX_SEAT) - (IFNULL((SELECT COUNT(c.KDXX_DFTR) FROM mrkt_daftarh c WHERE c.KDXX_PKET = a.IDXX_JDWL),0))) AS SISA,e.CODD_DESC,(SELECT COUNT(b.KDXX_PKET) FROM mrkt_daftarh b WHERE b.KDXX_PKET = a.IDXX_JDWL) AS TERISI FROM mrkt_jadwalh a LEFT JOIN m_hotel d ON d.IDXX_HTLX = a.HOTL_MEKX LEFT JOIN tb00_basx e ON e.CODD_VALU = d.BINTG_HTLX AND e.CODD_FLNM = 'BINTG_HTLX' WHERE a.STAS_AKTF = '1' ORDER BY a.TGLX_BGKT ASC`;
+    db.query(sql, function (err, rows, fields) {
+      res.send(rows);
+    })
+  }
+
+  
   getJadwalAvailable = (req, res) => {
     var sql = `SELECT a.IDXX_JDWL,a.TJAN_PKET,a.PSWT_BGKT, a.PSWT_PLNG,a.JMLX_SEAT,( SELECT b.CODD_DESC FROM tb00_basx b WHERE b.CODD_VALU = a.NAMA_PKET AND b.CODD_FLNM = "PAKET_XXXX" ) AS namaPaket,( SELECT b.CODD_DESC FROM tb00_basx b WHERE b.CODD_VALU = a.JENS_PKET AND b.CODD_FLNM = "JNS_PAKET" ) AS jenisPaket,DATE_FORMAT( a.TGLX_BGKT, "%d-%m-%Y" ) AS TGLX_BGKT,DATE_FORMAT( a.TGLX_PLNG, "%d-%m-%Y" ) AS TGLX_PLNG,a.JMLX_HARI,a.TARIF_PKET, a.STAS_AKTF AS STS ,a.MATA_UANG,a.KETERANGAN,IF( a.TGLX_BGKT <= DATE_FORMAT(NOW(), "%Y-%m-%d" ) ,1,0) AS status, ((a.JMLX_SEAT) - (IFNULL((SELECT COUNT(c.KDXX_DFTR) FROM mrkt_daftarh c WHERE c.KDXX_PKET = a.IDXX_JDWL),0))) AS SISA FROM mrkt_jadwalh a HAVING status = '0' AND STS = '1' AND SISA > 0 ORDER BY a.TGLX_BGKT DESC`;
 
