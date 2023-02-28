@@ -28,7 +28,7 @@ export default class Info {
 
   getDataLaporanTahunan = (req, res) => {
     var sql = `SELECT a.TAHUN, a.TOTAL, b.BERANGKAT FROM (SELECT YEAR(CRTX_DATE) AS TAHUN, COUNT(YEAR(CRTX_DATE)) AS TOTAL FROM mrkt_daftarh WHERE YEAR(CRTX_DATE) BETWEEN CAST(YEAR(NOW()) AS INT) - 9 AND YEAR(NOW()) GROUP BY YEAR(CRTX_DATE)) a INNER JOIN (SELECT YEAR(a.TGLX_BGKT) AS TAHUN, COUNT(b.KDXX_JMAH) AS BERANGKAT  FROM mrkt_jadwalh a INNER JOIN mrkt_daftarh b ON a.IDXX_JDWL = b.KDXX_PKET WHERE b.STAS_BGKT = '1' AND YEAR(a.TGLX_BGKT) BETWEEN CAST(YEAR(NOW()) AS INT) - 9 AND YEAR(NOW()) GROUP BY YEAR(a.TGLX_BGKT)) b
-    ON a.TAHUN = b.TAHUN`;
+    ON a.TAHUN = b.TAHUN DESC`;
     db.query(sql, function (err, rows, fields) {
       res.send(rows);
     })
@@ -96,6 +96,20 @@ export default class Info {
     var date = new Date();
     var tahun = date.getFullYear();
     var sql = `SELECT COUNT(a.KDXX_DFTR) AS JMLH,(SELECT COUNT(b.KDXX_DFTR) FROM mrkt_daftarh b WHERE YEAR(b.CRTX_DATE) = YEAR(NOW()) AND MONTH(b.CRTX_DATE) = MONTH(NOW())) AS BULAN_INI,(SELECT COUNT( b.KDXX_DFTR ) FROM mrkt_daftarh b WHERE YEAR(b.CRTX_DATE) = YEAR(NOW()) AND MONTH ( b.CRTX_DATE ) = MONTH (NOW()) - 1) AS BULAN_LALU,(SELECT COUNT(b.KDXX_DFTR) FROM mrkt_daftarh b WHERE YEAR(b.CRTX_DATE) =  YEAR(NOW()) AND MONTH(b.CRTX_DATE) BETWEEN MONTH('${tahun}/01/01') AND MONTH('${tahun}/06/30')) AS ENAM_BULAN,(SELECT COUNT(b.KDXX_DFTR) FROM mrkt_daftarh b WHERE YEAR(b.CRTX_DATE) =  YEAR(NOW())) AS TAHUN_INI FROM mrkt_daftarh a`;
+    db.query(sql, function (err, rows, fields) {
+      res.send(rows);
+    });
+  }
+
+  getInfoCalonJamaah = (req, res) => {
+    var sql = `SELECT COUNT(a.KDXX_JMAH) AS TOTAL, (SELECT COUNT(b.KDXX_JMAH) FROM mrkt_daftarh b WHERE b.STAS_BGKT = '1' AND YEAR(b.CRTX_DATE) = YEAR(NOW())) AS KONFIRMASI, (SELECT COUNT(b.KDXX_JMAH) FROM mrkt_daftarh b WHERE b.STAS_BGKT = '0' AND YEAR(b.CRTX_DATE) = YEAR(NOW())) AS BLM_BGKT, (SELECT COUNT(b.KDXX_JMAH) FROM mrkt_daftarh b WHERE YEAR(b.CRTX_DATE) = YEAR(NOW()) AND (b.DOKX_KKXX = 'n' OR b.DOKX_KTPX = 'n' OR b.DOKX_LAIN = 'n')) AS BLM_LGKP FROM mrkt_daftarh a WHERE YEAR(a.CRTX_DATE) = YEAR(NOW())`;
+    db.query(sql, function (err, rows, fields) {
+      res.send(rows);
+    });
+  }
+
+  getInfoDaftarJamaah = (req, res) => {
+    var sql = `SELECT COUNT(a.KDXX_JMAH) AS TOTAL, (SELECT COUNT(b.NOXX_PSPR) FROM jmah_jamaahp b RIGHT JOIN mrkt_daftarh c ON b.NOXX_IDNT = c.KDXX_JMAH WHERE YEAR(c.CRTX_DATE) = YEAR(NOW())) AS PASPOR, (SELECT COUNT(b.KDXX_DFTR) FROM mrkt_daftarh b WHERE HANDLING = 'c' AND YEAR(b.CRTX_DATE) = YEAR(NOW()) OR HANDLING = 'a' AND YEAR(b.CRTX_DATE) = YEAR(NOW())) AS HANDLING , (SELECT COUNT(b.KDXX_DFTR) FROM mrkt_daftarh b WHERE HANDLING = 'n' AND YEAR(b.CRTX_DATE) = YEAR(NOW())) AS BLM_HAND  FROM mrkt_daftarh a WHERE YEAR(a.CRTX_DATE) = YEAR(NOW())`;
     db.query(sql, function (err, rows, fields) {
       res.send(rows);
     });

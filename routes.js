@@ -127,6 +127,7 @@ const routes = (app) => {
 
       app.use('/uploads/foto', express.static('uploads/foto'));
       app.use('/uploads/ktp', express.static('uploads/ktp'));
+      app.use('/uploads/profil', express.static('uploads/profil'));
       
       app.get('/get-profil-koper/foto/:id', (req, res) => {
             var id = req.params.id;
@@ -168,6 +169,8 @@ const routes = (app) => {
 
       // jamaah
       app.route('/info/dashboard/jamaah').get(C.info.getInfoJamaah);
+      app.route('/info/dashboard/calon-jamaah').get(C.info.getInfoCalonJamaah);
+      app.route('/info/dashboard/daftar-jamaah').get(C.info.getInfoDaftarJamaah);
       app.route('/data/dashboard/jamaah').get(C.info.getDataJamaah);
       app.route('/chart/dashboard/jamaah').get(C.info.getChartJamaah);
 
