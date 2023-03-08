@@ -177,8 +177,27 @@ const routes = (app) => {
       // overview
       app.route('/data/dashboard/overview').get(C.info.getDataOverview);
 
+      // Menu Managemen
+      app.route('/menu/grup-user/all').get(C.menu.getGrupUser);
+      app.route('/menu/grup-user/nomor-grup').get(C.menu.generateNumberGrupUser);
+      app.route('/menu/grup-user/save').post(C.menu.saveGrupUser);
+      app.route('/menu/grup-user/update').post(C.menu.updateGrupUser);
+      app.route('/menu/grup-user/detail/:id').get(C.menu.getDetailGrupUser);
+      app.route('/menu/grup-user/detail/menu/:id').get(C.menu.getDetailMenuGrupUser);
+      app.route('/menu/menus/all').get(C.menu.getMenuAll);
+      app.route('/menu/type-menu/all').get(C.menu.getTypeAll);
 
+      app.route('/menu/daftar-menu/module-all').get(C.menu.getMenuModulAll);
 
+      app.route('/menu/daftar-pengguna/all').get(C.menu.getPenggunaAll);
+      app.route('/menu/daftar-pengguna/cek-pengguna/:id').get(C.menu.getCekPengguna);
+      app.route('/menu/daftar-pengguna/save-foto').post(C.menu.saveFotoPengguna);
+      app.route('/menu/daftar-pengguna/update').post(C.menu.updatePengguna);
+      app.route('/menu/daftar-pengguna/update-foto').post(C.menu.updateFotoPengguna);
+      app.route('/menu/daftar-pengguna/detail/menu/:id').get(C.menu.getPenggunaMenu);
+      app.route('/menu/daftar-pengguna/detail/grup/:id').get(C.menu.getPenggunaGrup);
+      app.route('/menu/daftar-pengguna/detail/:id').get(C.menu.getDetailPengguna);
+      app.route('/menu/daftar-pengguna/update-akses').post(C.menu.updateAksesPengguna);
 
       // app.route('/setup/save').post(C.auth.verifyToken, C.setup.saveSetup);
       // app.route('/setup/update').post(C.auth.verifyToken, C.setup.updateSetup);
@@ -256,8 +275,9 @@ const routes = (app) => {
       // app.route('/role/privilege/delete').post(C.auth.verifyToken, C.user.deleteRoleDetPrivilege);
       // app.route('/role/privileges/:roleID').get(C.auth.verifyToken, C.user.getRoleDetUserAccesses);
       // app.route('/role/privilege/:id').get(C.auth.verifyToken, C.user.getRolePrivilege);
-      // app.route('/register').post(C.auth.register);
+      app.route('/register').post(C.auth.register);
       app.route('/signin').post(C.auth.signin);
+      app.route('/get-permission/:kode/:id').get(C.auth.getPermission);
       // app.route('/profile').get(C.auth.verifyToken, C.user.getProfile);
       // app.route('/profile/karyawan/update').post(C.auth.verifyToken, C.karyawan.updateKaryawanProfile);
       // app.route('/profile/karyawan/save').post(C.auth.verifyToken, C.karyawan.saveKaryawanProfile);

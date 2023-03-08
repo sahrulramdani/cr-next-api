@@ -7,7 +7,7 @@ import moment from "moment";
 
 export default class AuthController {
   register = function (req, res) {
-    var hashedPassword = bcrypt.hashSync(req.body.password, 8);
+    var hashedPassword = bcrypt.hashSync(req.body.USER_PASS, 8);
 
     var token = jwt.sign({ id: req.body.USER_IDXX }, config.secret, {
       expiresIn: ca.config.TokenExpired,
@@ -17,19 +17,18 @@ export default class AuthController {
     var data = {
       USER_IDXX: req.body.USER_IDXX,
       PASS_IDXX: hashedPassword,
-      //PASS_IDXX: req.body.PASS_IDXX,
-      KETX_USER: req.body.KETX_USER,
-      BUSS_CODE: req.body.BUSS_CODE,
-      Active: req.body.Active,
-      IsValid: req.body.IsValid,
-      Email: req.body.Email,
-      NO_ID: req.body.NO_ID,
-      TYPE_PRSON: req.body.TYPE_PRSON,
+      KETX_USER: req.body.NAME_USER,
+      GRUP_MENU: req.body.GRUP_MENU,
+      BUSS_CODE: 'QU001',
+      Active: "1",
+      IsValid: "1",
+      Email: req.body.EMAIL,
+      TYPE_PRSON: '4',
+      NamaFile: req.body.FOTO_USER == 'KOSONG' ? null : req.body.FOTO_USER,
       CRTX_DATE: new Date(),
       CRTX_BYXX: req.body.USER_IDXX,
     };
 
-    console.log(hashedPassword);
     db.query(sql, data, (err, result) => {
       if (err) {
         console.log("Error", err);
@@ -39,9 +38,37 @@ export default class AuthController {
           message: err.sqlMessage,
         });
       } else {
-        res.send({
+        var sts;
+        var sql = `SELECT * FROM user_grupmenus WHERE KDXX_GRUP = '${req.body.GRUP_MENU}'`;
+        db.query(sql, function (err, rows, fields) {
+          rows.map((e) => {
+            var qryIns = `INSERT INTO user_usermenus SET ?`;
+            var dataIns = {
+              USER_IDXX : req.body.USER_IDXX,
+              PROC_CODE : e['PROC_CODE'],
+              ACCU_ADDX : e['ACCS_ADDX'],
+              ACCU_EDIT : e['ACCS_EDIT'],
+              ACCU_DELT : e['ACCS_DELT'],
+              ACCU_INQU : e['ACCS_INQU'],
+              ACCU_PRNT : e['ACCS_PRNT'],
+              ACCU_EXPT : e['ACCS_EXPT'],
+              CRTX_DATE : new Date(),
+              CRTX_BYXX : 'superadmin'
+            };   
+
+            db.query(qryIns, dataIns, (err, result) => {
+              if (err) {
+                  sts = false;
+              } else {
+                  sts = true;
+              }
+            });
+          })
+
+          res.send({
           status: true,
           token: token,
+        });
         });
       }
     });
@@ -103,22 +130,23 @@ export default class AuthController {
             });
 
             // // write Start Login
-            // var tgl = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
+            var tgl = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
             // sql = 'update tb01_lgxh set LOGN_STRT = "' + tgl + '", IpAddress = "' + req.body.IpAddress + '" where USER_IDXX = "' + user.USER_IDXX + '"';
 
             // db.query(sql, (err, rows) => {
             // });
 
-            // // write history login
-            // sql = 'insert into history_login (USER_IDXX, START_DATE, IP_ADDRESS) values ("' + user.USER_IDXX + '", "' + tgl + '", "' + req.body.IpAddress + '")';
+            // write history login
+            sql = 'insert into history_login (USER_IDXX, START_DATE, IP_ADDRESS) values ("' + user.USER_IDXX + '", "' + tgl + '", "LOGIN")';
 
-            // db.query(sql, (err, rows) => {
-            // });
+            db.query(sql, (err, rows) => {
+            });
 
             res.send({
               status: true,
               token: token,
               namaUser : rows[0]['KETX_USER'],
+              username : rows[0]['USER_IDXX'],
               fotoUser : rows[0]['NamaFile'],
             });
           }
@@ -156,6 +184,35 @@ export default class AuthController {
       next();
     });
   };
+
+  getPermission = async (req, res) => {
+    var sql = `SELECT a.* FROM user_usermenus a WHERE a.PROC_CODE = '${req.params.kode}' AND a.USER_IDXX = '${req.params.id}'`;
+    
+    db.query(sql, function (err, rows, fields) {
+      var AUTH_ADD = '0';
+      var AUTH_EDIT = '0';
+      var AUTH_DEL = '0';
+      var AUTH_PRINT = '0';
+      var AUTH_EXPORT = '0';
+
+      rows.map((e) => {
+        AUTH_ADD = e['ACCU_ADDX'] ?? '0';
+        AUTH_EDIT = e['ACCU_EDIT'] ?? '0';
+        AUTH_DEL = e['ACCU_DELT'] ?? '0';
+        AUTH_PRINT = e['ACCU_PRNT'] ?? '0';
+        AUTH_EXPORT = e['ACCU_EXPT'] ?? '0';
+      })
+
+      res.send({
+        AUTH_ADDX : AUTH_ADD,
+        AUTH_EDIT : AUTH_EDIT,
+        AUTH_DELT : AUTH_DEL,
+        AUTH_PRNT : AUTH_PRINT,
+        AUTH_EXPT : AUTH_EXPORT,
+      })
+    });
+  };
+
   //---------------------------------------------------------------------
   //Backup verifyToken
   //---------------------------------------------------------------------

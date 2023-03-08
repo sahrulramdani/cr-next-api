@@ -2,478 +2,458 @@ import  db from './../../koneksi.js';
 import { fncParseComma } from './../../libraries/sisqu/Utility.js';
 import moment from 'moment';
 import { fncCheckProcCode } from './../../libraries/local/localUtility.js';
-
+import date from 'date-and-time';
+import fs from 'fs';
 
 export default class Menu {
-    moduleAll = (request, response) => {
-        // get user Access
-        var authAdd = request.AUTH_ADDX;
-        var authEdit = request.AUTH_EDIT;
-        var authDelt = request.AUTH_DELT;
-        var authAppr = request.AUTH_APPR;  // auth Approve
-
-        var typeModule = request.params.typeModule;
-        var bussCode = request.params.bussCode;
-
-        var qryCmd = '';
-
-        if (bussCode === '00' && typeModule === '---') {  // All BUSS_CODE (Entity/Unit), All Type Module
-            qryCmd = "select a.* from tb01_modm a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where b.KODE_URUT like '" + request.KODE_URUT0 + "%' order by a.NoUrut";
-        } else {
-            if (typeModule === '---') {  // All type Module
-                qryCmd = "select * from tb01_modm where BUSS_CODE = '" + bussCode + "' order by NoUrut";
-            } else {
-                qryCmd = "select * from tb01_modm where BUSS_CODE = '" + bussCode + "' And TYPE_MDUL = '" + typeModule + "' order by NoUrut";
-            }
-        }
-        
-        db.query(qryCmd, function(err, rows, fields) {
-            var output = [];
-
-            if (rows.length > 0) {
-                rows.forEach(function(row) {
-                    var obj = new Object();
-                    for(var key in row) {
-                        obj[key] = row[key];
-                    }
-
-                    obj['AUTH_ADDX'] = authAdd;
-                    obj['AUTH_EDIT'] = authEdit;
-                    obj['AUTH_DELT'] = authDelt;
-                    obj['AUTH_APPR'] = authAppr;
-
-                    output.push(obj);
-                })
-            }
-
-            response.send(output);
-        });
-    }
-
-    module0All = (request, response) => {
-        // get user Access
-        var authAdd = request.AUTH_ADDX;
-        var authEdit = request.AUTH_EDIT;
-        var authDelt = request.AUTH_DELT;
-        var authAppr = request.AUTH_APPR;  // auth Approve
-
-        var qryCmd = 'select * from tb00_modm order by NoUrut';
-        
-        db.query(qryCmd, function(err, rows, fields) {
-            var output = [];
-
-            if (rows.length > 0) {
-                rows.forEach(function(row) {
-                    var obj = new Object();
-                    for(var key in row) {
-                        obj[key] = row[key];
-                    }
-
-                    obj['AUTH_ADDX'] = authAdd;
-                    obj['AUTH_EDIT'] = authEdit;
-                    obj['AUTH_DELT'] = authDelt;
-                    obj['AUTH_APPR'] = authAppr;
-
-                    output.push(obj);
-                })
-            }
-
-            response.send(output);
-        });
-    }
-
-    processAll = (request, response) => {
-        // get user Access
-        var authAdd = request.AUTH_ADDX;
-        var authEdit = request.AUTH_EDIT;
-        var authDelt = request.AUTH_DELT;
-        var authAppr = request.AUTH_APPR;  // auth Approve
-
-        var module = request.params.module;
-        var bussCode = request.params.bussCode;
-        var typeMdul = request.params.typeMdul;
-
-        if (typeMdul === undefined || typeMdul === 'undefined') {
-            typeMdul = '2';    // 2: React JS Application
-        }
-
-        var qryCmd = '';
-        if (bussCode === '00') {
-            qryCmd = "select a.*, a.PROC_NAME from tb00_proc a where a.MDUL_CODE = '" + module + "' And a.Enabled = '1' And a.TYPE_MDUL = '" + typeMdul + "' order by a.NoUrut, a.PROC_CODE";
-        } else {
-            qryCmd = "select a.*, b.PROC_NAME from tb01_proc a inner join tb00_proc b on a.PROC_CODE = b.PROC_CODE where a.BUSS_CODE = '" + bussCode + "' And a.MDUL_CODE = '" + module + "' And a.TYPE_MDUL = '" + typeMdul + "' order by b.NoUrut, a.PROC_CODE";
-        }
-        
-        db.query(qryCmd, function(err, rows, fields) {
-            var output = [];
-            
-            if (rows.length > 0) {
-                rows.forEach(function(row) {
-                    var obj = new Object();
-                    for(var key in row) {
-                        obj[key] = row[key];
-                    }
-
-                    obj['AUTH_ADDX'] = authAdd;
-                    obj['AUTH_EDIT'] = authEdit;
-                    obj['AUTH_DELT'] = authDelt;
-                    obj['AUTH_APPR'] = authAppr;
-
-                    output.push(obj);
-                })
-            }
-
-            response.send(output);
-        });
-    }
-
-    getModule = function(req, res) {
-        // get user Access
-        var authEdit = req.AUTH_EDIT;
-        var authAppr = req.AUTH_APPR;  // auth Approve
-
-        var id = req.params.id;
-        var sql = 'SELECT a.* FROM `tb01_modm` a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT WHERE a.id = ' + id + ' And b.KODE_URUT like "' + req.KODE_URUT0 + '%"';
-        
-        db.query(sql, function(err, rows, fields) {
-            var output = [];
-
-            if (rows.length > 0) {
-                rows.forEach(function(row) {
-                    var obj = new Object();
-                    for(var key in row) {
-                        obj[key] = row[key];
-                    }
-
-                    obj['AUTH_EDIT'] = authEdit;
-                    obj['AUTH_APPR'] = authAppr;
-
-                    output.push(obj);
-                })
-            }
-
-            res.send(output);
-        });
-    }
-
-    updateModule = function(req, res) {
-        var ids = req.body.id;
-        var sql = 'UPDATE `tb01_modm` a INNER JOIN tb00_unit b ON a.BUSS_CODE = b.KODE_UNIT SET ? WHERE a.id = ' + ids + ' And b.KODE_URUT like "' + req.KODE_URUT0 + '%"';
-        var data = {
-            MDUL_CODE : req.body.MDUL_CODE,
-            BUSS_CODE : req.body.BUSS_CODE,
-            MDUL_NAMA : req.body.MDUL_NAMA,
-            TYPE_MDUL : req.body.TYPE_MDUL,
-            'a.UPDT_DATE' : new Date(),
-            'a.UPDT_BYXX' : req.userID
-        };
-        
-        db.query(sql, data, (err, result) => {
-            if (err) {
-                console.log('Error', err);
-
-                res.send({
-                    status: false,
-                    message: err.sqlMessage
-                });
-            } else {
-                res.send({
-                    status: true
-                });
-            }
-        });
-    }
-
-    saveDetProcess = function(req, res) {
-        var sql = 'INSERT INTO tb01_proc SET ?';
-        var data = {
-            PROC_CODE : req.body.PROC_CODE,
-            BUSS_CODE : req.body.BUSS_CODE,
-            PATH : req.body.PATH,
-            MDUL_CODE : req.body.MDUL_CODE,
-            TYPE_MDUL : req.body.TYPE_MDUL,
-            PROC_NAME : req.body.PROC_NAME,
-            Enabled : req.body.Enabled,
-            CRTX_DATE : new Date(),
-            CRTX_BYXX : req.userID
-        };
-        
-        db.query(sql, data, (err, result) => {
-            if (err) {
-                console.log('Error', err);
-
-                res.send({
-                    status: false,
-                    message: err.sqlMessage
-                });
-            } else {
-                res.send({
-                    status: true
-                });
-            }
-        });
-    }
-
-    saveDetProcess2 = function(req, res) {
-        var tgl = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
-
-        var sql = 'INSERT INTO tb01_proc (PROC_CODE, BUSS_CODE, PATH, MDUL_CODE, TYPE_MDUL, PROC_NAME, CRTX_DATE, CRTX_BYXX, Enabled) select PROC_CODE, "' + req.body.BUSS_CODE + '","' + req.body.PATH + '", MDUL_CODE, TYPE_MDUL, PROC_NAME, "' + tgl + '","' + req.userID + '","1" from `tb00_proc` where proc_code = "' + req.body.PROC_CODE + '"';
-        
-        db.query(sql, (err, result) => {
-            if (err) {
-                console.log('Error', err);
-
-                res.send({
-                    status: false,
-                    message: err.sqlMessage
-                });
-            } else {
-                res.send({
-                    status: true
-                });
-            }
-        });
-    }
-
-    deleteDetProcess = function(req, res) {
-        var selectedIds = [];
-        selectedIds = fncParseComma(req.body.selectedIds);
+    getGrupUser = (req, res) => {
+        var sql = `SELECT * FROM user_grupuser`
     
-        var arrayLength = selectedIds.length;
-        var sql = 'delete a from `tb01_proc` a inner join tb00_unit b on a.BUSS_CODE = b.KODE_UNIT where b.KODE_URUT like "' + req.KODE_URUT0 + '%" And a.BUSS_CODE = "' + req.body.BUSS_CODE + '" And a.PROC_CODE in ("';
-        
-        if (arrayLength > 0) {
-            for(var i=0; i<arrayLength; i++) {
-                if (i === 0) {
-                  sql += selectedIds[i];
-                } else {
-                  sql += '","' + selectedIds[i];
-                }
-            } 
-    
-            sql += '")';
-            
-            db.query(sql, (err, result) => {
-                if (err) {
-                    console.log('Error', err);
+        db.query(sql, function (err, rows, fields) {
+          res.send(rows);
+        });
+    }
 
-                    res.send({
-                        status: false,
-                        message: err.sqlMessage
-                    });
-                } else {
-                    res.send({
-                        status: true
-                    });
-                }
-            });
-           
-        } else {
+    getMenuAll = (req, res) => {
+      var sql = `SELECT a.*, b.* FROM tb00_menus a LEFT JOIN tb00_procmenus b ON a.TYPE_MDUL = b.KDXX_TYPE ORDER BY a.PROC_CODE DESC`
+  
+      db.query(sql, function (err, rows, fields) {
+        res.send(rows);
+      });
+    }
+
+    getTypeAll = (req, res) => {
+      var sql = `SELECT CODD_VALU, CODD_DESC FROM tb00_basx WHERE CODD_FLNM = 'MDUL_TYPE' ORDER BY id ASC`
+  
+      db.query(sql, function (err, rows, fields) {
+        res.send(rows);
+      });
+    }
+
+    getMenuModulAll = (req, res) => {
+      var sql = `SELECT a.* FROM tb00_menus a WHERE a.PARENT = '0' ORDER BY a.NOXX_URUT ASC`
+  
+      db.query(sql, function (err, rows, fields) {
+        res.send(rows);
+      });
+    }
+
+    getPenggunaAll = (req, res) => {
+      var sql = `SELECT a.*, IFNULL(DATE_FORMAT( b.START_DATE, "%d-%m-%Y" ), DATE_FORMAT( a.CRTX_DATE, "%d-%m-%Y" )) AS LOGIN_TERAKHIR, c.NAMA_GRUP FROM tb01_lgxh a LEFT JOIN history_login b ON a.USER_IDXX = b.USER_IDXX LEFT JOIN user_grupuser c ON a.GRUP_MENU = c.KDXX_GRUP`
+  
+      db.query(sql, function (err, rows, fields) {
+        res.send(rows);
+      });
+    }
+
+    getPenggunaMenu = (req, res) => {
+      var sql = `SELECT a.*, a.PROC_CODE AS PROG_KODE, b.*, c.ACCU_ADDX, c.ACCU_EDIT, c.ACCU_DELT, c.ACCU_INQU, c.ACCU_PRNT, c.ACCU_EXPT FROM tb00_menus a LEFT JOIN user_usermenus c ON a.PROC_CODE = c.PROC_CODE AND c.USER_IDXX = '${req.params.id}' LEFT JOIN tb00_procmenus b ON a.TYPE_MDUL = b.KDXX_TYPE ORDER BY a.PROC_CODE DESC`
+  
+      db.query(sql, function (err, rows, fields) {
+        res.send(rows);
+      });
+    }
+
+    getPenggunaGrup = (req, res) => {
+      var sql = `SELECT a.*, b.* FROM tb01_lgxh a LEFT JOIN user_grupuser b ON a.GRUP_MENU = b.KDXX_GRUP WHERE a.USER_IDXX = '${req.params.id}'`
+  
+      db.query(sql, function (err, rows, fields) {
+        res.send(rows);
+      });
+    }
+
+    getDetailPengguna = (req, res) => {
+      var sql = `SELECT a.*, b.* FROM tb01_lgxh a LEFT JOIN user_grupuser b ON a.GRUP_MENU = b.KDXX_GRUP WHERE a.USER_IDXX = '${req.params.id}'`
+  
+      db.query(sql, function (err, rows, fields) {
+        res.send(rows);
+      });
+    }
+
+
+    getCekPengguna = (req, res) => {
+      var sql = `SELECT * FROM tb01_lgxh WHERE USER_IDXX = '${req.params.id}'`
+  
+      db.query(sql, function (err, rows, fields) {
+        if (rows != "") {
+          res.send({
+            cekUser : 'ADA',
+          });
+        }else{
+          res.send({
+            cekUser : 'TIDAK',
+          });
+        }
+      });
+    }
+
+    getDetailGrupUser = (req, res) => {
+      var sql = `SELECT a.* FROM user_grupuser a WHERE KDXX_GRUP = '${req.params.id}'`
+  
+      db.query(sql, function (err, rows, fields) {
+        res.send(rows);
+      });
+    }
+
+    getDetailMenuGrupUser = (req, res) => {
+      var sql = `SELECT a.*, a.PROC_CODE AS PROG_KODE, b.*, c.ACCS_ADDX, c.ACCS_EDIT, c.ACCS_DELT, c.ACCS_INQU, c.ACCS_PRNT, c.ACCS_EXPT, c.KDXX_GRUP FROM tb00_menus a LEFT JOIN user_grupmenus c ON a.PROC_CODE = c.PROC_CODE AND c.KDXX_GRUP = '${req.params.id}' LEFT JOIN tb00_procmenus b ON a.TYPE_MDUL = b.KDXX_TYPE ORDER BY a.PROC_CODE DESC`
+  
+      db.query(sql, function (err, rows, fields) {
+        res.send(rows);
+      });
+    }
+
+    generateNumberGrupUser = (req, res) => {
+      const now = new Date();
+      const tgl = date.format(now,"YYYY-MM-DD");
+      const tahun = date.format(now,"YYYY");
+      const tglReplace = tgl.replace(/-/g,"").toString();
+
+      var sql = `SELECT MAX(RIGHT(a.KDXX_GRUP, 3)) AS URUTX FROM user_grupuser a WHERE DATE_FORMAT( a.CRTX_DATE, "%Y-%m-%d" ) = DATE_FORMAT(NOW(), "%Y-%m-%d" )`;
+
+      db.query(sql, function (err, rows, fields) {
+        rows.map((data) => {
+          if (data['URUTX'] == null) {
+            var noGrupUser = `G${tglReplace}001`;
+
             res.send({
-                status: true
+              idGrupUser : noGrupUser,
             });
-        }
-    }
-
-    getMenus = function(req, res) {
-        var sql = 'SELECT b.*, b.id AS USERACCESS_ID, d.ICON, d.HasChildren, d.PARENT, d.NoUrut, d.PROC_CODE, d.PROC_NAME, d.PATH FROM tb00_proc d LEFT JOIN  (select tb01_proc.*, b.id, b.RIGH_AUTH, b.AUTH_ADDX, b.AUTH_EDIT, b.AUTH_DELT from tb01_proc inner join (select * from `tb01_usrd` where UPPER(USER_IDXX) = "' + req.userID.toUpperCase() + '" And BUSS_CODE = "' + req.BUSS_CODE0 + '") b on tb01_proc.BUSS_CODE = b.BUSS_CODE And tb01_proc.PROC_CODE = b.PROC_CODE) b ON d.PROC_CODE = b.PROC_CODE LEFT JOIN (select * from `tb01_lgxh` where UPPER(USER_IDXX) = "' + req.userID.toUpperCase() + '") c ON b.BUSS_CODE = c.BUSS_CODE WHERE d.NoUrut IS NOT NULL And d.TYPE_MDUL = "2" ORDER BY d.NoUrut';
-
-        db.query(sql, function(err, rows, fields) {
-            if (err) {
-                throw err;
-                return;
-            }
-
-            var output = [];
-
-            var outputTemp = [];
-
-            // sort NoUrut desc
-            rows.sort((a, b) => {
-                if (a.NoUrut > b.NoUrut) {
-                    return -1;
-                } else if (a.NoUrut < b.NoUrut) {
-                    return 1;
-                };
-
-                return 0;
-            });
-
-            if (rows.length > 0) {
-                rows.forEach(function(row) {
-                    var obj = new Object();
-                    for(var key in row) {
-                        obj[key] = row[key];
-                    }
-
-                    var check = outputTemp.filter(item => item.PARENT === obj.PROC_CODE);
-                    if (check.length > 0) {
-                        // sort NoUrut Asc
-                        check.sort((a, b) => {
-                            if (a.NoUrut < b.NoUrut) {
-                                return -1;
-                            } else if (a.NoUrut > b.NoUrut) {
-                                return 1;
-                            };
-        
-                            return 0;
-                        });
-        
-                        obj.children = check;
-                    }
-
-                    outputTemp.push(obj);
-                })
-
-                output = outputTemp.filter(item => item.PARENT === null);
-
-                // Sort NoUrut Asc
-                output.sort((a, b) => {
-                    if (a.NoUrut < b.NoUrut) {
-                        return -1;
-                    } else if (a.NoUrut > b.NoUrut) {
-                        return 1;
-                    };
-
-                    return 0;
-                });
-            }
-
-            res.send(output);
-        });
-    }
-
-    // get Menus tanpa children
-    getMenus2 = function(req, res) {
-        var sql = 'SELECT a.*, b.id AS USERACCESS_ID, b.RIGH_AUTH, b.AUTH_ADDX, b.AUTH_EDIT, b.AUTH_DELT FROM `tb01_proc` a LEFT JOIN (select * from `tb01_usrd` where UPPER(USER_IDXX) = "' + req.params.userID.toUpperCase() + '") b ON a.BUSS_CODE = b.BUSS_CODE AND a.PROC_CODE = b.PROC_CODE INNER JOIN tb00_proc c ON a.PROC_CODE = c.PROC_CODE WHERE c.NoUrut IS NOT NULL ORDER BY c.NoUrut';
-        db.query(sql, function(err, rows, fields) {
-            res.send(rows);
-        });
-    }
-
-    saveModule = function(req, res) {
-        // check Access PROC_CODE 
-        if (fncCheckProcCode(req.body.ProcCode, req.procCodes) === false) {
-            res.status(403).send({ 
-                status: false, 
-                message: 'Access Denied',
-                userAccess: false
-            });
-
-            return;
-        }
-
-        var tgl = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
-        
-        var sql = 'INSERT INTO tb01_modm (MDUL_CODE, MDUL_NAMA, TYPE_MDUL, BUSS_CODE, NoUrut, CRTX_BYXX, CRTX_DATE) select MDUL_CODE, MDUL_NAMA, "' + req.body.TYPE_MDUL + '", "' + req.body.BUSS_CODE + '", NoUrut, "' + req.userID + '", "' + tgl + '" from tb00_modm where MDUL_CODE = "' + req.body.MDUL_CODE + '"';
-        
-        db.query(sql, (err, result) => {
-            if (err) {
-                console.log('Error', err);
-
-                res.send({
-                    status: false,
-                    message: err.sqlMessage
-                });
-            } else {
-                sql = 'select LAST_INSERT_ID() As ID';
-
-                db.query(sql, (err, result2) => {
-                    if (err) {
-                        console.log('Error', err);
-        
-                        res.send({
-                            status: false,
-                            message: err.sqlMessage
-                        });
-                    } else {
-                        res.send(result2);
-                    }
-                });
-            }
-        });
-    }
-
-    saveDetProcessAll = function(req, res) {
-        var mdulCode = req.body.MDUL_CODE;
-
-        var tgl = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
-        var sql = '';
-        var sqlDelete = '';
-
-        if (mdulCode === 'ALL') {
-            sql = 'INSERT INTO tb01_modm (MDUL_CODE, MDUL_NAMA, TYPE_MDUL, BUSS_CODE, NoUrut, CRTX_BYXX, CRTX_DATE) select MDUL_CODE, MDUL_NAMA, TYPE_MDUL, "' + req.body.BUSS_CODE + '", NoUrut, "' + req.userID + '", "' + tgl + '" FROM tb00_modm where MDUL_CODE <> "ALL"';
+          } else {
+            var no = parseInt(data['URUTX']) + 1;
+            var noGrupUser = 'G' + tglReplace + no.toString().padStart(3,"0");
             
-            db.query(sql, (err, result) => {
-                if (err) {
-                    console.log('Error', err);
-
-                    res.send({
-                        status: false,
-                        message: err.sqlMessage
-                    });
-                } else {
-                    sqlDelete = 'delete from tb01_proc where BUSS_CODE = "' + req.body.BUSS_CODE + '"';
-
-                    sql = 'INSERT INTO tb01_proc (PROC_CODE, BUSS_CODE, PATH, MDUL_CODE, TYPE_MDUL, PROC_NAME, Enabled, CRTX_DATE, CRTX_BYXX) select PROC_CODE, "' + req.body.BUSS_CODE + '", PATH, MDUL_CODE, TYPE_MDUL, PROC_NAME, Enabled, "' + tgl + '", "' + req.userID + '" from tb00_proc';
-
-                    db.query(sqlDelete, (err, result) => {
-                        if (err) {
-                            console.log('Error', err);
-        
-                            res.send({
-                                status: false,
-                                message: err.sqlMessage
-                            });
-                        } else {
-                            db.query(sql, (err, result) => {
-                                if (err) {
-                                    console.log('Error', err);
-                
-                                    res.send({
-                                        status: false,
-                                        message: err.sqlMessage
-                                    });
-                                } else {
-                                    res.send({
-                                        status: true
-                                    });
-                                }
-                            });
-                        }
-                    });
-                }
+            res.send({
+              idGrupUser : noGrupUser,
             });
+          }
+        });
+      });
+    }
+
+    saveGrupUser = (req, res) => {
+      var qry = `INSERT INTO user_grupuser SET ?`;
+      var data = {
+        KDXX_GRUP : req.body.KDXX_GRUP,
+        NAMA_GRUP : req.body.NAMA_GRUP,
+        KETERANGAN : req.body.KETERANGAN,
+        STAS_GRUP : '1',
+        CRTX_DATE : new Date(),
+        CRTX_BYXX : 'superadmin'
+      };
+  
+      db.query(qry, data, async (err, result) => {
+        if (err) {
+          console.log(err);
+          res.send({
+            status: false,
+            message: err.sqlMessage,
+          });
         } else {
-            sqlDelete = 'delete from tb01_proc where BUSS_CODE = "' + req.body.BUSS_CODE + '" And MDUL_CODE = "' + mdulCode + '"';
-
-            sql = 'INSERT INTO tb01_proc (PROC_CODE, BUSS_CODE, PATH, MDUL_CODE, TYPE_MDUL, PROC_NAME, Enabled, CRTX_DATE, CRTX_BYXX) select PROC_CODE, "' + req.body.BUSS_CODE + '", PATH, MDUL_CODE, TYPE_MDUL, PROC_NAME, Enabled, "' + tgl + '", "' + req.userID + '" from tb00_proc where MDUL_CODE = "' + mdulCode + '"';
+            var detailAkses = req.body.DETX_GRUP;
+            var jsonAkses = JSON.parse(detailAkses);
+            var sts;
             
-            db.query(sqlDelete, (err, result) => {
-                if (err) {
-                    console.log('Error', err);
+            for (let i = 0; i < jsonAkses.length; i++) {
+              var qryIns = `INSERT INTO user_grupmenus SET ?`;
+              var dataIns = {
+                KDXX_GRUP : jsonAkses[i]['KDXX_GRUP'],
+                PROC_CODE : jsonAkses[i]['PROC_CODE'],
+                ACCS_ADDX : jsonAkses[i]['ACCS_ADDX'] == 'true' ? '1' : '0',
+                ACCS_EDIT : jsonAkses[i]['ACCS_EDIT'] == 'true' ? '1' : '0',
+                ACCS_DELT : jsonAkses[i]['ACCS_DELT'] == 'true' ? '1' : '0',
+                ACCS_INQU : jsonAkses[i]['ACCS_INQU'] == 'true' ? '1' : '0',
+                ACCS_PRNT : jsonAkses[i]['ACCS_PRNT'] == 'true' ? '1' : '0',
+                ACCS_EXPT : jsonAkses[i]['ACCS_EXPT'] == 'true' ? '1' : '0',
+                CRTX_DATE : new Date(),
+                CRTX_BYXX : 'superadmin'
+              };   
 
-                    res.send({
-                        status: false,
-                        message: err.sqlMessage
-                    });
+              db.query(qryIns, dataIns, (err, result) => {
+                if (err) {
+                    sts = false;
                 } else {
-                    db.query(sql, (err, result) => {
-                        if (err) {
-                            console.log('Error', err);
-        
-                            res.send({
-                                status: false,
-                                message: err.sqlMessage
-                            });
-                        } else {
-                            res.send({
-                                status: true
-                            });
-                        }
-                    });
+                    sts = true;
                 }
+              });
+            }
+
+            res.send({
+              status : true
             });
         }
+      });
+    }
+
+    updateGrupUser = (req, res) => {
+      // var qry = `INSERT INTO user_grupuser SET ?`;
+      var sql = `UPDATE user_grupuser SET ? WHERE KDXX_GRUP = "${req.body.KDXX_GRUP}" `;
+
+      var data = {
+        KDXX_GRUP : req.body.KDXX_GRUP,
+        NAMA_GRUP : req.body.NAMA_GRUP,
+        KETERANGAN : req.body.KETERANGAN,
+        STAS_GRUP : req.body.STAS_GRUP,
+        UPDT_DATE : new Date(),
+        UPDT_BYXX : 'superadmin'
+      };
+  
+      db.query(sql, data, async (err, result) => {
+        if (err) {
+          console.log(err);
+          res.send({
+            status: false,
+            message: err.sqlMessage,
+          });
+        } else {
+          var sql = `DELETE FROM user_grupmenus WHERE KDXX_GRUP = '${req.body.KDXX_GRUP}'`;
+
+          db.query(sql, (err, result) => {
+            if (err) {
+              console.log('Error', err);
+      
+              res.send({
+                status: false,
+                message: err.sqlMessage
+              });
+            } else {
+              var detailAkses = req.body.DETX_GRUP;
+              var jsonAkses = JSON.parse(detailAkses);
+              var sts;
+
+              for (let i = 0; i < jsonAkses.length; i++) {
+                var qryIns = `INSERT INTO user_grupmenus SET ?`;
+                var dataIns = {
+                  KDXX_GRUP : jsonAkses[i]['KDXX_GRUP'],
+                  PROC_CODE : jsonAkses[i]['PROC_CODE'],
+                  ACCS_ADDX : jsonAkses[i]['ACCS_ADDX'] == 'true' ? '1' : '0',
+                  ACCS_EDIT : jsonAkses[i]['ACCS_EDIT'] == 'true' ? '1' : '0',
+                  ACCS_DELT : jsonAkses[i]['ACCS_DELT'] == 'true' ? '1' : '0',
+                  ACCS_INQU : jsonAkses[i]['ACCS_INQU'] == 'true' ? '1' : '0',
+                  ACCS_PRNT : jsonAkses[i]['ACCS_PRNT'] == 'true' ? '1' : '0',
+                  ACCS_EXPT : jsonAkses[i]['ACCS_EXPT'] == 'true' ? '1' : '0',
+                  CRTX_DATE : new Date(),
+                  CRTX_BYXX : 'superadmin'
+                };   
+
+                db.query(qryIns, dataIns, (err, result) => {
+                  if (err) {
+                      sts = false;
+                  } else {
+                      sts = true;
+                  }
+                });
+              }
+
+              res.send({
+                status : true
+              });
+            }
+          });
+        }
+      });
+    }
+
+    saveFotoPengguna = (req, res) => {
+      var fotoUser = req.body.FOTO_USER;
+      const now = new Date();
+      const tgl = date.format(now,"YYYY-MM-DD");
+      const tglReplace = tgl.replace(/-/g,"").toString();
+
+      if (fotoUser != 'TIDAK') {
+        var fotoUserName = req.body.USER_IDXX + tglReplace + '.png';
+        fs.writeFile(`uploads/profil/${fotoUserName}`, fotoUser, { encoding: 'base64' }, function (err) {
+          if (err) {
+            console.log('FOTO GAGAL DIUPLOAD', err);
+          } else {
+            console.log('FOTO BERHASIL DIUPLOAD');
+          }
+        });
+  
+        var namaFoto = fotoUserName;
+      } else {
+        var namaFoto = 'KOSONG';
+      }
+
+      res.send({
+        status: true,
+        foto: namaFoto,
+      });
+    }
+
+    updateFotoPengguna = (req, res) => {
+      var fotoUser = req.body.FOTO_USER;
+      const now = new Date();
+      const tgl = date.format(now,"YYYY-MM-DD");
+      const tglReplace = tgl.replace(/-/g,"").toString();
+
+      var fotoLama = req.body.FOTO_LAMA;
+      if (fotoLama != '') {
+        if (req.body.FOTO_USER == 'TIDAK') {
+          var namaFoto = fotoLama;
+        } else {
+          fs.unlink(`uploads/profil/${fotoLama}`, function (err) {
+            if (err) return console.log(err);
+            console.log('FOTO LAMA BERHASIL DIHAPUS');
+          });
+
+          var fotoUser = req.body.FOTO_USER;
+          var fotoUserName = req.body.USER_IDXX + tglReplace + '.png';
+          fs.writeFile(`uploads/profil/${fotoUserName}`, fotoUser, { encoding: 'base64' }, function (err) {
+            if (err) {
+              console.log('FOTO BARU GAGAL DIUPLOAD' ,err);
+            } else {
+              console.log('FOTO BARU BERHASIL DIUPLOAD');
+            }
+          });
+          var namaFoto = fotoUserName;
+        }
+      } else {
+        if (req.body.FOTO_USER == 'TIDAK') {
+          var namaFoto = '';
+        } else {
+          var fotoUser = req.body.FOTO_USER;
+          var fotoUserName = req.body.USER_IDXX + tglReplace + '.png';
+          fs.writeFile(`uploads/profil/${fotoUserName}`, fotoUser, { encoding: 'base64' }, function (err) {
+            if (err) {
+              console.log('FOTO BARU GAGAL DIUPLOAD', err);
+            } else {
+              console.log('FOTO BARU BERHASIL DIUPLOAD');
+            }
+          });
+
+          var namaFoto = fotoUserName;
+        }
+      }
+        
+      res.send({
+        status: true,
+        foto: namaFoto,
+      });
+    }
+
+    updatePengguna = function (req, res) {  
+      var sql = `UPDATE tb01_lgxh SET ? WHERE USER_IDXX = '${req.body.USER_IDXX}'`;
+      var data = {
+        USER_IDXX: req.body.USER_IDXX,
+        PASS_IDXX: req.body.USER_PASS,
+        KETX_USER: req.body.NAME_USER,
+        GRUP_MENU: req.body.GRUP_MENU,
+        BUSS_CODE: 'QU001',
+        Active: req.body.Active,
+        IsValid: "1",
+        Email: req.body.EMAIL,
+        TYPE_PRSON: '4',
+        NamaFile: req.body.FOTO_USER == 'KOSONG' ? null : req.body.FOTO_USER,
+        UPDT_DATE: new Date(),
+        UPDT_BYXX: 'superadmin',
+      };
+  
+      db.query(sql, data, (err, result) => {
+        if (err) {
+          console.log("Error", err);
+  
+          res.send({
+            status: false,
+            message: err.sqlMessage,
+          });
+        } else {
+          res.send({
+            status: true,
+          });
+          // var sql = `DELETE FROM user_usermenus WHERE USER_IDXX = '${req.body.USER_IDXX}'`;
+          // db.query(sql, (err, result) => {
+          //   if (err) {
+          //     console.log('Error', err);
+      
+          //     res.send({
+          //       status: false,
+          //       message: err.sqlMessage
+          //     });
+          //   } else {
+
+          //   }
+          // });
+          // var sts;
+          // var sql = `SELECT * FROM user_grupmenus WHERE KDXX_GRUP = '${req.body.GRUP_MENU}'`;
+          // db.query(sql, function (err, rows, fields) {
+          //   rows.map((e) => {
+          //     var qryIns = `INSERT INTO user_usermenus SET ?`;
+          //     var dataIns = {
+          //       USER_IDXX : req.body.USER_IDXX,
+          //       PROC_CODE : e['PROC_CODE'],
+          //       ACCU_ADDX : e['ACCS_ADDX'],
+          //       ACCU_EDIT : e['ACCS_EDIT'],
+          //       ACCU_DELT : e['ACCS_DELT'],
+          //       ACCU_INQU : e['ACCS_INQU'],
+          //       ACCU_PRNT : e['ACCS_PRNT'],
+          //       ACCU_EXPT : e['ACCS_EXPT'],
+          //       CRTX_DATE : new Date(),
+          //       CRTX_BYXX : 'superadmin'
+          //     };   
+  
+          //     db.query(qryIns, dataIns, (err, result) => {
+          //       if (err) {
+          //           sts = false;
+          //       } else {
+          //           sts = true;
+          //       }
+          //     });
+          //   })
+  
+          //   res.send({
+          //     status: true,
+          //     token: token,
+          //   });
+          // });
+        }
+      });
+    };
+    
+    updateAksesPengguna = (req, res) => {
+      var sql = `DELETE FROM user_usermenus WHERE USER_IDXX = '${req.body.USER_IDXX}'`;
+
+      db.query(sql, (err, result) => {
+        if (err) {
+          console.log('Error', err);
+  
+          res.send({
+            status: false,
+            message: err.sqlMessage
+          });
+        } else {
+          var detailAkses = req.body.DETX_MENU;
+          var jsonAkses = JSON.parse(detailAkses);
+          var sts;
+
+          for (let i = 0; i < jsonAkses.length; i++) {
+            var qryIns = `INSERT INTO user_usermenus SET ?`;
+            var dataIns = {
+              USER_IDXX : jsonAkses[i]['USER_IDXX'],
+              PROC_CODE : jsonAkses[i]['PROC_CODE'],
+              ACCU_ADDX : jsonAkses[i]['ACCU_ADDX'] == 'true' ? '1' : '0',
+              ACCU_EDIT : jsonAkses[i]['ACCU_EDIT'] == 'true' ? '1' : '0',
+              ACCU_DELT : jsonAkses[i]['ACCU_DELT'] == 'true' ? '1' : '0',
+              ACCU_INQU : jsonAkses[i]['ACCU_INQU'] == 'true' ? '1' : '0',
+              ACCU_PRNT : jsonAkses[i]['ACCU_PRNT'] == 'true' ? '1' : '0',
+              ACCU_EXPT : jsonAkses[i]['ACCU_EXPT'] == 'true' ? '1' : '0',
+              CRTX_DATE : new Date(),
+              CRTX_BYXX : 'superadmin'
+            };   
+
+            db.query(qryIns, dataIns, (err, result) => {
+              if (err) {
+                  sts = false;
+              } else {
+                  sts = true;
+              }
+            });
+          }
+
+          res.send({
+            status : true
+          });
+        }
+      });
     }
 }
