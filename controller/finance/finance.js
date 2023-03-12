@@ -4,6 +4,121 @@ import { fncCheckProcCode } from '../../libraries/local/localUtility.js';
 import date from 'date-and-time';
 
 export default class Finance {
+    getBiayaAll = (req, res) => {
+      var sql = `SELECT a.*, b.CODD_DESC AS JENIS_BIAYA FROM sett_biaya a LEFT JOIN tb00_basx b ON a.JENS_BYAX = b.CODD_VALU`;
+
+      db.query(sql, function (err, rows, fields) {
+        res.send(rows);
+      });
+    };
+
+    getBiayaDetail = (req, res) => {
+      var sql = `SELECT a.*, b.CODD_DESC AS JENIS_BIAYA FROM sett_biaya a LEFT JOIN tb00_basx b ON a.JENS_BYAX = b.CODD_VALU WHERE a.KDXX_BYAX = '${req.params.id}'`;
+  
+      db.query(sql, function (err, rows, fields) {
+        res.send(rows);
+      });
+    }
+
+    generateNumberBiaya = (req, res) => {
+      const now = new Date();
+      const tgl = date.format(now,"YYYY-MM-DD");
+      const tahun = date.format(now,"YYYY");
+      const tglReplace = tgl.replace(/-/g,"").toString();
+
+      var sql = `SELECT MAX(RIGHT(a.KDXX_BYAX, 3)) AS URUTX FROM sett_biaya a WHERE DATE_FORMAT( a.CRTX_DATE, "%Y-%m-%d" ) = DATE_FORMAT(NOW(), "%Y-%m-%d" )`;
+
+      db.query(sql, function (err, rows, fields) {
+        rows.map((data) => {
+          if (data['URUTX'] == null) {
+            var noBiaya = `B${tglReplace}001`;
+
+            res.send({
+              idBiaya : noBiaya,
+            });
+          } else {
+            var no = parseInt(data['URUTX']) + 1;
+            var noBiaya = 'B' + tglReplace + no.toString().padStart(3,"0");
+            
+            res.send({
+              idBiaya : noBiaya,
+            });
+          }
+        });
+      });
+    }
+
+    saveBiaya = (req, res) => {
+      var qry = `INSERT INTO sett_biaya SET ?`;
+      var data = {
+        KDXX_BYAX : req.body.KDXX_BYAX,
+        NAMA_BYAX : req.body.NAMA_BYAX,
+        JENS_BYAX : req.body.JENS_BYAX,
+        JMLH_BYAX : req.body.JMLH_BYAX,
+        CRTX_DATE : new Date(),
+        CRTX_BYXX : 'superadmin'
+      };
+  
+      db.query(qry, data, async (err, result) => {
+        if (err) {
+          console.log(err);
+          res.send({
+            status: false,
+            message: err.sqlMessage,
+          });
+        } else {
+          res.send({
+            status : true
+          });
+        }
+      });
+    }
+
+    updateBiaya = (req, res) => {
+      var qry = `UPDATE sett_biaya SET ? WHERE KDXX_BYAX = "${req.body.KDXX_BYAX}" `;
+      var data = {
+        KDXX_BYAX : req.body.KDXX_BYAX,
+        NAMA_BYAX : req.body.NAMA_BYAX,
+        JENS_BYAX : req.body.JENS_BYAX,
+        JMLH_BYAX : req.body.JMLH_BYAX,
+        UPDT_DATE : new Date(),
+        UPDT_BYXX : 'superadmin'
+      };
+  
+      db.query(qry, data, async (err, result) => {
+        if (err) {
+          console.log(err);
+          res.send({
+            status: false,
+            message: err.sqlMessage,
+          });
+        } else {
+          res.send({
+            status : true
+          });
+        }
+      });
+    }
+
+    deleteBiaya = (req,res) => {
+      var sql = `DELETE FROM sett_biaya WHERE KDXX_BYAX = '${req.body.KDXX_BYAX}'`;
+      db.query(sql, (err, result) => {
+        if (err) {
+            console.log('Error', err);
+
+            res.send({
+                status: false,
+                message: err.sqlMessage
+            });
+        } else {
+            res.send({
+                status: true
+            });
+        }
+      });
+    }
+
+
     getJamaahDenganTagihan = (req, res) => {
         // var sql = `SELECT a.*,  DATE_FORMAT( a.TGLX_LHIR, "%d-%m-%Y" ) AS LAHIR ,TIMESTAMPDIFF(YEAR, a.TGLX_LHIR, CURDATE()) AS UMUR, b.CODD_DESC AS MENIKAH, c.CODD_DESC AS PENDIDIKAN, d.CODD_DESC AS PEKERJAAN, e.NOXX_PSPR, e.NAMA_PSPR, e.KLUR_DIXX, e.TGLX_KLUR, e.TGLX_EXPX, f.KDXX_DFTR FROM jmah_jamaahh a LEFT JOIN tb00_basx b ON a.JENS_MNKH = b.CODD_VALU LEFT JOIN tb00_basx c ON a.JENS_PEND = c.CODD_VALU LEFT JOIN tb00_basx d ON a.JENS_PKRJ = d.CODD_VALU LEFT JOIN jmah_jamaahp e ON a.NOXX_IDNT = e.NOXX_IDNT LEFT JOIN mrkt_daftarh f ON a.NOXX_IDNT = f.KDXX_JMAH WHERE STAS_BYAR = 0`;
 

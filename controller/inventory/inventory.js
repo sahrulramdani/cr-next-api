@@ -104,24 +104,10 @@ export default class Inventory {
 
     // Barang
     saveBarang = (req,res) => {
-      var sql = "SELECT NOXX_AKHR FROM tb00_sequence WHERE IDXX_XXXX = '4' AND DOCX_CODE = 'BRG'";
-      db.query(sql,function(err,rows,fields) {
-        if(rows != '') {
-          var no = '';
-          rows.map((data) => {
-             no = parseInt(data.NOXX_AKHR) + 1;
-          })
-        }
-
-        var sqlUpdtSequence = `UPDATE tb00_sequence SET NOXX_AKHR = '${no}' WHERE IDXX_XXXX = '4' AND DOCX_CODE = 'BRG' `;
-
-        db.query(sqlUpdtSequence,function(err,rows,fields) {
-           var id = "BRG" + no.toString().padStart(6,"0");
-
               var sql = "INSERT INTO invt_barang SET ?";
         
               var data = {
-                KDXX_BRGX : id,
+                KDXX_BRGX : req.body.KDXX_BRGX,
                 NAMA_BRGX : req.body.NAMA_BRGX,
                 JENS_BRGX : "Material",
                 JENS_STUA : req.body.JENS_STUA,
@@ -149,9 +135,6 @@ export default class Inventory {
                   });
                 }
               });
-
-        });
-      });
     }
 
     updateBarang = (req,res) => {
@@ -239,6 +222,34 @@ export default class Inventory {
         res.send(rows);
       });
 
+    }
+
+    generateNumberBarang = (req, res) => {
+      const now = new Date();
+      const tgl = date.format(now,"YYYY-MM-DD");
+      const tahun = date.format(now,"YYYY");
+      const tglReplace = tgl.replace(/-/g,"").toString();
+
+      var sql = `SELECT MAX(RIGHT(a.KDXX_BRGX, 3)) AS URUTX FROM invt_barang a WHERE DATE_FORMAT( a.CRTX_DATE, "%Y-%m-%d" ) = DATE_FORMAT(NOW(), "%Y-%m-%d" )`;
+
+      db.query(sql, function (err, rows, fields) {
+        rows.map((data) => {
+          if (data['URUTX'] == null) {
+            var noBarang = `BS${tglReplace}001`;
+
+            res.send({
+              idBarang : noBarang,
+            });
+          } else {
+            var no = parseInt(data['URUTX']) + 1;
+            var noBarang = 'BS' + tglReplace + no.toString().padStart(3,"0");
+            
+            res.send({
+              idBarang : noBarang,
+            });
+          }
+        });
+      });
     }
 
     getDetailBarang = (req,res) => {

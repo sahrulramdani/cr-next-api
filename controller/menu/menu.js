@@ -39,7 +39,7 @@ export default class Menu {
     }
 
     getPenggunaAll = (req, res) => {
-      var sql = `SELECT a.*, IFNULL(DATE_FORMAT( b.START_DATE, "%d-%m-%Y" ), DATE_FORMAT( a.CRTX_DATE, "%d-%m-%Y" )) AS LOGIN_TERAKHIR, c.NAMA_GRUP FROM tb01_lgxh a LEFT JOIN history_login b ON a.USER_IDXX = b.USER_IDXX LEFT JOIN user_grupuser c ON a.GRUP_MENU = c.KDXX_GRUP`
+      var sql = `SELECT a.*, IFNULL(DATE_FORMAT( (SELECT MAX(b.START_DATE) FROM history_login b WHERE b.USER_IDXX = a.USER_IDXX), "%d-%m-%Y" ), DATE_FORMAT( a.CRTX_DATE, "%d-%m-%Y" )) AS LOGIN_TERAKHIR, c.NAMA_GRUP FROM tb01_lgxh a LEFT JOIN user_grupuser c ON a.GRUP_MENU = c.KDXX_GRUP ORDER BY a.CRTX_DATE DESC`
   
       db.query(sql, function (err, rows, fields) {
         res.send(rows);

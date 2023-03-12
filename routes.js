@@ -74,14 +74,15 @@ const routes = (app) => {
       app.route("/inventory/satuan/update").post(C.inventory.updateInventory);
       app.route("/inventory/satuan/save").post(C.inventory.saveInvetorySatuan);
       app.route("/inventory/satuan/delete").post(C.inventory.deleteInventorySatuan);
-
+      
       //---- Inventory Barang ----
       app.route("/inventory/barang/getAllBarang").get(C.inventory.getBarangAll);
-      app.route("/inventory/barang/getdetail/:id").get(C.inventory.getDetailBarang);
+      app.route("/inventory/barang/get-id").get(C.inventory.generateNumberBarang);
       app.route('/inventory/barang/save').post(C.inventory.saveBarang);
       app.route('/inventory/barang/update').post(C.inventory.updateBarang);
       app.route('/inventory/barang/updateStok').post(C.inventory.updateStokBarang);
       app.route('/inventory/barang/delete').post(C.inventory.deleteBarang);
+      app.route("/inventory/barang/getdetail/:id").get(C.inventory.getDetailBarang);
 
       //--- Inventory Grup Barang
       app.route("/inventory/grupbrg/getGrupBrgHeaderAll").get(C.inventory.getGrupBrgHeaderAll);
@@ -124,6 +125,12 @@ const routes = (app) => {
       app.route('/finance/pembayaran/get-tagihan/:id').get(C.finance.getTagihanJamaah);
       app.route('/finance/pembayaran/no-faktur').get(C.finance.generateNumberFaktur);
       app.route('/finance/pembayaran/save').post(C.finance.savePembayaran);
+      app.route('/finance/biaya/biaya-all').get(C.finance.getBiayaAll);
+      app.route('/finance/biaya/biaya/get-id').get(C.finance.generateNumberBiaya);
+      app.route('/finance/biaya/biaya/save').post(C.finance.saveBiaya);
+      app.route('/finance/biaya/biaya/update').post(C.finance.updateBiaya);
+      app.route('/finance/biaya/biaya/delete').post(C.finance.deleteBiaya);
+      app.route('/finance/biaya/biaya/detail/:id').get(C.finance.getBiayaDetail);
 
       app.use('/uploads/foto', express.static('uploads/foto'));
       app.use('/uploads/ktp', express.static('uploads/ktp'));
@@ -150,6 +157,10 @@ const routes = (app) => {
       app.route('/setup/banks').get(C.setup.getBankAll);
       app.route('/setup/kamars').get(C.setup.getKamarAll);
       app.route('/setup/plus-tujuan').get(C.setup.getPlusTujuan);
+      app.route('/setup/jenis-biaya').get(C.setup.getJenisBiaya);
+      app.route('/setup/biaya-paspor').get(C.setup.getBiayaPaspor);
+      app.route('/setup/biaya-vaksin').get(C.setup.getBiayaVaksin);
+      app.route('/setup/biaya-admin').get(C.setup.getBiayaAdmin);
 
       //---- Setup ----
       app.route('/info/dashboard/main-dashboard').get(C.info.getMainDashboardInfo);

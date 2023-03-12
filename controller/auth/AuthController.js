@@ -186,31 +186,43 @@ export default class AuthController {
   };
 
   getPermission = async (req, res) => {
-    var sql = `SELECT a.* FROM user_usermenus a WHERE a.PROC_CODE = '${req.params.kode}' AND a.USER_IDXX = '${req.params.id}'`;
-    
-    db.query(sql, function (err, rows, fields) {
-      var AUTH_ADD = '0';
-      var AUTH_EDIT = '0';
-      var AUTH_DEL = '0';
-      var AUTH_PRINT = '0';
-      var AUTH_EXPORT = '0';
+    // var sql = `SELECT a.* FROM user_usermenus a WHERE a.PROC_CODE = '${req.params.kode}' AND a.USER_IDXX = '${req.params.id}'`;
 
-      rows.map((e) => {
-        AUTH_ADD = e['ACCU_ADDX'] ?? '0';
-        AUTH_EDIT = e['ACCU_EDIT'] ?? '0';
-        AUTH_DEL = e['ACCU_DELT'] ?? '0';
-        AUTH_PRINT = e['ACCU_PRNT'] ?? '0';
-        AUTH_EXPORT = e['ACCU_EXPT'] ?? '0';
-      })
+    // db.query(sql, function (err, rows, fields) {
+    //   var AUTH_ADD = '0';
+    //   var AUTH_EDIT = '0';
+    //   var AUTH_DEL = '0';
+    //   var AUTH_INQ = '0';
+    //   var AUTH_PRINT = '0';
+    //   var AUTH_EXPORT = '0';
+
+    //   rows.map((e) => {
+    //     AUTH_ADD = e['ACCU_ADDX'] ?? '0';
+    //     AUTH_EDIT = e['ACCU_EDIT'] ?? '0';
+    //     AUTH_DEL = e['ACCU_DELT'] ?? '0';
+    //     AUTH_INQ = e['ACCU_INQU'] ?? '0';
+    //     AUTH_PRINT = e['ACCU_PRNT'] ?? '0';
+    //     AUTH_EXPORT = e['ACCU_EXPT'] ?? '0';
+    //   })
+
+    //   res.send({
+    //     AUTH_ADDX : AUTH_ADD,
+    //     AUTH_EDIT : AUTH_EDIT,
+    //     AUTH_DELT : AUTH_DEL,
+    //     AUTH_INQU : AUTH_INQ,
+    //     AUTH_PRNT : AUTH_PRINT,
+    //     AUTH_EXPT : AUTH_EXPORT,
+    //   })
+    // });
 
       res.send({
-        AUTH_ADDX : AUTH_ADD,
-        AUTH_EDIT : AUTH_EDIT,
-        AUTH_DELT : AUTH_DEL,
-        AUTH_PRNT : AUTH_PRINT,
-        AUTH_EXPT : AUTH_EXPORT,
+        AUTH_ADDX : '1',
+        AUTH_EDIT : '1',
+        AUTH_DELT : '1',
+        AUTH_INQU : '1',
+        AUTH_PRNT : '1',
+        AUTH_EXPT : '1',
       })
-    });
   };
 
   //---------------------------------------------------------------------

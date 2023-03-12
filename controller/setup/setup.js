@@ -67,4 +67,37 @@ export default class Setup {
         res.send(rows);
       });
     }
+
+    getJenisBiaya = (req, res) => {
+      var sql = "SELECT CODD_FLNM, CODD_VALU, CODD_DESC FROM tb00_basx WHERE CODD_FLNM = 'JENIS_BIAYA'"
+    
+      db.query(sql, function (err, rows, fields) {
+        res.send(rows);
+      });
+    }
+
+    getBiayaPaspor = (req, res) => {
+      var sql = "SELECT a.* FROM sett_biaya a WHERE a.JENS_BYAX = '7704'"
+    
+      db.query(sql, function (err, rows, fields) {
+        res.send(rows);
+      });
+    }
+
+    getBiayaVaksin = (req, res) => {
+      var sql = "SELECT a.* FROM sett_biaya a WHERE a.JENS_BYAX = '7705'"
+    
+      db.query(sql, function (err, rows, fields) {
+        res.send(rows);
+      });
+    }
+
+    getBiayaAdmin = (req, res) => {
+      var sql = "SELECT a.* FROM sett_biaya a WHERE a.JENS_BYAX = '7702' AND a.NAMA_BYAX LIKE '%Admin'"
+    
+      db.query(sql, function (err, rows, fields) {
+        res.send(rows);
+      });
+    }
+    
 }
