@@ -74,7 +74,7 @@ const routes = (app) => {
       app.route("/inventory/satuan/update").post(C.inventory.updateInventory);
       app.route("/inventory/satuan/save").post(C.inventory.saveInvetorySatuan);
       app.route("/inventory/satuan/delete").post(C.inventory.deleteInventorySatuan);
-      
+
       //---- Inventory Barang ----
       app.route("/inventory/barang/getAllBarang").get(C.inventory.getBarangAll);
       app.route("/inventory/barang/get-id").get(C.inventory.generateNumberBarang);
@@ -135,13 +135,13 @@ const routes = (app) => {
       app.use('/uploads/foto', express.static('uploads/foto'));
       app.use('/uploads/ktp', express.static('uploads/ktp'));
       app.use('/uploads/profil', express.static('uploads/profil'));
-      
+
       app.get('/get-profil-koper/foto/:id', (req, res) => {
             var id = req.params.id;
             sharp('uploads/foto/' + id)
-              .rotate(90)
-              // Simpan gambar yang sudah diputar ke response
-              .pipe(res);
+                  .rotate(90)
+                  // Simpan gambar yang sudah diputar ke response
+                  .pipe(res);
       });
       // app.route('/marketing/location').get(C.marketing.getLocation);
       // app.route('/marketing/agency/kode').get(C.marketing.getIDAgency);
@@ -195,10 +195,20 @@ const routes = (app) => {
       app.route('/menu/grup-user/update').post(C.menu.updateGrupUser);
       app.route('/menu/grup-user/detail/:id').get(C.menu.getDetailGrupUser);
       app.route('/menu/grup-user/detail/menu/:id').get(C.menu.getDetailMenuGrupUser);
+      app.route('/menu/grup-user/detail/user/:id').get(C.menu.getDetailUserGrupUser);
       app.route('/menu/menus/all').get(C.menu.getMenuAll);
       app.route('/menu/type-menu/all').get(C.menu.getTypeAll);
 
       app.route('/menu/daftar-menu/module-all').get(C.menu.getMenuModulAll);
+      // app.route('/menu/daftar-menu/module-all').get(C.menu.getModul);
+      app.route('/menu/getmoduleall').get(C.menu.getModuleAll);
+      app.route('/menu/daftar-submenu/submenuByMenu/:id').get(C.menu.getSubmenuByMenu);
+      app.route('/menu/daftar-listmenu/listmenuBySubMenu/:id').get(C.menu.getLIstMenuBySubMenu);
+
+      app.route('/menu/getTypeMdul').get(C.menu.getTypeMdul);
+      app.route('/menu/listmenus/save').post(C.menu.savelistMenu);
+      app.route('/menu/submenus/save').post(C.menu.savesubMenu);
+      app.route('/menu/menus/save').post(C.menu.saveMenu);
 
       app.route('/menu/daftar-pengguna/all').get(C.menu.getPenggunaAll);
       app.route('/menu/daftar-pengguna/cek-pengguna/:id').get(C.menu.getCekPengguna);
@@ -209,6 +219,11 @@ const routes = (app) => {
       app.route('/menu/daftar-pengguna/detail/grup/:id').get(C.menu.getPenggunaGrup);
       app.route('/menu/daftar-pengguna/detail/:id').get(C.menu.getDetailPengguna);
       app.route('/menu/daftar-pengguna/update-akses').post(C.menu.updateAksesPengguna);
+
+      // app.route('/menu/getmenus/:nama').get(C.menu.getlistMenus);
+      app.route('/menu/getmenu/:nama').get(C.menu.getMenu);
+      app.route('/menu/getSubMenu/:nama').get(C.menu.getSubmenu);
+      app.route('/menu/getListMenu').get(C.menu.getlistMenus);
 
       // app.route('/setup/save').post(C.auth.verifyToken, C.setup.saveSetup);
       // app.route('/setup/update').post(C.auth.verifyToken, C.setup.updateSetup);
