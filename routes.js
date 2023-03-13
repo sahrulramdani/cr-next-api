@@ -202,6 +202,7 @@ const routes = (app) => {
       app.route('/menu/daftar-menu/module-all').get(C.menu.getMenuModulAll);
       // app.route('/menu/daftar-menu/module-all').get(C.menu.getModul);
       app.route('/menu/getmoduleall').get(C.menu.getModuleAll);
+      app.route('/menu/get-module/user/:id').get(C.menu.getModuleByUser);
       app.route('/menu/daftar-submenu/submenuByMenu/:id').get(C.menu.getSubmenuByMenu);
       app.route('/menu/daftar-listmenu/listmenuBySubMenu/:id').get(C.menu.getLIstMenuBySubMenu);
 

@@ -563,6 +563,13 @@ export default class Menu {
     });
   }
 
+  getModuleByUser = (req, res) => {
+    var sql = `SELECT DISTINCT a.MENU_NAME, a.PATH, a.ICON_MENU FROM tb01_menus a LEFT JOIN tb01_submenus b ON a.MDUL_CODE = b.MDUL_CODE LEFT JOIN tb01_listsubmenus c ON b.SUBMENU_CODE = c.SUBMENU_CODE LEFT JOIN user_usermenus d ON c.LIST_CODE = d.PROC_CODE WHERE d.USER_IDXX = '${req.params.id}' OR a.MDUL_CODE = 'DSR' OR a.MDUL_CODE = 'LGT' ORDER BY a.ID_MENU ASC`;
+    db.query(sql, function (err, rows, fields) {
+      res.send(rows);
+    });
+  }
+
   getSubmenu = (req, res) => {
     var sql = `SELECT a.MDUL_CODE, a.MENU_NAME AS NAME, a.PATH, a.ICON_MENU AS ICON FROM tb01_menus a WHERE a.MENU_NAME = '${req.params.nama}'`;
     db.query(sql, function (err, rows, fields) {
@@ -585,6 +592,7 @@ export default class Menu {
               });
 
               res.send(submenu);
+              console.log(submenu);
 
             })
 
@@ -606,6 +614,7 @@ export default class Menu {
             });
 
             res.send(submenu);
+            console.log(submenu);
 
           })
 
