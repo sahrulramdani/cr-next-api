@@ -33,6 +33,15 @@ import mysql from "mysql";
 }); */
 
 // server development
+// const db = mysql.createConnection({
+//     host: "localhost",
+//     port: 3306,
+//     user: "root", //sps
+//     password: "sps@c@h@y@r100%", //spscr@udh@h100%
+//     database: "db_craudhah",
+//   });
+
+  
 const db = mysql.createConnection({
   host: "localhost",
   port: 3306,

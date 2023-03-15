@@ -580,7 +580,7 @@ export default class Menu {
         db.query(sqllistmenu, function (err, rows, fields) {
           var menu = rows;
           rows.map(element => {
-            var sqlsubmenu = `SELECT a.MDUL_CODE, a.SUBMENU_CODE AS CODE_SUBMENU,a.SUBMENU_NAME AS NAME, a.ICON_SUBMENU AS ICON, a.LEVEL FROM tb01_submenus a LEFT JOIN tb01_menus b ON a.MDUL_CODE = b.MDUL_CODE WHERE a.MDUL_CODE = "${element["MDUL_CODE"]}"`;
+            var sqlsubmenu = `SELECT DISTINCT c.MDUL_CODE, c.SUBMENU_CODE AS CODE_SUBMENU, c.SUBMENU_NAME AS NAME, c.ICON_SUBMENU AS ICON, c.LEVEL FROM user_usermenus a LEFT JOIN tb01_listsubmenus b ON a.PROC_CODE = b.LIST_CODE LEFT JOIN tb01_submenus c ON b.SUBMENU_CODE = c.SUBMENU_CODE WHERE a.USER_IDXX = '${req.params.user}' AND c.MDUL_CODE = '${element["MDUL_CODE"]}'`;
 
 
 
@@ -592,7 +592,6 @@ export default class Menu {
               });
 
               res.send(submenu);
-              console.log(submenu);
 
             })
 
@@ -602,7 +601,7 @@ export default class Menu {
 
         var menu = rows;
         rows.map(element => {
-          var sqlsubmenu = `SELECT a.MDUL_CODE, a.SUBMENU_CODE AS CODE_SUBMENU,a.SUBMENU_NAME AS NAME, a.ICON_SUBMENU AS ICON, a.LEVEL FROM tb01_submenus a LEFT JOIN tb01_menus b ON a.MDUL_CODE = b.MDUL_CODE WHERE a.MDUL_CODE = "${element["MDUL_CODE"]}"`;
+          var sqlsubmenu = `SELECT DISTINCT c.MDUL_CODE, c.SUBMENU_CODE AS CODE_SUBMENU, c.SUBMENU_NAME AS NAME, c.ICON_SUBMENU AS ICON, c.LEVEL FROM user_usermenus a LEFT JOIN tb01_listsubmenus b ON a.PROC_CODE = b.LIST_CODE LEFT JOIN tb01_submenus c ON b.SUBMENU_CODE = c.SUBMENU_CODE WHERE a.USER_IDXX = '${req.params.user}' AND c.MDUL_CODE = '${element["MDUL_CODE"]}'`;
 
 
 
@@ -614,7 +613,6 @@ export default class Menu {
             });
 
             res.send(submenu);
-            console.log(submenu);
 
           })
 
@@ -627,7 +625,7 @@ export default class Menu {
 
   }
   getlistMenus = (req, res) => {
-    var sql = `SELECT a.LIST_CODE, a.LIST_NAME AS NAME, a.PATH, a.ICON_LISTMENU AS ICON, a.SUBMENU_CODE, a.LEVEL FROM tb01_listsubmenus a`;
+    var sql = `SELECT b.LIST_CODE, b.LIST_NAME AS NAME, b.PATH, b.ICON_LISTMENU AS ICON, b.SUBMENU_CODE, b.LEVEL FROM user_usermenus a LEFT JOIN tb01_listsubmenus b ON a.PROC_CODE = b.LIST_CODE WHERE a.USER_IDXX = '${req.params.user}'`;
 
     db.query(sql, function (err, rows, fields) {
       res.send(rows);

@@ -223,8 +223,8 @@ const routes = (app) => {
 
       // app.route('/menu/getmenus/:nama').get(C.menu.getlistMenus);
       app.route('/menu/getmenu/:nama').get(C.menu.getMenu);
-      app.route('/menu/getSubMenu/:nama').get(C.menu.getSubmenu);
-      app.route('/menu/getListMenu').get(C.menu.getlistMenus);
+      app.route('/menu/getSubMenu/:nama/:user').get(C.menu.getSubmenu);
+      app.route('/menu/getListMenu/:user').get(C.menu.getlistMenus);
 
       // app.route('/setup/save').post(C.auth.verifyToken, C.setup.saveSetup);
       // app.route('/setup/update').post(C.auth.verifyToken, C.setup.updateSetup);
