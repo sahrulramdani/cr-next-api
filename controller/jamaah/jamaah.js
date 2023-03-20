@@ -621,5 +621,14 @@ export default class Jamaah {
       }
     });
   }
+
+  getPendaftaranHandling = (req,res) => {
+    var sql = `SELECT DISTINCT a.KDXX_BRGX, a.NAMA_BRGX, a.JENS_BRGX, a.STOK_BRGX, a.HRGX_BELI, a.HRGX_JUAL, a.KETERANGAN, IFNULL(d.JMLH_BRGX, 0) AS JMLH FROM invt_barang a LEFT JOIN ( SELECT b.JENS_GHAN, c.* FROM invt_ghandh b LEFT JOIN invt_ghandd c ON b.KDXX_GHAN = c.KDXX_GHAN ) d ON a.KDXX_BRGX = d.KDXX_BRGX AND d.JENS_GHAN = '${req.params.kode}'`;
+
+    db.query(sql, function(err, rows, fields) {
+      res.send(rows);
+    })
+  }
+
   
 }

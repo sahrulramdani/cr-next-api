@@ -99,5 +99,13 @@ export default class Setup {
         res.send(rows);
       });
     }
+
+    getBiayaKamar = (req, res) => {
+      var sql = "SELECT a.* FROM sett_biaya a WHERE a.JENS_BYAX = '7706'"
+    
+      db.query(sql, function (err, rows, fields) {
+        res.send(rows);
+      });
+    }
     
 }

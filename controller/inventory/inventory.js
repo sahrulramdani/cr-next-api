@@ -386,7 +386,66 @@ export default class Inventory {
         res.send(rows);
       });
     }
-
     
+    getGrupHandAll = (req,res) => {
+      var sql = `SELECT a.* FROM invt_ghandh a`;
+
+      db.query(sql,function(err,rows,fields) {
+        res.send(rows);
+      });
+    }
+
+    getGrupHandDetail = (req,res) => {
+      var sql = `SELECT a.*, b.JMLH_BRGX, c.* FROM invt_ghandh a LEFT JOIN invt_ghandd b ON a.KDXX_GHAN = b.KDXX_GHAN LEFT JOIN invt_barang c ON b.KDXX_BRGX = c.KDXX_BRGX WHERE a.JENS_GHAN = '${req.params.kode}'`;
+
+      db.query(sql,function(err,rows,fields) {
+        res.send(rows);
+      });
+    }
+
+    saveHandlingBarang = (req,res) => {
+      var sql = "INSERT INTO invt_ghandd SET ?";
+
+      var data = {
+        KDXX_GHAN : req.body.KDXX_GHAN,
+        KDXX_BRGX : req.body.KDXX_BRGX,
+        JMLH_BRGX : req.body.QTYX_BRGX,
+        CRTX_BYXX : req.body.CRTX_BYXX,
+        CRTX_DATE : new Date(),
+      }
+
+      db.query(sql,data,(err,result) => {
+        if (err) {
+          console.log(err);
+          res.send({
+            status: false,
+            message: err.sqlMessage,
+          });
+        } else {
+          res.send({
+            status: true
+          });
+        }
+      });
+    }
+
+    deleteHandlingBarang = (req,res) => {
+      var sql = `DELETE FROM invt_ghandd WHERE KDXX_GHAN = '${req.body.KDXX_GHAN}' AND KDXX_BRGX = '${req.body.KDXX_BRGX}'`;
+
+      db.query(sql,(err,result) => {
+        if (err) {
+          console.log(err);
+          res.send({
+            status: false,
+            message: err.sqlMessage,
+          });
+        } else {
+          res.send({
+            status: true
+          });
+        }
+      });
+    }
+
 
 }

@@ -122,7 +122,7 @@ export default class Finance {
     getJamaahDenganTagihan = (req, res) => {
         // var sql = `SELECT a.*,  DATE_FORMAT( a.TGLX_LHIR, "%d-%m-%Y" ) AS LAHIR ,TIMESTAMPDIFF(YEAR, a.TGLX_LHIR, CURDATE()) AS UMUR, b.CODD_DESC AS MENIKAH, c.CODD_DESC AS PENDIDIKAN, d.CODD_DESC AS PEKERJAAN, e.NOXX_PSPR, e.NAMA_PSPR, e.KLUR_DIXX, e.TGLX_KLUR, e.TGLX_EXPX, f.KDXX_DFTR FROM jmah_jamaahh a LEFT JOIN tb00_basx b ON a.JENS_MNKH = b.CODD_VALU LEFT JOIN tb00_basx c ON a.JENS_PEND = c.CODD_VALU LEFT JOIN tb00_basx d ON a.JENS_PKRJ = d.CODD_VALU LEFT JOIN jmah_jamaahp e ON a.NOXX_IDNT = e.NOXX_IDNT LEFT JOIN mrkt_daftarh f ON a.NOXX_IDNT = f.KDXX_JMAH WHERE STAS_BYAR = 0`;
 
-        var sql = `SELECT a.KDXX_DFTR, a.STAS_BYAR, b.*, DATE_FORMAT( b.TGLX_LHIR, "%d-%m-%Y" ) AS LAHIR, TIMESTAMPDIFF( YEAR, b.TGLX_LHIR, CURDATE()) AS UMUR, c.*, ( SELECT d.CODD_DESC FROM tb00_basx d WHERE d.CODD_VALU = c.NAMA_PKET AND d.CODD_FLNM = "PAKET_XXXX" ) AS namaPaket, ( SELECT d.CODD_DESC FROM tb00_basx d WHERE d.CODD_VALU = c.JENS_PKET AND d.CODD_FLNM = "JNS_PAKET" ) AS jenisPaket, DATE_FORMAT( c.TGLX_BGKT, "%d-%m-%Y" ) AS BERANGKAT, DATE_FORMAT( c.TGLX_PLNG, "%d-%m-%Y" ) AS PULANG, IF(c.TGLX_BGKT <= DATE_FORMAT( NOW(), "%Y-%m-%d" ), 1, 0 ) AS STS, ((c.JMLX_SEAT) - (IFNULL(( SELECT COUNT( e.KDXX_DFTR ) FROM mrkt_daftarh e WHERE e.KDXX_PKET = c.IDXX_JDWL ), 0 ))) AS SISA FROM mrkt_daftarh a LEFT JOIN jmah_jamaahh b ON a.KDXX_JMAH = b.NOXX_IDNT LEFT JOIN mrkt_jadwalh c ON a.KDXX_PKET = c.IDXX_JDWL WHERE STAS_BYAR = 0 ORDER BY a.CRTX_DATE DESC`;
+        var sql = `SELECT a.KDXX_DFTR, a.STAS_BYAR, b.*, DATE_FORMAT( b.TGLX_LHIR, "%d-%m-%Y" ) AS LAHIR, TIMESTAMPDIFF( YEAR, b.TGLX_LHIR, CURDATE()) AS UMUR, c.*, ( SELECT d.CODD_DESC FROM tb00_basx d WHERE d.CODD_VALU = c.NAMA_PKET AND d.CODD_FLNM = "PAKET_XXXX" ) AS namaPaket, ( SELECT d.CODD_DESC FROM tb00_basx d WHERE d.CODD_VALU = c.JENS_PKET AND d.CODD_FLNM = "JNS_PAKET" ) AS jenisPaket, DATE_FORMAT( c.TGLX_BGKT, "%d-%m-%Y" ) AS BERANGKAT, DATE_FORMAT( c.TGLX_PLNG, "%d-%m-%Y" ) AS PULANG, IF ( c.TGLX_BGKT <= DATE_FORMAT( NOW(), "%Y-%m-%d" ), 1, 0 ) AS STS, (( c.JMLX_SEAT ) - ( IFNULL(( SELECT COUNT( e.KDXX_DFTR ) FROM mrkt_daftarh e WHERE e.KDXX_PKET = c.IDXX_JDWL ), 0 ))) AS SISA, (SELECT SUM(d.TOTL_TGIH) FROM mrkt_tagihanh d WHERE d.KDXX_DFTR = a.KDXX_DFTR) AS JML_TGIHAN FROM mrkt_daftarh a LEFT JOIN jmah_jamaahh b ON a.KDXX_JMAH = b.NOXX_IDNT LEFT JOIN mrkt_jadwalh c ON a.KDXX_PKET = c.IDXX_JDWL HAVING STAS_BYAR = 0 AND JML_TGIHAN != '' ORDER BY a.CRTX_DATE DESC`;
     
         db.query(sql, function (err, rows, fields) {
           res.send(rows);
@@ -139,6 +139,14 @@ export default class Finance {
 
     getTagihanJamaah = (req, res) => {
       var sql = `SELECT a.*, IF(SISA_TGIH = 0, 'LUNAS', 'BELUM') AS STS_LUNAS, 'false' AS CEK FROM mrkt_tagihanh a HAVING a.KDXX_DFTR = '${req.params.id}' AND STS_LUNAS = 'BELUM'`;
+  
+      db.query(sql, function (err, rows, fields) {
+        res.send(rows);
+      });
+    };
+
+    getMutasiRekening = (req, res) => {
+      var sql = `SELECT *, IFNULL(TransNumber,'Kosong') CEK FROM tblmutasi HAVING CEK = 'Kosong'`;
   
       db.query(sql, function (err, rows, fields) {
         res.send(rows);
@@ -244,6 +252,7 @@ export default class Finance {
         CARA_BYAR : req.body.METODE,
         NAMA_BANK : req.body.KDXX_BANK,
         KETERANGAN : req.body.KETERANGAN,
+        TRNS_NUMBER : req.body.TRNS_NUMBER,
         CRTX_DATE : new Date(),
         CRTX_BYXX : 'sahrulramdani20'
       };
@@ -313,6 +322,18 @@ export default class Finance {
               }
             });
           });
+
+          //UPDATE MUTASI REKENING
+          if (req.body.TRNS_NUMBER != '') {            
+            var updtMut = `UPDATE tblmutasi SET TransNumber = '${req.body.NOXX_FAKT}' WHERE KODE_TRNX = '${req.body.TRNS_NUMBER}'`;     
+            db.query(updtMut, (err, result) => {
+              if (err) {
+                  sts = false;
+              } else {
+                  sts = true;
+              }
+            });
+          }
   
           res.send({
             status : true
