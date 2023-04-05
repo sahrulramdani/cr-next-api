@@ -61,7 +61,9 @@ export default class Jamaah {
     }
 
     getDetailRiwayatBayar = (req, res) => {
-      var sql = `SELECT a.*, a.CRTX_DATE AS CRTXX, b.*, c.*, (IF(b.DIBAYARKAN = c.TOTL_TGIH,'Pelunasan','Pencicilan')) AS STS_PEMBAYARAN, ('Debit') AS JENIS FROM finc_bayarjamahh a LEFT JOIN finc_bayarjamahd b ON a.NOXX_FAKT = b.NOXX_FAKT LEFT JOIN mrkt_tagihanh c ON b.NOXX_TGIH = c.NOXX_TGIH WHERE c.KDXX_DFTR = '${req.params.id}' ORDER BY CRTXX DESC`;
+      // var sql = `SELECT a.*, a.CRTX_DATE AS CRTXX, b.*, c.*, (IF(b.DIBAYARKAN = c.TOTL_TGIH,'Pelunasan','Pencicilan')) AS STS_PEMBAYARAN, ('Debit') AS JENIS FROM finc_bayarjamahh a LEFT JOIN finc_bayarjamahd b ON a.NOXX_FAKT = b.NOXX_FAKT LEFT JOIN mrkt_tagihanh c ON b.NOXX_TGIH = c.NOXX_TGIH WHERE c.KDXX_DFTR = '${req.params.id}' ORDER BY CRTXX DESC`;
+
+      var sql = `SELECT a.*, a.CRTX_DATE AS CRTXX, b.*, c.*, d.NAMA_BANK, ( IF ( b.DIBAYARKAN = c.TOTL_TGIH, 'Pelunasan', 'Pencicilan' )) AS STS_PEMBAYARAN, ( 'Debit' ) AS JENIS FROM finc_bayarjamahh a LEFT JOIN finc_bayarjamahd b ON a.NOXX_FAKT = b.NOXX_FAKT LEFT JOIN mrkt_tagihanh c ON b.NOXX_TGIH = c.NOXX_TGIH LEFT JOIN finc_kasbank d ON a.CARA_BYAR = d.KODE_BANK AND d.KODE_FLNM = 'TYPE_BYRX' WHERE c.KDXX_DFTR = '${req.params.id}' ORDER BY CRTXX DESC`;
 
       db.query(sql, function(err, rows, fields) {
         res.send(rows);
@@ -69,7 +71,17 @@ export default class Jamaah {
     }
 
     getLainnyaKwitansi = (req, res) => {
-      var sql = `SELECT a.*, IFNULL( b.CODD_DESC, 'Tunai' ) AS NAME_BANK, IF ( a.NAMA_BANK, b.CODD_FLNM, 'TUNAI' ) AS CODD FROM finc_bayarjamahh a LEFT JOIN tb00_basx b ON a.NAMA_BANK = b.CODD_VALU HAVING KDXX_DFTR = '${req.params.id}' AND CODD = 'BANK' OR KDXX_DFTR = '${req.params.id}'AND CODD = 'TUNAI' ORDER BY CRTX_DATE DESC`;
+      // var sql = `SELECT a.*, IFNULL( b.CODD_DESC, 'Tunai' ) AS NAME_BANK, IF ( a.NAMA_BANK, b.CODD_FLNM, 'TUNAI' ) AS CODD FROM finc_bayarjamahh a LEFT JOIN tb00_basx b ON a.NAMA_BANK = b.CODD_VALU HAVING KDXX_DFTR = '${req.params.id}' AND CODD = 'BANK' OR KDXX_DFTR = '${req.params.id}'AND CODD = 'TUNAI' ORDER BY CRTX_DATE DESC`;
+
+      var sql = `SELECT a.*, c.NAMA_LGKP, d.NAMA_BANK FROM finc_bayarjamahh a LEFT JOIN mrkt_daftarh b ON a.KDXX_DFTR = b.KDXX_DFTR LEFT JOIN jmah_jamaahh c ON b.KDXX_JMAH = c.NOXX_IDNT LEFT JOIN finc_kasbank d ON a.CARA_BYAR = d.KODE_BANK AND d.KODE_FLNM = 'TYPE_BYRX' HAVING KDXX_DFTR = '${req.params.id}' ORDER BY CRTX_DATE DESC`;
+      
+      db.query(sql, function(err, rows, fields) {
+        res.send(rows);
+      })
+    }
+
+    getLainnyaKwitansiDet = (req, res) => {
+      var sql = `SELECT a.NOXX_BYAR, a.NOXX_FAKT, a.TARIF_TGIH, a.DIBAYARKAN, b.NOXX_RESI, b.TGLX_BYAR, c.*, e.MATA_UANG FROM finc_bayarjamahd a LEFT JOIN finc_bayarjamahh b ON a.NOXX_FAKT = b.NOXX_FAKT LEFT JOIN mrkt_tagihanh c ON a.NOXX_TGIH = c.NOXX_TGIH LEFT JOIN mrkt_daftarh d ON c.KDXX_DFTR = d.KDXX_DFTR LEFT JOIN mrkt_jadwalh e ON d.KDXX_PKET = e.KDXX_JDWL WHERE b.KDXX_DFTR = '${req.params.id}'`;
 
       db.query(sql, function(err, rows, fields) {
         res.send(rows);
@@ -487,7 +499,7 @@ export default class Jamaah {
   }
 
 
-  pendaftaranJamaah = (req, res) => {
+  pendaftaranJamaah = async (req, res) => {
     // Menyimpan pendaftaran header
     var qry = `INSERT INTO mrkt_daftarh SET ?`;
     var data = {
@@ -521,6 +533,7 @@ export default class Jamaah {
           message: err.sqlMessage,
         });
       } else {
+        // INSERT TAGIHAN
         var tagihan = req.body.TAGIHAN;
         var jsonTagihan = JSON.parse(tagihan);
         var sts;
@@ -540,6 +553,34 @@ export default class Jamaah {
             CRTX_BYXX : 'admin'
           };      
           db.query(qry, data, (err, result) => {
+              if (err) {
+                  sts = false;
+              } else {
+                  sts = true;
+              }
+          });
+        }
+
+        // INSERT BARANG HANDLING
+        var barang = req.body.BARANG;
+        var jsonBarang = JSON.parse(barang);
+        var sts;
+
+        for (let i = 0; i < jsonBarang.length; i++) {
+
+          var insHand = `INSERT INTO mrkt_jmahand SET ?`;
+          var data = {
+            KDXX_DFTR : req.body.KDXX_DFTR,
+            KDXX_BRGX : jsonBarang[i]['KDXX_BRGX'],
+            JMLX_BRGX : jsonBarang[i]['JMLH'],
+            SUBTOTAL : jsonBarang[i]['SUBTOTAL'],
+            STAS_TERM : 0,
+            CRTX_DATE : new Date(),
+            CRTX_BYXX : 'admin'
+          };      
+
+          console.log(insHand, data);
+          db.query(insHand, data, (err, result) => {
               if (err) {
                   sts = false;
               } else {

@@ -162,6 +162,19 @@ export default class Finance {
       })
     }
 
+    getLaporanPembayaran = (req,res) => {
+      if (req.params.kode == 'Semua') {
+        var sql = `SELECT a.NOXX_BYAR, a.NOXX_FAKT, a.TARIF_TGIH, a.DIBAYARKAN, b.NOXX_RESI, DATE_FORMAT( b.TGLX_BYAR, "%d-%m-%Y" ) AS TGLX_BYAR, c.*, 	IFNULL(e.NAMA_LGKP, '-') AS NAMA_LGKP, f.KETX_USER FROM finc_bayarjamahd a LEFT JOIN finc_bayarjamahh b ON a.NOXX_FAKT = b.NOXX_FAKT LEFT JOIN mrkt_tagihanh c ON a.NOXX_TGIH = c.NOXX_TGIH LEFT JOIN mrkt_daftarh d ON c.KDXX_DFTR = d.KDXX_DFTR LEFT JOIN jmah_jamaahh e ON d.KDXX_JMAH = e.NOXX_IDNT LEFT JOIN tb01_lgxh f ON a.CRTX_BYXX = f.USER_IDXX WHERE b.TGLX_BYAR BETWEEN '${req.params.tgl1}' AND '${req.params.tgl2}' ORDER BY b.TGLX_BYAR DESC`;
+      } else {
+        var sql = `SELECT a.NOXX_BYAR, a.NOXX_FAKT, a.TARIF_TGIH, a.DIBAYARKAN, b.NOXX_RESI, DATE_FORMAT( b.TGLX_BYAR, "%d-%m-%Y" ) AS TGLX_BYAR, c.*, 	IFNULL(e.NAMA_LGKP, '-') AS NAMA_LGKP, f.KETX_USER FROM finc_bayarjamahd a LEFT JOIN finc_bayarjamahh b ON a.NOXX_FAKT = b.NOXX_FAKT LEFT JOIN mrkt_tagihanh c ON a.NOXX_TGIH = c.NOXX_TGIH LEFT JOIN mrkt_daftarh d ON c.KDXX_DFTR = d.KDXX_DFTR LEFT JOIN jmah_jamaahh e ON d.KDXX_JMAH = e.NOXX_IDNT LEFT JOIN tb01_lgxh f ON a.CRTX_BYXX = f.USER_IDXX WHERE JENS_TGIH = '${req.params.kode}' AND b.TGLX_BYAR BETWEEN '${req.params.tgl1}' AND '${req.params.tgl2}' ORDER BY b.TGLX_BYAR DESC`;
+      }
+  
+      db.query(sql, function(err, rows, fields) {
+        res.send(rows);
+      })
+    }
+
+
     getPembayaranBulanan = (req, res) => {
       var sql = `SELECT IFNULL( SUM( a.JMLH_BYAR ), 0 ) AS TOTAL, IFNULL((SELECT SUM(b.JMLH_BYAR) FROM finc_bayarjamahh b WHERE YEAR ( b.TGLX_BYAR ) = YEAR(NOW()) AND MONTH(b.TGLX_BYAR) = '01'),0) AS JAN, IFNULL((SELECT SUM(b.JMLH_BYAR) FROM finc_bayarjamahh b WHERE YEAR ( b.TGLX_BYAR ) = YEAR(NOW()) AND MONTH(b.TGLX_BYAR) = '02'),0) AS FEB, IFNULL((SELECT SUM(b.JMLH_BYAR) FROM finc_bayarjamahh b WHERE YEAR ( b.TGLX_BYAR ) = YEAR(NOW()) AND MONTH(b.TGLX_BYAR) = '03'),0) AS MAR, IFNULL((SELECT SUM(b.JMLH_BYAR) FROM finc_bayarjamahh b WHERE YEAR ( b.TGLX_BYAR ) = YEAR(NOW()) AND MONTH(b.TGLX_BYAR) = '04'),0) AS APR, IFNULL((SELECT SUM(b.JMLH_BYAR) FROM finc_bayarjamahh b WHERE YEAR ( b.TGLX_BYAR ) = YEAR(NOW()) AND MONTH(b.TGLX_BYAR) = '05'),0) AS MEI, IFNULL((SELECT SUM(b.JMLH_BYAR) FROM finc_bayarjamahh b WHERE YEAR ( b.TGLX_BYAR ) = YEAR(NOW()) AND MONTH(b.TGLX_BYAR) = '06'),0) AS JUN, IFNULL((SELECT SUM(b.JMLH_BYAR) FROM finc_bayarjamahh b WHERE YEAR ( b.TGLX_BYAR ) = YEAR(NOW()) AND MONTH(b.TGLX_BYAR) = '07'),0) AS JUL, IFNULL((SELECT SUM(b.JMLH_BYAR) FROM finc_bayarjamahh b WHERE YEAR ( b.TGLX_BYAR ) = YEAR(NOW()) AND MONTH(b.TGLX_BYAR) = '08'),0) AS AGU, IFNULL((SELECT SUM(b.JMLH_BYAR) FROM finc_bayarjamahh b WHERE YEAR ( b.TGLX_BYAR ) = YEAR(NOW()) AND MONTH(b.TGLX_BYAR) = '09'),0) AS SEP, IFNULL((SELECT SUM(b.JMLH_BYAR) FROM finc_bayarjamahh b WHERE YEAR ( b.TGLX_BYAR ) = YEAR(NOW()) AND MONTH(b.TGLX_BYAR) = '10'),0) AS OKT, IFNULL((SELECT SUM(b.JMLH_BYAR) FROM finc_bayarjamahh b WHERE YEAR ( b.TGLX_BYAR ) = YEAR(NOW()) AND MONTH(b.TGLX_BYAR) = '11'),0) AS NOV, IFNULL((SELECT SUM(b.JMLH_BYAR) FROM finc_bayarjamahh b WHERE YEAR ( b.TGLX_BYAR ) = YEAR(NOW()) AND MONTH(b.TGLX_BYAR) = '12'),0) AS DES FROM finc_bayarjamahh a WHERE YEAR ( a.TGLX_BYAR ) = YEAR (NOW())`;
 
@@ -250,11 +263,11 @@ export default class Finance {
         TGLX_BYAR : new Date(),
         JMLH_BYAR : req.body.TOTL_BYAR,
         CARA_BYAR : req.body.METODE,
-        NAMA_BANK : req.body.KDXX_BANK,
+        // NAMA_BANK : req.body.KDXX_BANK,
         KETERANGAN : req.body.KETERANGAN,
         TRNS_NUMBER : req.body.TRNS_NUMBER,
         CRTX_DATE : new Date(),
-        CRTX_BYXX : 'sahrulramdani20'
+        CRTX_BYXX : 'superadmin'
       };
 
       db.query(qry, data, async (err, result) => {
@@ -341,4 +354,414 @@ export default class Finance {
         }
       });
     }
+
+
+    // MASTER
+    getAllAccount = (req, res) => {
+      var sql = `SELECT a.*, CONCAT( a.KDXX_COAX, " - ", a.DESKRIPSI ) AS COAX_LBEL, CONCAT( a.KDXX_PARENT, " - ", b.DESKRIPSI ) AS PRENT_LBEL, c.NAMA_KATC, c.JENS_KATC, d.CODD_VALU, d.CODD_DESC FROM finc_coa a LEFT JOIN finc_coa b ON a.KDXX_PARENT = b.KDXX_COAX LEFT JOIN finc_kategori_coa c ON a.KATX_COAX = c.KDXX_KATC LEFT JOIN tb00_basx d ON a.MATA_UANG = d.CODD_VALU ORDER BY a.KDXX_COAX`;
+
+      db.query(sql, function(err, rows, fields) {
+        res.send(rows);
+      })
+    }
+
+    saveAccount = (req, res) => {
+      var qry = `INSERT INTO finc_coa SET ?`;
+      var data = {
+        KDXX_COAX : req.body.KDXX_COAX,
+        MATA_UANG : req.body.MATA_UANG,
+        DESKRIPSI : req.body.DESKRIPSI,
+        KATX_COAX : req.body.KATX_COAX,
+        INCX_STMN : '0',
+        COAX_LVEL : parseInt(req.body.COAX_LVEL),
+        COAX_DKXX : req.body.COAX_DKXX,
+        STAS_DKXX : req.body.STAS_DKXX,
+        BUDGET : req.body.BUDGET,
+        TYPE_COAX : req.body.TYPE_COAX,
+        STAS_AKTF : '1',
+        KDXX_PARENT : req.body.KDXX_PARENT,
+        CRTX_DATE : new Date(),
+        CRTX_BYXX : 'superadmin'
+      };
+  
+      db.query(qry, data, async (err, result) => {
+        if (err) {
+          console.log(err);
+          res.send({
+            status: false,
+            message: err.sqlMessage,
+          });
+        } else {
+          res.send({
+            status : true
+          });
+        }
+      });
+    }
+
+    updateAccount = (req,res) => {
+      var sql = `UPDATE finc_coa SET ? WHERE KDXX_COAX = '${req.body.KDXX_COAX}'`;
+
+      var data = {
+        KDXX_COAX : req.body.KDXX_COAX,
+        MATA_UANG : req.body.MATA_UANG,
+        DESKRIPSI : req.body.DESKRIPSI,
+        KATX_COAX : req.body.KATX_COAX,
+        INCX_STMN : '0',
+        COAX_LVEL : parseInt(req.body.COAX_LVEL),
+        COAX_DKXX : req.body.COAX_DKXX,
+        STAS_DKXX : req.body.STAS_DKXX,
+        BUDGET : req.body.BUDGET,
+        TYPE_COAX : req.body.TYPE_COAX,
+        STAS_AKTF : '1',
+        KDXX_PARENT : req.body.KDXX_PARENT,
+        UPDT_BYXX : "superadmin",
+        UPDT_DATE : new Date(),
+    }
+
+    db.query(sql,data,(err,result) => {
+        if (err) {
+          console.log(err);
+          res.send({
+            status: false,
+            message: err.sqlMessage,
+          });
+        } else {
+          res.send({
+            status: true
+          });
+        }
+      });
+    }
+
+    deleteAccount = (req,res) => {
+      var sql = `DELETE FROM finc_coa WHERE KDXX_COAX = '${req.body.KDXX_COAX}'`;
+      db.query(sql, (err, result) => {
+        if (err) {
+            console.log('Error', err);
+
+            res.send({
+                status: false,
+                message: err.sqlMessage
+            });
+        } else {
+            res.send({
+                status: true
+            });
+        }
+      });
+    }
+
+
+    generateKodeAccount = (req, res) => {
+      var sql = `SELECT KDXX_COAX, COAX_LVEL AS LEVEL FROM finc_coa WHERE KDXX_COAX = '${req.params.id}'`;
+
+      db.query(sql, function(err, rows, fields) {
+        if(rows == ''){
+          // LEVEL 1
+          var urut1 = `SELECT MAX(KDXX_COAX) AS URUT FROM finc_coa WHERE COAX_LVEL = 1`;
+
+          db.query(urut1, function(err, rows, fields) {
+            rows.map((data) => {
+              if (data['URUT'] != null) {
+                var no = parseInt(data['URUT']) + 1;
+                var kode = no.toString();
+        
+                res.send({
+                  KDXX_COAX: kode,
+                  LVEL_COAX: '1',
+                });
+              }else{
+                res.send({
+                  KDXX_COAX: '1',
+                  LVEL_COAX: '1',
+                });
+              }
+            });
+          })
+        }else{
+          rows.map((data) => {
+            if (data['LEVEL'] == 1) {
+              // LEVEL 2
+              var urut2 = `SELECT MAX(RIGHT(KDXX_COAX,1)) AS URUT FROM finc_coa WHERE LEFT(KDXX_COAX, 1) = '${req.params.id}' AND LENGTH(KDXX_COAX) = 2`;
+              db.query(urut2, function(err, rows, fields) {
+                rows.map((data) => {
+                  if (data['URUT'] != null) {                    
+                    var no = parseInt(data['URUT']) + 1;
+                    var kode = `${req.params.id}${no}`;
+  
+                    res.send({
+                      KDXX_COAX: kode,
+                      LVEL_COAX: '2',
+                    });
+                  }else{
+                    var kode = `${req.params.id}1`;
+  
+                    res.send({
+                      KDXX_COAX: kode,
+                      LVEL_COAX: '2',
+                    });
+                  }
+                });
+              })
+            }else{
+              // LEVEL 3 DST
+              var urut3 = `SELECT MAX(RIGHT(KDXX_COAX,2)) AS HASIL , (${data['LEVEL']}) AS URUT FROM finc_coa WHERE LEFT(KDXX_COAX, LENGTH('${req.params.id}')) = '${req.params.id}' AND COAX_LVEL = '${parseInt(data['LEVEL']) + 1}';`
+
+              db.query(urut3, function(err, rows, fields) {
+                rows.map((data) => {
+                  if (data['HASIL'] != null) {
+                    var no = parseInt(data['HASIL']) + 1;
+                    var kode = `${req.params.id}` + no.toString().padStart(2,"0");
+    
+                    res.send({
+                      KDXX_COAX: kode,
+                      LVEL_COAX: `${parseInt(data['URUT']) + 1}`,
+                    });
+                  }else{
+                    var kode = `${req.params.id}01`;
+
+                    res.send({
+                      KDXX_COAX: kode,
+                      LVEL_COAX: `${parseInt(data['URUT']) + 1}`,
+                    });
+                  }
+                });
+              })
+            }
+          })
+        }
+      })
+    }
+
+    listTreeAccount = (req, res) => {
+        var sql = `SELECT a.*, CONCAT( a.KDXX_COAX, " - ", a.DESKRIPSI ) AS COAX_LBEL, CONCAT( a.KDXX_PARENT, " - ", b.DESKRIPSI ) AS PRENT_LBEL, c.NAMA_KATC, c.JENS_KATC, d.CODD_VALU, d.CODD_DESC FROM finc_coa a LEFT JOIN finc_coa b ON a.KDXX_PARENT = b.KDXX_COAX LEFT JOIN finc_kategori_coa c ON a.KATX_COAX = c.KDXX_KATC LEFT JOIN tb00_basx d ON a.MATA_UANG = d.CODD_VALU ORDER BY a.KDXX_COAX`;
+
+        db.query(sql, function(err, rows, fields) {
+
+            // console.log(rows);
+
+            if (err) {
+                throw err;
+            }
+
+            var output = [];
+            var outputTemp = [];
+
+            // sort Kode Account desc
+            rows.sort((a, b) => {
+                if (a.KDXX_COAX > b.KDXX_COAX) {
+                    return -1;
+                } else if (a.KDXX_COAX < b.KDXX_COAX) {
+                    return 1;
+                };
+
+                return 0;
+            });
+
+            if (rows.length > 0) {
+                rows.forEach(function(row) {
+                    var obj = new Object();
+                    for(var key in row) {
+                        obj[key] = row[key];
+                    }
+
+                    obj.children = [];
+
+                    var check = outputTemp.filter(item => item.KDXX_PARENT === obj.KDXX_COAX);
+                    if (check.length > 0) {
+                        // sort Kode Account Asc
+                        check.sort((a, b) => {
+                            if (a.KDXX_COAX < b.KDXX_COAX) {
+                                return -1;
+                            } else if (a.KDXX_COAX > b.KDXX_COAX) {
+                                return 1;
+                            };
+        
+                            return 0;
+                        });
+
+                        obj.children = check;
+                    }
+
+                    outputTemp.push(obj);
+                });
+
+                // output = outputTemp.filter(item => item.CompanyID === companyID && (item.KDXX_PARENT === null || item.KDXX_PARENT === ''));
+
+                output = outputTemp.filter(item => item.KDXX_PARENT === null || item.KDXX_PARENT === '');
+
+                // Sort Kode Account Asc
+                output.sort((a, b) => {
+                    if (a.KDXX_COAX < b.KDXX_COAX) {
+                        return -1;
+                    } else if (a.KDXX_COAX > b.KDXX_COAX) {
+                        return 1;
+                    };
+
+                    return 0;
+                });
+            }
+
+            res.send(output);
+        });
+    }
+
+    getAllKasBank = (req, res) => {
+      var sql = `SELECT a.*, b.DESKRIPSI, c.CODD_DESC FROM finc_kasbank a LEFT JOIN finc_coa b ON a.ACCT_CODE = b.KDXX_COAX LEFT JOIN tb00_basx c ON a.CURR_MNYX = c.CODD_VALU WHERE a.KODE_FLNM = 'KASX_BANK'`;
+
+      db.query(sql, function(err, rows, fields) {
+        res.send(rows);
+      })
+    }
+
+    getDetailKasBank = (req, res) => {
+      var sql = `SELECT a.*, b.DESKRIPSI, c.CODD_DESC FROM finc_kasbank a LEFT JOIN finc_coa b ON a.ACCT_CODE = b.KDXX_COAX LEFT JOIN tb00_basx c ON a.CURR_MNYX = c.CODD_VALU WHERE a.KODE_FLNM = '${req.params.kode}' AND a.KODE_BANK = '${req.params.id}'`;
+
+      db.query(sql, function(err, rows, fields) {
+        res.send(rows);
+      })
+    }
+
+    generateNumberKasBank = (req, res) => {
+      var sql = `SELECT MAX(RIGHT(a.KODE_BANK, 2)) AS URUTX FROM finc_kasbank a WHERE a.KODE_FLNM = 'KASX_BANK'`;
+
+      db.query(sql, function (err, rows, fields) {
+        rows.map((data) => {
+          if (data['URUTX'] == null) {
+            var noKasBank = `01`;
+  
+            res.send({
+              idKasBank: noKasBank,
+            });
+          } else {
+            var no = parseInt(data['URUTX']) + 1;
+            var noKasBank = no.toString().padStart(2, "0");
+  
+            res.send({
+              idKasBank: noKasBank,
+            });
+          }
+        });
+      });
+    }
+
+    
+    saveKasBank = (req, res) => {
+      var qry = `INSERT INTO finc_kasbank SET ?`;
+      var data = {
+        KODE_FLNM : req.body.KODE_FLNM,
+        KODE_BANK : req.body.KODE_BANK,
+        NAMA_BANK : req.body.NAMA_BANK,
+        CHKX_BANK : req.body.CHKX_BANK,
+        ACCT_CODE : req.body.ACCT_CODE,
+        CURR_MNYX : req.body.CURR_MNYX,
+        NOXX_REKX : req.body.NOXX_REKX,
+        ALMT_BANK : req.body.ALMT_BANK,
+        NOXX_TELP : req.body.NOXX_TELP,
+        NOXX_FAXX : req.body.NOXX_FAXX,
+        CRTX_DATE : new Date(),
+        CRTX_BYXX : 'superadmin'
+      };
+  
+      db.query(qry, data, async (err, result) => {
+        if (err) {
+          console.log(err);
+          res.send({
+            status: false,
+            message: err.sqlMessage,
+          });
+        } else {
+          res.send({
+            status : true
+          });
+        }
+      });
+    }
+
+    deleteKasBank = (req,res) => {
+      var sql = `DELETE FROM finc_kasbank WHERE KODE_BANK = '${req.body.KODE_BANK}' AND KODE_FLNM = '${req.body.KODE_FLNM}'`;
+
+      db.query(sql, (err, result) => {
+        if (err) {
+            console.log('Error', err);
+
+            res.send({
+                status: false,
+                message: err.sqlMessage
+            });
+        } else {
+            res.send({
+                status: true
+            });
+        }
+      });
+    }
+
+    updateKasBank = (req,res) => {
+      var sql = `UPDATE finc_kasbank SET ? WHERE KODE_BANK = '${req.body.KODE_BANK}' AND KODE_FLNM = '${req.body.KODE_FLNM}'`;
+
+      var data = {
+        KODE_FLNM : req.body.KODE_FLNM,
+        KODE_BANK : req.body.KODE_BANK,
+        NAMA_BANK : req.body.NAMA_BANK,
+        CHKX_BANK : req.body.CHKX_BANK,
+        ACCT_CODE : req.body.ACCT_CODE,
+        CURR_MNYX : req.body.CURR_MNYX,
+        NOXX_REKX : req.body.NOXX_REKX,
+        ALMT_BANK : req.body.ALMT_BANK,
+        NOXX_TELP : req.body.NOXX_TELP,
+        NOXX_FAXX : req.body.NOXX_FAXX,
+        UPDT_BYXX : "superadmin",
+        UPDT_DATE : new Date(),
+    }
+
+    // console.log(data);
+
+    db.query(sql,data,(err,result) => {
+        if (err) {
+          console.log(err);
+          res.send({
+            status: false,
+            message: err.sqlMessage,
+          });
+        } else {
+          res.send({
+            status: true
+          });
+        }
+      });
+    }
+
+    getAllCaraBayar = (req, res) => {
+      var sql = `SELECT a.*, b.DESKRIPSI, c.CODD_DESC FROM finc_kasbank a LEFT JOIN finc_coa b ON a.ACCT_CODE = b.KDXX_COAX LEFT JOIN tb00_basx c ON a.CURR_MNYX = c.CODD_VALU WHERE a.KODE_FLNM = 'TYPE_BYRX'`;
+
+      db.query(sql, function(err, rows, fields) {
+        res.send(rows);
+      })
+    }
+
+    generateNumberCaraBayar = (req, res) => {
+      var sql = `SELECT MAX(RIGHT(a.KODE_BANK, 2)) AS URUTX FROM finc_kasbank a WHERE a.KODE_FLNM = 'TYPE_BYRX'`;
+
+      db.query(sql, function (err, rows, fields) {
+        rows.map((data) => {
+          if (data['URUTX'] == null) {
+            var noKasBank = `01`;
+  
+            res.send({
+              idKasBank: noKasBank,
+            });
+          } else {
+            var no = parseInt(data['URUTX']) + 1;
+            var noKasBank = no.toString().padStart(2, "0");
+  
+            res.send({
+              idKasBank: noKasBank,
+            });
+          }
+        });
+      });
+    }
+
 }

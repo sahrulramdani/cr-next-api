@@ -114,6 +114,7 @@ const routes = (app) => {
       app.route('/jamaah/jamaah/detail/info-estimasi/:id').get(C.auth.verifyToken ,C.jamaah.getDetailInfoEstimasi);
       app.route('/jamaah/jamaah/detail/info-bayar/:id').get(C.auth.verifyToken ,C.jamaah.getDetailRiwayatBayar);
       app.route('/jamaah/jamaah/lainnya/kwitansi/:id').get(C.auth.verifyToken ,C.jamaah.getLainnyaKwitansi);
+      app.route('/jamaah/jamaah/lainnya/kwitansi-detail/:id').get(C.auth.verifyToken ,C.jamaah.getLainnyaKwitansiDet);
 
       // --- Jamaah Pendaftaran --
       app.route('/jamaah/pendaftaran/kode').get(C.auth.verifyToken ,C.jamaah.generateNumberPendaftaran);
@@ -128,6 +129,7 @@ const routes = (app) => {
       app.route('/finance/info-data/list-cabang').get(C.auth.verifyToken ,C.finance.getPembayaranCabang);
 
       app.route('/finance/penerbangan/get-profit').get(C.auth.verifyToken ,C.finance.getPenerbanganLoss);
+      app.route('/finance/pembayaran/get-laporan/:tgl1/:tgl2/:kode').get(C.auth.verifyToken ,C.finance.getLaporanPembayaran);
       app.route('/finance/pembayaran/get-jamaah').get(C.auth.verifyToken ,C.finance.getJamaahDenganTagihan);
       app.route('/finance/pembayaran/get-jadwal/:id').get(C.finance.getJadwalJamaah);
       app.route('/finance/pembayaran/get-tagihan/:id').get(C.auth.verifyToken ,C.finance.getTagihanJamaah);
@@ -140,6 +142,25 @@ const routes = (app) => {
       app.route('/finance/biaya/biaya/update').post(C.finance.updateBiaya);
       app.route('/finance/biaya/biaya/delete').post(C.finance.deleteBiaya);
       app.route('/finance/biaya/biaya/detail/:id').get(C.finance.getBiayaDetail);
+      // --- Finance Pembayaran --  
+
+      app.route('/finance/gettree-account').get(C.auth.verifyToken, C.finance.listTreeAccount);
+      app.route('/finance/all-account').get(C.auth.verifyToken, C.finance.getAllAccount);
+      app.route('/finance/master-account/save').post(C.auth.verifyToken, C.finance.saveAccount);
+      app.route('/finance/master-account/update').post(C.auth.verifyToken, C.finance.updateAccount);
+      app.route('/finance/master-account/delete').post(C.auth.verifyToken, C.finance.deleteAccount);
+      app.route('/finance/master-account/generate-kode/:id').get(C.auth.verifyToken, C.finance.generateKodeAccount);
+
+      app.route('/finance/all-kasbank').get(C.auth.verifyToken, C.finance.getAllKasBank);
+      app.route('/finance/kas-bank/generate-number').get(C.auth.verifyToken, C.finance.generateNumberKasBank);
+      app.route('/finance/kas-bank/save').post(C.auth.verifyToken, C.finance.saveKasBank);
+      app.route('/finance/kas-bank/update').post(C.auth.verifyToken, C.finance.updateKasBank);
+      app.route('/finance/kas-bank/delete').post(C.auth.verifyToken, C.finance.deleteKasBank);
+      app.route('/finance/kas-bank/detail/:id/:kode').get(C.auth.verifyToken, C.finance.getDetailKasBank);
+
+      app.route('/finance/all-carabayar').get(C.auth.verifyToken, C.finance.getAllCaraBayar);
+      app.route('/finance/all-carabayar/generate-number').get(C.auth.verifyToken, C.finance.generateNumberCaraBayar);
+      // --- Finance  --  
 
       app.use('/uploads/foto', express.static('uploads/foto'));
       app.use('/uploads/ktp', express.static('uploads/ktp'));
@@ -171,6 +192,7 @@ const routes = (app) => {
       app.route('/setup/biaya-vaksin').get(C.auth.verifyToken ,C.setup.getBiayaVaksin);
       app.route('/setup/biaya-admin').get(C.auth.verifyToken ,C.setup.getBiayaAdmin);
       app.route('/setup/biaya-kamar').get(C.auth.verifyToken ,C.setup.getBiayaKamar);
+      app.route('/setup/kategori-account').get(C.auth.verifyToken ,C.setup.getKategoriAccount);
 
       //---- Setup ----
       app.route('/info/dashboard/main-dashboard').get(C.auth.verifyToken, C.info.getMainDashboardInfo);
@@ -235,6 +257,11 @@ const routes = (app) => {
       app.route('/menu/getmenu/:nama').get(C.menu.getMenu);
       app.route('/menu/getSubMenu/:nama/:user').get(C.auth.verifyToken, C.menu.getSubmenu);
       app.route('/menu/getListMenu/:user').get(C.auth.verifyToken, C.menu.getlistMenus);
+
+      // LOGIN AND REGISTER
+      app.route('/register').post(C.auth.register);
+      app.route('/signin').post(C.auth.signin);
+      app.route('/get-permission/:kode/:id').get(C.auth.verifyToken, C.auth.getPermission);
 
       // app.route('/setup/save').post(C.auth.verifyToken, C.setup.saveSetup);
       // app.route('/setup/update').post(C.auth.verifyToken, C.setup.updateSetup);
@@ -312,9 +339,6 @@ const routes = (app) => {
       // app.route('/role/privilege/delete').post(C.auth.verifyToken, C.user.deleteRoleDetPrivilege);
       // app.route('/role/privileges/:roleID').get(C.auth.verifyToken, C.user.getRoleDetUserAccesses);
       // app.route('/role/privilege/:id').get(C.auth.verifyToken, C.user.getRolePrivilege);
-      app.route('/register').post(C.auth.register);
-      app.route('/signin').post(C.auth.signin);
-      app.route('/get-permission/:kode/:id').get(C.auth.verifyToken, C.auth.getPermission);
       // app.route('/profile').get(C.auth.verifyToken, C.user.getProfile);
       // app.route('/profile/karyawan/update').post(C.auth.verifyToken, C.karyawan.updateKaryawanProfile);
       // app.route('/profile/karyawan/save').post(C.auth.verifyToken, C.karyawan.saveKaryawanProfile);

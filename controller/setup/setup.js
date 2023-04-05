@@ -107,5 +107,13 @@ export default class Setup {
         res.send(rows);
       });
     }
+
+    getKategoriAccount = (req, res) => {
+      var sql = "SELECT a.* FROM finc_kategori_coa a"
+    
+      db.query(sql, function (err, rows, fields) {
+        res.send(rows);
+      });
+    }
     
 }
