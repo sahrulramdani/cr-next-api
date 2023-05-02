@@ -35,14 +35,15 @@ export default class Info {
   }
 
   getDetailLaporanPencapaian = (req, res) => {
-    var sql = `SELECT YEAR ( a.CRTX_DATE ) AS TAHUN, a.KDXX_MRKT, b.NAMA_LGKP, COUNT(a.KDXX_MRKT) AS PEROLEHAN FROM mrkt_daftarh a LEFT JOIN mrkt_agensih b ON a.KDXX_MRKT = b.KDXX_MRKT LEFT JOIN tb00_basx c ON b.KATX_MRKT = c.CODD_VALU AND c.CODD_FLNM = 'FEELEVEL' WHERE YEAR ( a.CRTX_DATE ) = '${req.params.tahun}' AND c.CODD_DESC = '${req.params.kode}' GROUP BY YEAR(a.CRTX_DATE ), a.KDXX_MRKT ORDER BY COUNT(a.KDXX_MRKT) DESC`;
+    var sql = `SELECT YEAR ( a.CRTX_DATE ) AS TAHUN, a.KDXX_MRKT, b.NAMA_LGKP, COUNT(a.KDXX_MRKT) AS PEROLEHAN FROM mrkt_daftarh a LEFT JOIN mrkt_agensih b ON a.KDXX_MRKT = b.KDXX_MRKT LEFT JOIN tb00_basx c ON b.FEEX_LVEL = c.CODD_VALU AND c.CODD_FLNM = 'FEELEVEL' WHERE YEAR ( a.CRTX_DATE ) = '${req.params.tahun}' AND c.CODD_DESC = '${req.params.kode}' GROUP BY YEAR(a.CRTX_DATE ), a.KDXX_MRKT ORDER BY COUNT(a.KDXX_MRKT) DESC`;
+    
     db.query(sql, function (err, rows, fields) {
       res.send(rows);
     })
   }
 
   getDetailLaporanTahunan = (req, res) => {
-    var sql = `SELECT a.TAHUN, SUM(CASE a.KATEGORI WHEN 'Agen' THEN 1 END) AS AGEN, SUM(CASE a.KATEGORI WHEN 'Cabang' THEN 1 END) AS CABANG, SUM(CASE a.KATEGORI WHEN 'Tourleader' THEN 1 END) AS TOURLEAD, SUM(CASE a.KATEGORI WHEN 'Pusat' THEN 1 END) AS PUSAT, COUNT(a.TAHUN) AS TOTAL FROM (SELECT YEAR ( a.CRTX_DATE ) AS TAHUN, CASE b.KATX_MRKT WHEN '4951' THEN 'Agen' WHEN '4953' THEN 'Cabang' WHEN '4954' THEN 'Tourleader' ELSE 'Pusat' END AS KATEGORI FROM mrkt_daftarh a LEFT JOIN mrkt_agensih b ON a.KDXX_MRKT = b.KDXX_MRKT LEFT JOIN tb00_basx c ON b.KATX_MRKT = c.CODD_VALU AND c.CODD_FLNM = 'FEELEVEL' WHERE YEAR ( a.CRTX_DATE ) BETWEEN CAST( YEAR ( NOW()) AS INT ) - 9 AND YEAR (NOW())) a GROUP BY a.TAHUN DESC`;
+    var sql = `SELECT a.TAHUN, SUM(CASE a.KATEGORI WHEN 'Agen' THEN 1 END) AS AGEN, SUM(CASE a.KATEGORI WHEN 'Cabang' THEN 1 END) AS CABANG, SUM(CASE a.KATEGORI WHEN 'Tourleader' THEN 1 END) AS TOURLEAD, SUM(CASE a.KATEGORI WHEN 'Pusat' THEN 1 END) AS PUSAT, COUNT(a.TAHUN) AS TOTAL FROM (SELECT YEAR ( a.CRTX_DATE ) AS TAHUN, CASE b.FEEX_LVEL WHEN '4951' THEN 'Agen' WHEN '4953' THEN 'Cabang' WHEN '4954' THEN 'Tourleader' ELSE 'Pusat' END AS KATEGORI FROM mrkt_daftarh a LEFT JOIN mrkt_agensih b ON a.KDXX_MRKT = b.KDXX_MRKT LEFT JOIN tb00_basx c ON b.FEEX_LVEL = c.CODD_VALU AND c.CODD_FLNM = 'FEELEVEL' WHERE YEAR ( a.CRTX_DATE ) BETWEEN CAST( YEAR ( NOW()) AS INT ) - 9 AND YEAR (NOW())) a GROUP BY a.TAHUN DESC`;
     db.query(sql, function (err, rows, fields) {
       res.send(rows);
     })
@@ -132,6 +133,29 @@ export default class Info {
     db.query(sql, function (err, rows, fields) {
       res.send(rows);
     });
+  }
 
+  getInfoFinance = (req, res) => {
+    var sql = `SELECT COUNT( a.IDXX_JDWL ) AS TTL_BRGKT, ( SELECT SUM( b.TOTL_TGIH ) FROM mrkt_tagihanh b WHERE YEAR ( b.CRTX_DATE ) = YEAR ( NOW())) AS TGIH_THUN, ( SELECT SUM( c.JMLH_BYAR ) FROM finc_bayarjamahh c WHERE YEAR ( c.TGLX_BYAR ) = YEAR ( NOW())) AS BAYAR_THUN, ( SELECT SUM( b.SISA_TGIH ) FROM mrkt_tagihanh b WHERE YEAR ( b.CRTX_DATE ) = YEAR ( NOW())) AS SISA_TGIH FROM mrkt_jadwalh a WHERE DATE_FORMAT( a.TGLX_BGKT, "%Y-%m" ) = DATE_FORMAT( NOW(), "%Y-%m")`;
+
+    db.query(sql, function (err, rows, fields) {
+      res.send(rows);
+    });
+  }
+
+  getChartFinance = (req, res) => {
+    var sql = `SELECT SUM( a.JMLH_BYAR ) AS TOTAL_ALL, IFNULL((SELECT SUM(b.JMLH_BYAR) FROM finc_bayarjamahh b WHERE MONTH(b.TGLX_BYAR) = '01' AND YEAR(b.TGLX_BYAR) = YEAR(NOW())), 0) AS BULAN_JAN, IFNULL((SELECT SUM(b.JMLH_BYAR) FROM finc_bayarjamahh b WHERE MONTH(b.TGLX_BYAR) = '02' AND YEAR(b.TGLX_BYAR) = YEAR(NOW())), 0) AS BULAN_FEB, IFNULL((SELECT SUM(b.JMLH_BYAR) FROM finc_bayarjamahh b WHERE MONTH(b.TGLX_BYAR) = '03' AND YEAR(b.TGLX_BYAR) = YEAR(NOW())), 0) AS BULAN_MAR, IFNULL((SELECT SUM(b.JMLH_BYAR) FROM finc_bayarjamahh b WHERE MONTH(b.TGLX_BYAR) = '04' AND YEAR(b.TGLX_BYAR) = YEAR(NOW())), 0) AS BULAN_APR, IFNULL((SELECT SUM(b.JMLH_BYAR) FROM finc_bayarjamahh b WHERE MONTH(b.TGLX_BYAR) = '05' AND YEAR(b.TGLX_BYAR) = YEAR(NOW())), 0) AS BULAN_MEI, IFNULL((SELECT SUM(b.JMLH_BYAR) FROM finc_bayarjamahh b WHERE MONTH(b.TGLX_BYAR) = '06' AND YEAR(b.TGLX_BYAR) = YEAR(NOW())), 0) AS BULAN_JUNI, IFNULL((SELECT SUM(b.JMLH_BYAR) FROM finc_bayarjamahh b WHERE MONTH(b.TGLX_BYAR) = '07' AND YEAR(b.TGLX_BYAR) = YEAR(NOW())), 0) AS BULAN_JULI, IFNULL((SELECT SUM(b.JMLH_BYAR) FROM finc_bayarjamahh b WHERE MONTH(b.TGLX_BYAR) = '08' AND YEAR(b.TGLX_BYAR) = YEAR(NOW())), 0) AS BULAN_AGUS, IFNULL((SELECT SUM(b.JMLH_BYAR) FROM finc_bayarjamahh b WHERE MONTH(b.TGLX_BYAR) = '09' AND YEAR(b.TGLX_BYAR) = YEAR(NOW())), 0) AS BULAN_SEP, IFNULL((SELECT SUM(b.JMLH_BYAR) FROM finc_bayarjamahh b WHERE MONTH(b.TGLX_BYAR) = '10' AND YEAR(b.TGLX_BYAR) = YEAR(NOW())), 0) AS BULAN_OKT, IFNULL((SELECT SUM(b.JMLH_BYAR) FROM finc_bayarjamahh b WHERE MONTH(b.TGLX_BYAR) = '11' AND YEAR(b.TGLX_BYAR) = YEAR(NOW())), 0) AS BULAN_NOV, IFNULL((SELECT SUM(b.JMLH_BYAR) FROM finc_bayarjamahh b WHERE MONTH(b.TGLX_BYAR) = '12' AND YEAR(b.TGLX_BYAR) = YEAR(NOW())), 0) AS BULAN_DES FROM finc_bayarjamahh a WHERE YEAR ( a.TGLX_BYAR ) = YEAR (NOW())`;
+
+    db.query(sql, function (err, rows, fields) {
+      res.send(rows);
+    });
+  }
+
+  getDataFinance = (req, res) => {
+    var sql = `SELECT SUM(a.JMLH_BYAR) AS TOTAL_BAYAR, IFNULL((SELECT SUM( b.JMLH_BYAR ) FROM finc_bayarjamahh b WHERE YEAR ( b.TGLX_BYAR ) = YEAR ( NOW()) AND DATE_FORMAT( b.TGLX_BYAR, '%m' ) = DATE_FORMAT( NOW(), '%m' )),0) AS BULAN_INI, IFNULL((SELECT SUM( b.JMLH_BYAR ) FROM finc_bayarjamahh b WHERE YEAR ( b.TGLX_BYAR ) = YEAR ( NOW()) AND CAST( DATE_FORMAT( b.TGLX_BYAR, '%m' ) AS INT ) = CAST( DATE_FORMAT( NOW(), '%m' ) AS INT ) - 1),0) AS BULAN_LALU, IFNULL(( SELECT SUM( b.JMLH_BYAR ) FROM finc_bayarjamahh b WHERE CAST( YEAR ( b.TGLX_BYAR ) AS INT ) = CAST( YEAR ( NOW()) AS INT ) - 1 ),0) AS TAHUN_LALU FROM finc_bayarjamahh a WHERE YEAR (a.TGLX_BYAR ) = YEAR (NOW())`;
+
+    db.query(sql, function (err, rows, fields) {
+      res.send(rows);
+    });
   }
 }

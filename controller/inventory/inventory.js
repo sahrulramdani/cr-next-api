@@ -252,6 +252,30 @@ export default class Inventory {
       });
     }
 
+    // getNumberKode = (req, res) => {
+    //   const now = new Date();
+    //   const tgl = date.format(now,"YYYY-MM-DD");
+    //   const tahun = date.format(now,"YYYY");
+    //   const tglReplace = tgl.replace(/-/g,"").toString();
+
+    //   var array = [];
+
+    //   for (let i = 1; i < 543; i++) {
+    //     var idTagih = 'T' + '20230419' + i.toString().padStart(3,"0");;
+
+    //     var data = {
+    //       NOXX_TGIH : idTagih,
+    //     };      
+        
+    //     array.push(data);
+    //   }
+
+    //   res.send({
+    //     status: true,
+    //     idBarang : array,
+    //   });
+    // }
+
     getDetailBarang = (req,res) => {
       var id = req.params.id;
       var sql = `SELECT a.*, b.NAMA_STAN FROM invt_barang a LEFT JOIN invt_satuan b ON a.JENS_STUA = b.IDXX_STAN WHERE KDXX_BRGX = '${id}'`;

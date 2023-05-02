@@ -14,9 +14,7 @@ import date from 'date-and-time';
 export default class Marketing {
 
   getAllAgency = (req, res) => {
-    // var sql = "SELECT a.* , IF( a.STAS_AGEN = '1', 'Aktif', 'Tidak Aktif' ) AS STATUS_AGEN, b.CODD_DESC AS FEE, c.CODD_DESC AS FIRST_LVL, d.NAMA_KNTR FROM mrkt_agensih a LEFT JOIN tb00_basx b ON a.FEEX_LVEL = b.CODD_VALU LEFT JOIN tb00_basx c ON a.FIRST_LVEL = c.CODD_VALU LEFT JOIN hrsc_mkantorh d ON a.KDXX_KNTR = d.KDXX_KNTR ORDER BY CRTX_DATE DESC";
-
-    var sql = "SELECT a.* , IF( a.STAS_AGEN = '1', 'Aktif', 'Tidak Aktif' ) AS STATUS_AGEN,IFNULL(b.CODD_DESC, '-') AS FEE, IFNULL((SELECT e.CODD_DESC FROM tb00_basx e WHERE e.CODD_VALU = a.FEEX_LVEL AND e.CODD_FLNM = 'FEELEVEL'),'-') AS FIRST_LVL, d.NAMA_KNTR FROM mrkt_agensih a LEFT JOIN tb00_basx b ON a.FEEX_LVEL = b.CODD_VALU  LEFT JOIN hrsc_mkantorh d ON a.KDXX_KNTR = d.KDXX_KNTR ORDER BY CRTX_DATE DESC";
+    var sql = "SELECT a.*, IF ( a.STAS_AGEN = '1', 'Aktif', 'Tidak Aktif' ) AS STATUS_AGEN, IFNULL( b.CODD_DESC, '-' ) AS FEE, IFNULL(( SELECT e.CODD_DESC FROM tb00_basx e WHERE e.CODD_VALU = a.FEEX_LVEL AND e.CODD_FLNM = 'FEELEVEL' ), '-' ) AS FIRST_LVL, d.NAMA_KNTR FROM mrkt_agensih a LEFT JOIN tb00_basx b ON a.FEEX_LVEL = b.CODD_VALU AND b.CODD_FLNM = 'FEELEVEL' LEFT JOIN hrsc_mkantorh d ON a.KDXX_KNTR = d.KDXX_KNTR ORDER BY CRTX_DATE DESC";
 
     db.query(sql, function (err, rows, fields) {
       res.send(rows);
@@ -24,7 +22,7 @@ export default class Marketing {
   };
 
   getCalonAgency = (req, res) => {
-    var sql = "SELECT a.*, b.CODD_DESC AS MENIKAH, c.CODD_DESC AS PENDIDIKAN, d.CODD_DESC AS PEKERJAAN, e.NOXX_PSPR, e.NAMA_PSPR, e.KLUR_DIXX, e.TGLX_KLUR, e.TGLX_EXPX, IFNULL(f.KDXX_MRKT,'BUKAN') AS CEK FROM jmah_jamaahh a LEFT JOIN tb00_basx b ON a.JENS_MNKH = b.CODD_VALU LEFT JOIN tb00_basx c ON a.JENS_PEND = c.CODD_VALU LEFT JOIN tb00_basx d ON a.JENS_PKRJ = d.CODD_VALU LEFT JOIN jmah_jamaahp e ON a.NOXX_IDNT = e.NOXX_IDNT LEFT JOIN mrkt_agensih f ON a.NOXX_IDNT = f.NOXX_IDNT HAVING CEK = 'BUKAN'"
+    var sql = "SELECT a.*, b.CODD_DESC AS MENIKAH, c.CODD_DESC AS PENDIDIKAN, d.CODD_DESC AS PEKERJAAN, e.NOXX_PSPR, e.NAMA_PSPR, e.KLUR_DIXX, e.TGLX_KLUR, e.TGLX_EXPX, IFNULL( f.KDXX_MRKT, 'BUKAN' ) AS CEK FROM jmah_jamaahh a LEFT JOIN tb00_basx b ON a.JENS_MNKH = b.CODD_VALU AND b.CODD_FLNM = 'MARRYXX' LEFT JOIN tb00_basx c ON a.JENS_PEND = c.CODD_VALU AND c.CODD_FLNM = 'PENDXX' LEFT JOIN tb00_basx d ON a.JENS_PKRJ = d.CODD_VALU AND d.CODD_FLNM = 'PEKERJAAN' LEFT JOIN jmah_jamaahp e ON a.NOXX_IDNT = e.NOXX_IDNT LEFT JOIN mrkt_agensih f ON a.NOXX_IDNT = f.NOXX_IDNT HAVING CEK = 'BUKAN'"
 
     db.query(sql, function (err, rows, fields) {
       res.send(rows);
@@ -549,7 +547,7 @@ export default class Marketing {
 
         var sqlInsert = "INSERT INTO mrkt_jadwalh SET ?";
         var data = {
-          KDXX_JDWL: req.body.KDXX_JDWL,
+          KDXX_JDWL: id,
           IDXX_JDWL: id,
           NAMA_PKET: req.body.NAMA_PKET,
           JENS_PKET: req.body.JENS_PKET,
@@ -575,6 +573,7 @@ export default class Marketing {
           STAS_AKTF: '1',
           STAS_BGKT: '0',
           KETERANGAN: req.body.KETERANGAN,
+          KETX_RUTE: req.body.KETX_RUTE,
           CRTX_DATE: new Date(),
           CRTX_BYXX: "alfi",
         }
@@ -624,6 +623,7 @@ export default class Marketing {
       JMLX_SEAT: req.body.JMLX_SEAT,
       MATA_UANG: req.body.MATA_UANG,
       KETERANGAN: req.body.KETERANGAN,
+      KETX_RUTE: req.body.KETX_RUTE,
       UPDT_DATE: new Date(),
       UPDT_BYXX: "alfi",
     };
@@ -692,57 +692,57 @@ export default class Marketing {
   }
 
   getTransit = (req, res) => {
-    var sql = "SELECT IDXX_RTS, NAMA_NEGR FROM m_rutetransit order by CRTX_DATE DESC";
+    var sql = "SELECT IDXX_RTRS, NAMA_NEGR FROM m_rutetransit order by CRTX_DATE DESC";
     db.query(sql, function (err, rows, fields) {
       res.send(rows);
     })
   }
 
   getMaskapai = (req, res) => {
-    var sql = "SELECT IDXX_PSWT, NAMA_PSWT FROM m_pesawat order by CRTX_DATE DESC";
+    var sql = "SELECT IDXX_PSWT, KODE_PSWT, NAMA_PSWT FROM m_pesawat order by CRTX_DATE DESC";
     db.query(sql, function (err, rows, fields) {
       res.send(rows);
     })
   }
 
   getHotel = (req, res) => {
-    var sql = "SELECT a.IDXX_HTLX, a.NAMA_HTLX, a.BINTG_HTLX,a.KTGR_HTLX,c.CODD_DESC AS namaKota,b.CODD_DESC FROM m_hotel a INNER JOIN tb00_basx b ON a.BINTG_HTLX = b.CODD_VALU INNER JOIN tb00_basx c ON a.KTGR_HTLX = c.CODD_VALU WHERE b.CODD_FLNM = 'BINTG_HTLX' AND c.CODD_FLNM = 'KOTA_XXX' ORDER BY a.CRTX_DATE DESC";
+    var sql = "SELECT a.IDXX_HTLX, a.NAMA_HTLX, a.BINTG_HTLX,a.KTGR_HTLX, a.LOKX_HTLX, a.ALMT_HTLX,c.CODD_DESC AS NAMA_KTGR,b.CODD_DESC FROM m_hotel a INNER JOIN tb00_basx b ON a.BINTG_HTLX = b.CODD_VALU INNER JOIN tb00_basx c ON a.KTGR_HTLX = c.CODD_VALU WHERE b.CODD_FLNM = 'BINTG_HTLX' AND c.CODD_FLNM = 'KOTA_XXX' ORDER BY a.CRTX_DATE DESC";
     db.query(sql, function (err, rows, fields) {
       res.send(rows);
     })
   }
 
 
-  getHotelMekkah = (req, res) => {
-    var sql = "SELECT a.IDXX_HTLX, a.NAMA_HTLX, a.BINTG_HTLX,b.CODD_DESC,c.CODD_DESC as KOTA FROM m_hotel a INNER JOIN tb00_basx b ON a.BINTG_HTLX = b.CODD_VALU INNER JOIN tb00_basx c ON a.KTGR_HTLX = c.CODD_VALU WHERE b.CODD_FLNM = 'BINTG_HTLX' AND c.CODD_FLNM = 'KOTA_XXX' AND a.KTGR_HTLX = '01' ORDER BY a.BINTG_HTLX DESC";
-    db.query(sql, function (err, rows, fields) {
-      res.send(rows);
-    })
-  }
-  getHotelMadinah = (req, res) => {
-    var sql = "SELECT a.IDXX_HTLX, a.NAMA_HTLX, a.BINTG_HTLX,b.CODD_DESC,c.CODD_DESC as KOTA FROM m_hotel a INNER JOIN tb00_basx b ON a.BINTG_HTLX = b.CODD_VALU INNER JOIN tb00_basx c ON a.KTGR_HTLX = c.CODD_VALU WHERE b.CODD_FLNM = 'BINTG_HTLX' AND c.CODD_FLNM = 'KOTA_XXX' AND a.KTGR_HTLX = '02' ORDER BY a.BINTG_HTLX DESC";
-    db.query(sql, function (err, rows, fields) {
-      res.send(rows);
-    })
-  }
+  // getHotelMekkah = (req, res) => {
+  //   var sql = "SELECT a.IDXX_HTLX, a.NAMA_HTLX, a.BINTG_HTLX,b.CODD_DESC,c.CODD_DESC as KOTA FROM m_hotel a INNER JOIN tb00_basx b ON a.BINTG_HTLX = b.CODD_VALU INNER JOIN tb00_basx c ON a.KTGR_HTLX = c.CODD_VALU WHERE b.CODD_FLNM = 'BINTG_HTLX' AND c.CODD_FLNM = 'KOTA_XXX' AND a.KTGR_HTLX = '01' ORDER BY a.BINTG_HTLX DESC";
+  //   db.query(sql, function (err, rows, fields) {
+  //     res.send(rows);
+  //   })
+  // }
+  // getHotelMadinah = (req, res) => {
+  //   var sql = "SELECT a.IDXX_HTLX, a.NAMA_HTLX, a.BINTG_HTLX,b.CODD_DESC,c.CODD_DESC as KOTA FROM m_hotel a INNER JOIN tb00_basx b ON a.BINTG_HTLX = b.CODD_VALU INNER JOIN tb00_basx c ON a.KTGR_HTLX = c.CODD_VALU WHERE b.CODD_FLNM = 'BINTG_HTLX' AND c.CODD_FLNM = 'KOTA_XXX' AND a.KTGR_HTLX = '02' ORDER BY a.BINTG_HTLX DESC";
+  //   db.query(sql, function (err, rows, fields) {
+  //     res.send(rows);
+  //   })
+  // }
 
-  getHotelPlus = (req, res) => {
-    var sql = "SELECT a.IDXX_HTLX, a.NAMA_HTLX, a.BINTG_HTLX,b.CODD_DESC,c.CODD_DESC as KOTA FROM m_hotel a INNER JOIN tb00_basx b ON a.BINTG_HTLX = b.CODD_VALU INNER JOIN tb00_basx c ON a.KTGR_HTLX = c.CODD_VALU WHERE b.CODD_FLNM = 'BINTG_HTLX' AND c.CODD_FLNM = 'KOTA_XXX' AND a.KTGR_HTLX = '03' ORDER BY a.BINTG_HTLX DESC";
-    db.query(sql, function (err, rows, fields) {
-      res.send(rows);
-    })
-  }
+  // getHotelPlus = (req, res) => {
+  //   var sql = "SELECT a.IDXX_HTLX, a.NAMA_HTLX, a.BINTG_HTLX,b.CODD_DESC,c.CODD_DESC as KOTA FROM m_hotel a INNER JOIN tb00_basx b ON a.BINTG_HTLX = b.CODD_VALU INNER JOIN tb00_basx c ON a.KTGR_HTLX = c.CODD_VALU WHERE b.CODD_FLNM = 'BINTG_HTLX' AND c.CODD_FLNM = 'KOTA_XXX' AND a.KTGR_HTLX = '03' ORDER BY a.BINTG_HTLX DESC";
+  //   db.query(sql, function (err, rows, fields) {
+  //     res.send(rows);
+  //   })
+  // }
 
-  getHotelTransit = (req, res) => {
-    var sql = "SELECT a.IDXX_HTLX, a.NAMA_HTLX, a.BINTG_HTLX,b.CODD_DESC,c.CODD_DESC as KOTA FROM m_hotel a INNER JOIN tb00_basx b ON a.BINTG_HTLX = b.CODD_VALU INNER JOIN tb00_basx c ON a.KTGR_HTLX = c.CODD_VALU WHERE b.CODD_FLNM = 'BINTG_HTLX' AND c.CODD_FLNM = 'KOTA_XXX' AND a.KTGR_HTLX = '04' ORDER BY a.BINTG_HTLX DESC";
-    db.query(sql, function (err, rows, fields) {
-      res.send(rows);
-    })
-  }
+  // getHotelTransit = (req, res) => {
+  //   var sql = "SELECT a.IDXX_HTLX, a.NAMA_HTLX, a.BINTG_HTLX,b.CODD_DESC,c.CODD_DESC as KOTA FROM m_hotel a INNER JOIN tb00_basx b ON a.BINTG_HTLX = b.CODD_VALU INNER JOIN tb00_basx c ON a.KTGR_HTLX = c.CODD_VALU WHERE b.CODD_FLNM = 'BINTG_HTLX' AND c.CODD_FLNM = 'KOTA_XXX' AND a.KTGR_HTLX = '04' ORDER BY a.BINTG_HTLX DESC";
+  //   db.query(sql, function (err, rows, fields) {
+  //     res.send(rows);
+  //   })
+  // }
 
   getAllJadwal = (req, res) => {
     // DATE_FORMAT(a.TGL_PRMN, "%Y-%m-%d") AS TGL_TRAN
-    var sql = `SELECT a.IDXX_JDWL,a.TJAN_PKET, a.PSWT_BGKT, a.PSWT_PLNG,(SELECT b.NAMA_PSWT FROM m_pesawat b WHERE b.IDXX_PSWT = a.PSWT_BGKT) AS NAME_PESWT_BGKT,(SELECT b.NAMA_PSWT FROM m_pesawat b WHERE b.IDXX_PSWT = a.PSWT_PLNG) AS NAME_PESWT_PLNG, a.RUTE_AWAL_BRKT,a.RUTE_TRNS_BRKT,a.RUTE_AKHR_BRKT,a.JMLX_SEAT,( SELECT b.CODD_DESC FROM tb00_basx b WHERE b.CODD_VALU = a.NAMA_PKET AND b.CODD_FLNM = "PAKET_XXXX" ) AS namaPaket,( SELECT b.CODD_DESC FROM tb00_basx b WHERE b.CODD_VALU = a.JENS_PKET AND b.CODD_FLNM = "JNS_PAKET" ) AS jenisPaket,DATE_FORMAT( a.TGLX_BGKT, "%d-%m-%Y" ) AS TGLX_BGKT,DATE_FORMAT( a.TGLX_PLNG, "%d-%m-%Y" ) AS TGLX_PLNG,a.JMLX_HARI,a.TARIF_PKET,a.MATA_UANG,a.KETERANGAN,IF( a.TGLX_BGKT <= DATE_FORMAT(NOW(), "%Y-%m-%d" ) ,1,0) AS status, ((a.JMLX_SEAT) - (IFNULL((SELECT COUNT(c.KDXX_DFTR) FROM mrkt_daftarh c WHERE c.KDXX_PKET = a.IDXX_JDWL),0))) AS SISA FROM mrkt_jadwalh a WHERE a.STAS_AKTF = '1' ORDER BY a.TGLX_BGKT DESC`;
+    var sql = `SELECT a.IDXX_JDWL, a.TJAN_PKET, a.PSWT_BGKT, a.PSWT_PLNG, a.KETX_RUTE,( SELECT b.NAMA_PSWT FROM m_pesawat b WHERE b.IDXX_PSWT = a.PSWT_BGKT ) AS NAME_PESWT_BGKT,( SELECT b.NAMA_PSWT FROM m_pesawat b WHERE b.IDXX_PSWT = a.PSWT_PLNG ) AS NAME_PESWT_PLNG, a.RUTE_AWAL_BRKT, a.RUTE_TRNS_BRKT, a.RUTE_AKHR_BRKT, a.JMLX_SEAT,( SELECT b.CODD_DESC FROM tb00_basx b WHERE b.CODD_VALU = a.NAMA_PKET AND b.CODD_FLNM = "PAKET_XXXX" ) AS namaPaket,( SELECT b.CODD_DESC FROM tb00_basx b WHERE b.CODD_VALU = a.JENS_PKET AND b.CODD_FLNM = "JNS_PAKET" ) AS jenisPaket, DATE_FORMAT( a.TGLX_BGKT, "%d-%m-%Y" ) AS TGLX_BGKT, DATE_FORMAT( a.TGLX_PLNG, "%d-%m-%Y" ) AS TGLX_PLNG, a.JMLX_HARI, a.TARIF_PKET, a.MATA_UANG, a.KETERANGAN, IF ( a.TGLX_BGKT <= DATE_FORMAT( NOW(), "%Y-%m-%d" ), 1, 0 ) AS STATUS, (( a.JMLX_SEAT ) - ( IFNULL(( SELECT COUNT( c.KDXX_DFTR ) FROM mrkt_daftarh c WHERE c.KDXX_PKET = a.IDXX_JDWL ), 0 ))) AS SISA FROM mrkt_jadwalh a WHERE a.STAS_AKTF = '1' ORDER BY a.TGLX_BGKT DESC`;
 
     db.query(sql, function (err, rows, fields) {
       res.send(rows);
@@ -750,7 +750,7 @@ export default class Marketing {
   }
 
   getAllJadwalDash = (req, res) => {
-    var sql = `SELECT a.IDXX_JDWL,a.TJAN_PKET, a.PSWT_BGKT, a.KETX_RUTE, a.KETX_HTLX, a.PSWT_PLNG,(SELECT b.NAMA_PSWT FROM m_pesawat b WHERE b.IDXX_PSWT = a.PSWT_BGKT) AS NAME_PESWT_BGKT,(SELECT b.NAMA_PSWT FROM m_pesawat b WHERE b.IDXX_PSWT = a.PSWT_PLNG) AS NAME_PESWT_PLNG, a.RUTE_AWAL_BRKT,a.RUTE_TRNS_BRKT,a.RUTE_AKHR_BRKT,a.RUTE_AWAL_PLNG,a.JMLX_SEAT,( SELECT b.CODD_DESC FROM tb00_basx b WHERE b.CODD_VALU = a.NAMA_PKET AND b.CODD_FLNM = "PAKET_XXXX" ) AS namaPaket,( SELECT b.CODD_DESC FROM tb00_basx b WHERE b.CODD_VALU = a.JENS_PKET AND b.CODD_FLNM = "JNS_PAKET" ) AS jenisPaket,DATE_FORMAT( a.TGLX_BGKT, "%d-%m-%Y" ) AS TGLX_BGKT,DATE_FORMAT( a.TGLX_PLNG, "%d-%m-%Y" ) AS TGLX_PLNG,a.JMLX_HARI,a.TARIF_PKET,a.MATA_UANG,a.KETERANGAN,IF( a.TGLX_BGKT <= DATE_FORMAT(NOW(), "%Y-%m-%d" ) ,1,0) AS status, ((a.JMLX_SEAT) - (IFNULL((SELECT COUNT(c.KDXX_DFTR) FROM mrkt_daftarh c WHERE c.KDXX_PKET = a.IDXX_JDWL),0))) AS SISA,e.CODD_DESC,(SELECT COUNT(b.KDXX_PKET) FROM mrkt_daftarh b WHERE b.KDXX_PKET = a.IDXX_JDWL) AS TERISI FROM mrkt_jadwalh a LEFT JOIN m_hotel d ON d.IDXX_HTLX = a.HOTL_MEKX LEFT JOIN tb00_basx e ON e.CODD_VALU = d.BINTG_HTLX AND e.CODD_FLNM = 'BINTG_HTLX' WHERE a.STAS_AKTF = '1' ORDER BY a.TGLX_BGKT ASC`;
+    var sql = `SELECT a.IDXX_JDWL, a.TJAN_PKET, a.PSWT_BGKT, a.KETX_RUTE, a.FOTO_PKET, a.PSWT_PLNG,( SELECT b.NAMA_PSWT FROM m_pesawat b WHERE b.IDXX_PSWT = a.PSWT_BGKT ) AS NAME_PESWT_BGKT,( SELECT b.NAMA_PSWT FROM m_pesawat b WHERE b.IDXX_PSWT = a.PSWT_PLNG ) AS NAME_PESWT_PLNG, a.RUTE_AWAL_BRKT, a.RUTE_TRNS_BRKT, a.RUTE_AKHR_BRKT, a.RUTE_AWAL_PLNG, a.JMLX_SEAT,( SELECT b.CODD_DESC FROM tb00_basx b WHERE b.CODD_VALU = a.NAMA_PKET AND b.CODD_FLNM = "PAKET_XXXX" ) AS namaPaket,( SELECT b.CODD_DESC FROM tb00_basx b WHERE b.CODD_VALU = a.JENS_PKET AND b.CODD_FLNM = "JNS_PAKET" ) AS jenisPaket, DATE_FORMAT( a.TGLX_BGKT, "%d-%m-%Y" ) AS TGLX_BGKT, DATE_FORMAT( a.TGLX_PLNG, "%d-%m-%Y" ) AS TGLX_PLNG, a.JMLX_HARI, a.TARIF_PKET, a.MATA_UANG, a.KETERANGAN, IF ( a.TGLX_BGKT < DATE_FORMAT( NOW(), "%Y-%m-%d" ), 1, 0 ) AS STATUS, (( a.JMLX_SEAT ) - ( IFNULL(( SELECT COUNT( c.KDXX_DFTR ) FROM mrkt_daftarh c WHERE c.KDXX_PKET = a.IDXX_JDWL ), 0 ))) AS SISA, e.CODD_DESC,( SELECT COUNT( b.KDXX_PKET ) FROM mrkt_daftarh b WHERE b.KDXX_PKET = a.IDXX_JDWL ) AS TERISI FROM mrkt_jadwalh a LEFT JOIN m_hotel d ON d.IDXX_HTLX = a.HOTL_MEKX LEFT JOIN tb00_basx e ON e.CODD_VALU = d.BINTG_HTLX AND e.CODD_FLNM = 'BINTG_HTLX' HAVING STATUS = '0' ORDER BY a.TGLX_BGKT ASC`;
     db.query(sql, function (err, rows, fields) {
       res.send(rows);
     })
@@ -768,7 +768,7 @@ export default class Marketing {
   getDetailJadwal = (req, res) => {
     var id = req.params.id;
 
-    var sql = `SELECT a.IDXX_JDWL,a.TJAN_PKET,a.PSWT_BGKT,a.PSWT_PLNG,a.RUTE_AWAL_BRKT,a.RUTE_TRNS_BRKT,b.NAMA_NEGR,a.RUTE_AKHR_BRKT,a.RUTE_AWAL_PLNG,a.RUTE_TRNS_PLNG,(SELECT e.NAMA_NEGR FROM m_rutetransit e WHERE e.IDXX_RTS = a.RUTE_TRNS_PLNG ) AS NAMA_NEGRATRPLNG,a.RUTE_AKHR_PLNG,a.JMLX_SEAT,a.HOTL_MEKX,a.HOTL_MADX,a.HOTL_JEDX,a.HOTL_TRAX,c.NAMA_PSWT AS PESAWAT_BERANGKAT,d.NAMA_HTLX AS HOTEL_MEKKAH,(SELECT b.CODD_DESC FROM tb00_basx b WHERE b.CODD_VALU = a.NAMA_PKET AND b.CODD_FLNM = "PAKET_XXXX" ) AS namaPaket,a.NAMA_PKET,(SELECT b.CODD_DESC FROM tb00_basx b WHERE b.CODD_VALU = a.JENS_PKET AND b.CODD_FLNM = "JNS_PAKET" ) AS jenisPaket,a.JENS_PKET,DATE_FORMAT( a.TGLX_BGKT, "%d-%m-%Y" )AS TGLX_BGKT,DATE_FORMAT( a.TGLX_PLNG, "%d-%m-%Y" ) AS TGLX_PLNG,a.JMLX_HARI,a.TARIF_PKET,a.MATA_UANG,(SELECT b.CODD_DESC FROM tb00_basx b WHERE b.CODD_VALU = a.MATA_UANG AND b.CODD_FLNM = "CURR_MNYX" ) AS MataUang,a.KETERANGAN,IF( a.TGLX_BGKT <= DATE_FORMAT( NOW(), "%Y-%m-%d" ), 1, 0 ) AS STATUS,f.NAMA_PSWT AS PESAWAT_PULANG,g.NAMA_HTLX AS HOTEL_MADINAH,h.NAMA_HTLX AS HOTEL_JEDDAH,i.NAMA_HTLX AS HOTEL_TRANSIT,j.KDXX_DESC AS NAMA_TUJUAN FROM mrkt_jadwalh a LEFT JOIN m_rutetransit b ON a.RUTE_TRNS_BRKT = b.IDXX_RTS LEFT JOIN m_pesawat c ON a.PSWT_BGKT = c.IDXX_PSWT LEFT JOIN m_hotel d ON a.HOTL_MEKX = d.IDXX_HTLX LEFT JOIN m_pesawat f ON a.PSWT_PLNG = f.IDXX_PSWT LEFT JOIN m_hotel g ON a.HOTL_MADX = g.IDXX_HTLX LEFT JOIN m_hotel h ON a.HOTL_JEDX = h.IDXX_HTLX LEFT JOIN m_hotel i ON a.HOTL_TRAX = i.IDXX_HTLX LEFT JOIN xxxx_masterdata j ON a.TJAN_PKET = j.KDXX_VALU WHERE a.IDXX_JDWL = "${id}"`;
+    var sql = `SELECT a.IDXX_JDWL, a.TJAN_PKET, a.PSWT_BGKT, a.PSWT_PLNG, a.RUTE_AWAL_BRKT, a.RUTE_TRNS_BRKT, b.NAMA_NEGR, a.RUTE_AKHR_BRKT, a.RUTE_AWAL_PLNG, a.RUTE_TRNS_PLNG,( SELECT e.NAMA_NEGR FROM m_rutetransit e WHERE e.IDXX_RTRS = a.RUTE_TRNS_PLNG ) AS NAMA_NEGRATRPLNG, a.RUTE_AKHR_PLNG, a.JMLX_SEAT, a.HOTL_MEKX, a.HOTL_MADX, a.HOTL_JEDX, a.HOTL_TRAX, c.NAMA_PSWT AS PESAWAT_BERANGKAT, d.NAMA_HTLX AS HOTEL_MEKKAH,( SELECT b.CODD_DESC FROM tb00_basx b WHERE b.CODD_VALU = a.NAMA_PKET AND b.CODD_FLNM = "PAKET_XXXX" ) AS namaPaket, a.NAMA_PKET,( SELECT b.CODD_DESC FROM tb00_basx b WHERE b.CODD_VALU = a.JENS_PKET AND b.CODD_FLNM = "JNS_PAKET" ) AS jenisPaket, a.JENS_PKET, DATE_FORMAT( a.TGLX_BGKT, "%d-%m-%Y" ) AS TGLX_BGKT, DATE_FORMAT( a.TGLX_PLNG, "%d-%m-%Y" ) AS TGLX_PLNG, a.JMLX_HARI, a.TARIF_PKET, a.MATA_UANG,( SELECT b.CODD_DESC FROM tb00_basx b WHERE b.CODD_VALU = a.MATA_UANG AND b.CODD_FLNM = "CURR_MNYX" ) AS MataUang, a.KETERANGAN, IF ( a.TGLX_BGKT <= DATE_FORMAT( NOW(), "%Y-%m-%d" ), 1, 0 ) AS STATUS, f.NAMA_PSWT AS PESAWAT_PULANG, g.NAMA_HTLX AS HOTEL_MADINAH, h.NAMA_HTLX AS HOTEL_PLUS, i.NAMA_HTLX AS HOTEL_TAMBAH, j.NAMA_NEGR AS NAMA_TUJUAN FROM mrkt_jadwalh a LEFT JOIN m_rutetransit b ON a.RUTE_TRNS_BRKT = b.IDXX_RTRS LEFT JOIN m_pesawat c ON a.PSWT_BGKT = c.IDXX_PSWT LEFT JOIN m_hotel d ON a.HOTL_MEKX = d.IDXX_HTLX LEFT JOIN m_pesawat f ON a.PSWT_PLNG = f.IDXX_PSWT LEFT JOIN m_hotel g ON a.HOTL_MADX = g.IDXX_HTLX LEFT JOIN m_hotel h ON a.HOTL_JEDX = h.IDXX_HTLX LEFT JOIN m_hotel i ON a.HOTL_TRAX = i.IDXX_HTLX LEFT JOIN m_rutetransit j ON a.TJAN_PKET = j.IDXX_RTRS WHERE a.IDXX_JDWL = "${id}"`;
 
     db.query(sql, function (err, rows, fields) {
       res.send(rows);
@@ -814,31 +814,31 @@ export default class Marketing {
 
   getDetailTransit = (req, res) => {
     var id = req.params.id;
-    var sql = `SELECT IDXX_RTS, NAMA_NEGR FROM m_rutetransit WHERE IDXX_RTS = '${id}'`;
+    var sql = `SELECT IDXX_RTRS, NAMA_NEGR FROM m_rutetransit WHERE IDXX_RTRS = '${id}'`;
     db.query(sql, function (err, rows, fields) {
       res.send(rows);
     })
   }
 
   saveRuteTransit = (req, res) => {
-    var sql = "SELECT NOXX_AKHR FROM tb00_sequence WHERE IDXX_XXXX = '5' AND DOCX_CODE = 'TRS'";
+    // var sql = "SELECT NOXX_AKHR FROM tb00_sequence WHERE IDXX_XXXX = '5' AND DOCX_CODE = 'TRS'";
 
-    db.query(sql, function (err, rows, fields) {
-      if (rows != '') {
-        var no = '';
-        rows.map((data) => {
-          no = parseInt(data.NOXX_AKHR) + 1;
-        })
-      }
+    // db.query(sql, function (err, rows, fields) {
+    //   if (rows != '') {
+    //     var no = '';
+    //     rows.map((data) => {
+    //       no = parseInt(data.NOXX_AKHR) + 1;
+    //     })
+    //   }
 
-      var sqlUpdtSequence = `UPDATE tb00_sequence SET NOXX_AKHR = '${no}' WHERE IDXX_XXXX = '5' AND DOCX_CODE = 'TRS' `;
+    //   var sqlUpdtSequence = `UPDATE tb00_sequence SET NOXX_AKHR = '${no}' WHERE IDXX_XXXX = '5' AND DOCX_CODE = 'TRS' `;
 
-      db.query(sqlUpdtSequence, function (err, rows, fields) {
-        var id = "TS" + no.toString().padStart(4, "0");
+    //   db.query(sqlUpdtSequence, function (err, rows, fields) {
+    //     var id = "TS" + no.toString().padStart(4, "0");
 
         var sqlInsert = "INSERT INTO m_rutetransit SET ?";
         var data = {
-          IDXX_RTS: id,
+          // IDXX_RTS: id,
           NAMA_NEGR: req.body.NAMA_NEGR,
           CRTX_BYXX: "alfi",
           CRTX_DATE: new Date(),
@@ -858,16 +858,16 @@ export default class Marketing {
           }
         });
 
-      })
-    });
+    //   })
+    // });
 
   }
 
   updateRuteTransit = (req, res) => {
-    var sql = `UPDATE m_rutetransit SET ? WHERE IDXX_RTS = '${req.body.IDXX_RTS}'`;
+    var sql = `UPDATE m_rutetransit SET ? WHERE IDXX_RTRS = '${req.body.IDXX_RTRS}'`;
 
     var data = {
-      IDXX_RTS: req.body.IDXX_RTS,
+      IDXX_RTRS: req.body.IDXX_RTRS,
       NAMA_NEGR: req.body.NAMA_NEGR,
       UPDT_BYXX: "alfi",
       UPDT_DATE: new Date(),
@@ -889,7 +889,9 @@ export default class Marketing {
   }
 
   deleteRuteTransit = (req, res) => {
-    var sql = `DELETE FROM m_rutetransit WHERE IDXX_RTS = '${req.body.IDXX_RTS}'`;
+    var sql = `DELETE FROM m_rutetransit WHERE IDXX_RTRS = '${req.body.IDXX_RTRS}'`;
+
+    console.log(sql);
 
     db.query(sql, (err, result) => {
       if (err) {
@@ -910,24 +912,25 @@ export default class Marketing {
   
   // Maskapai
   saveMaskapai = (req, res) => {
-    var sql = "SELECT NOXX_AKHR FROM tb00_sequence WHERE IDXX_XXXX = '6' AND DOCX_CODE = 'PWT'";
+    // var sql = "SELECT NOXX_AKHR FROM tb00_sequence WHERE IDXX_XXXX = '6' AND DOCX_CODE = 'PWT'";
 
-    db.query(sql, function (err, rows, fields) {
-      if (rows != '') {
-        var no = '';
-        rows.map((data) => {
-          no = parseInt(data.NOXX_AKHR) + 1;
-        })
-      }
+    // db.query(sql, function (err, rows, fields) {
+    //   if (rows != '') {
+    //     var no = '';
+    //     rows.map((data) => {
+    //       no = parseInt(data.NOXX_AKHR) + 1;
+    //     })
+    //   }
 
-      var sqlUpdtSequence = `UPDATE tb00_sequence SET NOXX_AKHR = '${no}' WHERE IDXX_XXXX = '6' AND DOCX_CODE = 'PWT' `;
+    //   var sqlUpdtSequence = `UPDATE tb00_sequence SET NOXX_AKHR = '${no}' WHERE IDXX_XXXX = '6' AND DOCX_CODE = 'PWT' `;
 
-      db.query(sqlUpdtSequence, function (err, rows, fields) {
-        var id = "MKP" + no.toString().padStart(4, "0");
+    //   db.query(sqlUpdtSequence, function (err, rows, fields) {
+    //     var id = "MKP" + no.toString().padStart(4, "0");
 
         var sqlInsert = "INSERT INTO m_pesawat SET ?";
         var data = {
-          IDXX_PSWT: id,
+          // IDXX_PSWT: id,
+          KODE_PSWT: req.body.KODE_PSWT,
           NAMA_PSWT: req.body.NAMA_PSWT,
           CRTX_BYXX: "alfi",
           CRTX_DATE: new Date(),
@@ -947,8 +950,8 @@ export default class Marketing {
           }
         });
 
-      })
-    });
+    //   })
+    // });
 
   }
 
@@ -957,6 +960,7 @@ export default class Marketing {
 
     var data = {
       IDXX_PSWT: req.body.IDXX_PSWT,
+      KODE_PSWT: req.body.KODE_PSWT,
       NAMA_PSWT: req.body.NAMA_PSWT,
       UPDT_BYXX: "alfi",
       UPDT_DATE: new Date(),
@@ -998,7 +1002,7 @@ export default class Marketing {
 
   getDetailMaskapai = (req, res) => {
     var id = req.params.id;
-    var sql = `SELECT IDXX_PSWT, NAMA_PSWT FROM m_pesawat WHERE IDXX_PSWT = '${id}'`;
+    var sql = `SELECT IDXX_PSWT, KODE_PSWT, NAMA_PSWT FROM m_pesawat WHERE IDXX_PSWT = '${id}'`;
     db.query(sql, function (err, rows, fields) {
       res.send(rows);
     })
@@ -1006,26 +1010,28 @@ export default class Marketing {
 
   // Marketing Hotel
   saveHotel = (req, res) => {
-    var sql = "SELECT NOXX_AKHR FROM tb00_sequence WHERE IDXX_XXXX = '7' AND DOCX_CODE = 'HTL'";
+    // var sql = "SELECT NOXX_AKHR FROM tb00_sequence WHERE IDXX_XXXX = '7' AND DOCX_CODE = 'HTL'";
 
-    db.query(sql, function (err, rows, fields) {
-      if (rows != '') {
-        var no = '';
-        rows.map((data) => {
-          no = parseInt(data.NOXX_AKHR) + 1;
-        })
-      }
+    // db.query(sql, function (err, rows, fields) {
+    //   if (rows != '') {
+    //     var no = '';
+    //     rows.map((data) => {
+    //       no = parseInt(data.NOXX_AKHR) + 1;
+    //     })
+    //   }
 
-      var sqlUpdtSequence = `UPDATE tb00_sequence SET NOXX_AKHR = '${no}' WHERE IDXX_XXXX = '7' AND DOCX_CODE = 'HTL' `;
+    //   var sqlUpdtSequence = `UPDATE tb00_sequence SET NOXX_AKHR = '${no}' WHERE IDXX_XXXX = '7' AND DOCX_CODE = 'HTL' `;
 
-      db.query(sqlUpdtSequence, function (err, rows, fields) {
-        var id = "HTL" + no.toString().padStart(4, "0");
+    //   db.query(sqlUpdtSequence, function (err, rows, fields) {
+    //     var id = "HTL" + no.toString().padStart(4, "0");
 
         var sqlInsert = "INSERT INTO m_hotel SET ?";
         var data = {
-          IDXX_HTLX: id,
+          // IDXX_HTLX: id,
           NAMA_HTLX: req.body.NAMA_HTLX,
           BINTG_HTLX: req.body.BINTG_HTLX,
+          LOKX_HTLX: req.body.LOKX_HTLX,
+          ALMT_HTLX: req.body.ALMT_HTLX,
           KTGR_HTLX: req.body.KTGR_HTLX,
           CRTX_BYXX: "alfi",
           CRTX_DATE: new Date(),
@@ -1045,8 +1051,8 @@ export default class Marketing {
           }
         });
 
-      })
-    });
+    //   })
+    // });
 
   }
 
@@ -1056,6 +1062,8 @@ export default class Marketing {
     var data = {
       IDXX_HTLX: req.body.IDXX_HTLX,
       NAMA_HTLX: req.body.NAMA_HTLX,
+      LOKX_HTLX: req.body.LOKX_HTLX,
+      ALMT_HTLX: req.body.ALMT_HTLX,
       BINTG_HTLX: req.body.BINTG_HTLX,
       KTGR_HTLX: req.body.KTGR_HTLX,
       UPDT_BYXX: "alfi",
@@ -1080,7 +1088,7 @@ export default class Marketing {
   }
 
   deleteHotel = (req, res) => {
-    var sql = `DELETE FROM m_hotel WHERE IDXX_HTLX = '${req.body.IDXX_PSWT}'`;
+    var sql = `DELETE FROM m_hotel WHERE IDXX_HTLX = '${req.body.IDXX_HTLX}'`;
 
     db.query(sql, (err, result) => {
       if (err) {
@@ -1100,7 +1108,21 @@ export default class Marketing {
 
   getDetailHotel = (req, res) => {
     var id = req.params.id;
-    var sql = `SELECT a.IDXX_HTLX, a.NAMA_HTLX, a.BINTG_HTLX,a.KTGR_HTLX,c.CODD_DESC as namaKota,b.CODD_DESC FROM m_hotel a INNER JOIN tb00_basx b ON a.BINTG_HTLX = b.CODD_VALU INNER JOIN tb00_basx c ON a.KTGR_HTLX = c.CODD_VALU WHERE b.CODD_FLNM = 'BINTG_HTLX' AND c.CODD_FLNM = 'KOTA_XXX'AND IDXX_HTLX = '${id}'`;
+    var sql = `SELECT a.IDXX_HTLX, a.NAMA_HTLX, a.BINTG_HTLX,a.KTGR_HTLX, a.LOKX_HTLX, a.ALMT_HTLX,c.CODD_DESC as NAMA_KTGR,b.CODD_DESC FROM m_hotel a INNER JOIN tb00_basx b ON a.BINTG_HTLX = b.CODD_VALU INNER JOIN tb00_basx c ON a.KTGR_HTLX = c.CODD_VALU WHERE b.CODD_FLNM = 'BINTG_HTLX' AND c.CODD_FLNM = 'KOTA_XXX'AND IDXX_HTLX = '${id}'`;
+    db.query(sql, function (err, rows, fields) {
+      res.send(rows);
+    })
+  }
+
+  getAllBandara = (req, res) => {
+    var sql = "SELECT a.IDXX_BAND, a.KDXX_BAND, a.NAMA_BAND, a.JENS_BAND, a.NEGR_BAND, a.PROV_BAND, a.KOTA_BAND, a.KETERANGAN, b.CODD_DESC AS JENIS, c.NAME AS NEGARA, d.NAME AS PROVINSI, e.NAME AS KOTA FROM m_bandara a LEFT JOIN tb00_basx b ON a.JENS_BAND = b.CODD_VALU AND b.CODD_FLNM = 'JENIS_BANDARA' LEFT JOIN countries c ON a.NEGR_BAND = c.id LEFT JOIN states d ON a.PROV_BAND = d.id LEFT JOIN cities e ON a.KOTA_BAND = e.id ORDER BY a.CRTX_DATE DESC";
+    db.query(sql, function (err, rows, fields) {
+      res.send(rows);
+    })
+  }
+
+  getJenisBandara = (req, res) => {
+    var sql = "SELECT CODD_VALU, CODD_DESC FROM tb00_basx WHERE CODD_FLNM = 'JENIS_BANDARA'";
     db.query(sql, function (err, rows, fields) {
       res.send(rows);
     })
@@ -1132,6 +1154,94 @@ export default class Marketing {
     db.query(sql, function (err, rows, fields) {
       res.send(rows);
     })
+  }
+
+  getDetailBandara = (req, res) => {
+    var sql = `SELECT a.*, b.CODD_DESC AS JENIS, c.name AS NEGARA, d.name AS PROVINSI, e.name AS KOTA FROM m_bandara a LEFT JOIN tb00_basx b ON a.JENS_BAND = b.CODD_VALU LEFT JOIN countries c ON a.NEGR_BAND = c.id LEFT JOIN states d ON a.PROV_BAND = d.id LEFT JOIN cities e ON a.KOTA_BAND = e.id WHERE a.IDXX_BAND = '${req.params.id}' `;
+    db.query(sql, function (err, rows, fields) {
+      res.send(rows);
+    })
+  }
+
+  saveBandara = (req, res) => {
+        var sql = "INSERT INTO m_bandara SET ?";
+        var data = {
+          KDXX_BAND: req.body.KDXX_BAND,
+          NAMA_BAND: req.body.NAMA_BAND,
+          JENS_BAND: req.body.JENS_BAND,
+          NEGR_BAND: req.body.NEGR_BAND,
+          PROV_BAND: req.body.PROV_BAND,
+          KOTA_BAND: req.body.KOTA_BAND,
+          KETERANGAN: req.body.KETERANGAN,
+          CRTX_BYXX: "superadmin",
+          CRTX_DATE: new Date(),
+        }
+
+        db.query(sql, data, (err, result) => {
+          if (err) {
+            console.log(err);
+            res.send({
+              status: false,
+              message: err.sqlMessage,
+            });
+          } else {
+            res.send({
+              status: true
+            });
+          }
+        });
+  }
+
+  updateBandara = (req, res) => {
+    var sql = `UPDATE m_bandara SET ? WHERE IDXX_BAND = '${req.body.IDXX_BAND}'`;
+
+    var data = {
+      IDXX_BAND: req.body.IDXX_BAND,
+      KDXX_BAND: req.body.KDXX_BAND,
+      NAMA_BAND: req.body.NAMA_BAND,
+      JENS_BAND: req.body.JENS_BAND,
+      NEGR_BAND: req.body.NEGR_BAND,
+      PROV_BAND: req.body.PROV_BAND,
+      KOTA_BAND: req.body.KOTA_BAND,
+      KETERANGAN: req.body.KETERANGAN,
+      UPDT_BYXX: "superadmin",
+      UPDT_DATE: new Date(),
+    }
+
+    console.log(sql, data)
+
+    db.query(sql, data, (err, result) => {
+      if (err) {
+        console.log(err);
+        res.send({
+          status: false,
+          message: err.sqlMessage,
+        });
+      } else {
+        res.send({
+          status: true
+        });
+      }
+    });
+  }
+
+  deleteBandara = (req, res) => {
+    var sql = `DELETE FROM m_bandara WHERE IDXX_BAND = '${req.body.IDXX_BAND}'`;
+
+    db.query(sql, (err, result) => {
+      if (err) {
+        console.log('Error', err);
+
+        res.send({
+          status: false,
+          message: err.sqlMessage
+        });
+      } else {
+        res.send({
+          status: true
+        });
+      }
+    });
   }
 
 }

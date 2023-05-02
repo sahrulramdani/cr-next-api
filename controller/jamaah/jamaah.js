@@ -498,7 +498,6 @@ export default class Jamaah {
     });
   }
 
-
   pendaftaranJamaah = async (req, res) => {
     // Menyimpan pendaftaran header
     var qry = `INSERT INTO mrkt_daftarh SET ?`;
@@ -578,8 +577,7 @@ export default class Jamaah {
             CRTX_DATE : new Date(),
             CRTX_BYXX : 'admin'
           };      
-
-          console.log(insHand, data);
+          
           db.query(insHand, data, (err, result) => {
               if (err) {
                   sts = false;

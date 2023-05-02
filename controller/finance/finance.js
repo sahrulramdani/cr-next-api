@@ -163,12 +163,22 @@ export default class Finance {
     }
 
     getLaporanPembayaran = (req,res) => {
-      if (req.params.kode == 'Semua') {
-        var sql = `SELECT a.NOXX_BYAR, a.NOXX_FAKT, a.TARIF_TGIH, a.DIBAYARKAN, b.NOXX_RESI, DATE_FORMAT( b.TGLX_BYAR, "%d-%m-%Y" ) AS TGLX_BYAR, c.*, 	IFNULL(e.NAMA_LGKP, '-') AS NAMA_LGKP, f.KETX_USER FROM finc_bayarjamahd a LEFT JOIN finc_bayarjamahh b ON a.NOXX_FAKT = b.NOXX_FAKT LEFT JOIN mrkt_tagihanh c ON a.NOXX_TGIH = c.NOXX_TGIH LEFT JOIN mrkt_daftarh d ON c.KDXX_DFTR = d.KDXX_DFTR LEFT JOIN jmah_jamaahh e ON d.KDXX_JMAH = e.NOXX_IDNT LEFT JOIN tb01_lgxh f ON a.CRTX_BYXX = f.USER_IDXX WHERE b.TGLX_BYAR BETWEEN '${req.params.tgl1}' AND '${req.params.tgl2}' ORDER BY b.TGLX_BYAR DESC`;
-      } else {
-        var sql = `SELECT a.NOXX_BYAR, a.NOXX_FAKT, a.TARIF_TGIH, a.DIBAYARKAN, b.NOXX_RESI, DATE_FORMAT( b.TGLX_BYAR, "%d-%m-%Y" ) AS TGLX_BYAR, c.*, 	IFNULL(e.NAMA_LGKP, '-') AS NAMA_LGKP, f.KETX_USER FROM finc_bayarjamahd a LEFT JOIN finc_bayarjamahh b ON a.NOXX_FAKT = b.NOXX_FAKT LEFT JOIN mrkt_tagihanh c ON a.NOXX_TGIH = c.NOXX_TGIH LEFT JOIN mrkt_daftarh d ON c.KDXX_DFTR = d.KDXX_DFTR LEFT JOIN jmah_jamaahh e ON d.KDXX_JMAH = e.NOXX_IDNT LEFT JOIN tb01_lgxh f ON a.CRTX_BYXX = f.USER_IDXX WHERE JENS_TGIH = '${req.params.kode}' AND b.TGLX_BYAR BETWEEN '${req.params.tgl1}' AND '${req.params.tgl2}' ORDER BY b.TGLX_BYAR DESC`;
-      }
+      var sql = `SELECT b.NOXX_FAKT, DATE_FORMAT( b.TGLX_BYAR, "%d-%m-%Y" ) AS TGLX_BYAR, d.KDXX_DFTR, e.NOXX_IDNT, e.NAMA_LGKP, c.NOXX_TGIH, DATE_FORMAT( c.CRTX_DATE, "%d-%m-%Y" ) AS TGLX_TGIH, c.JENS_TGIH, a.TARIF_TGIH, a.DIBAYARKAN, g.NAMA_BANK, b.KETERANGAN, f.KETX_USER FROM finc_bayarjamahd a LEFT JOIN finc_bayarjamahh b ON a.NOXX_FAKT = b.NOXX_FAKT LEFT JOIN mrkt_tagihanh c ON a.NOXX_TGIH = c.NOXX_TGIH LEFT JOIN mrkt_daftarh d ON c.KDXX_DFTR = d.KDXX_DFTR LEFT JOIN jmah_jamaahh e ON d.KDXX_JMAH = e.NOXX_IDNT LEFT JOIN tb01_lgxh f ON a.CRTX_BYXX = f.USER_IDXX LEFT JOIN finc_kasbank g ON b.CARA_BYAR = g.KODE_BANK AND g.KODE_FLNM = 'TYPE_BYRX' WHERE b.TGLX_BYAR BETWEEN '${req.params.tgl1}' AND '${req.params.tgl2}' ${req.params.jns != 'Semua' ? 'AND c.JENS_TGIH LIKE ' + `'%${req.params.jns}%'` : ''} ${req.params.noxx != 'ALL' ? 'AND d.KDXX_DFTR = ' + `'${req.params.noxx}'` : ''} ${req.params.kode != 'XX' ? 'AND g.KODE_BANK = ' + `'${req.params.kode}'` : ''} ORDER BY b.TGLX_BYAR ASC`
+
+      // console.log(sql);
   
+      db.query(sql, function(err, rows, fields) {
+        res.send(rows);
+      })
+    }
+
+    
+    getLaporanTagihan = (req,res) => {
+      var sql = `SELECT a.NOXX_IDNT, a.NAMA_LGKP, b.KDXX_DFTR, b.STAS_BGKT, IF(b.STAS_BGKT = 0, 'Belum Berangkat', 'Telah Berangkat') AS STATUS_BGKT, c.IDXX_JDWL, DATE_FORMAT( c.TGLX_BGKT, "%Y-%m-%d" ) AS TGLX_BGKT, DATE_FORMAT( c.TGLX_BGKT, "%d-%m-%Y" ) AS BERANGKAT, d.JENS_TGIH, d.TOTL_TGIH, d.JMLX_BYAR, d.SISA_TGIH, DATE_FORMAT( b.CRTX_DATE, "%Y-%m-%d" ) AS TGLX_TDIB, DATE_FORMAT( b.CRTX_DATE, "%d-%m-%Y" ) TGLX_TAGIHAN, IF(SISA_TGIH = 0, 'Lunas', 'Belum') AS STS_LUNAS FROM jmah_jamaahh a LEFT JOIN mrkt_daftarh b ON a.NOXX_IDNT = b.KDXX_JMAH LEFT JOIN mrkt_jadwalh c ON b.KDXX_PKET = c.IDXX_JDWL INNER JOIN mrkt_tagihanh d ON b.KDXX_DFTR = d.KDXX_DFTR HAVING TGLX_BGKT BETWEEN '${req.params.tgl1}' AND '${req.params.tgl2}' ${req.params.kode != 'Semua' ? 'AND STS_LUNAS = ' + `'${req.params.kode}'` : ''} ${req.params.noxx != 'ALL' ? 'AND KDXX_DFTR = ' + `'${req.params.noxx}'` : ''} ${req.params.cek != 'ALL' ? 'AND STAS_BGKT = ' + `'${req.params.cek}'` : ''} ORDER BY TGLX_BGKT ASC`
+
+      // var sql = `SELECT a.KDXX_DFTR, a.STAS_BGKT, b.NAMA_LGKP, c.IDXX_JDWL, DATE_FORMAT( c.TGLX_BGKT, "%Y-%m-%d") AS TGLX_BGKT, DATE_FORMAT( c.TGLX_BGKT, "%d-%m-%Y") AS BERANGKAT, d.JENS_TGIH, d.TOTL_TGIH, d.JMLX_BYAR, d.SISA_TGIH, DATE_FORMAT( a.CRTX_DATE, "%Y-%m-%d") AS TGLX_TDIB, DATE_FORMAT( a.CRTX_DATE, "%d-%m-%Y" ) TGLX_TAGIHAN, IF(SISA_TGIH = 0, 'Lunas','Belum') AS STS_LUNAS FROM mrkt_daftarh a LEFT JOIN jmah_jamaahh b ON a.KDXX_JMAH = b.NOXX_IDNT LEFT JOIN mrkt_jadwalh c ON a.KDXX_PKET = c.IDXX_JDWL INNER JOIN mrkt_tagihanh d ON a.KDXX_DFTR = d.KDXX_DFTR HAVING TGLX_BGKT BETWEEN '${req.params.tgl1}' AND '${req.params.tgl2}' ${req.params.kode != 'Semua' ? 'AND STS_LUNAS = ' + `'${req.params.kode}'` : ''} ${req.params.noxx != 'ALL' ? 'AND KDXX_DFTR = ' + `'${req.params.noxx}'` : ''} ${req.params.cek != 'ALL' ? 'AND STAS_BGKT = ' + `'${req.params.cek}'` : ''} ORDER BY TGLX_BGKT ASC`
+  
+      // console.log(sql);
       db.query(sql, function(err, rows, fields) {
         res.send(rows);
       })
@@ -195,7 +205,7 @@ export default class Finance {
       // var sql = `SELECT a.*, IFNULL((SELECT COUNT(b.KDXX_DFTR) FROM mrkt_daftarh b WHERE b.KDXX_MRKT = a.KDXX_MRKT),0) AS JML_DFTAR, IFNULL((SELECT SUM(d.TOTL_TGIH) FROM mrkt_daftarh c LEFT JOIN mrkt_tagihanh d ON c.KDXX_DFTR = d.KDXX_DFTR WHERE c.KDXX_MRKT = a.KDXX_MRKT AND YEAR(d.CRTX_DATE) = YEAR(NOW())),0) AS TOTL_TGIH, IFNULL((SELECT SUM(d.JMLX_BYAR) FROM mrkt_daftarh c LEFT JOIN mrkt_tagihanh d ON c.KDXX_DFTR = d.KDXX_DFTR WHERE c.KDXX_MRKT = a.KDXX_MRKT AND YEAR(d.CRTX_DATE) = YEAR(NOW())),0) AS JML_BYAR FROM mrkt_agensih a WHERE FEEX_LVEL = '4953'`;
 
       // By Kantor
-      var sql = `SELECT a.*, IFNULL((SELECT COUNT(b.KDXX_DFTR) FROM mrkt_daftarh b WHERE b.KDXX_KNTR = a.KDXX_KNTR),0) AS JML_DFTAR, IFNULL((SELECT SUM(d.TOTL_TGIH) FROM mrkt_daftarh c LEFT JOIN mrkt_tagihanh d ON c.KDXX_DFTR = d.KDXX_DFTR WHERE c.KDXX_KNTR = a.KDXX_KNTR AND YEAR ( d.CRTX_DATE ) = YEAR (NOW())),0) AS TOTL_TGIH, IFNULL((SELECT SUM(d.JMLX_BYAR) FROM mrkt_daftarh c LEFT JOIN mrkt_tagihanh d ON c.KDXX_DFTR = d.KDXX_DFTR WHERE c.KDXX_KNTR = a.KDXX_KNTR AND YEAR ( d.CRTX_DATE ) = YEAR (NOW())),0) AS JML_BYAR FROM hrsc_mkantorh a`;
+      var sql = `SELECT a.*, IFNULL(( SELECT COUNT( b.KDXX_DFTR ) FROM mrkt_daftarh b WHERE b.KDXX_KNTR = a.KDXX_KNTR ), 0 ) AS JML_DFTAR, IFNULL(( SELECT SUM( d.TOTL_TGIH ) FROM mrkt_daftarh c LEFT JOIN mrkt_tagihanh d ON c.KDXX_DFTR = d.KDXX_DFTR WHERE c.KDXX_KNTR = a.KDXX_KNTR AND YEAR ( d.CRTX_DATE ) = YEAR ( NOW())), 0 ) AS TOTL_TGIH, IFNULL(( SELECT SUM(d.JMLH_BYAR) FROM mrkt_daftarh c LEFT JOIN finc_bayarjamahh d ON c.KDXX_DFTR = d.KDXX_DFTR WHERE c.KDXX_KNTR = a.KDXX_KNTR AND YEAR (d.TGLX_BYAR) = YEAR(NOW())), 0 ) AS JML_BYAR FROM hrsc_mkantorh a`;
 
       db.query(sql, function(err, rows, fields) {
         res.send(rows);
@@ -762,6 +772,235 @@ export default class Finance {
           }
         });
       });
+    }
+
+    getAllEstimasiPaket = (req, res) => {
+      var sql = `SELECT a.* ,( SELECT b.CODD_DESC FROM tb00_basx b WHERE b.CODD_VALU = a.NAMA_PKET AND b.CODD_FLNM = "PAKET_XXXX" ) AS namaPaket,( SELECT b.CODD_DESC FROM tb00_basx b WHERE b.CODD_VALU = a.JENS_PKET AND b.CODD_FLNM = "JNS_PAKET" ) AS jenisPaket, IF ( a.TGLX_BGKT <= DATE_FORMAT( NOW(), "%Y-%m-%d" ), 1, 0 ) AS STATUS, (( a.JMLX_SEAT ) - ( IFNULL(( SELECT COUNT( c.KDXX_DFTR ) FROM mrkt_daftarh c WHERE c.KDXX_PKET = a.IDXX_JDWL ), 0 ))) AS SISA ,( SELECT b.NAMA_PSWT FROM m_pesawat b WHERE b.IDXX_PSWT = a.PSWT_BGKT ) AS NAME_PESWT_BGKT,( SELECT b.NAMA_PSWT FROM m_pesawat b WHERE b.IDXX_PSWT = a.PSWT_PLNG ) AS NAME_PESWT_PLNG, (SELECT DISTINCT c.KDXX_PKET FROM finc_estpket c WHERE c.KDXX_PKET = a.KDXX_JDWL) AS CEK	,DATE_FORMAT( a.TGLX_BGKT, "%d-%m-%Y" ) AS TGL_BGKT,
+      DATE_FORMAT( a.TGLX_PLNG, "%d-%m-%Y" ) AS TGL_PLNG FROM mrkt_jadwalh a ORDER BY a.TGLX_BGKT DESC`;
+
+      db.query(sql, function(err, rows, fields) {
+        res.send(rows);
+      })
+    }
+
+    getDetailEstimasiPaket = (req, res) => {
+      var sql = `SELECT a.*, b.DESKRIPSI AS NAMA_SUMB, c.DESKRIPSI AS DESC_BIAYA, ( SELECT SUM( b.NOMINAL ) FROM finc_estpket b WHERE b.KDXX_PKET = a.KDXX_PKET AND b.SUMB_DANA = a.SUMB_DANA ) AS TOTAL FROM finc_estpket a LEFT JOIN finc_pbiaya b ON a.SUMB_DANA = b.KDXX_PBYA LEFT JOIN finc_pbiaya c ON a.NAMA_BIAYA = c.KDXX_PBYA WHERE a.KDXX_PKET = '${req.params.id}' ORDER BY a.SUMB_DANA ASC`;
+
+      db.query(sql, function(err, rows, fields) {
+        res.send(rows);
+      })
+    }
+
+    saveEstimasiPaket = async (req, res) => {
+          var biaya = req.body.LIST_DETX;
+          var jsonBiaya = JSON.parse(biaya);
+          var sts;
+  
+          for (let i = 0; i < jsonBiaya.length; i++) {
+            var idBiaya = await this.generateNumberEstimasi();
+  
+            var qry = `INSERT INTO finc_estpket SET ?`;
+            var data = {
+              KDXX_ESTX : idBiaya,
+              KDXX_PKET : req.body.KDXX_PKET,
+              SUMB_DANA : req.body.SUMB_DANA,
+              NOMX_SUMD : req.body.NOMX_SUMD,
+              NAMA_BIAYA : jsonBiaya[i]['KDXX_BIAYA'],
+              NOMINAL : jsonBiaya[i]['NOMINAL'],
+              CRTX_DATE : new Date(),
+              CRTX_BYXX : 'superadmin'
+            };      
+
+            db.query(qry, data, (err, result) => {
+                if (err) {
+                    sts = false;
+                } else {
+                    sts = true;
+                }
+            });
+          }
+         
+          res.send({
+            status: true,
+          });
+
+    }
+
+    generateNumberEstimasi = () => {
+      const now = new Date();
+      const tgl = date.format(now,"YYYY-MM-DD");
+      const tglReplace = tgl.replace(/-/g,"").toString();
+    
+      return new Promise((resolve, reject) => {
+          const sql = `SELECT MAX(RIGHT(a.KDXX_ESTX, 3)) AS URUTX FROM finc_estpket a WHERE DATE_FORMAT( a.CRTX_DATE, "%Y-%m-%d" ) = DATE_FORMAT(NOW(), "%Y-%m-%d" )`;
+          db.query(sql, function (err, rows, fields) {
+            rows.map((data) => {
+              if (data['URUTX'] == null) {
+                var noEstimasi = `E${tglReplace}001`;
+    
+                resolve(noEstimasi);
+              } else {
+                var no = parseInt(data['URUTX']) + 1;
+                var noEstimasi = 'E' + tglReplace + no.toString().padStart(3,"0");
+                
+                resolve(noEstimasi);
+              }
+            });
+          });
+      });
+    };
+  
+    getAllPendapatanBiaya = (req, res) => {
+      var sql = `SELECT a.*, CODD_DESC FROM finc_pbiaya a LEFT JOIN tb00_basx b ON a.TIPE_PBYA = b.CODD_VALU`;
+
+      db.query(sql, function(err, rows, fields) {
+        res.send(rows);
+      })
+    }
+
+    getDetailPendapatanBiaya = (req, res) => {
+      var sql = `SELECT a.*, CODD_DESC FROM finc_pbiaya a LEFT JOIN tb00_basx b ON a.TIPE_PBYA = b.CODD_VALU WHERE a.KDXX_PBYA = '${req.params.id}'`;
+
+      db.query(sql, function(err, rows, fields) {
+        res.send(rows);
+      })
+    }
+
+    savePendapatanBiaya = (req, res) => {
+      var sqlInsert = "INSERT INTO finc_pbiaya SET ?";
+      var data = {
+        DESKRIPSI: req.body.DESKRIPSI,
+        TIPE_PBYA: req.body.TIPE_PBYA,
+        CRTX_BYXX: "superadmin",
+        CRTX_DATE: new Date(),
+      }
+  
+      db.query(sqlInsert, data, (err, result) => {
+        if (err) {
+          console.log(err);
+          res.send({
+            status: false,
+            message: err.sqlMessage,
+          });
+        } else {
+          res.send({
+            status: true
+          });
+        }
+      });
+    }
+
+    updatePendapatanBiaya = (req, res) => {
+      var sql = `UPDATE finc_pbiaya SET ? WHERE KDXX_PBYA = '${req.body.KDXX_PBYA}'`;
+  
+      var data = {
+        KDXX_PBYA: req.body.KDXX_PBYA,
+        DESKRIPSI: req.body.DESKRIPSI,
+        TIPE_PBYA: req.body.TIPE_PBYA,
+        UPDT_BYXX: "superadmin",
+        UPDT_DATE: new Date(),
+      }
+  
+      db.query(sql, data, (err, result) => {
+        if (err) {
+          console.log(err);
+          res.send({
+            status: false,
+            message: err.sqlMessage,
+          });
+        } else {
+          res.send({
+            status: true
+          });
+        }
+      });
+    }
+
+    deletePendapatanBiaya = (req, res) => {
+      var sql = `DELETE FROM finc_pbiaya WHERE KDXX_PBYA = '${req.body.KDXX_PBYA}'`;
+  
+      db.query(sql, (err, result) => {
+        if (err) {
+          console.log('Error', err);
+  
+          res.send({
+            status: false,
+            message: err.sqlMessage
+          });
+        } else {
+          res.send({
+            status: true
+          });
+        }
+      });
+    }
+
+    getPendapatanBiaya = (req, res) => {
+      var sql = `SELECT a.* FROM finc_pbiaya a WHERE a.TIPE_PBYA = '${req.params.kode}'`;
+
+      db.query(sql, function(err, rows, fields) {
+        res.send(rows);
+      })
+    }
+
+    getAllCostStructure = (req, res) => {
+      var sql = `SELECT a.*, b.DESKRIPSI AS NAMA_SUMBD, c.DESKRIPSI AS NAMA_BIAYAC, d.CODD_DESC FROM finc_costs a LEFT JOIN finc_pbiaya b ON a.SUMB_DANA = b.KDXX_PBYA LEFT JOIN finc_pbiaya c ON a.NAMA_BIAYA = c.KDXX_PBYA LEFT JOIN tb00_basx d ON c.TIPE_PBYA = d.CODD_VALU ORDER BY a.SUMB_DANA ASC`;
+
+      db.query(sql, function(err, rows, fields) {
+        res.send(rows);
+      })
+    }
+
+    saveCostStructure = (req, res) => {
+      var sqlInsert = "INSERT INTO finc_costs SET ?";
+      var data = {
+        SUMB_DANA: req.body.SUMB_DANA,
+        NAMA_BIAYA: req.body.NAMA_BIAYA,
+        CRTX_BYXX: "superadmin",
+        CRTX_DATE: new Date(),
+      }
+  
+      db.query(sqlInsert, data, (err, result) => {
+        if (err) {
+          console.log(err);
+          res.send({
+            status: false,
+            message: err.sqlMessage,
+          });
+        } else {
+          res.send({
+            status: true
+          });
+        }
+      });
+    }
+
+    
+    deleteCostStructure = (req, res) => {
+      var sql = `DELETE FROM finc_costs WHERE KDXX_CSXX = '${req.body.KDXX_CSXX}'`;
+  
+      db.query(sql, (err, result) => {
+        if (err) {
+          console.log('Error', err);
+  
+          res.send({
+            status: false,
+            message: err.sqlMessage
+          });
+        } else {
+          res.send({
+            status: true
+          });
+        }
+      });
+    }
+
+    getPendapatanSimulasi = (req, res) => {
+      var sql = `SELECT DISTINCT a.*, b.NOMX_SUMD FROM finc_pbiaya a LEFT JOIN finc_estpket b ON a.KDXX_PBYA = b.SUMB_DANA WHERE a.TIPE_PBYA = '8901' AND b.KDXX_PKET = '${req.params.id}' AND b.NOMX_SUMD != '' `;
+
+      db.query(sql, function(err, rows, fields) {
+        res.send(rows);
+      })
     }
 
 }

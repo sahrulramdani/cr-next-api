@@ -60,14 +60,6 @@ export default class Setup {
       });
     }
 
-    getPlusTujuan = (req, res) => {
-      var sql = "SELECT a.* FROM xxxx_masterdata a WHERE a.KDXX_FLNM = 'PLUS_TJUAN'"
-    
-      db.query(sql, function (err, rows, fields) {
-        res.send(rows);
-      });
-    }
-
     getJenisBiaya = (req, res) => {
       var sql = "SELECT CODD_FLNM, CODD_VALU, CODD_DESC FROM tb00_basx WHERE CODD_FLNM = 'JENIS_BIAYA'"
     
@@ -110,6 +102,38 @@ export default class Setup {
 
     getKategoriAccount = (req, res) => {
       var sql = "SELECT a.* FROM finc_kategori_coa a"
+    
+      db.query(sql, function (err, rows, fields) {
+        res.send(rows);
+      });
+    }
+
+    getAllCountry = (req, res) => {
+      var sql = "SELECT a.* FROM countries a"
+    
+      db.query(sql, function (err, rows, fields) {
+        res.send(rows);
+      });
+    }
+
+    getAllStates = (req, res) => {
+      var sql = `SELECT a.* FROM states a WHERE a.country_id = '${req.params.id}'`
+    
+      db.query(sql, function (err, rows, fields) {
+        res.send(rows);
+      });
+    }
+
+    getAllCities = (req, res) => {
+      var sql = `SELECT a.* FROM cities a WHERE a.state_id = '${req.params.id}'`
+    
+      db.query(sql, function (err, rows, fields) {
+        res.send(rows);
+      });
+    }
+
+    getKompBiaya = (req, res) => {
+      var sql = "SELECT CODD_FLNM, CODD_VALU, CODD_DESC FROM tb00_basx WHERE CODD_FLNM = 'JENIS_PBYA'"
     
       db.query(sql, function (err, rows, fields) {
         res.send(rows);
