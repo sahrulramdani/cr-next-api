@@ -523,6 +523,32 @@ export default class Marketing {
     });
   }
 
+  saveFotoJadwal = (req, res) => {
+    var fotoJadwal = req.body.FOTO_PKET;
+    const now = new Date();
+    const tgl = date.format(now, "YYYY-MM-DD");
+    const tglReplace = tgl.replace(/-/g, "").toString();
+
+    if (fotoJadwal != 'TIDAK') {
+      var fotoJadwalName = req.body.TGLX_BGKT + tglReplace + '.png';
+      fs.writeFile(`uploads/paket/${fotoJadwalName}`, fotoJadwal, { encoding: 'base64' }, function (err) {
+        if (err) {
+          console.log('FOTO GAGAL DIUPLOAD', err);
+        } else {
+          console.log('FOTO BERHASIL DIUPLOAD');
+        }
+      });
+
+      var namaFoto = fotoJadwalName;
+    } else {
+      var namaFoto = 'KOSONG';
+    }
+
+    res.send({
+      status: true,
+      foto: namaFoto,
+    });
+  }
 
   saveJadwal = (req, res) => {
     console.log('PROT');
@@ -574,6 +600,7 @@ export default class Marketing {
           STAS_BGKT: '0',
           KETERANGAN: req.body.KETERANGAN,
           KETX_RUTE: req.body.KETX_RUTE,
+          FOTO_PKET: req.body.FOTO_PKET,
           CRTX_DATE: new Date(),
           CRTX_BYXX: "alfi",
         }
@@ -593,6 +620,57 @@ export default class Marketing {
         });
 
       });
+    });
+  }
+
+  updateFotoJadwal = (req, res) => {
+    // FOTO LAMA JAMAAH
+    var fotoLama = req.body.FOTO_LAMA;
+    const now = new Date();
+    const tgl = date.format(now, "YYYY-MM-DD");
+    const tglReplace = tgl.replace(/-/g, "").toString();
+
+    if (fotoLama != '') {
+      if (req.body.FOTO_PKET == 'TIDAK') {
+        var namaFoto = fotoLama;
+      }else{
+        fs.unlink(`uploads/paket/${fotoLama}`,function(err){
+          if(err) return console.log(err);
+          console.log('FOTO LAMA BERHASIL DIHAPUS');
+        });  
+
+        var fotoJadwal = req.body.FOTO_PKET;
+        var fotoJadwalName = req.body.TGLX_BGKT + tglReplace + '.png';
+        fs.writeFile(`uploads/paket/${fotoJadwalName}`, fotoJadwal, {encoding:'base64'}, function(err){
+          if (err) {
+            console.log('FOTO BARU GAGAL DIUPLOAD',err);
+          }else{
+            console.log('FOTO BARU BERHASIL DIUPLOAD');
+          }
+        });
+        var namaFoto = fotoJadwalName;
+      }
+    }else{
+      if(req.body.FOTO_PKET == 'TIDAK'){
+        var namaFoto = '';
+      }else{
+        var fotoJadwal = req.body.FOTO_PKET;
+        var fotoJadwalName = req.body.TGLX_BGKT + tglReplace + '.png';
+        fs.writeFile(`uploads/paket/${fotoJadwalName}`, fotoJadwal, {encoding:'base64'}, function(err){
+          if (err) {
+            console.log('FOTO LAMA GAGAL DIUPLOAD',err);
+          }else{
+            console.log('FOTO BARU BERHASIL DIUPLOAD');
+          }
+        });
+  
+        var namaFoto = fotoJadwalName;
+      }
+    }
+
+    res.send({
+      status: true,
+      foto: namaFoto,
     });
   }
 
@@ -624,6 +702,7 @@ export default class Marketing {
       MATA_UANG: req.body.MATA_UANG,
       KETERANGAN: req.body.KETERANGAN,
       KETX_RUTE: req.body.KETX_RUTE,
+      FOTO_PKET: req.body.FOTO_PKET,
       UPDT_DATE: new Date(),
       UPDT_BYXX: "alfi",
     };
@@ -756,6 +835,17 @@ export default class Marketing {
     })
   }
 
+  getDetailDashJadwal = (req, res) => {
+    var id = req.params.id;
+
+    var sql = `SELECT a.IDXX_JDWL, a.TJAN_PKET, a.FOTO_PKET, a.KETX_RUTE, a.PSWT_BGKT, a.PSWT_PLNG, a.RUTE_AWAL_BRKT, a.RUTE_TRNS_BRKT, b.NAMA_NEGR, a.RUTE_AKHR_BRKT, a.RUTE_AWAL_PLNG, a.RUTE_TRNS_PLNG,( SELECT e.NAMA_NEGR FROM m_rutetransit e WHERE e.IDXX_RTRS = a.RUTE_TRNS_PLNG ) AS NAMA_NEGRATRPLNG, a.RUTE_AKHR_PLNG, a.JMLX_SEAT, a.HOTL_MEKX, a.HOTL_MADX, a.HOTL_JEDX, a.HOTL_TRAX, c.NAMA_PSWT AS PESAWAT_BERANGKAT, d.NAMA_HTLX AS HOTEL_MEKKAH,( SELECT b.CODD_DESC FROM tb00_basx b WHERE b.CODD_VALU = a.NAMA_PKET AND b.CODD_FLNM = "PAKET_XXXX" ) AS namaPaket,((a.JMLX_SEAT) - (IFNULL((SELECT COUNT(c.KDXX_DFTR) FROM mrkt_daftarh c WHERE c.KDXX_PKET = a.IDXX_JDWL),0))) AS SISA, a.NAMA_PKET,( SELECT b.CODD_DESC FROM tb00_basx b WHERE b.CODD_VALU = a.JENS_PKET AND b.CODD_FLNM = "JNS_PAKET" ) AS jenisPaket, a.JENS_PKET, DATE_FORMAT( a.TGLX_BGKT, "%d-%m-%Y" ) AS TGLX_BGKT, DATE_FORMAT( a.TGLX_PLNG, "%d-%m-%Y" ) AS TGLX_PLNG, a.JMLX_HARI, a.TARIF_PKET, a.MATA_UANG,( SELECT b.CODD_DESC FROM tb00_basx b WHERE b.CODD_VALU = a.MATA_UANG AND b.CODD_FLNM = "CURR_MNYX" ) AS MataUang, a.KETERANGAN, IF ( a.TGLX_BGKT <= DATE_FORMAT( NOW(), "%Y-%m-%d" ), 1, 0 ) AS STATUS, f.NAMA_PSWT AS PESAWAT_PULANG, g.NAMA_HTLX AS HOTEL_MADINAH, h.NAMA_HTLX AS HOTEL_PLUS, i.NAMA_HTLX AS HOTEL_TAMBAH, j.NAMA_NEGR AS NAMA_TUJUAN FROM mrkt_jadwalh a LEFT JOIN m_rutetransit b ON a.RUTE_TRNS_BRKT = b.IDXX_RTRS LEFT JOIN m_pesawat c ON a.PSWT_BGKT = c.IDXX_PSWT LEFT JOIN m_hotel d ON a.HOTL_MEKX = d.IDXX_HTLX LEFT JOIN m_pesawat f ON a.PSWT_PLNG = f.IDXX_PSWT LEFT JOIN m_hotel g ON a.HOTL_MADX = g.IDXX_HTLX LEFT JOIN m_hotel h ON a.HOTL_JEDX = h.IDXX_HTLX LEFT JOIN m_hotel i ON a.HOTL_TRAX = i.IDXX_HTLX LEFT JOIN m_rutetransit j ON a.TJAN_PKET = j.IDXX_RTRS WHERE a.IDXX_JDWL = "${id}"`;
+
+    db.query(sql, function (err, rows, fields) {
+      res.send(rows);
+    })
+  }
+
+
   
   getJadwalAvailable = (req, res) => {
     var sql = `SELECT a.IDXX_JDWL,a.TJAN_PKET,a.PSWT_BGKT, a.PSWT_PLNG,a.JMLX_SEAT,( SELECT b.CODD_DESC FROM tb00_basx b WHERE b.CODD_VALU = a.NAMA_PKET AND b.CODD_FLNM = "PAKET_XXXX" ) AS namaPaket,( SELECT b.CODD_DESC FROM tb00_basx b WHERE b.CODD_VALU = a.JENS_PKET AND b.CODD_FLNM = "JNS_PAKET" ) AS jenisPaket,DATE_FORMAT( a.TGLX_BGKT, "%d-%m-%Y" ) AS TGLX_BGKT,DATE_FORMAT( a.TGLX_PLNG, "%d-%m-%Y" ) AS TGLX_PLNG,a.JMLX_HARI,a.TARIF_PKET, a.STAS_AKTF AS STS ,a.MATA_UANG,a.KETERANGAN,IF( a.TGLX_BGKT <= DATE_FORMAT(NOW(), "%Y-%m-%d" ) ,1,0) AS status, ((a.JMLX_SEAT) - (IFNULL((SELECT COUNT(c.KDXX_DFTR) FROM mrkt_daftarh c WHERE c.KDXX_PKET = a.IDXX_JDWL),0))) AS SISA FROM mrkt_jadwalh a HAVING status = '0' AND STS = '1' AND SISA > 0 ORDER BY a.TGLX_BGKT DESC`;
@@ -768,7 +858,7 @@ export default class Marketing {
   getDetailJadwal = (req, res) => {
     var id = req.params.id;
 
-    var sql = `SELECT a.IDXX_JDWL, a.TJAN_PKET, a.PSWT_BGKT, a.PSWT_PLNG, a.RUTE_AWAL_BRKT, a.RUTE_TRNS_BRKT, b.NAMA_NEGR, a.RUTE_AKHR_BRKT, a.RUTE_AWAL_PLNG, a.RUTE_TRNS_PLNG,( SELECT e.NAMA_NEGR FROM m_rutetransit e WHERE e.IDXX_RTRS = a.RUTE_TRNS_PLNG ) AS NAMA_NEGRATRPLNG, a.RUTE_AKHR_PLNG, a.JMLX_SEAT, a.HOTL_MEKX, a.HOTL_MADX, a.HOTL_JEDX, a.HOTL_TRAX, c.NAMA_PSWT AS PESAWAT_BERANGKAT, d.NAMA_HTLX AS HOTEL_MEKKAH,( SELECT b.CODD_DESC FROM tb00_basx b WHERE b.CODD_VALU = a.NAMA_PKET AND b.CODD_FLNM = "PAKET_XXXX" ) AS namaPaket, a.NAMA_PKET,( SELECT b.CODD_DESC FROM tb00_basx b WHERE b.CODD_VALU = a.JENS_PKET AND b.CODD_FLNM = "JNS_PAKET" ) AS jenisPaket, a.JENS_PKET, DATE_FORMAT( a.TGLX_BGKT, "%d-%m-%Y" ) AS TGLX_BGKT, DATE_FORMAT( a.TGLX_PLNG, "%d-%m-%Y" ) AS TGLX_PLNG, a.JMLX_HARI, a.TARIF_PKET, a.MATA_UANG,( SELECT b.CODD_DESC FROM tb00_basx b WHERE b.CODD_VALU = a.MATA_UANG AND b.CODD_FLNM = "CURR_MNYX" ) AS MataUang, a.KETERANGAN, IF ( a.TGLX_BGKT <= DATE_FORMAT( NOW(), "%Y-%m-%d" ), 1, 0 ) AS STATUS, f.NAMA_PSWT AS PESAWAT_PULANG, g.NAMA_HTLX AS HOTEL_MADINAH, h.NAMA_HTLX AS HOTEL_PLUS, i.NAMA_HTLX AS HOTEL_TAMBAH, j.NAMA_NEGR AS NAMA_TUJUAN FROM mrkt_jadwalh a LEFT JOIN m_rutetransit b ON a.RUTE_TRNS_BRKT = b.IDXX_RTRS LEFT JOIN m_pesawat c ON a.PSWT_BGKT = c.IDXX_PSWT LEFT JOIN m_hotel d ON a.HOTL_MEKX = d.IDXX_HTLX LEFT JOIN m_pesawat f ON a.PSWT_PLNG = f.IDXX_PSWT LEFT JOIN m_hotel g ON a.HOTL_MADX = g.IDXX_HTLX LEFT JOIN m_hotel h ON a.HOTL_JEDX = h.IDXX_HTLX LEFT JOIN m_hotel i ON a.HOTL_TRAX = i.IDXX_HTLX LEFT JOIN m_rutetransit j ON a.TJAN_PKET = j.IDXX_RTRS WHERE a.IDXX_JDWL = "${id}"`;
+    var sql = `SELECT a.IDXX_JDWL, a.TJAN_PKET, a.FOTO_PKET, a.PSWT_BGKT, a.PSWT_PLNG, a.RUTE_AWAL_BRKT, a.RUTE_TRNS_BRKT, b.NAMA_NEGR, a.RUTE_AKHR_BRKT, a.RUTE_AWAL_PLNG, a.RUTE_TRNS_PLNG,( SELECT e.NAMA_NEGR FROM m_rutetransit e WHERE e.IDXX_RTRS = a.RUTE_TRNS_PLNG ) AS NAMA_NEGRATRPLNG, a.RUTE_AKHR_PLNG, a.JMLX_SEAT, a.HOTL_MEKX, a.HOTL_MADX, a.HOTL_JEDX, a.HOTL_TRAX, c.NAMA_PSWT AS PESAWAT_BERANGKAT, d.NAMA_HTLX AS HOTEL_MEKKAH,( SELECT b.CODD_DESC FROM tb00_basx b WHERE b.CODD_VALU = a.NAMA_PKET AND b.CODD_FLNM = "PAKET_XXXX" ) AS namaPaket, a.NAMA_PKET,( SELECT b.CODD_DESC FROM tb00_basx b WHERE b.CODD_VALU = a.JENS_PKET AND b.CODD_FLNM = "JNS_PAKET" ) AS jenisPaket, a.JENS_PKET, DATE_FORMAT( a.TGLX_BGKT, "%d-%m-%Y" ) AS TGLX_BGKT, DATE_FORMAT( a.TGLX_PLNG, "%d-%m-%Y" ) AS TGLX_PLNG, a.JMLX_HARI, a.TARIF_PKET, a.MATA_UANG,( SELECT b.CODD_DESC FROM tb00_basx b WHERE b.CODD_VALU = a.MATA_UANG AND b.CODD_FLNM = "CURR_MNYX" ) AS MataUang, a.KETERANGAN, IF ( a.TGLX_BGKT <= DATE_FORMAT( NOW(), "%Y-%m-%d" ), 1, 0 ) AS STATUS, f.NAMA_PSWT AS PESAWAT_PULANG, g.NAMA_HTLX AS HOTEL_MADINAH, h.NAMA_HTLX AS HOTEL_PLUS, i.NAMA_HTLX AS HOTEL_TAMBAH, j.NAMA_NEGR AS NAMA_TUJUAN FROM mrkt_jadwalh a LEFT JOIN m_rutetransit b ON a.RUTE_TRNS_BRKT = b.IDXX_RTRS LEFT JOIN m_pesawat c ON a.PSWT_BGKT = c.IDXX_PSWT LEFT JOIN m_hotel d ON a.HOTL_MEKX = d.IDXX_HTLX LEFT JOIN m_pesawat f ON a.PSWT_PLNG = f.IDXX_PSWT LEFT JOIN m_hotel g ON a.HOTL_MADX = g.IDXX_HTLX LEFT JOIN m_hotel h ON a.HOTL_JEDX = h.IDXX_HTLX LEFT JOIN m_hotel i ON a.HOTL_TRAX = i.IDXX_HTLX LEFT JOIN m_rutetransit j ON a.TJAN_PKET = j.IDXX_RTRS WHERE a.IDXX_JDWL = "${id}"`;
 
     db.query(sql, function (err, rows, fields) {
       res.send(rows);

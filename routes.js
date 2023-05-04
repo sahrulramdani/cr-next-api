@@ -24,6 +24,7 @@ const routes = (app) => {
       app.route("/marketing/jadwal/getmatauang").get(C.auth.verifyToken ,C.marketing.getMataUang);
       app.route("/marketing/jadwal/getAllJadwal").get(C.auth.verifyToken ,C.marketing.getAllJadwal);
       app.route("/marketing/jadwal/getAllJadwalDash").get(C.marketing.getAllJadwalDash);
+      app.route("/marketing/jadwal/getDetailDash/:id").get(C.marketing.getDetailDashJadwal);
       app.route("/marketing/jadwal/get-jadwal").get(C.auth.verifyToken ,C.marketing.getJadwalAvailable);
       app.route("/marketing/jadwal/getTransit").get(C.auth.verifyToken ,C.marketing.getTransit);
       app.route("/marketing/jadwal/getMaskapai").get(C.auth.verifyToken ,C.marketing.getMaskapai);
@@ -37,7 +38,9 @@ const routes = (app) => {
       app.route("/marketing/jadwal/getDetail/:id").get(C.auth.verifyToken, C.marketing.getDetailJadwal);
       app.route("/marketing/jadwal/getDetail-jamaah/:id").get(C.auth.verifyToken, C.marketing.getDetailJadwalJamaah);
       app.route("/marketing/jadwal/save").post(C.auth.verifyToken, C.marketing.saveJadwal);
+      app.route("/marketing/jadwal/save-foto").post(C.auth.verifyToken, C.marketing.saveFotoJadwal);
       app.route("/marketing/jadwal/update").post(C.auth.verifyToken, C.marketing.updateJadwal);
+      app.route("/marketing/jadwal/update-foto").post(C.auth.verifyToken, C.marketing.updateFotoJadwal);
       app.route('/marketing/jadwal/delete').post(C.auth.verifyToken, C.marketing.deleteJadwal);
 
       //-- Marketing Pemberangkatan --
@@ -196,6 +199,7 @@ const routes = (app) => {
       app.use('/uploads/foto', express.static('uploads/foto'));
       app.use('/uploads/ktp', express.static('uploads/ktp'));
       app.use('/uploads/profil', express.static('uploads/profil'));
+      app.use('/uploads/paket', express.static('uploads/paket'));
 
       app.get('/get-profil-koper/foto/:id', (req, res) => {
             var id = req.params.id;
