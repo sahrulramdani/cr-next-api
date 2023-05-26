@@ -17,14 +17,15 @@ export default class AuthController {
     var data = {
       USER_IDXX: req.body.USER_IDXX,
       PASS_IDXX: hashedPassword,
+      KATX_USER: req.body.KATX_USER,
+      KDXX_MRKT: req.body.KDXX_MRKT,
+      UNIT_KNTR: req.body.UNIT_KNTR,
       KETX_USER: req.body.NAME_USER,
       GRUP_MENU: req.body.GRUP_MENU,
-      BUSS_CODE: 'QU001',
-      Active: "1",
-      IsValid: "1",
-      Email: req.body.EMAIL,
-      TYPE_PRSON: '4',
-      NamaFile: req.body.FOTO_USER == 'KOSONG' ? null : req.body.FOTO_USER,
+      ACTIVE: "1",
+      IS_VALID: "1",
+      EMAIL: req.body.EMAIL,
+      NAMA_FILE: req.body.FOTO_USER == 'KOSONG' ? null : req.body.FOTO_USER,
       CRTX_DATE: new Date(),
       CRTX_BYXX: req.body.USER_IDXX,
     };
@@ -90,7 +91,7 @@ export default class AuthController {
     // }
 
     if (req.body.USER_LOGN !== "") {
-      sql = `select * from tb01_lgxh where (UPPER(USER_IDXX) = '${req.body.USER_LOGN.toUpperCase()}' Or (Alias Is Not Null And UPPER(Alias) = '${req.body.USER_LOGN.toUpperCase()}')) And Active = "1" And IsValid = "1" And BUSS_CODE = 'QU001';`;
+      sql = `select * from tb01_lgxh where (UPPER(USER_IDXX) = '${req.body.USER_LOGN.toUpperCase()}' Or (ALIAS Is Not Null And UPPER(ALIAS) = '${req.body.USER_LOGN.toUpperCase()}')) And ACTIVE = "1" And IS_VALID = "1";`;
     }
 
     db.query(sql, (err, rows) => {
@@ -147,7 +148,8 @@ export default class AuthController {
               token: token,
               namaUser : rows[0]['KETX_USER'],
               username : rows[0]['USER_IDXX'],
-              fotoUser : rows[0]['NamaFile'],
+              fotoUser : rows[0]['NAMA_FILE'],
+              kodeAgen : rows[0]['KDXX_MRKT'],
             });
           }
         } else {

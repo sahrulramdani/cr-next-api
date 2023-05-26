@@ -37,7 +37,7 @@ import mysql from "mysql";
 //     host: "localhost",
 //     port: 3306,
 //     user: "root", //sps
-//     password: "sps@c@h@y@r100%", //spscr@udh@h100%
+//     password: "cr@udh@h!!!", //spscr@udh@h100%
 //     database: "db_craudhah",
 //   });
 

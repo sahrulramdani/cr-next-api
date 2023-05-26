@@ -14,7 +14,7 @@ import date from 'date-and-time';
 export default class Marketing {
 
   getAllAgency = (req, res) => {
-    var sql = "SELECT a.*, IF ( a.STAS_AGEN = '1', 'Aktif', 'Tidak Aktif' ) AS STATUS_AGEN, IFNULL( b.CODD_DESC, '-' ) AS FEE, IFNULL(( SELECT e.CODD_DESC FROM tb00_basx e WHERE e.CODD_VALU = a.FEEX_LVEL AND e.CODD_FLNM = 'FEELEVEL' ), '-' ) AS FIRST_LVL, d.NAMA_KNTR FROM mrkt_agensih a LEFT JOIN tb00_basx b ON a.FEEX_LVEL = b.CODD_VALU AND b.CODD_FLNM = 'FEELEVEL' LEFT JOIN hrsc_mkantorh d ON a.KDXX_KNTR = d.KDXX_KNTR ORDER BY CRTX_DATE DESC";
+    var sql = "SELECT a.*, IF(a.STAS_AGEN = '1', 'Aktif', 'Tidak Aktif' ) AS STATUS_AGEN, b.CODD_DESC AS FEE, c.CODD_DESC AS FIRST_LVL, d.NAMA_KNTR, IF(a.FEEX_LVEL = '4954','20','40') AS PERIODE FROM mrkt_agensih a LEFT JOIN tb00_basx b ON a.FEEX_LVEL = b.CODD_VALU LEFT JOIN tb00_basx c ON a.FIRST_LVEL = c.CODD_VALU LEFT JOIN hrsc_mkantorh d ON a.KDXX_KNTR = d.KDXX_KNTR ORDER BY CRTX_DATE DESC";
 
     db.query(sql, function (err, rows, fields) {
       res.send(rows);
@@ -114,7 +114,7 @@ export default class Marketing {
       KATX_MRKT: req.body.KATX_MRKT,
       NAMA_PJWB: req.body.NAMA_PJWB,
       TELP_PJWB: req.body.TELP_PJWB,
-      FIRST_LVEL: '4801',
+      FIRST_LVEL: req.body.FEEX_LVEL == '4954' ? '4851' : '4801',
       NAMA_AYAH: req.body.NAMA_AYAH,
       NOXX_TELP: req.body.NOXX_TELP,
       JENS_MNKH: req.body.JENS_MNKH,
@@ -327,60 +327,41 @@ export default class Marketing {
   }
 
   updateAgency = (req, res) => {
-    // --Mencari Data Leader
-    var sql = `SELECT FIRST_LVEL FROM mrkt_agensih WHERE KDXX_MRKT = '${req.body.KDXX_LEAD}'`;
-
-    db.query(sql, function (err, rows, fields) {
-      // --Menentukan First level
-      if (rows != '') {
-        var firstLvl = '';
-
-        rows.map((data) => {
-          if (data.FIRST_LEVL < 4804) {
-            firstLvl = parseInt(data.FIRST_LEVL) + 1;
-          } else {
-            firstLvl = '4804'
-          }
-        })
-      } else {
-        var firstLvl = '4801';
-      }
-      
-      // --Menyimpan ke database
-      var qryUpdate = `UPDATE mrkt_agensih SET ? WHERE KDXX_MRKT = '${req.body.KDXX_AGEN}'`;
-      var data = {
-        KDXX_MRKT: req.body.KDXX_AGEN,
-        NOXX_IDNT: req.body.NOXX_IDNT,
-        NAMA_LGKP: req.body.NAMA_LGKP,
-        JENS_KLMN: req.body.JENS_KLMN,
-        TMPT_LHIR: req.body.TMPT_LHIR,
-        TGLX_LHIR: req.body.TGLX_LHIR,
-        ALAMAT: req.body.ALAMAT,
-        KDXX_KNTR: req.body.KDXX_KNTR,
-        KDXX_PROV: req.body.KDXX_PROV,
-        KDXX_KOTA: req.body.KDXX_KOTA,
-        KDXX_KECX: req.body.KDXX_KECX,
-        KDXX_KELX: req.body.KDXX_KELX,
-        KDXX_POSX: req.body.KDXX_POSX,
-        KDXX_LEAD: req.body.KDXX_LEAD,
-        FEEX_LVEL: req.body.FEEX_LVEL,
-        KATX_MRKT: req.body.KATX_MRKT,
-        NAMA_PJWB: req.body.NAMA_PJWB,
-        TELP_PJWB: req.body.TELP_PJWB,
-        FIRST_LVEL: firstLvl,
-        NAMA_AYAH: req.body.NAMA_AYAH,
-        NOXX_TELP: req.body.NOXX_TELP,
-        JENS_MNKH: req.body.JENS_MNKH,
-        JENS_PEND: req.body.JENS_PEND,
-        JENS_PKRJ: req.body.JENS_PKRJ,
-        FEEX_LVEL: req.body.FEEX_LVEL,
-        FOTO_AGEN: req.body.NAMA_FOTO,
-        FOTO_KTPX: req.body.NAMA_KTPX,
-        STAS_AGEN: req.body.STAS_AGEN,
-        TGLX_GBNG: moment(new Date()).format('YYYY-MM-DD'),
-        UPDT_DATE: new Date(),
-        UPDT_BYXX: 'admin'
-      };
+    // --Menyimpan ke database
+    var qryUpdate = `UPDATE mrkt_agensih SET ? WHERE KDXX_MRKT = '${req.body.KDXX_AGEN}'`;
+    var data = {
+      KDXX_MRKT: req.body.KDXX_AGEN,
+      NOXX_IDNT: req.body.NOXX_IDNT,
+      NAMA_LGKP: req.body.NAMA_LGKP,
+      JENS_KLMN: req.body.JENS_KLMN,
+      TMPT_LHIR: req.body.TMPT_LHIR,
+      TGLX_LHIR: req.body.TGLX_LHIR,
+      ALAMAT: req.body.ALAMAT,
+      KDXX_KNTR: req.body.KDXX_KNTR,
+      KDXX_PROV: req.body.KDXX_PROV,
+      KDXX_KOTA: req.body.KDXX_KOTA,
+      KDXX_KECX: req.body.KDXX_KECX,
+      KDXX_KELX: req.body.KDXX_KELX,
+      KDXX_POSX: req.body.KDXX_POSX,
+      KDXX_LEAD: req.body.KDXX_LEAD,
+      FEEX_LVEL: req.body.FEEX_LVEL,
+      KATX_MRKT: req.body.KATX_MRKT,
+      NAMA_PJWB: req.body.NAMA_PJWB,
+      TELP_PJWB: req.body.TELP_PJWB,
+      FIRST_LVEL: req.body.GRADE_TL == 'NOTL' ? ( req.body.FIRST_LVEL ?? '4801'  ) : req.body.GRADE_TL,
+      NAMA_AYAH: req.body.NAMA_AYAH,
+      NOXX_TELP: req.body.NOXX_TELP,
+      JENS_MNKH: req.body.JENS_MNKH,
+      JENS_PEND: req.body.JENS_PEND,
+      JENS_PKRJ: req.body.JENS_PKRJ,
+      FEEX_LVEL: req.body.FEEX_LVEL,
+      FOTO_AGEN: req.body.NAMA_FOTO,
+      FOTO_KTPX: req.body.NAMA_KTPX,
+      STAS_AGEN: req.body.STAS_AGEN,
+      TGLX_GBNG: moment(new Date()).format('YYYY-MM-DD'),
+      UPDT_DATE: new Date(),
+      UPDT_BYXX: 'admin'
+    };
 
       db.query(qryUpdate, data, (err, result) => {
         if (err) {
@@ -458,8 +439,6 @@ export default class Marketing {
           }
         }
       });
-
-    });
   }
 
 
@@ -480,6 +459,14 @@ export default class Marketing {
           status: true
         });
       }
+    });
+  }
+
+  getDetDaftarAgency = (req, res) => {
+    var sql = `SELECT a.* FROM mrkt_agensih a WHERE a.KDXX_MRKT = '${req.params.id}'`
+
+    db.query(sql, function (err, rows, fields) {
+      res.send(rows);
     });
   }
 
@@ -791,6 +778,13 @@ export default class Marketing {
     })
   }
 
+  getKantorUser = (req, res) => {
+    var sql = `SELECT a.*, b.USER_IDXX FROM hrsc_mkantorh a LEFT JOIN tb01_lgxh b ON a.KDXX_KNTR = b.UNIT_KNTR WHERE b.USER_IDXX = '${req.params.id}'`;
+    db.query(sql, function (err, rows, fields) {
+      res.send(rows);
+    })
+  }
+
 
   // getHotelMekkah = (req, res) => {
   //   var sql = "SELECT a.IDXX_HTLX, a.NAMA_HTLX, a.BINTG_HTLX,b.CODD_DESC,c.CODD_DESC as KOTA FROM m_hotel a INNER JOIN tb00_basx b ON a.BINTG_HTLX = b.CODD_VALU INNER JOIN tb00_basx c ON a.KTGR_HTLX = c.CODD_VALU WHERE b.CODD_FLNM = 'BINTG_HTLX' AND c.CODD_FLNM = 'KOTA_XXX' AND a.KTGR_HTLX = '01' ORDER BY a.BINTG_HTLX DESC";
@@ -848,7 +842,7 @@ export default class Marketing {
 
   
   getJadwalAvailable = (req, res) => {
-    var sql = `SELECT a.IDXX_JDWL,a.TJAN_PKET,a.PSWT_BGKT, a.PSWT_PLNG,a.JMLX_SEAT,( SELECT b.CODD_DESC FROM tb00_basx b WHERE b.CODD_VALU = a.NAMA_PKET AND b.CODD_FLNM = "PAKET_XXXX" ) AS namaPaket,( SELECT b.CODD_DESC FROM tb00_basx b WHERE b.CODD_VALU = a.JENS_PKET AND b.CODD_FLNM = "JNS_PAKET" ) AS jenisPaket,DATE_FORMAT( a.TGLX_BGKT, "%d-%m-%Y" ) AS TGLX_BGKT,DATE_FORMAT( a.TGLX_PLNG, "%d-%m-%Y" ) AS TGLX_PLNG,a.JMLX_HARI,a.TARIF_PKET, a.STAS_AKTF AS STS ,a.MATA_UANG,a.KETERANGAN,IF( a.TGLX_BGKT <= DATE_FORMAT(NOW(), "%Y-%m-%d" ) ,1,0) AS status, ((a.JMLX_SEAT) - (IFNULL((SELECT COUNT(c.KDXX_DFTR) FROM mrkt_daftarh c WHERE c.KDXX_PKET = a.IDXX_JDWL),0))) AS SISA FROM mrkt_jadwalh a HAVING status = '0' AND STS = '1' AND SISA > 0 ORDER BY a.TGLX_BGKT DESC`;
+    var sql = `SELECT a.IDXX_JDWL,a.TJAN_PKET,a.RUTE_AWAL_BRKT, a.PSWT_BGKT, a.FOTO_PKET ,a.PSWT_PLNG,a.JMLX_SEAT,( SELECT b.CODD_DESC FROM tb00_basx b WHERE b.CODD_VALU = a.NAMA_PKET AND b.CODD_FLNM = "PAKET_XXXX" ) AS namaPaket,( SELECT b.CODD_DESC FROM tb00_basx b WHERE b.CODD_VALU = a.JENS_PKET AND b.CODD_FLNM = "JNS_PAKET" ) AS jenisPaket,DATE_FORMAT( a.TGLX_BGKT, "%d-%m-%Y" ) AS TGLX_BGKT,DATE_FORMAT( a.TGLX_PLNG, "%d-%m-%Y" ) AS TGLX_PLNG,a.JMLX_HARI,a.TARIF_PKET, a.STAS_AKTF AS STS ,a.MATA_UANG,a.KETERANGAN,IF( a.TGLX_BGKT <= DATE_FORMAT(NOW(), "%Y-%m-%d" ) ,1,0) AS status, ((a.JMLX_SEAT) - (IFNULL((SELECT COUNT(c.KDXX_DFTR) FROM mrkt_daftarh c WHERE c.KDXX_PKET = a.IDXX_JDWL),0))) AS SISA FROM mrkt_jadwalh a HAVING status = '0' AND STS = '1' AND SISA > 0 ORDER BY a.TGLX_BGKT DESC`;
 
     db.query(sql, function (err, rows, fields) {
       res.send(rows);
@@ -1248,6 +1242,101 @@ export default class Marketing {
 
   getDetailBandara = (req, res) => {
     var sql = `SELECT a.*, b.CODD_DESC AS JENIS, c.name AS NEGARA, d.name AS PROVINSI, e.name AS KOTA FROM m_bandara a LEFT JOIN tb00_basx b ON a.JENS_BAND = b.CODD_VALU LEFT JOIN countries c ON a.NEGR_BAND = c.id LEFT JOIN states d ON a.PROV_BAND = d.id LEFT JOIN cities e ON a.KOTA_BAND = e.id WHERE a.IDXX_BAND = '${req.params.id}' `;
+    db.query(sql, function (err, rows, fields) {
+      res.send(rows);
+    })
+  }
+
+  
+  getAllTourleader = (req, res) => {
+    var sql = `SELECT a.*, ( SELECT COUNT( b.KDXX_DFTR ) FROM mrkt_daftarh b WHERE b.KDXX_MRKT = a.KDXX_MRKT ) AS TTL_SELURUH, ( SELECT COUNT( b.KDXX_DFTR ) FROM mrkt_daftarh b WHERE b.KDXX_MRKT = a.KDXX_MRKT AND b.STAS_BGKT = '1' ) AS TLH_BGKT, ( SELECT COUNT( b.KDXX_DFTR ) FROM mrkt_daftarh b WHERE b.KDXX_MRKT = a.KDXX_MRKT AND b.STAS_BGKT = '0' ) AS PENDING, ( SELECT COUNT( b.KDXX_DFTR ) FROM mrkt_daftarh b LEFT JOIN mrkt_jadwalh c ON b.KDXX_PKET = c.IDXX_JDWL WHERE b.KDXX_MRKT = a.KDXX_MRKT AND YEAR ( c.TGLX_BGKT ) = YEAR ( NOW()) ) AS TAHUN_INI, b.CODD_DESC AS FEE_LEVEL FROM mrkt_agensih a LEFT JOIN tb00_basx b ON a.FEEX_LVEL = b.CODD_VALU`;
+    db.query(sql, function (err, rows, fields) {
+      res.send(rows);
+    })
+  }
+
+    
+  getOnlyTourleader = (req, res) => {
+    var sql = `SELECT a.*, b.CODD_DESC AS FEE_LEVEL, c.CODD_DESC AS FIRST_LEVEL FROM mrkt_agensih a LEFT JOIN tb00_basx b ON a.FEEX_LVEL = b.CODD_VALU LEFT JOIN tb00_basx c ON a.FIRST_LVEL = c.CODD_VALU HAVING FEE_LEVEL = 'Tourleader'`;
+    db.query(sql, function (err, rows, fields) {
+      res.send(rows);
+    })
+  }
+
+  getAllJadwalTL = (req, res) => {
+    var sql = `SELECT a.*, ( SELECT c.CODD_DESC FROM tb00_basx c WHERE c.CODD_VALU = b.JENS_PKET AND c.CODD_FLNM = "JNS_PAKET" ) AS JENS_PAKET, b.KETERANGAN, DATE_FORMAT( b.TGLX_BGKT, "%d-%m-%Y" ) AS TGLX_BGKT, d.NAMA_LGKP, d.TOTL_JMAH, d.PERD_JMAH, d.TOTL_POIN, e.CODD_DESC AS LEVEL_TL FROM mrkt_jadwaltl a LEFT JOIN mrkt_jadwalh b ON a.KDXX_JDWL = b.IDXX_JDWL LEFT JOIN mrkt_agensih d ON a.KDXX_MRKT = d.KDXX_MRKT LEFT JOIN tb00_basx e ON d.FIRST_LVEL = e.CODD_VALU ORDER BY a.KDXX_JDWL DESC`;
+    db.query(sql, function (err, rows, fields) {
+      res.send(rows);
+    })
+  }
+
+  getTLSiap = (req, res) => {
+    var sql = `SELECT a.*, b.CODD_DESC AS FEE_LEVEL, c.CODD_DESC AS FIRST_LEVEL FROM mrkt_agensih a LEFT JOIN tb00_basx b ON a.FEEX_LVEL = b.CODD_VALU LEFT JOIN tb00_basx c ON a.FIRST_LVEL = c.CODD_VALU WHERE a.FEEX_LVEL = '4954' AND ( a.PERD_JMAH >= 15 OR a.FIRST_LVEL >= 4853) ORDER BY a.PERD_JMAH DESC`;
+    db.query(sql, function (err, rows, fields) {
+      res.send(rows);
+    })
+  }
+
+
+  
+  saveTugasTL = async (req, res) => {
+    var listTL = req.body.LIST_TL;
+    var jsonTL = JSON.parse(listTL);
+    var sts;
+
+    for (let i = 0; i < jsonTL.length; i++) {
+      var qry = `INSERT INTO mrkt_jadwaltl SET ?`;
+      var data = {
+        KDXX_JDWL : req.body.KDXX_JDWL,
+        KDXX_MRKT : jsonTL[i]['KDXX_MRKT'],
+        JENS_MRKT : jsonTL[i]['TUGAS'],
+        CRTX_DATE : new Date(),
+        CRTX_BYXX : 'superadmin'
+      };      
+
+      db.query(qry, data, (err, result) => {
+          if (err) {
+              sts = false;
+          } else {
+              sts = true;
+          }
+      });
+    }
+   
+    res.send({
+      status: true,
+    });
+
+  }
+
+  deleteTugasTL = (req, res) => {
+    var sql = `DELETE FROM mrkt_jadwaltl WHERE KDXX_JDTL = '${req.body.KDXX_JDTL}'`;
+
+    db.query(sql, (err, result) => {
+      if (err) {
+        console.log('Error', err);
+
+        res.send({
+          status: false,
+          message: err.sqlMessage
+        });
+      } else {
+        res.send({
+          status: true
+        });
+      }
+    });
+  }
+
+  getDetJadwalTl = (req, res) => {
+    var sql = `SELECT DATE_FORMAT( a.TGLX_BGKT, "%d-%m-%Y" ) AS TGLX_BGKT, a.KETERANGAN, a.STAS_BGKT, (SELECT COUNT(b.KDXX_DFTR) FROM mrkt_daftarh b WHERE b.KDXX_MRKT = '${req.params.id}' AND b.KDXX_PKET = a.IDXX_JDWL) AS TOTAL, (SELECT COUNT(b.KDXX_DFTR) FROM mrkt_daftarh b WHERE b.KDXX_MRKT = '${req.params.id}' AND b.KDXX_JMAH = '${req.params.nik}' AND b.KDXX_PKET = a.IDXX_JDWL) AS SENDIRI FROM mrkt_jadwalh a HAVING TOTAL != 0 ORDER BY a.TGLX_BGKT ASC `;
+    db.query(sql, function (err, rows, fields) {
+      res.send(rows);
+    })
+  }
+
+  getDetJamaahTl = (req, res) => {
+    var sql = `SELECT a.KDXX_MRKT, b.*, c.TGLX_BGKT FROM mrkt_daftarh a LEFT JOIN jmah_jamaahh b ON a.KDXX_JMAH = b.NOXX_IDNT LEFT JOIN mrkt_jadwalh c ON a.KDXX_PKET = c.IDXX_JDWL WHERE a.KDXX_MRKT = '${req.params.id}' AND DATE_FORMAT( c.TGLX_BGKT, "%d-%m-%Y" ) = '${req.params.tgl}'`;
     db.query(sql, function (err, rows, fields) {
       res.send(rows);
     })

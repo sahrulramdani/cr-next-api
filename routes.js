@@ -12,7 +12,8 @@ const routes = (app) => {
       app.route('/marketing/agency/update').post(C.auth.verifyToken, C.marketing.updateAgency);
       app.route('/marketing/agency/update-foto').post(C.auth.verifyToken, C.marketing.updateFotoAgency);
       app.route('/marketing/agency/bank/save').post(C.auth.verifyToken, C.marketing.saveAgencyBank);
-      app.route('/marketing/agency/detail/:id').get(C.auth.verifyToken ,C.marketing.getDetailAgency);
+      app.route('/marketing/agency/det-daftar/save').get(C.marketing.getDetDaftarAgency);
+      app.route('/marketing/agency/detail/:id').get(C.marketing.getDetailAgency);
       app.route('/marketing/agency/detail/pelanggan/:id').get(C.auth.verifyToken ,C.marketing.getDetailPelangganAgency);
       app.route('/marketing/agency/detail/bank/:id').get(C.auth.verifyToken ,C.marketing.getDetailBankAgency);
       app.route('/marketing/agency/detail/downline/:id').get(C.auth.verifyToken ,C.marketing.getDetailDownlineAgency);
@@ -25,10 +26,11 @@ const routes = (app) => {
       app.route("/marketing/jadwal/getAllJadwal").get(C.auth.verifyToken ,C.marketing.getAllJadwal);
       app.route("/marketing/jadwal/getAllJadwalDash").get(C.marketing.getAllJadwalDash);
       app.route("/marketing/jadwal/getDetailDash/:id").get(C.marketing.getDetailDashJadwal);
-      app.route("/marketing/jadwal/get-jadwal").get(C.auth.verifyToken ,C.marketing.getJadwalAvailable);
+      app.route("/marketing/jadwal/get-jadwal").get(C.marketing.getJadwalAvailable);
       app.route("/marketing/jadwal/getTransit").get(C.auth.verifyToken ,C.marketing.getTransit);
       app.route("/marketing/jadwal/getMaskapai").get(C.auth.verifyToken ,C.marketing.getMaskapai);
       app.route("/marketing/jadwal/getHotel").get(C.auth.verifyToken ,C.marketing.getHotel);
+      app.route("/marketing/jadwal/getKantorUser/:id").get(C.auth.verifyToken ,C.marketing.getKantorUser);
       // app.route("/marketing/jadwal/getHotelMekkah").get(C.auth.verifyToken ,C.marketing.getHotelMekkah);
       // app.route("/marketing/jadwal/getHotelMadinah").get(C.auth.verifyToken ,C.marketing.getHotelMadinah);
       // app.route("/marketing/jadwal/getHotelPlus").get(C.auth.verifyToken ,C.marketing.getHotelPlus);
@@ -75,7 +77,14 @@ const routes = (app) => {
       app.route('/marketing/bandara/delete').post(C.auth.verifyToken, C.marketing.deleteBandara);
       app.route('/marketing/bandara/get-detail/:id').get(C.auth.verifyToken, C.marketing.getDetailBandara);
 
-
+      app.route('/marketing/tourlead/all-tourleader').get(C.auth.verifyToken, C.marketing.getAllTourleader);
+      app.route('/marketing/tourlead/get-tourleader').get(C.auth.verifyToken, C.marketing.getOnlyTourleader);
+      app.route('/marketing/tourlead/all-jadwal-tl').get(C.auth.verifyToken, C.marketing.getAllJadwalTL);
+      app.route('/marketing/tourlead/tl-siap').get(C.auth.verifyToken, C.marketing.getTLSiap);
+      app.route('/marketing/tourlead/save-tugas-tl').post(C.auth.verifyToken, C.marketing.saveTugasTL);
+      app.route('/marketing/tourlead/delete-tugas-tl').post(C.auth.verifyToken, C.marketing.deleteTugasTL);
+      app.route('/marketing/tourlead/detail-jadwal-tl/:id/:nik').get(C.auth.verifyToken, C.marketing.getDetJadwalTl);
+      app.route('/marketing/tourlead/detail-jamaah-tl/:id/:tgl').get(C.auth.verifyToken, C.marketing.getDetJamaahTl);
 
       //---- Chart Marketing
       app.route('/marketing/chart').get(C.marketing.getChart);
@@ -131,7 +140,7 @@ const routes = (app) => {
 
       // --- Jamaah Pendaftaran --
       app.route('/jamaah/pendaftaran/kode').get(C.auth.verifyToken ,C.jamaah.generateNumberPendaftaran);
-      app.route('/jamaah/pendaftaran/get-handling/:kode').get(C.auth.verifyToken ,C.jamaah.getPendaftaranHandling);
+      app.route('/jamaah/pendaftaran/get-handling/:kode').get(C.jamaah.getPendaftaranHandling);
       app.route('/jamaah/pendaftaran/save').post(C.auth.verifyToken ,C.jamaah.pendaftaranJamaah);
       app.route('/jamaah/pendaftaran/save-foto').post(C.auth.verifyToken ,C.jamaah.pendaftaranJamaahFoto);
 
@@ -192,14 +201,14 @@ const routes = (app) => {
       app.route('/finance/cost-structure/delete').post(C.auth.verifyToken, C.finance.deleteCostStructure);
 
       app.route('/finance/simulasi/pendapatan/:id').get(C.auth.verifyToken, C.finance.getPendapatanSimulasi);
-
-
       // --- Finance  --  
 
       app.use('/uploads/foto', express.static('uploads/foto'));
       app.use('/uploads/ktp', express.static('uploads/ktp'));
+      app.use('/uploads/kk', express.static('uploads/kk'));
       app.use('/uploads/profil', express.static('uploads/profil'));
       app.use('/uploads/paket', express.static('uploads/paket'));
+      app.use('/uploads/lampiran', express.static('uploads/lampiran'));
 
       app.get('/get-profil-koper/foto/:id', (req, res) => {
             var id = req.params.id;
@@ -213,24 +222,32 @@ const routes = (app) => {
       // app.route('/marketing/agency/delete').post(C.marketing.deleteAgency);
       // app.route('/marketing/agency/detail/bank/:id').get(C.marketing.getDetailBankAgency);
 
+      app.route('/hr/kantor-all').get(C.auth.verifyToken ,C.hr.kantorAll);
+      app.route('/hr/kantor/save').post(C.auth.verifyToken ,C.hr.saveKantor);
+      app.route('/hr/kantor/update').post(C.auth.verifyToken ,C.hr.updateKantor);
+      app.route('/hr/kantor/delete').post(C.auth.verifyToken ,C.hr.deleteKantor);
+      app.route('/hr/kantor/detail/:id').get(C.auth.verifyToken ,C.hr.detailKantor);
+      
       //---- Setup ----
       app.route('/setup/kantor').get(C.auth.verifyToken ,C.setup.kantorAll);
       app.route('/setup/fee-level').get(C.auth.verifyToken ,C.setup.getFeeLevel);
-      app.route('/setup/status-menikah').get(C.auth.verifyToken ,C.setup.getStatusMenikah);
-      app.route('/setup/pendidikans').get(C.auth.verifyToken ,C.setup.getPendidikan);
-      app.route('/setup/pekerjaans').get(C.auth.verifyToken ,C.setup.getPekerjaan);
+      app.route('/setup/grade-tl').get(C.auth.verifyToken ,C.setup.getGradeTL);
+      app.route('/setup/status-menikah').get(C.setup.getStatusMenikah);
+      app.route('/setup/pendidikans').get(C.setup.getPendidikan);
+      app.route('/setup/pekerjaans').get(C.setup.getPekerjaan);
       app.route('/setup/banks').get(C.auth.verifyToken ,C.setup.getBankAll);
       app.route('/setup/kamars').get(C.setup.getKamarAll);
       app.route('/setup/jenis-biaya').get(C.setup.getJenisBiaya);
-      app.route('/setup/biaya-paspor').get(C.auth.verifyToken ,C.setup.getBiayaPaspor);
-      app.route('/setup/biaya-vaksin').get(C.auth.verifyToken ,C.setup.getBiayaVaksin);
-      app.route('/setup/biaya-admin').get(C.auth.verifyToken ,C.setup.getBiayaAdmin);
-      app.route('/setup/biaya-kamar').get(C.auth.verifyToken ,C.setup.getBiayaKamar);
+      app.route('/setup/biaya-paspor').get(C.setup.getBiayaPaspor);
+      app.route('/setup/biaya-vaksin').get(C.setup.getBiayaVaksin);
+      app.route('/setup/biaya-admin').get(C.setup.getBiayaAdmin);
+      app.route('/setup/biaya-kamar').get(C.setup.getBiayaKamar);
       app.route('/setup/kategori-account').get(C.auth.verifyToken ,C.setup.getKategoriAccount);
       app.route('/setup/get-country').get(C.auth.verifyToken ,C.setup.getAllCountry);
       app.route('/setup/get-states/:id').get(C.auth.verifyToken ,C.setup.getAllStates);
       app.route('/setup/get-cities/:id').get(C.auth.verifyToken ,C.setup.getAllCities);
       app.route('/setup/get-komp-biaya').get(C.auth.verifyToken ,C.setup.getKompBiaya);
+      app.route('/setup/kategori-akun').get(C.auth.verifyToken ,C.setup.getKategoriUser);
 
 
       //---- Setup ----
@@ -264,15 +281,16 @@ const routes = (app) => {
       app.route('/data/dashboard/finance').get(C.auth.verifyToken , C.info.getDataFinance);
 
       // Menu Managemen
-      app.route('/menu/grup-user/all').get(C.menu.getGrupUser);
-      app.route('/menu/grup-user/nomor-grup').get(C.menu.generateNumberGrupUser);
-      app.route('/menu/grup-user/save').post(C.menu.saveGrupUser);
+      app.route('/menu/grup-user/all').get(C.auth.verifyToken ,C.menu.getGrupUser);
+      app.route('/menu/grup-user/nomor-grup').get(C.auth.verifyToken ,C.menu.generateNumberGrupUser);
+      app.route('/menu/grup-user/save').post(C.auth.verifyToken ,C.menu.saveGrupUser);
       app.route('/menu/grup-user/update').post(C.menu.updateGrupUser);
-      app.route('/menu/grup-user/detail/:id').get(C.menu.getDetailGrupUser);
-      app.route('/menu/grup-user/detail/menu/:id').get(C.menu.getDetailMenuGrupUser);
-      app.route('/menu/grup-user/detail/user/:id').get(C.menu.getDetailUserGrupUser);
-      app.route('/menu/menus/all').get(C.menu.getMenuAll);
-      app.route('/menu/type-menu/all').get(C.menu.getTypeAll);
+      app.route('/menu/grup-user/delete').post(C.menu.deleteGrupUser);
+      app.route('/menu/grup-user/detail/:id').get(C.auth.verifyToken ,C.menu.getDetailGrupUser);
+      app.route('/menu/grup-user/detail/menu/:id').get(C.auth.verifyToken ,C.menu.getDetailMenuGrupUser);
+      app.route('/menu/grup-user/detail/user/:id').get(C.auth.verifyToken ,C.menu.getDetailUserGrupUser);
+      app.route('/menu/menus/all').get(C.auth.verifyToken ,C.menu.getMenuAll);
+      app.route('/menu/type-menu/all').get(C.auth.verifyToken ,C.menu.getTypeAll);
 
       app.route('/menu/daftar-menu/module-all').get(C.menu.getMenuModulAll);
       // app.route('/menu/daftar-menu/module-all').get(C.menu.getModul);
@@ -286,14 +304,15 @@ const routes = (app) => {
       app.route('/menu/submenus/save').post(C.menu.savesubMenu);
       app.route('/menu/menus/save').post(C.menu.saveMenu);
 
-      app.route('/menu/daftar-pengguna/all').get(C.menu.getPenggunaAll);
-      app.route('/menu/daftar-pengguna/cek-pengguna/:id').get(C.menu.getCekPengguna);
-      app.route('/menu/daftar-pengguna/save-foto').post(C.menu.saveFotoPengguna);
-      app.route('/menu/daftar-pengguna/update').post(C.menu.updatePengguna);
-      app.route('/menu/daftar-pengguna/update-foto').post(C.menu.updateFotoPengguna);
-      app.route('/menu/daftar-pengguna/detail/menu/:id').get(C.menu.getPenggunaMenu);
-      app.route('/menu/daftar-pengguna/detail/grup/:id').get(C.menu.getPenggunaGrup);
-      app.route('/menu/daftar-pengguna/detail/:id').get(C.menu.getDetailPengguna);
+      app.route('/menu/daftar-pengguna/all').get(C.auth.verifyToken ,C.menu.getPenggunaAll);
+      app.route('/menu/daftar-pengguna/cek-pengguna/:id').get(C.auth.verifyToken ,C.menu.getCekPengguna);
+      app.route('/menu/daftar-pengguna/save-foto').post(C.auth.verifyToken ,C.menu.saveFotoPengguna);
+      app.route('/menu/daftar-pengguna/update').post(C.auth.verifyToken ,C.menu.updatePengguna);
+      app.route('/menu/daftar-pengguna/update-foto').post(C.auth.verifyToken ,C.menu.updateFotoPengguna);
+      app.route('/menu/daftar-pengguna/delete').post(C.auth.verifyToken ,C.menu.deletePengguna);
+      app.route('/menu/daftar-pengguna/detail/menu/:id').get(C.auth.verifyToken ,C.menu.getPenggunaMenu);
+      app.route('/menu/daftar-pengguna/detail/grup/:id').get(C.auth.verifyToken ,C.menu.getPenggunaGrup);
+      app.route('/menu/daftar-pengguna/detail/:id').get(C.auth.verifyToken ,C.menu.getDetailPengguna);
       app.route('/menu/daftar-pengguna/update-akses').post(C.menu.updateAksesPengguna);
 
       // app.route('/menu/getmenus/:nama').get(C.menu.getlistMenus);
@@ -302,7 +321,7 @@ const routes = (app) => {
       app.route('/menu/getListMenu/:user').get(C.auth.verifyToken, C.menu.getlistMenus);
 
       // LOGIN AND REGISTER
-      app.route('/register').post(C.auth.register);
+      app.route('/register').post(C.auth.verifyToken, C.auth.register);
       app.route('/signin').post(C.auth.signin);
       app.route('/get-permission/:kode/:id').get(C.auth.verifyToken, C.auth.getPermission);
 

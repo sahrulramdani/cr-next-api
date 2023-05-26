@@ -63,7 +63,7 @@ export default class Menu {
   }
 
   getDetailPengguna = (req, res) => {
-    var sql = `SELECT a.*, b.* FROM tb01_lgxh a LEFT JOIN user_grupuser b ON a.GRUP_MENU = b.KDXX_GRUP WHERE a.USER_IDXX = '${req.params.id}'`
+    var sql = `SELECT a.*, b.*, c.NAMA_KNTR, d.CODD_DESC AS KAT_USER, e.NAMA_LGKP AS NAMA_AGEN FROM tb01_lgxh a LEFT JOIN user_grupuser b ON a.GRUP_MENU = b.KDXX_GRUP LEFT JOIN hrsc_mkantorh c ON a.UNIT_KNTR = c.KDXX_KNTR LEFT JOIN tb00_basx d ON a.KATX_USER = d.CODD_VALU LEFT JOIN mrkt_agensih e ON a.KDXX_MRKT = e.KDXX_MRKT WHERE a.USER_IDXX = '${req.params.id}'`
 
     db.query(sql, function (err, rows, fields) {
       res.send(rows);
@@ -262,6 +262,39 @@ export default class Menu {
     });
   }
 
+  
+  deleteGrupUser = (req, res) => {
+    var sql = `DELETE FROM user_grupuser WHERE KDXX_GRUP = '${req.body.KDXX_GRUP}'`;
+
+    db.query(sql, (err, result) => {
+      if (err) {
+          console.log('Error', err);
+
+          res.send({
+          status: false,
+          message: err.sqlMessage
+          });
+      } else {
+          var sql = `DELETE FROM user_grupmenus WHERE KDXX_GRUP = '${req.body.KDXX_GRUP}'`;
+
+          db.query(sql, (err, result) => {
+            if (err) {
+                console.log('Error', err);
+      
+                res.send({
+                status: false,
+                message: err.sqlMessage
+                });
+            } else {
+                res.send({
+                status: true
+                });
+            }
+          });
+      }
+    });
+  }
+
   saveFotoPengguna = (req, res) => {
     var fotoUser = req.body.FOTO_USER;
     const now = new Date();
@@ -345,14 +378,12 @@ export default class Menu {
     var data = {
       USER_IDXX: req.body.USER_IDXX,
       PASS_IDXX: req.body.USER_PASS,
+      UNIT_KNTR: req.body.UNIT_KNTR,
       KETX_USER: req.body.NAME_USER,
       GRUP_MENU: req.body.GRUP_MENU,
-      BUSS_CODE: 'QU001',
-      Active: req.body.Active,
-      IsValid: "1",
-      Email: req.body.EMAIL,
-      TYPE_PRSON: '4',
-      NamaFile: req.body.FOTO_USER == 'KOSONG' ? null : req.body.FOTO_USER,
+      ACTIVE: req.body.ACTIVE,
+      EMAIL: req.body.EMAIL,
+      NAMA_FILE: req.body.FOTO_USER == 'KOSONG' ? null : req.body.FOTO_USER,
       UPDT_DATE: new Date(),
       UPDT_BYXX: 'superadmin',
     };
@@ -461,6 +492,38 @@ export default class Menu {
         res.send({
           status: true
         });
+      }
+    });
+  }
+
+  deletePengguna = (req, res) => {
+    var sql = `DELETE FROM tb01_lgxh WHERE USER_IDXX = '${req.body.USER_IDXX}'`;
+
+    db.query(sql, (err, result) => {
+      if (err) {
+          console.log('Error', err);
+
+          res.send({
+          status: false,
+          message: err.sqlMessage
+          });
+      } else {
+          var sql = `DELETE FROM user_usermenus WHERE USER_IDXX = '${req.body.USER_IDXX}'`;
+
+          db.query(sql, (err, result) => {
+            if (err) {
+                console.log('Error', err);
+      
+                res.send({
+                status: false,
+                message: err.sqlMessage
+                });
+            } else {
+                res.send({
+                status: true
+                });
+            }
+          });
       }
     });
   }

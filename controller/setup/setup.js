@@ -20,6 +20,14 @@ export default class Setup {
       });
     }
 
+    getGradeTL = (req, res) => {
+      var sql = "SELECT CODD_FLNM, CODD_VALU, CODD_DESC FROM tb00_basx WHERE CODD_FLNM = 'GRADE_TL'"
+    
+      db.query(sql, function (err, rows, fields) {
+        res.send(rows);
+      });
+    }
+
     getStatusMenikah = (req, res) => {
       var sql = "SELECT CODD_FLNM, CODD_VALU, CODD_DESC FROM tb00_basx WHERE CODD_FLNM = 'MARRYXX'"
     
@@ -134,6 +142,14 @@ export default class Setup {
 
     getKompBiaya = (req, res) => {
       var sql = "SELECT CODD_FLNM, CODD_VALU, CODD_DESC FROM tb00_basx WHERE CODD_FLNM = 'JENIS_PBYA'"
+    
+      db.query(sql, function (err, rows, fields) {
+        res.send(rows);
+      });
+    }
+    
+    getKategoriUser = (req, res) => {
+      var sql = "SELECT CODD_FLNM, CODD_VALU, CODD_DESC FROM tb00_basx WHERE CODD_FLNM = 'KATX_USER'"
     
       db.query(sql, function (err, rows, fields) {
         res.send(rows);

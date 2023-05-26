@@ -460,14 +460,37 @@ export default class Jamaah {
 
   pendaftaranJamaahFoto = (req, res) => {
     // Menyimpan Foto KK
+    var sts;
+    var fotoKtpDaftar = req.body.FOTO_KTPX;
+    if (fotoKtpDaftar != 'TIDAK') { 
+      var fotoKtpDaftarName = req.body.NOXX_IDNT + '.png';
+      fs.writeFile(`uploads/ktp/${fotoKtpDaftarName}`, fotoKtpDaftar, {encoding:'base64'}, function(err){
+        if (err) {
+          console.log('UPLOAD FOTO KTP GAGAL',err);
+        }else{
+          console.log('UPLOAD FOTO KTP BERHASIL');
+        }
+      });
+
+      var sqlUpdPerd = `UPDATE jmah_jamaahh SET FOTO_KTPX = ${fotoKtpDaftarName} WHERE NOXX_IDNT = '${req.body.NOXX_IDNT}'`;
+      db.query(sqlUpdPerd, (err,result) => {
+        if (err) {
+          sts = false;
+        } else {
+          sts = true;
+        }
+      });
+    } 
+
+
     var fotoKkDaftar = req.body.FOTO_KKXX;
     if (fotoKkDaftar != 'TIDAK') {        
       var fotoKkDaftarName = req.body.NOXX_IDNT + '.png';
       fs.writeFile(`uploads/kk/${fotoKkDaftarName}`, fotoKkDaftar, {encoding:'base64'}, function(err){
         if (err) {
-          console.log('UPLOAD FOTO KK BERHASIL',err);
+          console.log('UPLOAD FOTO KK GAGAL',err);
         }else{
-          console.log('UPLOAD FOTO KK GAGAl');
+          console.log('UPLOAD FOTO KK BERHASIL');
         }
       });
       var namaKk = fotoKkDaftarName;
@@ -481,9 +504,9 @@ export default class Jamaah {
       var fotoDokDaftarName = req.body.NOXX_IDNT + '.png';
       fs.writeFile(`uploads/lampiran/${fotoDokDaftarName}`, fotoDokDaftar, {encoding:'base64'}, function(err){
         if (err) {
-          console.log('UPLOAD LAMPIRAN BERHASIL', err);
+          console.log('UPLOAD LAMPIRAN GAGAL', err);
         }else{
-          console.log('UPLOAD LAMPIRAN GAGAL');
+          console.log('UPLOAD LAMPIRAN BERHASIL');
         }
       });
       var namaDok = fotoDokDaftarName;
