@@ -58,7 +58,9 @@ const routes = (app) => {
 
       //-- Marketing Maskapai --
       app.route('/marketing/maskapai/save').post(C.auth.verifyToken, C.marketing.saveMaskapai);
+      app.route('/marketing/maskapai/save-foto').post(C.auth.verifyToken, C.marketing.saveFotoMaskapai);
       app.route('/marketing/maskapai/update').post(C.auth.verifyToken, C.marketing.updateMaskapai);
+      app.route('/marketing/maskapai/update-foto').post(C.auth.verifyToken, C.marketing.updateFotoMaskapai);
       app.route('/marketing/maskapai/delete').post(C.auth.verifyToken, C.marketing.deleteMaskapai);
       app.route('/marketing/maskapai/getDetailMaskapai/:id').get(C.auth.verifyToken, C.marketing.getDetailMaskapai);
  
@@ -209,6 +211,7 @@ const routes = (app) => {
       app.use('/uploads/profil', express.static('uploads/profil'));
       app.use('/uploads/paket', express.static('uploads/paket'));
       app.use('/uploads/lampiran', express.static('uploads/lampiran'));
+      app.use('/uploads/maskapai', express.static('uploads/maskapai'));
 
       app.get('/get-profil-koper/foto/:id', (req, res) => {
             var id = req.params.id;
@@ -248,6 +251,10 @@ const routes = (app) => {
       app.route('/setup/get-cities/:id').get(C.auth.verifyToken ,C.setup.getAllCities);
       app.route('/setup/get-komp-biaya').get(C.auth.verifyToken ,C.setup.getKompBiaya);
       app.route('/setup/kategori-akun').get(C.auth.verifyToken ,C.setup.getKategoriUser);
+      app.route('/setup/musim-berjalan').get(C.auth.verifyToken ,C.setup.getMusimBerjalan);
+      app.route('/setup/all-musim').get(C.auth.verifyToken ,C.setup.getAllMusim);
+      app.route('/setup/musim/save').post(C.auth.verifyToken ,C.setup.saveMusim);
+      app.route('/setup/musim/update-aktif').post(C.auth.verifyToken ,C.setup.updateAktifMusim);
 
 
       //---- Setup ----

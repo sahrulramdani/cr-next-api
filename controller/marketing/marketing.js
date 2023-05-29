@@ -765,7 +765,7 @@ export default class Marketing {
   }
 
   getMaskapai = (req, res) => {
-    var sql = "SELECT IDXX_PSWT, KODE_PSWT, NAMA_PSWT FROM m_pesawat order by CRTX_DATE DESC";
+    var sql = "SELECT IDXX_PSWT, KODE_PSWT, NAMA_PSWT, FOTO_PSWT FROM m_pesawat order by CRTX_DATE DESC";
     db.query(sql, function (err, rows, fields) {
       res.send(rows);
     })
@@ -823,7 +823,7 @@ export default class Marketing {
   }
 
   getAllJadwalDash = (req, res) => {
-    var sql = `SELECT a.IDXX_JDWL, a.TJAN_PKET, a.PSWT_BGKT, a.KETX_RUTE, a.FOTO_PKET, a.PSWT_PLNG,( SELECT b.NAMA_PSWT FROM m_pesawat b WHERE b.IDXX_PSWT = a.PSWT_BGKT ) AS NAME_PESWT_BGKT,( SELECT b.NAMA_PSWT FROM m_pesawat b WHERE b.IDXX_PSWT = a.PSWT_PLNG ) AS NAME_PESWT_PLNG, a.RUTE_AWAL_BRKT, a.RUTE_TRNS_BRKT, a.RUTE_AKHR_BRKT, a.RUTE_AWAL_PLNG, a.JMLX_SEAT,( SELECT b.CODD_DESC FROM tb00_basx b WHERE b.CODD_VALU = a.NAMA_PKET AND b.CODD_FLNM = "PAKET_XXXX" ) AS namaPaket,( SELECT b.CODD_DESC FROM tb00_basx b WHERE b.CODD_VALU = a.JENS_PKET AND b.CODD_FLNM = "JNS_PAKET" ) AS jenisPaket, DATE_FORMAT( a.TGLX_BGKT, "%d-%m-%Y" ) AS TGLX_BGKT, DATE_FORMAT( a.TGLX_PLNG, "%d-%m-%Y" ) AS TGLX_PLNG, a.JMLX_HARI, a.TARIF_PKET, a.MATA_UANG, a.KETERANGAN, IF ( a.TGLX_BGKT < DATE_FORMAT( NOW(), "%Y-%m-%d" ), 1, 0 ) AS STATUS, (( a.JMLX_SEAT ) - ( IFNULL(( SELECT COUNT( c.KDXX_DFTR ) FROM mrkt_daftarh c WHERE c.KDXX_PKET = a.IDXX_JDWL ), 0 ))) AS SISA, e.CODD_DESC,( SELECT COUNT( b.KDXX_PKET ) FROM mrkt_daftarh b WHERE b.KDXX_PKET = a.IDXX_JDWL ) AS TERISI FROM mrkt_jadwalh a LEFT JOIN m_hotel d ON d.IDXX_HTLX = a.HOTL_MEKX LEFT JOIN tb00_basx e ON e.CODD_VALU = d.BINTG_HTLX AND e.CODD_FLNM = 'BINTG_HTLX' HAVING STATUS = '0' ORDER BY a.TGLX_BGKT ASC`;
+    var sql = `SELECT a.IDXX_JDWL, a.TJAN_PKET, a.PSWT_BGKT, a.KETX_RUTE, a.FOTO_PKET, a.PSWT_PLNG,( SELECT b.NAMA_PSWT FROM m_pesawat b WHERE b.IDXX_PSWT = a.PSWT_BGKT ) AS NAME_PESWT_BGKT,( SELECT b.NAMA_PSWT FROM m_pesawat b WHERE b.IDXX_PSWT = a.PSWT_PLNG ) AS NAME_PESWT_PLNG, a.RUTE_AWAL_BRKT, a.RUTE_TRNS_BRKT, a.RUTE_AKHR_BRKT, a.RUTE_AWAL_PLNG, a.JMLX_SEAT,( SELECT b.CODD_DESC FROM tb00_basx b WHERE b.CODD_VALU = a.NAMA_PKET AND b.CODD_FLNM = "PAKET_XXXX" ) AS namaPaket,( SELECT b.CODD_DESC FROM tb00_basx b WHERE b.CODD_VALU = a.JENS_PKET AND b.CODD_FLNM = "JNS_PAKET" ) AS jenisPaket, DATE_FORMAT( a.TGLX_BGKT, "%d-%m-%Y" ) AS TGLX_BGKT, DATE_FORMAT( a.TGLX_PLNG, "%d-%m-%Y" ) AS TGLX_PLNG, a.JMLX_HARI, a.TARIF_PKET, a.MATA_UANG, a.KETERANGAN, IF ( a.TGLX_BGKT < DATE_FORMAT( NOW(), "%Y-%m-%d" ), 1, 0 ) AS STATUS, (( a.JMLX_SEAT ) - ( IFNULL(( SELECT COUNT( c.KDXX_DFTR ) FROM mrkt_daftarh c WHERE c.KDXX_PKET = a.IDXX_JDWL ), 0 ))) AS SISA, e.CODD_DESC,( SELECT COUNT( b.KDXX_PKET ) FROM mrkt_daftarh b WHERE b.KDXX_PKET = a.IDXX_JDWL ) AS TERISI, (SELECT f.FOTO_PSWT FROM m_pesawat f WHERE f.IDXX_PSWT = a.PSWT_BGKT) AS FOTO_PSWT FROM mrkt_jadwalh a LEFT JOIN m_hotel d ON d.IDXX_HTLX = a.HOTL_MEKX LEFT JOIN tb00_basx e ON e.CODD_VALU = d.BINTG_HTLX AND e.CODD_FLNM = 'BINTG_HTLX' HAVING STATUS = '0' ORDER BY a.TGLX_BGKT ASC`;
     db.query(sql, function (err, rows, fields) {
       res.send(rows);
     })
@@ -1016,6 +1016,7 @@ export default class Marketing {
           // IDXX_PSWT: id,
           KODE_PSWT: req.body.KODE_PSWT,
           NAMA_PSWT: req.body.NAMA_PSWT,
+          FOTO_PSWT: req.body.FOTO_PSWT,
           CRTX_BYXX: "alfi",
           CRTX_DATE: new Date(),
         }
@@ -1039,6 +1040,29 @@ export default class Marketing {
 
   }
 
+  saveFotoMaskapai = async (req, res) => {
+    var fotoMaskapai = req.body.FOTO_PSWT;
+    if (fotoMaskapai != 'TIDAK') {        
+      var fotoMaskapaiName = await randomString(10) + '.png';
+
+      fs.writeFile(`uploads/maskapai/${fotoMaskapaiName}`, fotoMaskapai, {encoding:'base64'}, function(err){
+        if (err) {
+          console.log(err);
+        }else{
+          console.log('berhasil');
+        }
+      });
+      var namaFoto = fotoMaskapaiName;
+    }else{
+      var namaFoto = '';
+    }
+
+    res.send({
+      status: true,
+      foto: namaFoto,
+    });
+  }
+
   updateMaskapai = (req, res) => {
     var sql = `UPDATE m_pesawat SET ? WHERE IDXX_PSWT = '${req.body.IDXX_PSWT}'`;
 
@@ -1046,6 +1070,7 @@ export default class Marketing {
       IDXX_PSWT: req.body.IDXX_PSWT,
       KODE_PSWT: req.body.KODE_PSWT,
       NAMA_PSWT: req.body.NAMA_PSWT,
+      FOTO_PSWT: req.body.FOTO_PSWT,
       UPDT_BYXX: "alfi",
       UPDT_DATE: new Date(),
     }
@@ -1065,7 +1090,60 @@ export default class Marketing {
     });
   }
 
+  updateFotoMaskapai = async (req, res) => {
+    // FOTO LAMA JAMAAH
+    var fotoLama = req.body.FOTO_LAMA;
+    if (fotoLama != '') {
+      if (req.body.FOTO_PSWT == 'TIDAK') {
+        var namaFoto = fotoLama;
+      }else{
+        fs.unlink(`uploads/maskapai/${fotoLama}`,function(err){
+          if(err) return console.log(err);
+          console.log('FOTO LAMA BERHASIL DIHAPUS');
+        });  
+
+        var fotoMaskapai = req.body.FOTO_PSWT;
+        var fotoMaskapaiName =  await randomString(10) + '.png';
+        fs.writeFile(`uploads/maskapai/${fotoMaskapaiName}`, fotoMaskapai, {encoding:'base64'}, function(err){
+          if (err) {
+            console.log('FOTO BARU GAGAL DIUPLOAD',err);
+          }else{
+            console.log('FOTO BARU BERHASIL DIUPLOAD');
+          }
+        });
+        var namaFoto = fotoMaskapaiName;
+      }
+    }else{
+      if(req.body.FOTO_PSWT == 'TIDAK'){
+        var namaFoto = '';
+      }else{
+        var fotoMaskapai = req.body.FOTO_PSWT;
+        var fotoMaskapaiName = await randomString(10) + '.png';
+        fs.writeFile(`uploads/maskapai/${fotoMaskapaiName}`, fotoMaskapai, {encoding:'base64'}, function(err){
+          if (err) {
+            console.log('FOTO LAMA GAGAL DIUPLOAD',err);
+          }else{
+            console.log('FOTO BARU BERHASIL DIUPLOAD');
+          }
+        });
+  
+        var namaFoto = fotoMaskapaiName;
+      }
+    }
+
+    res.send({
+      status: true,
+      foto: namaFoto,
+    });
+  }
+
   deleteMaskapai = (req, res) => {
+    if (req.body.FOTO_PSWT != 'TIDAK') {
+      fs.unlink(`uploads/maskapai/${req.body.FOTO_PSWT}`,function(err){
+        if(err) return console.log(err);
+      });  
+    }
+
     var sql = `DELETE FROM m_pesawat WHERE IDXX_PSWT = '${req.body.IDXX_PSWT}'`;
 
     db.query(sql, (err, result) => {
@@ -1086,7 +1164,7 @@ export default class Marketing {
 
   getDetailMaskapai = (req, res) => {
     var id = req.params.id;
-    var sql = `SELECT IDXX_PSWT, KODE_PSWT, NAMA_PSWT FROM m_pesawat WHERE IDXX_PSWT = '${id}'`;
+    var sql = `SELECT IDXX_PSWT, KODE_PSWT, NAMA_PSWT, FOTO_PSWT FROM m_pesawat WHERE IDXX_PSWT = '${id}'`;
     db.query(sql, function (err, rows, fields) {
       res.send(rows);
     })

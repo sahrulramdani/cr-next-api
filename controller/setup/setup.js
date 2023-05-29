@@ -155,5 +155,74 @@ export default class Setup {
         res.send(rows);
       });
     }
+
+    getMusimBerjalan = (req, res) => {
+      var sql = `SELECT a.KDXX_MUSM, DATE_FORMAT( a.AWAL_MUSM, "%d-%m-%Y" ) AS AWAL_MUSM, DATE_FORMAT( a.AKHR_MUSM, "%d-%m-%Y" ) AS AKHR_MUSM, STAS_MUSM FROM sett_musim a`
     
+      db.query(sql, function (err, rows, fields) {
+        res.send(rows);
+      });
+    }
+    
+    getAllMusim = (req, res) => {
+      var sql = `SELECT a.KDXX_MUSM, DATE_FORMAT( a.AWAL_MUSM, "%d-%m-%Y" ) AS AWAL_MUSM, DATE_FORMAT( a.AKHR_MUSM, "%d-%m-%Y" ) AS AKHR_MUSM, (SELECT COUNT(b.KDXX_DFTR) FROM mrkt_daftarh b WHERE b.CRTX_DATE BETWEEN a.AWAL_MUSM AND a.AKHR_MUSM ) AS PELANGGAN, (SELECT COUNT(b.KDXX_DFTR) FROM mrkt_daftarh b WHERE b.STAS_BGKT = '1' AND b.CRTX_DATE BETWEEN a.AWAL_MUSM AND a.AKHR_MUSM ) AS BERANGKAT, STAS_MUSM FROM sett_musim a ORDER BY a.AWAL_MUSM DESC`
+    
+      db.query(sql, function (err, rows, fields) {
+        res.send(rows);
+      });
+    }
+
+    saveMusim = (req, res) => {
+        var sqlInsert = "INSERT INTO sett_musim SET ?";
+        var data = {
+          AWAL_MUSM: req.body.AWAL_MUSM,
+          AKHR_MUSM: req.body.AKHR_MUSM,
+          STAS_MUSM: '0',
+          CRTX_BYXX: "superadmin",
+          CRTX_DATE: new Date(),
+        }
+
+        db.query(sqlInsert, data, (err, result) => {
+          if (err) {
+            console.log(err);
+            res.send({
+              status: false,
+              message: err.sqlMessage,
+            });
+          } else {
+            res.send({
+              status: true
+            });
+          }
+        });
+    }
+
+    updateAktifMusim = (req,res) => {
+      var sql = `UPDATE sett_musim SET STAS_MUSM = '0'`;
+
+      db.query(sql, (err, result) => {
+      if (err) {
+          console.log(err);
+          res.send({
+          status: false,
+          message: err.sqlMessage,
+          });
+      } else {
+        var sql = `UPDATE sett_musim SET STAS_MUSM = '1' WHERE KDXX_MUSM = '${req.body.KDXX_MUSM}'`;
+        db.query(sql, (err, result) => {
+        if (err) {
+            console.log(err);
+            res.send({
+            status: false,
+            message: err.sqlMessage,
+            });
+        } else {
+            res.send({
+            status: true
+            });
+        }
+        });
+      }
+      });
+    }
 }

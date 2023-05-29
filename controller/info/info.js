@@ -27,8 +27,7 @@ export default class Info {
   }
 
   getDataLaporanTahunan = (req, res) => {
-    var sql = `SELECT a.TAHUN, a.TOTAL, b.BERANGKAT FROM (SELECT YEAR(CRTX_DATE) AS TAHUN, COUNT(YEAR(CRTX_DATE)) AS TOTAL FROM mrkt_daftarh WHERE YEAR(CRTX_DATE) BETWEEN CAST(YEAR(NOW()) AS INT) - 9 AND YEAR(NOW()) GROUP BY YEAR(CRTX_DATE)) a INNER JOIN (SELECT YEAR(a.TGLX_BGKT) AS TAHUN, COUNT(b.KDXX_JMAH) AS BERANGKAT  FROM mrkt_jadwalh a INNER JOIN mrkt_daftarh b ON a.IDXX_JDWL = b.KDXX_PKET WHERE b.STAS_BGKT = '1' AND YEAR(a.TGLX_BGKT) BETWEEN CAST(YEAR(NOW()) AS INT) - 9 AND YEAR(NOW()) GROUP BY YEAR(a.TGLX_BGKT)) b
-    ON a.TAHUN = b.TAHUN DESC`;
+    var sql = `SELECT a.TAHUN, a.TOTAL, b.BERANGKAT FROM (SELECT YEAR(CRTX_DATE) AS TAHUN, COUNT(YEAR(CRTX_DATE)) AS TOTAL FROM mrkt_daftarh WHERE YEAR(CRTX_DATE) BETWEEN CAST(YEAR(NOW()) AS INT) - 9 AND YEAR(NOW()) GROUP BY YEAR(CRTX_DATE)) a INNER JOIN (SELECT YEAR(a.TGLX_BGKT) AS TAHUN, COUNT(b.KDXX_JMAH) AS BERANGKAT  FROM mrkt_jadwalh a INNER JOIN mrkt_daftarh b ON a.IDXX_JDWL = b.KDXX_PKET WHERE b.STAS_BGKT = '1' AND YEAR(a.TGLX_BGKT) BETWEEN CAST(YEAR(NOW()) AS INT) - 9 AND YEAR(NOW()) GROUP BY YEAR(a.TGLX_BGKT)) b ON a.TAHUN = b.TAHUN DESC`;
     db.query(sql, function (err, rows, fields) {
       res.send(rows);
     })
@@ -136,7 +135,7 @@ export default class Info {
   }
 
   getInfoFinance = (req, res) => {
-    var sql = `SELECT COUNT( a.IDXX_JDWL ) AS TTL_BRGKT, ( SELECT SUM( b.TOTL_TGIH ) FROM mrkt_tagihanh b WHERE YEAR ( b.CRTX_DATE ) = YEAR ( NOW())) AS TGIH_THUN, ( SELECT SUM( c.JMLH_BYAR ) FROM finc_bayarjamahh c WHERE YEAR ( c.TGLX_BYAR ) = YEAR ( NOW())) AS BAYAR_THUN, ( SELECT SUM( b.SISA_TGIH ) FROM mrkt_tagihanh b WHERE YEAR ( b.CRTX_DATE ) = YEAR ( NOW())) AS SISA_TGIH FROM mrkt_jadwalh a WHERE DATE_FORMAT( a.TGLX_BGKT, "%Y-%m" ) = DATE_FORMAT( NOW(), "%Y-%m")`;
+    var sql = `SELECT COUNT( a.IDXX_JDWL ) AS TTL_BRGKT, (SELECT COUNT(DISTINCT c.KDXX_JMAH) FROM finc_bayarjamahh b LEFT JOIN mrkt_daftarh c ON b.KDXX_DFTR = c.KDXX_DFTR WHERE b.TGLX_BYAR BETWEEN (SELECT b.AWAL_MUSM FROM sett_musim b WHERE b.STAS_MUSM = '1') AND (SELECT b.AKHR_MUSM FROM sett_musim b WHERE b.STAS_MUSM = '1')) AS TRANSAKSI_JAMAAH, ( SELECT SUM( d.TOTL_TGIH ) FROM mrkt_tagihanh d WHERE d.CRTX_DATE BETWEEN (SELECT b.AWAL_MUSM FROM sett_musim b WHERE b.STAS_MUSM = '1') AND (SELECT b.AKHR_MUSM FROM sett_musim b WHERE b.STAS_MUSM = '1') ) AS TGIH_THUN, ( SELECT SUM( e.JMLH_BYAR ) FROM finc_bayarjamahh e WHERE e.TGLX_BYAR BETWEEN (SELECT b.AWAL_MUSM FROM sett_musim b WHERE b.STAS_MUSM = '1') AND (SELECT b.AKHR_MUSM FROM sett_musim b WHERE b.STAS_MUSM = '1') ) AS BAYAR_THUN, ( SELECT SUM( f.SISA_TGIH ) FROM mrkt_tagihanh f WHERE f.CRTX_DATE BETWEEN (SELECT b.AWAL_MUSM FROM sett_musim b WHERE b.STAS_MUSM = '1') AND (SELECT b.AKHR_MUSM FROM sett_musim b WHERE b.STAS_MUSM = '1') ) AS SISA_TGIH FROM mrkt_jadwalh a WHERE DATE_FORMAT( a.TGLX_BGKT, "%Y-%m" ) = DATE_FORMAT(NOW(),"%Y-%m")`;
 
     db.query(sql, function (err, rows, fields) {
       res.send(rows);
